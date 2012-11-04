@@ -16,7 +16,7 @@
  /**
  * A collection of constants defining keys for registry- and session-entries.
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 interface Conjoon_Keys {
 
@@ -35,9 +35,6 @@ interface Conjoon_Keys {
 // -------- session reception controller
     const SESSION_CONTROLLER_RECEPTION = 'com.conjoon.session.receptionController';
 
-// -------- session application cache helper
-    const SESSION_APPLICATION_CACHE = 'com.conjoon.session.applicationCache';
-
 // -------- session twitter oauth
     const SESSION_SERVICE_TWITTER_OAUTH = 'com.conjoon.service.twitter.oauth';
 
@@ -46,9 +43,6 @@ interface Conjoon_Keys {
 
 // -------- cache key email accounts
     const CACHE_EMAIL_ACCOUNTS = 'com.conjoon.cache.email.accounts';
-
-// -------- cache email folder root types
-    const CACHE_EMAIL_FOLDERS_ROOT_TYPE = 'com.conjoon.cache.email.folders.root_type';
 
 // -------- cache key feed items
     const CACHE_FEED_ITEM = 'com.conjoon.cache.feed.item';

@@ -19,6 +19,7 @@
 <html>
  <head>
   <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=8" >
   <title><?php echo $this->title; ?></title>
   <link rel="shortcut icon" href="./favicon.png" type="image/png" />
   <?php echo $this->render('reception/_stylesheets.phtml'); ?>
@@ -35,26 +36,26 @@
 
 Ext.onReady(function(){
 
-    com.conjoon.groupware.Registry.load({
-        fn : function() {
-            var reception = com.conjoon.groupware.Reception;
-            reception.init(false);
+    com.conjoon.util.PreLoader.addStore(com.conjoon.groupware.Registry.getStore());
 
-            com.conjoon.SystemMessageManager.setContext(com.conjoon.groupware.Registry.get(
-                '/client/environment/device'
-            ));
+    com.conjoon.util.PreLoader.on('load', function() {
+        var reception = com.conjoon.groupware.Reception;
+        reception.init(false);
 
-            <?php if ($this->locked === true) { ?>
-                reception.onUserLoad(function(){
-                    reception.showLogin(reception.TYPE_UNLOCK);
-                });
-            <?php } else { ?>
-                reception.showLogin(reception.TYPE_LOGIN);
-            <?php } ?>
-        }
+        com.conjoon.SystemMessageManager.setContext(com.conjoon.groupware.Registry.get(
+            '/client/environment/device'
+        ));
+
+        <?php if ($this->locked === true) { ?>
+            reception.onUserLoad(function(){
+                reception.showLogin(reception.TYPE_UNLOCK);
+            });
+        <?php } else { ?>
+            reception.showLogin(reception.TYPE_LOGIN);
+        <?php } ?>
     });
 
-
+    com.conjoon.util.PreLoader.load();
 });
   </script>
  </body>

@@ -21,23 +21,17 @@
     <script type="text/javascript">
 
         Ext.onReady(function() {
-          
-            var currentName;
 
-            var replace = function(config, name) {
-              var btns = Ext.getCmp('btns');
-              
-              if (name && name != currentName) {
-                  currentName = name;
-                  
-                  btns.remove(0);
+            var replace = function(config){
+                var btns = Ext.getCmp('btns');
 
-                  btns.add(Ext.apply(config, {
-                      layout:'hbox'
-                  }));
-              };
-              
-              btns.doLayout();
+                btns.remove(0);
+
+                btns.add(Ext.apply(config, {
+                    layout:'hbox'
+                }));
+
+                btns.doLayout();
             }
 
 
@@ -103,7 +97,7 @@
                                         text: 'Button 4',
                                         margins:'0'
                                     }]
-                                }, 'spaced');
+                                });
                             }
                         },{
                             xtype:'button',
@@ -128,7 +122,7 @@
                                         xtype:'button',
                                         text: 'Button 4'
                                     }]
-                                }, 'align top');
+                                });
                             }
                         },{
                             xtype:'button',
@@ -153,7 +147,7 @@
                                         xtype:'button',
                                         text: 'Button 4'
                                     }]
-                                }, 'align middle');
+                                });
                             }
                         },{
                             xtype:'button',
@@ -178,7 +172,7 @@
                                         xtype:'button',
                                         text: 'Button 4'
                                     }]
-                                }, 'align stretch');
+                                });
                             }
                         },{
                             xtype:'button',
@@ -203,7 +197,7 @@
                                         xtype:'button',
                                         text: 'Button 4'
                                     }]
-                                }, 'align stretchmax');
+                                });
                             }
                         }]
                     },{
@@ -247,7 +241,7 @@
                                         flex:1,
                                         margins:'0'
                                     }]
-                                }, 'flex all even');
+                                });
                             }
                         },{
                             xtype:'button',
@@ -277,7 +271,7 @@
                                         flex:3,
                                         margins:'0'
                                     }]
-                                }, 'flex ratio');
+                                });
                             }
                         },{
                             xtype:'button',
@@ -303,7 +297,7 @@
                                         xtype:'button',
                                         text: 'Button 4'
                                     }]
-                                }, 'pack start');
+                                });
                             }
                         },{
                             xtype:'button',
@@ -330,7 +324,7 @@
                                         text: 'Button 4',
                                         margins:'0'
                                     }]
-                                }, 'pack center');
+                                });
                             }
                         },{
                             xtype:'button',
@@ -357,7 +351,7 @@
                                         text: 'Button 4',
                                         margins:'0'
                                     }]
-                                }, 'pack end');
+                                });
                             }
                         }]
                     }]

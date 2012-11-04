@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Application
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ModulesTest.php 24593 2012-01-05 20:35:02Z matthew $
+ * @version    $Id: ModulesTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
@@ -33,7 +33,7 @@ require_once 'Zend/Loader/Autoloader.php';
  * @category   Zend
  * @package    Zend_Application
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Application
  */
@@ -168,47 +168,6 @@ class Zend_Application_Resource_ModulesTest extends PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('foo-bar', (array)$bootstraps);
         $this->assertArrayHasKey('foo',     (array)$bootstraps);
         $this->assertArrayHasKey('default', (array)$bootstraps);
-    }
-    
-    public function testBootstrapBootstrapsIsOwnMethod()
-    {
-        require_once 'Zend/Application/Resource/Modules.php';
-
-        $this->bootstrap->registerPluginResource('Frontcontroller', array(
-            'moduleDirectory' => dirname(__FILE__) . '/../_files/modules',
-        ));
-        $resource = new ZendTest_Application_Resource_ModulesHalf(array());
-        $resource->setBootstrap($this->bootstrap);
-        $bootstraps = $resource->init();
-        $this->assertEquals(3, count((array)$bootstraps));
-    }
-
-    /**
-     * @group ZF-11548
-     */
-    public function testGetExecutedBootstrapsShouldReturnArrayObject()
-    {
-        require_once 'Zend/Application/Resource/Modules.php';
-
-        $this->bootstrap->registerPluginResource('Frontcontroller', array(
-            'moduleDirectory' => dirname(__FILE__) . '/../_files/modules',
-        ));
-        $resource = new Zend_Application_Resource_Modules(array());
-        $resource->setBootstrap($this->bootstrap);
-        $resource->init();
-        $bootstraps = $resource->getExecutedBootstraps();
-        $this->assertType('ArrayObject', $bootstraps);
-    }
-}
-
-require_once 'Zend/Application/Resource/Modules.php';
-class ZendTest_Application_Resource_ModulesHalf
-    extends Zend_Application_Resource_Modules 
-{
-    protected function bootstrapBootstraps($bootstraps)
-    {
-        array_pop($bootstraps);
-        return parent::bootstrapBootstraps($bootstraps);
     }
 }
 

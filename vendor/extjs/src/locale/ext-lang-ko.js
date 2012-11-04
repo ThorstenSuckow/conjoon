@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
+ * licensing@extjs.com
+ * http://www.extjs.com/license
  */
 /**
  * Korean Translations By nicetip
@@ -133,8 +133,7 @@ if(Ext.form.DateField){
       minText           : "{0}일 이후여야 합니다.",
       maxText           : "{0}일 이전이어야 합니다.",
       invalidText       : "{0}는 올바른 날짜형식이 아닙니다. - 다음과 같은 형식이어야 합니다. {1}",
-      format            : "m/d/y",
-      startDay          : 0
+      format            : "m/d/y"
    });
 }
 

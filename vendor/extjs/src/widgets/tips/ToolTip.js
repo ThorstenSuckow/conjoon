@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
+ * licensing@extjs.com
+ * http://www.extjs.com/license
  */
 /**
  * @class Ext.ToolTip
@@ -134,7 +134,7 @@ myGrid.on('render', function(grid) {
     // private
     afterRender : function(){
         Ext.ToolTip.superclass.afterRender.call(this);
-        this.anchorEl.setStyle('z-index', this.el.getZIndex() + 1).setVisibilityMode(Ext.Element.DISPLAY);
+        this.anchorEl.setStyle('z-index', this.el.getZIndex() + 1);
     },
 
     /**
@@ -401,8 +401,8 @@ myGrid.on('render', function(grid) {
         this.showAt(this.getTargetXY());
 
         if(this.anchor){
-            this.anchorEl.show();
             this.syncAnchor();
+            this.anchorEl.show();
             this.constrainPosition = this.origConstrainPosition;
         }else{
             this.anchorEl.hide();
@@ -420,8 +420,6 @@ myGrid.on('render', function(grid) {
         if(this.anchor && !this.anchorEl.isVisible()){
             this.syncAnchor();
             this.anchorEl.show();
-        }else{
-            this.anchorEl.hide();
         }
     },
 
@@ -510,7 +508,7 @@ myGrid.on('render', function(grid) {
 
     // private
     adjustPosition : function(x, y){
-        if(this.constrainPosition){
+        if(this.contstrainPosition){
             var ay = this.targetXY[1], h = this.getSize().height;
             if(y <= ay && (y+h) >= ay){
                 y = ay-h-5;

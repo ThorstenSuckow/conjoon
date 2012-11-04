@@ -25,7 +25,7 @@ require_once 'Zend/Db/Table.php';
  * @category   Conjoon
  * @package    Conjoon_Db
  * @subpackage Table
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 class Conjoon_Db_Table extends Zend_Db_Table {
 

@@ -160,7 +160,6 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
 
         var Checkbox  = Ext.form.Checkbox;
         var TextField = Ext.form.TextField;
-        var Radio     = Ext.form.Radio;
 
         this.fields = {
             'name' : new TextField({
@@ -186,126 +185,93 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
                 vtype           : 'email',
                 enableKeyEvents : true
             }),
-            'protocol1' : new Ext.form.DisplayField({
-                labelStyle : 'width:102px;font-size:11px',
-                ctCls      : 'com-conjoon-smalleditor',
+            'protocol' : new TextField({
+                labelStyle : 'width:50px;font-size:11px',
                 fieldLabel : com.conjoon.Gettext.gettext("Protocol"),
+                disabled   : true,
                 value      : 'POP3',
-                width      : 225
+                width      : 50
             }),
             'serverInbox' : new TextField({
                 fieldLabel      : com.conjoon.Gettext.gettext("Host"),
-                width           : 255,
-                labelStyle      : 'width:102px;font-size:11px',
+                itemCls         : 'com-conjoon-float-left',
+                width           : 100,
+                ctCls           : Ext.isIE ? undefined : 'com-conjoon-groupware-email-EmailAccountDialog-serverCard-col1',
                 allowBlank      : false,
+                labelStyle      : 'width:90px;font-size:11px',
                 validator       : this.isServerInboxValid.createDelegate(this),
                 enableKeyEvents : true
             }),
             'portInbox' : new TextField({
                 fieldLabel      : com.conjoon.Gettext.gettext("Port"),
+                itemCls         : (Ext.isIE ? 'com-conjoon-margin-l-25 ' : '' )+'com-conjoon-float-left',
                 width           : 50,
-                labelStyle      : 'width:102px;font-size:11px',
+                ctCls           : Ext.isIE ? undefined : 'com-conjoon-groupware-email-EmailAccountDialog-serverCard-col2',
+                labelStyle      : 'width:55px;font-size:11px',
                 allowBlank      : false,
                 validator       : this.isPortValid.createDelegate(this),
                 enableKeyEvents : true
             }),
             'usernameInbox' : new TextField({
                 fieldLabel      : com.conjoon.Gettext.gettext("User name"),
-                width           : 255,
-                labelStyle      : 'width:102px;font-size:11px',
+                itemCls         : 'com-conjoon-float-left',
+                ctCls           : Ext.isIE ? undefined : 'com-conjoon-groupware-email-EmailAccountDialog-serverCard-col1',
+                width           : 100,
+                labelStyle      : 'width:90px;font-size:11px',
                 allowBlank      : false,
                 enableKeyEvents : true
             }),
             'passwordInbox' : new TextField({
                 inputType       : 'password',
-                width           : 255,
-                labelStyle      : 'width:102px;font-size:11px',
+                itemCls         : (Ext.isIE ? 'com-conjoon-margin-l-25 ' : '' )+'com-conjoon-float-left',
+                ctCls           : Ext.isIE ? undefined : 'com-conjoon-groupware-email-EmailAccountDialog-serverCard-col2',
                 fieldLabel      : com.conjoon.Gettext.gettext("Password"),
+                width           : 50,
+                labelStyle      : 'width:55px;font-size:11px',
                 allowBlank      : false,
                 enableKeyEvents : true
             }),
-
-            'inboxConnectionTypeUnsecure' : new Radio({
-                hideLabel  : true,
-                itemCls    : 'com-conjoon-float-left',
-                boxLabel   : com.conjoon.Gettext.gettext("Never"),
-                name       : 'inboxConnectionType',
-                inputValue : 'never'
-            }),
-
-            'inboxConnectionTypeSsl' : new Radio({
-                hideLabel  : true,
-                boxLabel   : 'SSL',
-                itemCls    : 'com-conjoon-float-left com-conjoon-margin-l-25',
-                name       : 'inboxConnectionType',
-                inputValue : 'SSL'
-            }),
-
-            'inboxConnectionTypeTls' : new Radio({
-                hideLabel  : true,
-                boxLabel   : 'TLS',
-                itemCls    : 'com-conjoon-float-left com-conjoon-margin-l-25',
-                name       : 'inboxConnectionType',
-                inputValue : 'TLS'
-            }),
-
-            'outboxConnectionTypeUnsecure' : new Radio({
-                hideLabel  : true,
-                boxLabel   : com.conjoon.Gettext.gettext("Never"),
-                itemCls    : 'com-conjoon-float-left',
-                name       : 'outboxConnectionType',
-                inputValue : 'never'
-            }),
-
-            'outboxConnectionTypeSsl' : new Radio({
-                hideLabel  : true,
-                boxLabel   : 'SSL',
-                itemCls    : 'com-conjoon-float-left com-conjoon-margin-l-25',
-                name       : 'outboxConnectionType',
-                inputValue : 'SSL'
-            }),
-
-            'outboxConnectionTypeTls' : new Radio({
-                hideLabel  : true,
-                boxLabel   : 'TLS',
-                itemCls    : 'com-conjoon-float-left com-conjoon-margin-l-25',
-                name       : 'outboxConnectionType',
-                inputValue : 'TLS'
-            }),
-
             'serverOutbox' : new TextField({
                 fieldLabel      : com.conjoon.Gettext.gettext("Host"),
-                width           : 255,
-                labelStyle      : 'width:102px;font-size:11px',
+                itemCls         : 'com-conjoon-float-left',
+                ctCls           : Ext.isIE ? undefined : 'com-conjoon-groupware-email-EmailAccountDialog-serverCard-col1',
+                width           : 100,
+                labelStyle      : 'width:90px;font-size:11px',
                 allowBlank      : false,
                 enableKeyEvents : true
             }),
             'portOutbox' : new TextField({
                 fieldLabel      : com.conjoon.Gettext.gettext("Port"),
+                itemCls         : (Ext.isIE ? 'com-conjoon-margin-l-25 ' : '' )+'com-conjoon-float-left',
+                ctCls           : Ext.isIE ? undefined : 'com-conjoon-groupware-email-EmailAccountDialog-serverCard-col2',
                 width           : 50,
                 allowBlank      : false,
-                labelStyle      : 'width:102px;font-size:11px',
+                labelStyle      : 'width:55px;font-size:11px',
                 validator       : this.isPortValid.createDelegate(this),
                 enableKeyEvents : true
             }),
             'isOutboxAuth' : new Checkbox({
-                fieldLabel : com.conjoon.Gettext.gettext("Authorization"),
-                labelStyle : 'width:102px;font-size:11px'
+                fieldLabel : com.conjoon.Gettext.gettext("Server requires authorization"),
+                labelStyle : 'width:175px;font-size:11px'
             }),
             'usernameOutbox' : new TextField({
                 fieldLabel      : com.conjoon.Gettext.gettext("User name"),
-                width           : 255,
-                labelStyle      : 'width:102px;font-size:11px',
+                itemCls         : 'com-conjoon-float-left',
+                ctCls           : Ext.isIE ? undefined : 'com-conjoon-groupware-email-EmailAccountDialog-serverCard-col1',
+                width           : 100,
                 disabled        : true,
+                labelStyle      : 'width:90px;font-size:11px',
                 allowBlank      : false,
                 enableKeyEvents : true
             }),
             'passwordOutbox' : new TextField({
                 inputType       : 'password',
-                width           : 255,
-                labelStyle      : 'width:102px;font-size:11px',
+                itemCls         : (Ext.isIE ? 'com-conjoon-margin-l-25 ' : '' )+'com-conjoon-float-left',
+                ctCls           : Ext.isIE ? undefined : 'com-conjoon-groupware-email-EmailAccountDialog-serverCard-col2',
                 fieldLabel      : com.conjoon.Gettext.gettext("Password"),
+                width           : 50,
                 disabled        : true,
+                labelStyle      : 'width:55px;font-size:11px',
                 allowBlank      : false,
                 enableKeyEvents : true
             }),
@@ -357,73 +323,36 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
             fields['replyAddress']
             ]
         });
-        var incomingMailPanel = new Ext.FormPanel({
-            title       : com.conjoon.Gettext.gettext("Incoming Mail"),
+        var serverSettingsPanel = new Ext.FormPanel({
+            title       : com.conjoon.Gettext.gettext("Server"),
             bodyStyle   : 'padding:5px 15px 5px 15px;background-color:#F6F6F6',
             defaultType : 'textfield',
             baseCls     : 'x-small-editor',
             labelAlign : 'left',
             labelWidth : 30,
             items       : [
+                fields['protocol'],
                 new com.conjoon.groupware.util.FormIntro({
-                    style     : 'margin:10px 0 15px 0;',
+                    style     : 'margin:10px 0 5px 0;',
                     labelText : com.conjoon.Gettext.gettext("Inbox"),
                     text      : com.conjoon.Gettext.gettext("These settings will be used to connect to the inbox server and retrieve new email messages.")
-                }),
+            }),
                 fields['serverInbox'],
-                new com.conjoon.groupware.util.Clear({style : 'height:15px'}),
-                fields['protocol1'],
-                new Ext.BoxComponent({
-                    autoEl : {
-                        tag   : 'div',
-                        html  : 'Secure connection:',
-                        style : 'line-height:18px;margin-right:15px;padding-top:2px',
-                        cls   : 'com-conjoon-float-left'
-                    }}),
-                fields['inboxConnectionTypeUnsecure'],
-                fields['inboxConnectionTypeSsl'],
-                fields['inboxConnectionTypeTls'],
-                new com.conjoon.groupware.util.Clear({style : 'height:5px'}),
                 fields['portInbox'],
-                new com.conjoon.groupware.util.Clear({style : 'height:25px'}),
+                new com.conjoon.groupware.util.Clear(),
                 fields['usernameInbox'],
                 fields['passwordInbox'],
-                new com.conjoon.groupware.util.Clear()
-            ]
-        });
-        var outgoingMailPanel = new Ext.FormPanel({
-            title       : com.conjoon.Gettext.gettext("Outgoing Mail"),
-            bodyStyle   : 'padding:5px 15px 5px 15px;background-color:#F6F6F6',
-            defaultType : 'textfield',
-            baseCls     : 'x-small-editor',
-            labelAlign : 'left',
-            labelWidth : 30,
-            items       : [
-                new com.conjoon.groupware.util.FormIntro({
-                        style     : 'margin:10px 0 15px 0;',
-                        labelText : com.conjoon.Gettext.gettext("Outbox"),
-                        text      : com.conjoon.Gettext.gettext("These settings will be used to connect to the outbox server to send email messages.")
-                }),
+                new com.conjoon.groupware.util.Clear(), new com.conjoon.groupware.util.FormIntro({
+                    style     : 'margin:10px 0 5px 0;',
+                    labelText : com.conjoon.Gettext.gettext("Outbox"),
+                    text      : com.conjoon.Gettext.gettext("These settings will be used to connect to the outbox server to send email messages.")
+            }),
                 fields['serverOutbox'],
-                new com.conjoon.groupware.util.Clear({style : 'height:15px'}),
-                new Ext.BoxComponent({
-                    autoEl : {
-                        tag   : 'div',
-                        html  : 'Secure connection:',
-                        style : 'line-height:18px;margin-right:15px;padding-top:2px',
-                        cls   : 'com-conjoon-float-left'
-                    }}),
-                fields['outboxConnectionTypeUnsecure'],
-                fields['outboxConnectionTypeSsl'],
-                fields['outboxConnectionTypeTls'],
-                new com.conjoon.groupware.util.Clear({style : 'height:5px'}),
                 fields['portOutbox'],
-                new com.conjoon.groupware.util.Clear({style : 'height:25px'}),
+                new com.conjoon.groupware.util.Clear({style:'height:10px;'}),
                 fields['isOutboxAuth'],
                 fields['usernameOutbox'],
-                fields['passwordOutbox'],
-                new com.conjoon.groupware.util.Clear()
-
+                fields['passwordOutbox']
             ]
         });
         var commonSettingsPanel = new Ext.FormPanel({
@@ -435,7 +364,7 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
             items       : [new com.conjoon.groupware.util.FormIntro({
                 style     : 'margin:10px 0 5px 0;',
                 labelText : com.conjoon.Gettext.gettext("Fetch messages"),
-                text      : com.conjoon.Gettext.gettext("You can delete each message from the inbox server after downloading them. If you use additional software to organize your emails, it is suggested to leave this option off.<br />Note:<br />This option is not available for IMAP based accounts.")
+                text      : com.conjoon.Gettext.gettext("You can delete each message from the inbox server after downloading them. If you use additional software to organize your emails, it is suggested to leave this option off.")
             }),
             fields['isCopyLeftOnServer']
             ]
@@ -480,9 +409,7 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
             style      : 'background:none',
             items      : [
                 identitySettingsPanel,
-                //serverSettingsPanel,
-                incomingMailPanel,
-                outgoingMailPanel,
+                serverSettingsPanel,
                 commonSettingsPanel,
                 signatureSettingsPanel
             ]
@@ -508,19 +435,9 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
             cls      : 'com-conjoon-margin-b-5',
             minWidth : 175,
             handler  : function(){
-
-                var r = [], w, i;
-
-                for (i in this.deletedRecords) {
-                    r.push(this.deletedRecords[i]);
-                }
-
-                w = new com.conjoon.groupware.email.EmailAccountWizard({
-                    pendingRemovedRecords : r
-                });
+                var w = new com.conjoon.groupware.email.EmailAccountWizard();
                 w.show();
-            },
-            scope : this
+            }
         });
 
         /**
@@ -666,15 +583,13 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
     /**
      * Validator to check if the specified account name is valid. Will return false
      * if either the value defaults to empty or if the account name already exists.
-     * This method will also look up the currently pending removed records to
-     * see if there's a duplicate.
      *
      * @param {String} value The value to validate
      * @return {Boolean} true if the passed value was valid, otherwise false.
      */
     isAccountNameValid : function(value)
     {
-        var value = value.trim().toLowerCase();
+        var value = value.trim();
         if (value == "") {
             return false;
         }
@@ -688,20 +603,10 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
             if (clkRecord && rec.id == clkRecord.id) {
                 continue;
             }
-            if (rec.get('name').trim().toLowerCase() == value) {
+            if (rec.get('name').trim() == value) {
                 return false;
             }
         }
-
-        // check deleted
-        var r = [], i;
-        for (var i in this.deletedRecords) {
-            if (this.deletedRecords[i].get('name').toLowerCase() == value) {
-                return false;
-            }
-        }
-
-
 
         return true;
     },
@@ -926,16 +831,16 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
             tab = 1;
         } else if (!fields['serverOutbox'].isValid()) {
             errorField = 'serverOutbox';
-            tab = 2;
+            tab = 1;
         } else if (!fields['portOutbox'].isValid()) {
             errorField = 'portOutbox';
-            tab = 2;
+            tab = 1;
         } else if (!fields['usernameOutbox'].isValid()) {
             errorField = 'usernameOutbox';
-            tab = 2;
+            tab = 1;
         } else if (!fields['passwordOutbox'].isValid()) {
             errorField = 'passwordOutbox';
-            tab = 2;
+            tab = 1;
         }
 
         if (errorField !== null) {
@@ -971,39 +876,12 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         var fields = this.fields;
 
         this.mon(fields['isOutboxAuth'], 'check', function(checkbox, checked) {
-
-            fields['usernameOutbox'].setDisabled(!checked);
-            fields['passwordOutbox'].setDisabled(!checked);
             fields['usernameOutbox'].allowBlank = !checked;
             fields['passwordOutbox'].allowBlank = !checked;
             fields['usernameOutbox'].isValid();
             fields['passwordOutbox'].isValid();
-
-            if (!checked) {
-                fields['usernameOutbox'].clearInvalid();
-                fields['passwordOutbox'].clearInvalid();
-            }
-
-            this.onConfigChange();
-        }, this);
-
-        this.mon(fields['outboxConnectionTypeUnsecure'], 'check', function(radio, checked) {
-            this.onConfigChange();
-        }, this);
-        this.mon(fields['outboxConnectionTypeSsl'], 'check', function(radio, checked) {
-            this.onConfigChange();
-        }, this);
-        this.mon(fields['outboxConnectionTypeTls'], 'check', function(radio, checked) {
-            this.onConfigChange();
-        }, this);
-
-        this.mon(fields['inboxConnectionTypeUnsecure'], 'check', function(radio, checked) {
-            this.onConfigChange();
-        }, this);
-        this.mon(fields['inboxConnectionTypeSsl'], 'check', function(radio, checked) {
-            this.onConfigChange();
-        }, this);
-        this.mon(fields['inboxConnectionTypeTls'], 'check', function(radio, checked) {
+            fields['usernameOutbox'].setDisabled(!checked);
+            fields['passwordOutbox'].setDisabled(!checked);
             this.onConfigChange();
         }, this);
 
@@ -1175,26 +1053,24 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         for (var i = 0, max_i = records.length; i < max_i; i++) {
             currUpd = records[i];
             upd.push({
-                id                   : currUpd.id,
-                isStandard           : currUpd.get('isStandard'),
-                name                 : currUpd.get('name'),
-                userName             : currUpd.get('userName'),
-                address              : currUpd.get('address'),
-                replyAddress         : currUpd.get('replyAddress'),
-                serverInbox          : currUpd.get('serverInbox'),
-                portInbox            : currUpd.get('portInbox'),
-                usernameInbox        : currUpd.get('usernameInbox'),
-                passwordInbox        : currUpd.get('passwordInbox'),
-                serverOutbox         : currUpd.get('serverOutbox'),
-                portOutbox           : currUpd.get('portOutbox'),
-                isOutboxAuth         : currUpd.get('isOutboxAuth'),
-                usernameOutbox       : currUpd.get('usernameOutbox'),
-                passwordOutbox       : currUpd.get('passwordOutbox'),
-                isCopyLeftOnServer   : currUpd.get('isCopyLeftOnServer'),
-                isSignatureUsed      : currUpd.get('isSignatureUsed'),
-                signature            : currUpd.get('signature'),
-                inboxConnectionType  : currUpd.get('inboxConnectionType'),
-                outboxConnectionType : currUpd.get('outboxConnectionType')
+                id                 : currUpd.id,
+                isStandard         : currUpd.get('isStandard'),
+                name               : currUpd.get('name'),
+                userName           : currUpd.get('userName'),
+                address            : currUpd.get('address'),
+                replyAddress       : currUpd.get('replyAddress'),
+                serverInbox        : currUpd.get('serverInbox'),
+                portInbox          : currUpd.get('portInbox'),
+                usernameInbox      : currUpd.get('usernameInbox'),
+                passwordInbox      : currUpd.get('passwordInbox'),
+                serverOutbox       : currUpd.get('serverOutbox'),
+                portOutbox         : currUpd.get('portOutbox'),
+                isOutboxAuth       : currUpd.get('isOutboxAuth'),
+                usernameOutbox     : currUpd.get('usernameOutbox'),
+                passwordOutbox     : currUpd.get('passwordOutbox'),
+                isCopyLeftOnServer : currUpd.get('isCopyLeftOnServer'),
+                isSignatureUsed    : currUpd.get('isSignatureUsed'),
+                signature          : currUpd.get('signature')
             });
         }
 
@@ -1517,7 +1393,7 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
 // -------- data
 
     /**
-     * Fills the form fields according to the data found in the passed
+     * Fills the form fields according to teh data found in the passed
      * record.
      *
      * @param {com.conjoon.groupware.email.EmailAccountRecord} record The record
@@ -1532,21 +1408,13 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         fields['isOutboxAuth'].suspendEvents();
         fields['isSignatureUsed'].suspendEvents();
 
-        fields['outboxConnectionTypeUnsecure'].suspendEvents();
-        fields['outboxConnectionTypeSsl'].suspendEvents();
-        fields['outboxConnectionTypeTls'].suspendEvents();
-
-        fields['inboxConnectionTypeUnsecure'].suspendEvents();
-        fields['inboxConnectionTypeSsl'].suspendEvents();
-        fields['inboxConnectionTypeTls'].suspendEvents();
-
-        fields['usernameOutbox'].allowBlank = !data.isOutboxAuth;
-        fields['passwordOutbox'].allowBlank = !data.isOutboxAuth;
+        fields['usernameOutbox'].allowBlank = !fields['isOutboxAuth'].getValue();
+        fields['passwordOutbox'].allowBlank = !fields['isOutboxAuth'].getValue();
         fields['name'].setValue(data.name);
         fields['userName'].setValue(data.userName);
         fields['address'].setValue(data.address);
         fields['replyAddress'].setValue(data.replyAddress);
-        fields['protocol1'].setValue(data.protocol);
+        fields['protocol'].setValue(data.protocol);
         fields['serverInbox'].setValue(data.serverInbox);
         fields['portInbox'].setValue(data.portInbox);
         fields['usernameInbox'].setValue(data.usernameInbox);
@@ -1557,43 +1425,12 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         fields['usernameOutbox'].setValue(data.usernameOutbox);
         fields['passwordOutbox'].setValue(data.passwordOutbox);
         fields['isCopyLeftOnServer'].setValue(!data.isCopyLeftOnServer);
-
-        if (data.outboxConnectionType == 'SSL') {
-            fields['outboxConnectionTypeSsl'].setValue(true);
-        } else if (data.outboxConnectionType == 'TLS') {
-            fields['outboxConnectionTypeTls'].setValue(true);
-        } else {
-            fields['outboxConnectionTypeUnsecure'].setValue(true);
-        }
-
-        if (data.inboxConnectionType == 'SSL') {
-            fields['inboxConnectionTypeSsl'].setValue(true);
-        } else if (data.inboxConnectionType == 'TLS') {
-            fields['inboxConnectionTypeTls'].setValue(true);
-        } else {
-            fields['inboxConnectionTypeUnsecure'].setValue(true);
-        }
-
-        if (data.protocol === 'IMAP') {
-            fields['isCopyLeftOnServer'].setDisabled(true);
-        } else {
-            fields['isCopyLeftOnServer'].setDisabled(false);
-        }
-
         fields['isSignatureUsed'].setValue(data.isSignatureUsed);
         fields['signature'].setValue(data.signature);
 
         fields['signature'].setDisabled(!data.isSignatureUsed);
         fields['usernameOutbox'].setDisabled(!data.isOutboxAuth);
         fields['passwordOutbox'].setDisabled(!data.isOutboxAuth);
-
-        fields['outboxConnectionTypeUnsecure'].resumeEvents();
-        fields['outboxConnectionTypeSsl'].resumeEvents();
-        fields['outboxConnectionTypeTls'].resumeEvents();
-
-        fields['inboxConnectionTypeUnsecure'].resumeEvents();
-        fields['inboxConnectionTypeSsl'].resumeEvents();
-        fields['inboxConnectionTypeTls'].resumeEvents();
 
         fields['isCopyLeftOnServer'].resumeEvents();
         fields['isOutboxAuth'].resumeEvents();
@@ -1621,19 +1458,19 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
 
         var isOutboxAuth = fields['isOutboxAuth'].getValue();
 
-        record.set('name',               fields['name'].getValue());
-        record.set('userName',           fields['userName'].getValue());
-        record.set('address',            fields['address'].getValue());
-        record.set('replyAddress',       fields['replyAddress'].getValue());
-        record.set('serverInbox',        fields['serverInbox'].getValue());
-        record.set('portInbox',          fields['portInbox'].getValue());
-        record.set('usernameInbox',      fields['usernameInbox'].getValue());
-        record.set('serverOutbox',       fields['serverOutbox'].getValue());
-        record.set('portOutbox',         fields['portOutbox'].getValue());
-        record.set('isOutboxAuth',       isOutboxAuth);
-        record.set('isCopyLeftOnServer', !fields['isCopyLeftOnServer'].getValue());
-        record.set('isSignatureUsed',    fields['isSignatureUsed'].getValue());
-        record.set('signature',          fields['signature'].getValue());
+        record.set('name',            fields['name'].getValue());
+        record.set('userName',       fields['userName'].getValue());
+        record.set('address',         fields['address'].getValue());
+        record.set('replyAddress',   fields['replyAddress'].getValue());
+        record.set('serverInbox',    fields['serverInbox'].getValue());
+        record.set('portInbox',      fields['portInbox'].getValue());
+        record.set('usernameInbox',  fields['usernameInbox'].getValue());
+        record.set('serverOutbox',   fields['serverOutbox'].getValue());
+        record.set('portOutbox',     fields['portOutbox'].getValue());
+        record.set('isOutboxAuth',     isOutboxAuth);
+        record.set('isCopyLeftOnServer',      !fields['isCopyLeftOnServer'].getValue());
+        record.set('isSignatureUsed',   fields['isSignatureUsed'].getValue());
+        record.set('signature',       fields['signature'].getValue());
 
         var passwordInbox  = fields['passwordInbox'].getValue();
         var passwordOutbox = fields['passwordOutbox'].getValue();
@@ -1643,22 +1480,6 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
             passwordOutbox = "";
         } else {
             record.set('usernameOutbox',  fields['usernameOutbox'].getValue());
-        }
-
-        if (fields['outboxConnectionTypeSsl'].getValue() === true) {
-            record.set('outboxConnectionType', 'SSL');
-        } else if (fields['outboxConnectionTypeTls'].getValue() === true) {
-            record.set('outboxConnectionType', 'TLS');
-        } else {
-            record.set('outboxConnectionType', "");
-        }
-
-        if (fields['inboxConnectionTypeSsl'].getValue() === true) {
-            record.set('inboxConnectionType', 'SSL');
-        } else if (fields['inboxConnectionTypeTls'].getValue() === true) {
-            record.set('inboxConnectionType', 'TLS');
-        } else {
-            record.set('inboxConnectionType', "");
         }
 
         if (passwordInbox.trim() == "" || passwordInbox.replace(/\*/g, '').trim() != "") {

@@ -167,7 +167,7 @@ Ext.ux.grid.GridViewMenuPlugin = Ext.extend(Object, {
      */
     _handleHdMenuClick : function(item, e)
     {
-        return this._view.handleHdMenuClickDefault(item, e);
+        return this._view.handleHdMenuClick(item, e);
     },
 
     /**
@@ -369,9 +369,7 @@ Ext.ux.grid.GridViewMenuPlugin = Ext.extend(Object, {
             this.colMenu.un("beforeremove", this._beforeColMenuRemove, this);
             this.colMenu.removeAll(true);
             Ext.menu.MenuMgr.unregister(this.colMenu);
-            if (this.colMenu.getEl()) {
-                this.colMenu.getEl().remove();
-            }
+            this.colMenu.getEl().remove();
             delete this.colMenu;
         }
 

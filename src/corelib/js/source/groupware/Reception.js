@@ -24,14 +24,6 @@ Ext.namespace('com.conjoon.groupware');
 com.conjoon.groupware.Reception = function() {
 
     /**
-     * @param {Boolean} _workbenchInit indicates whether the workbench is
-     * ready to use or not. This flag might not be set to true if anything in
-     * the process of loading all stores/dependencies for the workbench
-     * failed.
-     */
-    var _workbenchInit = false;
-
-    /**
      * @param {Object} _options
      */
     var _options = {
@@ -115,11 +107,12 @@ com.conjoon.groupware.Reception = function() {
     /**
      * Callback for the receptions user load response.
      *
-     * @param {ResponseObject}
+     * @param {XmlHttpResponse}
+     * @param {Object} options
+     *
      */
-    var _onUserLoad = function(response)
+    var _onUserLoad = function(response, options)
     {
-        response = response.result;
         var inspector = com.conjoon.groupware.ResponseInspector;
 
         var data = inspector.isSuccess(response);
@@ -139,13 +132,14 @@ com.conjoon.groupware.Reception = function() {
     /**
      * Callback for the receptions user load failure.
      *
-     * @param {ResponseObject}
+     * @param {XmlHttpResponse}
+     * @param {Object} options
      *
      */
-    var _onUserLoadFailure = function(response)
+    var _onUserLoadFailure = function(response, options)
     {
         for (var i = 0, len = _userLoadFailureListeners.length; i < len; i++) {
-            _userLoadFailureListeners[i]['fn'].call(_userLoadFailureListeners[i]['scope'], response);
+            _userLoadFailureListeners[i]['fn'].call(_userLoadFailureListeners[i]['scope'], response, options);
         }
     };
 
@@ -219,13 +213,13 @@ com.conjoon.groupware.Reception = function() {
      *
      * @param {String} buttonType The type of the button that was clicked. Can be
      * either 'yes' or 'no'.
-     * @param {String} exitUrl optional: the url to redirect to
      *
      * @see #_onLogoutSuccess
      */
-    var _logout = function(buttonType, exitUrl)
+    var _logout = function(buttonType)
     {
         if (buttonType == 'yes') {
+
             for (var i = 0, len = _beforeLogoutListeners.length; i < len; i++) {
                 var ret = _beforeLogoutListeners[i]['fn'].call(_beforeLogoutListeners[i]['scope']);
                 if (ret === false) {
@@ -240,12 +234,11 @@ com.conjoon.groupware.Reception = function() {
                 })
             );
 
-            com.conjoon.defaultProvider.reception.logout(function(provider, response) {
-                if (!response.status) {
-                    _onLogoutFailure(response);
-                } else {
-                    _onLogoutSuccess(response, exitUrl);
-                }
+            Ext.Ajax.request({
+                url            : './default/reception/logout/format/json',
+                success        : _onLogoutSuccess,
+                failure        : _onLogoutFailure,
+                disableCaching : true
             });
         }
     };
@@ -256,9 +249,8 @@ com.conjoon.groupware.Reception = function() {
      * to the logout action on server side if the Reception indicated a
      * token failure.
      *
-     * @param {String} exitUrl optional: the url to redirect to
      */
-    var _onExit = function(exitUrl)
+    var _onExit = function()
     {
         if (_context == this.TYPE_TOKEN_FAILURE) {
             com.conjoon.SystemMessageManager.wait(
@@ -268,16 +260,14 @@ com.conjoon.groupware.Reception = function() {
                 })
             );
 
-            com.conjoon.defaultProvider.reception.logout(function(provider, response) {
-                if (!response.status) {
-                    _onLogoutFailure(response);
-                } else {
-                    _onLogoutSuccess(response, exitUrl);
-                }
+            Ext.Ajax.request({
+                url            : './default/reception/logout/format/json',
+                success        : _onLogoutSuccess,
+                failure        : _onLogoutFailure,
+                disableCaching : true
             });
-
         } else {
-            _logout('yes', exitUrl);
+            _logout('yes');
         }
     };
 
@@ -310,31 +300,47 @@ com.conjoon.groupware.Reception = function() {
      * Listener for a successfull logout-request invoked by _logout.
      *
      * @param {Object} response The response object returned by the server.
-     * @param {String} exitUrl optional, the url to redirect to
+     * @param {Object} options The options used to initiate the request.
+     *
      */
-    var _onLogoutSuccess = function(response, exitUrl)
+    var _onLogoutSuccess = function(response, options)
     {
-        var myResponse = response.result;
-
         window.onbeforeunload = Ext.emptyFn;
 
-        if (!myResponse.success) {
-            _onLogoutFailure(response);
+        var json = com.conjoon.util.Json;
+
+        if (json.isError(response.responseText)) {
+            _onLogoutFailure(response, options);
             return;
         }
 
-        window.location.href = exitUrl ? exitUrl : './';
+        window.location.href = './';
     };
 
     /**
      * Listener for a erroneous logout-request invoked by _logout.
      *
      * @param {Object} response The response object returned by the server.
+     * @param {Object} options The options used to initiate the request.
+     *
      */
-    var _onLogoutFailure = function(response)
+    var _onLogoutFailure = function(response, options)
     {
         com.conjoon.SystemMessageManager.hide();
-        com.conjoon.groupware.ResponseInspector.handleFailure(response);
+
+        var json = com.conjoon.util.Json;
+        var msg  = Ext.MessageBox;
+
+        var error = json.forceErrorDecode(response);
+
+        msg.show({
+            title   : error.title || com.conjoon.Gettext.gettext("Error"),
+            msg     : error.message,
+            buttons : msg.OK,
+            icon    : msg[error.level.toUpperCase()],
+            cls     :'com-conjoon-msgbox-'+error.level,
+            width   : 400
+        });
     };
 
     /**
@@ -387,43 +393,6 @@ com.conjoon.groupware.Reception = function() {
     };
 
     /**
-     * Builds up the window for signing out. No input fields will be rendered.
-     */
-    var _signOutAndRedirectToNoCache = function()
-    {
-        _buildLoginWindow({
-            loginUrl      : './',
-            exitUrl       : './?noappcache',
-            showExit      : true,
-            modal         : false
-        });
-
-        loginWindow.setFormIntroLabel(
-            com.conjoon.Gettext.gettext("Reload")
-        );
-
-        var msg = "";
-
-        if (_context == this.TYPE_AUTHENTICATE) {
-            msg = com.conjoon.Gettext.gettext("Sorry, the application is unable to process your request. <br />It looks like this page was loaded from the application cache. The workbench needs you to authorize again.<br />Please click the \"Exit\" button, which will redirect you to the login screen.");
-        } else {
-            msg = String.format(
-                com.conjoon.Gettext.gettext("Sorry, the application is unable to process your request. <br />It looks like this page was loaded from the application cache and someone else is signed in with your user credentials  (username: \"{0}\"). The workbench needs you to authorize again.<br />Please click the \"Exit\" button, which will redirect you to the login screen."),
-                _user.userName
-            );
-        }
-
-        loginWindow.setFormIntroText(msg);
-
-        loginWindow.getStateIndicator().setErrorMessage(
-            com.conjoon.Gettext.gettext("Authorization Warning")
-        );
-
-        loginWindow.showFormPanel(false);
-        loginWindow.showLoginButton(false);
-    };
-
-    /**
      * Builds up the login window for authentication when the app was started
      * but the user's session got lost.
      *
@@ -433,7 +402,7 @@ com.conjoon.groupware.Reception = function() {
         _buildLoginWindow({
             loginUrl        : './default/reception/process/format/json',
             usernameValue   : _user.userName,
-            modal           : (_workbenchInit === false) ? false : _applicationStarted,
+            modal           : _applicationStarted,
             lastUserRequest : _lastUserRequest ? _lastUserRequest : 0,
             draggable       : true
         });
@@ -458,7 +427,7 @@ com.conjoon.groupware.Reception = function() {
         _buildLoginWindow({
             loginUrl      : './default/reception/unlock/format/json',
             usernameValue : _user.userName,
-            showExit      : (_workbenchInit === false) ? false : !_applicationStarted,
+            showExit      : !_applicationStarted,
             modal         : _applicationStarted,
             draggable     : true
         });
@@ -497,10 +466,10 @@ com.conjoon.groupware.Reception = function() {
      */
     var _pingServer = function()
     {
-        com.conjoon.defaultProvider.reception.ping(function(provider, response) {
-            if (!response.status) {
-                com.conjoon.groupware.ResponseInspector.handleFailure(response);
-            }
+        Ext.Ajax.request({
+            url            : './default/reception/ping/format/json',
+            disableCaching : true,
+            failure        : com.conjoon.groupware.ResponseInspector.handleFailure
         });
     };
 
@@ -540,22 +509,11 @@ com.conjoon.groupware.Reception = function() {
     var _buildLoginWindow = function(config)
     {
         if (loginWindow === null) {
-
-            var softwareLabel = com.conjoon.groupware.Registry.get('/base/conjoon/name')
-                                ? com.conjoon.groupware.Registry.get('/base/conjoon/name')
-                                : appCacheFallback.softwareLabel;
-            var editionLabel = com.conjoon.groupware.Registry.get('/base/conjoon/edition')
-                               ? com.conjoon.groupware.Registry.get('/base/conjoon/edition')
-                               : appCacheFallback.editionLabel;
-            var versionLabel = com.conjoon.groupware.Registry.get('/base/conjoon/version')
-                               ? com.conjoon.groupware.Registry.get('/base/conjoon/version')
-                               : appCacheFallback.versionLabel;
-
             var options = {
                 loginUrl      : './default/reception/process/format/json',
-                softwareLabel : softwareLabel,
-                editionLabel  : editionLabel,
-                versionLabel  : versionLabel,
+                softwareLabel : com.conjoon.groupware.Registry.get('/base/conjoon/name'),
+                editionLabel  : com.conjoon.groupware.Registry.get('/base/conjoon/edition'),
+                versionLabel  : com.conjoon.groupware.Registry.get('/base/conjoon/version'),
                 draggable     : false
             };
 
@@ -564,31 +522,16 @@ com.conjoon.groupware.Reception = function() {
             Ext.apply(options, config);
 
             loginWindow = new _options['loginWindowClass'](options);
-
-            var exitFn = options.exitUrl
-                         ? function() {_onExit(options.exitUrl);}
-                         : _onExit;
-
-            loginWindow.on('exit',         exitFn,           com.conjoon.groupware.Reception);
-            loginWindow.on('loginsuccess', _onLoginSuccess,  com.conjoon.groupware.Reception);
-            loginWindow.on('loginfailure', _onLoginFailure,  com.conjoon.groupware.Reception);
-            loginWindow.on('beforelogin',  _onBeforeLogin,   com.conjoon.groupware.Reception);
-            loginWindow.on('destroy',      _onDestroy,       com.conjoon.groupware.Reception);
+            loginWindow.on('exit',         _onExit,          com.conjoon.groupware.Reception);
+            loginWindow.on('loginsuccess', _onLoginSuccess, com.conjoon.groupware.Reception);
+            loginWindow.on('loginfailure', _onLoginFailure, com.conjoon.groupware.Reception);
+            loginWindow.on('beforelogin',  _onBeforeLogin, com.conjoon.groupware.Reception);
+            loginWindow.on('destroy',      _onDestroy,     com.conjoon.groupware.Reception);
         }
 
         if (!loginWindow.isVisible()) {
             loginWindow.show();
         }
-    };
-
-    /**
-     * The listener for the {@see Ext.ux.util.MessageBus}' message
-     * 'com.conjoon.groupware.ready'.
-     * This will simply set the _workbenchInit-Flag to true
-     */
-    var _handleGroupwareReady = function(subject, message)
-    {
-        _workbenchInit = true;
     };
 
     /**
@@ -609,24 +552,7 @@ com.conjoon.groupware.Reception = function() {
         var rawResponse = message.rawResponse;
 
         var inspector = com.conjoon.groupware.ResponseInspector;
-        var ft        = inspector.getFailureType(rawResponse);
-
-        switch (ft) {
-            case inspector.FAILURE_AUTH:
-            case inspector.FAILURE_TOKEN:
-
-                // in some cases the user refreshes the page or loads an AppCached
-                // index page. What happens here is that the page was cached when a successfull
-                // attempt to load the app was made, and no login screen will appear.
-                // Now that it's being refreshed and tries to load the user, the server
-                // sends the failure and the splashscreen is still available. It needs
-                // to be removed first to be able to show the corresponding
-                // failure window
-                var splash = document.getElementById('DOM:com.conjoon.groupware.Startup.body');
-                if (splash) {
-                    splash.parentNode.removeChild(splash);
-                }
-        }
+        var ft = inspector.getFailureType(rawResponse);
 
         switch (ft) {
             case inspector.FAILURE_AUTH:
@@ -655,13 +581,7 @@ com.conjoon.groupware.Reception = function() {
                 // currently signed in user, to indicate which user's auth token
                 // is invalid
                 var data = Ext.decode(rawResponse.responseText);
-
-                // it is possible that the error was triggered from a response
-                // to a Ext.direct Call. in this case user will not be accessible
-                // as a property directly over the decoded object
-                var user = data.user ? data.user : data.result.user;
-                _user = user;
-
+                _user    = data.user;
                 this.showLogin(this.TYPE_TOKEN_FAILURE);
             break;
 
@@ -796,12 +716,11 @@ com.conjoon.groupware.Reception = function() {
 
             _onBeforeUserLoad();
 
-            com.conjoon.defaultProvider.reception.getUser(function(provider, response) {
-                if (!response.status) {
-                    _onUserLoadFailure(response);
-                } else {
-                    _onUserLoad(response);
-                }
+            Ext.Ajax.request({
+                url            : './default/reception/get.user/format/json',
+                disableCaching : true,
+                success        : _onUserLoad,
+                failure        : _onUserLoadFailure
             });
 
             // subscribe to the message bus and listen to failed responses
@@ -811,16 +730,6 @@ com.conjoon.groupware.Reception = function() {
                 _handleAuthFailure,
                 this
             );
-
-            // subscribe to the message bus for the 'com.conjoon.groupware.ready'
-            // event which gets fired after everything has been loaded (or at
-            // least a load failure did not prevent from loading any further
-            // data) and the workbench is ready to use
-            Ext.ux.util.MessageBus.subscribe(
-                'com.conjoon.groupware.ready',
-                _handleGroupwareReady
-            );
-
             return this;
         },
 
@@ -859,14 +768,15 @@ com.conjoon.groupware.Reception = function() {
                 })
             );
 
-            var me = this;
-            com.conjoon.defaultProvider.reception.lock(function(provider, response) {
-                if (!response.status) {
+            Ext.Ajax.request({
+                url            : './default/reception/lock/format/json',
+                disableCaching : true,
+                success        : _lockWorkbench,
+                failure        : function(response, options) {
                     com.conjoon.SystemMessageManager.hide();
                     com.conjoon.groupware.ResponseInspector.handleFailure(response);
-                } else {
-                    _lockWorkbench.call(me);
-                }
+                },
+                scope          : this
             });
         },
 
@@ -955,12 +865,6 @@ com.conjoon.groupware.Reception = function() {
                 break;
                 case this.TYPE_AUTHENTICATE:
                     _context = contextType;
-
-                    if (_applicationStarted && !_workbenchInit) {
-                        _signOutAndRedirectToNoCache.call(this);
-                        return;
-                    }
-
                     _authenticate();
                 break;
                 case this.TYPE_UNLOCK:
@@ -969,12 +873,6 @@ com.conjoon.groupware.Reception = function() {
                 break;
                 case this.TYPE_TOKEN_FAILURE:
                     _context = contextType;
-
-                    if (_applicationStarted && !_workbenchInit) {
-                        _signOutAndRedirectToNoCache.call(this);
-                        return;
-                    }
-
                     _tokenFailureSignOut();
                 break;
                 default:

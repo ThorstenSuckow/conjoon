@@ -20,7 +20,7 @@ require_once 'Zend/Controller/Action.php';
 
 /**
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 class Groupware_EmailAccountController extends Zend_Controller_Action {
 
@@ -63,12 +63,6 @@ class Groupware_EmailAccountController extends Zend_Controller_Action {
      * <li>password_outbox: The password for the outbox-server. If <tt>outbox_auth</tt>
      * equals to <tt>false</tt>, the value will be empty</li>
      * </ul>
-     * <li>inbox_connection_type: Secure connection type for the incoming
-     * mail server. Empty for unsecure connection, or SSL or TLS</li>
-     * <li>outbox_connection_type: Secure connection type for the outgoing mail
-     * server. Empty for unsecure connection, or SSL or TLS. If <tt>outbox_auth</tt>
-     * equals to <tt>false</tt>, the value will be empty</li>
-     * </ul>
      *
      * Upon success, the following view variables will be assigned:
      * <ul>
@@ -78,8 +72,6 @@ class Groupware_EmailAccountController extends Zend_Controller_Action {
      * <br /><strong>NOTE:</strong> If the user submitted passwords, those will be replaced by strings
      * containing only blanks, matching the length of the originally submitted
      * passwords.</li>
-     *  <li>rootFolder: The root folder that saves the tree hierarchy for this
-     * account.</li>
      * <li>error: An object of the type <tt>Conjoon_Groupware_ErrorObject</tt>, if any error
      * occured, otherwise <tt>null</tt></li>
      * <ul>
@@ -88,8 +80,6 @@ class Groupware_EmailAccountController extends Zend_Controller_Action {
      * be returned in the format based on the passed context the action was called.
      * For example, if an array was assigned to <tt>account</tt> and the context is <tt>json</tt>,
      * this array will become json-encoded and returned as a string. This happens transparently.
-     *
-     * @todo FACADE!
      */
     public function addEmailAccountAction()
     {
@@ -104,7 +94,6 @@ class Groupware_EmailAccountController extends Zend_Controller_Action {
             array(),
             Conjoon_Filter_Input::CONTEXT_CREATE
         );
-
 
         $auth   = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
         $userId = $auth->getIdentity()->getId();
@@ -123,94 +112,52 @@ class Groupware_EmailAccountController extends Zend_Controller_Action {
         $classToCreate = 'Conjoon_Modules_Groupware_Email_Account';
 
         $this->view->success = true;
-        $this->view->error   = null;
+        $this->view->error = null;
 
         try {
             $filter->setData($_POST);
             $processedData = $filter->getProcessedData();
-        } catch (Zend_Filter_Exception $e) {
+            $data = $processedData;
+            Conjoon_Util_Array::underscoreKeys($data);
+            $addedId = $model->addAccount($userId, $data);
 
             /**
-             * @see Conjoon_Error
+             * @see Conjoon_BeanContext_Decorator
              */
+            require_once 'Conjoon/BeanContext/Decorator.php';
+
+            $decoratedModel = new Conjoon_BeanContext_Decorator(
+                'Conjoon_Modules_Groupware_Email_Account_Model_Account'
+            );
+
+            $dto = $decoratedModel->getAccountAsDto($addedId, $userId);
+
+            if (!$dto->isOutboxAuth) {
+                $dto->usernameOutbox = "";
+                $dto->passwordOutbox = "";
+            }
+            $dto->passwordOutbox = str_pad("", strlen($dto->passwordOutbox), '*');
+            $dto->passwordInbox  = str_pad("", strlen($dto->passwordInbox), '*');
+
+            $this->view->account = $dto;
+
+        } catch (Zend_Filter_Exception $e) {
             require_once 'Conjoon/Error.php';
-
             $error = Conjoon_Error::fromFilter($filter, $e);
-
             $accountData = $_POST;
             $accountData['passwordOutbox'] = isset($accountData['passwordOutbox'])
-                ? str_pad("", strlen($accountData['passwordOutbox']), '*')
-                : '';
+                                             ? str_pad("", strlen($accountData['passwordOutbox']), '*')
+                                             : '';
             $accountData['passwordInbox'] = isset($accountData['passwordInbox'])
-                ? str_pad("", strlen($accountData['passwordInbox']), '*')
-                : '';
+                                            ? str_pad("", strlen($accountData['passwordInbox']), '*')
+                                            : '';
             $this->view->account = Conjoon_BeanContext_Inspector::create(
                 $classToCreate,
                 $accountData
             )->getDto();
             $this->view->success = false;
             $this->view->error = $error->getDto();
-            return;
         }
-
-        $data = $processedData;
-
-        // check for duplicates
-        $duplicates = $model->getAccountWithNameForUser($data['name'], $userId);
-
-        if (!empty($duplicates)) {
-            /**
-             * @see Conjoon_Error
-             */
-            require_once 'Conjoon/Error.php';
-
-            $error = new Conjoon_Error();
-
-            $error->setMessage("There is already an account with "
-                              . "the name \"".$data['name']."\"!");
-            $error->setLevel(Conjoon_Error::LEVEL_WARNING);
-            $this->view->success = false;
-            $this->view->error   = $error->getDto();
-            return;
-        }
-
-        // add account here
-        Conjoon_Util_Array::underscoreKeys($data);
-        $addedId = $model->addAccount($userId, $data);
-
-        /**
-         * @see Conjoon_BeanContext_Decorator
-         */
-        require_once 'Conjoon/BeanContext/Decorator.php';
-
-        $decoratedModel = new Conjoon_BeanContext_Decorator(
-            'Conjoon_Modules_Groupware_Email_Account_Model_Account'
-        );
-
-        $dto = $decoratedModel->getAccountAsDto($addedId, $userId);
-
-        if (!$dto->isOutboxAuth) {
-            $dto->usernameOutbox = "";
-            $dto->passwordOutbox = "";
-        }
-        $dto->passwordOutbox = str_pad("", strlen($dto->passwordOutbox), '*');
-        $dto->passwordInbox  = str_pad("", strlen($dto->passwordInbox), '*');
-
-        $this->view->account = $dto;
-
-        // read out root folder for account
-        require_once 'Conjoon/BeanContext/Decorator.php';
-        $decoratedFolderModel = new Conjoon_BeanContext_Decorator(
-            'Conjoon_Modules_Groupware_Email_Folder_Model_Folder',
-            null, false
-        );
-        $rootId = $decoratedFolderModel->getAccountsRootOrRootFolderId($addedId, $userId);
-
-        if ($rootId != 0) {
-            $this->view->rootFolder = $decoratedFolderModel->getFolderBaseDataAsDto($rootId);
-        }
-
-
     }
 
     /**
@@ -310,11 +257,10 @@ class Groupware_EmailAccountController extends Zend_Controller_Action {
             ));
         }
 
-        $userId = $this->_helper->registryAccess()->getUserId();
-
         for ($i = 0; $i < $numToDelete; $i++) {
-            $affected = $model->deleteAccount($toDelete[$i], $userId);
-
+            $affected = $model->deleteAccount(
+                $toDelete[$i], $this->_helper->registryAccess()->getUserId()
+            );
             if ($affected == 0) {
                 $deletedFailed[] = $toDelete[$i];
             }
@@ -343,26 +289,7 @@ class Groupware_EmailAccountController extends Zend_Controller_Action {
         for ($i = 0, $len = count($data); $i < $len; $i++) {
             $id = $data[$i]['id'];
             unset($data[$i]['id']);
-
-            // check here for duplicates
-            $duplicates = $model->getAccountWithNameForUser(
-                $data[$i]['name'], $userId
-            );
-
-            $affected = 0;
-            if (!empty($duplicates)) {
-                for ($a = 0, $lena = count($duplicates); $a < $lena; $a++) {
-                    if ($duplicates[$a]['id'] != $id) {
-                        $affected = -1;
-                        break;
-                    }
-                }
-            }
-
-            if ($affected != -1) {
-                $affected = $model->updateAccount($id, $data[$i]);
-            }
-
+            $affected = $model->updateAccount($id, $data[$i]);
             if ($affected == -1) {
                 $updatedFailed[] = $id;
             }

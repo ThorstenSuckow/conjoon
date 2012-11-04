@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: FormRadioTest.php 24865 2012-06-02 01:02:32Z adamlundrigan $
+ * @version    $Id: FormRadioTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_View_Helper_FormRadioTest::main() if this source file is executed directly.
@@ -36,7 +36,7 @@ require_once 'Zend/View.php';
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_View
  * @group      Zend_View_Helper
@@ -59,7 +59,6 @@ class Zend_View_Helper_FormRadioTest extends PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->view   = new Zend_View();
-        $this->view->doctype('HTML4_LOOSE'); // Set default doctype
         $this->helper = new Zend_View_Helper_FormRadio();
         $this->helper->setView($this->view);
     }
@@ -384,136 +383,26 @@ class Zend_View_Helper_FormRadioTest extends PHPUnit_Framework_TestCase
         $this->assertNotContains('style="white-space: nowrap;"', $html);
     }
 
-    /**
-     * @group ZF-8709
-     */
-    public function testRadioLabelContainsNotForAttributeTag()
+    public function testRadioLabelContainsForAttributeTag()
     {
-        $actual = $this->helper->formRadio(
-            array(
-                 'name'    => 'foo',
-                 'options' => array(
-                     'bar' => 'Bar',
-                     'baz' => 'Baz'
-                 ),
-            )
-        );
-
-        $expected = '<label><input type="radio" name="foo" id="foo-bar" value="bar">Bar</label><br>'
-                  . "\n"
-                  . '<label><input type="radio" name="foo" id="foo-baz" value="baz">Baz</label>';
-
-        $this->assertSame($expected, $actual);
-    }
-    
-    /**
-     * @group ZF-4191
-     */
-    public function testDashesShouldNotBeFilteredFromId()
-    {
-        $name = "Foo";
         $options = array(
-            -1 => 'Test -1',
-             0 => 'Test 0',
-             1 => 'Test 1'
+            'foo bar' => 'Foo',
+            'bar baz' => 'Bar',
+            'baz' => 'Baz'
         );
-        
-        $formRadio = new Zend_View_Helper_FormRadio();
-        $formRadio->setView(new Zend_View());
-        $html = $formRadio->formRadio($name, -1, null, $options);
-        foreach ( $options as $key=>$value ) {
-            $fid = "{$name}-{$key}";
-            $this->assertRegExp('/<input([^>]*)(id="'.$fid.'")/', $html);
+        $html = $this->helper->formRadio(array(
+            'name'    => 'foo[bar]',
+            'value'   => 'bar',
+            'options' => $options,
+        ));
+
+        require_once 'Zend/Filter/Alnum.php';
+        $filter = new Zend_Filter_Alnum();
+        foreach ($options as $key => $value) {
+            $id = 'foo-bar-' . $filter->filter($key);
+            $this->assertRegexp('/<label([^>]*)(for="' . $id . '")/', $html);
         }
-        
-        // Assert that radio for value -1 is the selected one
-        $this->assertRegExp('/<input([^>]*)(id="'.$name.'--1")([^>]*)(checked="checked")/', $html);
     }
-    
-    /**
-     * @group ZF-11477
-     */
-    public function testRendersAsHtmlByDefault()
-    {
-        $options = array(
-            'foo' => 'Foo',
-            'bar' => 'Bar',
-            'baz' => 'Baz'
-        );
-        $html = $this->helper->formRadio(array(
-            'name'    => 'foo',
-            'options' => $options,
-        ));
-
-        $this->assertContains('value="foo">', $html);
-        $this->assertContains('value="bar">', $html);
-        $this->assertContains('value="baz">', $html);
-    }
-
-    /**
-     * @group ZF-11477
-     */
-    public function testCanRendersAsXHtml()
-    {
-        $this->view->doctype('XHTML1_STRICT');
-        $options = array(
-            'foo' => 'Foo',
-            'bar' => 'Bar',
-            'baz' => 'Baz'
-        );
-        $html = $this->helper->formRadio(array(
-            'name'    => 'foo',
-            'options' => $options,
-        ));
-        $this->assertContains('value="foo" />', $html);
-        $this->assertContains('value="bar" />', $html);
-        $this->assertContains('value="baz" />', $html);
-    }
-
-     /**
-      * @group ZF-11620
-      */
-     public function testSeparatorCanRendersAsXhtmlByDefault()
-     {
-         $this->view->doctype('XHTML1_STRICT');
-         $options = array(
-             'foo' => 'Foo',
-             'bar' => 'Bar',
-             'baz' => 'Baz'
-         );
-         $html = $this->helper->formRadio(array(
-             'name'    => 'foo',
-             'value'   => 'bar',
-             'options' => $options,
-         ));
- 
-         $this->assertContains('<br />', $html);
-         $count = substr_count($html, '<br />');
-         $this->assertEquals(2, $count);
-     }
- 
-     /**
-      * @group ZF-11620
-      */
-     public function testeparatorCanRendersAsHtml()
-     {
-         $this->view->doctype('HTML4_STRICT');
-         $options = array(
-             'foo' => 'Foo',
-             'bar' => 'Bar',
-             'baz' => 'Baz'
-         );
-         $html = $this->helper->formRadio(array(
-             'name'    => 'foo',
-             'value'   => 'bar',
-             'options' => $options,
-         ));
- 
-         $this->assertContains('<br>', $html);
-         $count = substr_count($html, '<br>');
-         $this->assertEquals(2, $count);
-     }
-
 }
 
 // Call Zend_View_Helper_FormRadioTest::main() if this source file is executed directly.

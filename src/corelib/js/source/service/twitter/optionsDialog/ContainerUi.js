@@ -16,7 +16,7 @@ Ext.namespace('com.conjoon.service.twitter.optionsDialog');
 
 /**
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  *
  *
  * @class com.conjoon.service.twitter.optionsDialog.ContainerUi
@@ -25,8 +25,6 @@ Ext.namespace('com.conjoon.service.twitter.optionsDialog');
 
 com.conjoon.service.twitter.optionsDialog.ContainerUi = Ext.extend(
     com.conjoon.cudgets.settings.ui.DefaultContainerUi, {
-
-    emptyText : "",
 
     /**
      * @cfg {String} removeMsg The message to show if confirmBeforeRemove is set to true and the user

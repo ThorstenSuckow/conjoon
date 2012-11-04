@@ -39,16 +39,10 @@ com.conjoon.groupware.feeds.AccountStore = function() {
         return new Ext.data.Store({
             storeId     : Ext.id(),
             autoLoad    : false,
-            reader      : new com.conjoon.cudgets.data.JsonReader({
+            reader      : new Ext.data.JsonReader({
                               root: 'accounts',
                               id : 'id'
                           }, com.conjoon.groupware.feeds.AccountRecord),
-            proxy   : new com.conjoon.cudgets.data.DirectProxy({
-                api : {
-                    read : com.conjoon.groupware.provider.feedsAccount.getFeedAccounts
-                }
-            }),
-
             url         : './groupware/feeds.account/get.feed.accounts/format/json',
             listeners   : com.conjoon.groupware.feeds.FeedRunner.getListener()
         });

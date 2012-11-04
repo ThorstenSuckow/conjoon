@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
+ * licensing@extjs.com
+ * http://www.extjs.com/license
  */
 /**
  * @class Ext.data.DirectProxy
@@ -107,25 +107,23 @@ paramOrder: 'param1|param2|param'
 
     // private
     createCallback : function(action, rs, trans) {
-        var me = this;
         return function(result, res) {
             if (!res.status) {
                 // @deprecated fire loadexception
                 if (action === Ext.data.Api.actions.read) {
-                    me.fireEvent("loadexception", me, trans, res, null);
+                    this.fireEvent("loadexception", this, trans, res, null);
                 }
-                me.fireEvent('exception', me, 'remote', action, trans, res, null);
+                this.fireEvent('exception', this, 'remote', action, trans, res, null);
                 trans.request.callback.call(trans.request.scope, null, trans.request.arg, false);
                 return;
             }
             if (action === Ext.data.Api.actions.read) {
-                me.onRead(action, trans, result, res);
+                this.onRead(action, trans, result, res);
             } else {
-                me.onWrite(action, trans, result, res, rs);
+                this.onWrite(action, trans, result, res, rs);
             }
         };
     },
-
     /**
      * Callback for read actions
      * @param {String} action [Ext.data.Api.actions.create|read|update|destroy]
@@ -160,8 +158,8 @@ paramOrder: 'param1|param2|param'
      * @protected
      */
     onWrite : function(action, trans, result, res, rs) {
-        var data = trans.reader.extractData(trans.reader.getRoot(result), false);
-        var success = trans.reader.getSuccess(result);
+        var data = trans.reader.extractData(result[trans.reader.meta.root], false);
+        var success = result[trans.reader.meta.successProperty];
         success = (success !== false);
         if (success){
             this.fireEvent("write", this, action, data, res, rs, trans.request.arg);
@@ -474,8 +472,7 @@ Ext.Direct.Transaction.prototype = {
     }
 };Ext.Direct.Event = function(config){
     Ext.apply(this, config);
-};
-
+}
 Ext.Direct.Event.prototype = {
     status: true,
     getData: function(){
@@ -500,6 +497,7 @@ Ext.Direct.eventTypes = {
     'event':  Ext.Direct.Event,
     'exception':  Ext.Direct.ExceptionEvent
 };
+
 /**
  * @class Ext.direct.Provider
  * @extends Ext.util.Observable
@@ -629,7 +627,7 @@ Ext.direct.JsonProvider = Ext.extend(Ext.direct.Provider, {
                 xhr: xhr,
                 code: Ext.Direct.exceptions.PARSE,
                 message: 'Error parsing json response: \n\n ' + data
-            });
+            })
             return [event];
         }
         var events = [];
@@ -904,7 +902,6 @@ TestAction.multiply(
              * executing.
              * @param {Ext.direct.RemotingProvider} provider
              * @param {Ext.Direct.Transaction} transaction
-             * @param {Object} meta The meta data
              */            
             'beforecall',            
             /**
@@ -913,7 +910,6 @@ TestAction.multiply(
              * NOT fire after the response has come back from the call.
              * @param {Ext.direct.RemotingProvider} provider
              * @param {Ext.Direct.Transaction} transaction
-             * @param {Object} meta The meta data
              */            
             'call'
         );
@@ -1071,10 +1067,10 @@ TestAction.multiply(
             cb: scope && Ext.isFunction(hs) ? hs.createDelegate(scope) : hs
         });
 
-        if(this.fireEvent('beforecall', this, t, m) !== false){
+        if(this.fireEvent('beforecall', this, t) !== false){
             Ext.Direct.addTransaction(t);
             this.queueTransaction(t);
-            this.fireEvent('call', this, t, m);
+            this.fireEvent('call', this, t);
         }
     },
 
@@ -1088,7 +1084,7 @@ TestAction.multiply(
             isForm: true
         });
 
-        if(this.fireEvent('beforecall', this, t, m) !== false){
+        if(this.fireEvent('beforecall', this, t) !== false){
             Ext.Direct.addTransaction(t);
             var isUpload = String(form.getAttribute("enctype")).toLowerCase() == 'multipart/form-data',
                 params = {
@@ -1106,7 +1102,7 @@ TestAction.multiply(
                 isUpload: isUpload,
                 params: callback && Ext.isObject(callback.params) ? Ext.apply(params, callback.params) : params
             });
-            this.fireEvent('call', this, t, m);
+            this.fireEvent('call', this, t);
             this.processForm(t);
         }
     },

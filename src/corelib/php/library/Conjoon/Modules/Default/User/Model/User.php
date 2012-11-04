@@ -31,7 +31,7 @@ require_once 'Conjoon/BeanContext/Decoratable.php';
  * @subpackage Model
  * @category Model
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 class Conjoon_Modules_Default_User_Model_User
     extends Conjoon_Db_Table implements Conjoon_BeanContext_Decoratable {

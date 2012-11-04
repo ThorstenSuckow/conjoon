@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Validate_File
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: IsCompressedTest.php 24729 2012-04-28 18:09:08Z rob $
+ * @version    $Id: IsCompressedTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_Validate_File_MimeTypeTest::main() if this source file is executed directly.
@@ -36,7 +36,7 @@ require_once 'Zend/Validate/File/IsCompressed.php';
  * @category   Zend
  * @package    Zend_Validate_File
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Validate
  */
@@ -69,31 +69,19 @@ class Zend_Validate_File_IsCompressedTest extends PHPUnit_Framework_TestCase
                 );
         }
 
-        // Prevent error in the next check
-        if (!function_exists('mime_content_type')) {
-            $this->markTestSkipped('mime_content_type function is not available.');
-        }
-
-        // Sometimes mime_content_type() gives application/zip and sometimes 
-        // application/x-zip ...
-        $expectedMimeType = mime_content_type(dirname(__FILE__) . '/_files/test.zip');
-        if (!in_array($expectedMimeType, array('application/zip', 'application/x-zip'))) {
-            $this->markTestSkipped('mime_content_type exhibits buggy behavior on this system!');
-        }
-
         $valuesExpected = array(
             array(null, true),
             array('zip', true),
             array('test/notype', false),
-            array('application/x-zip, application/zip, application/x-tar', true),
-            array(array('application/x-zip', 'application/zip', 'application/x-tar'), true),
+            array('application/zip, application/x-tar', true),
+            array(array('application/zip', 'application/x-tar'), true),
             array(array('zip', 'tar'), true),
             array(array('tar', 'arj'), false),
         );
 
         $files = array(
             'name'     => 'test.zip',
-            'type'     => $expectedMimeType,
+            'type'     => 'application/zip',
             'size'     => 200,
             'tmp_name' => dirname(__FILE__) . '/_files/test.zip',
             'error'    => 0

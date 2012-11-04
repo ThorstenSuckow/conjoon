@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
+ * licensing@extjs.com
+ * http://www.extjs.com/license
  */
 /**
  * @class Ext.Window
@@ -178,18 +178,6 @@ Ext.Window = Ext.extend(Ext.Panel, {
      * {@link #collapsed}) when displayed (defaults to true).
      */
     expandOnShow : true,
-    
-    /**
-     * @cfg {Number} showAnimDuration The number of seconds that the window show animation takes if enabled.
-     * Defaults to 0.25
-     */
-    showAnimDuration: 0.25,
-    
-    /**
-     * @cfg {Number} hideAnimDuration The number of seconds that the window hide animation takes if enabled.
-     * Defaults to 0.25
-     */
-    hideAnimDuration: 0.25,
 
     // inherited docs, same default
     collapsible : false,
@@ -343,12 +331,8 @@ Ext.Window = Ext.extend(Ext.Panel, {
 
     initDraggable : function(){
         /**
-         * <p>If this Window is configured {@link #draggable}, this property will contain
-         * an instance of {@link Ext.dd.DD} which handles dragging the Window's DOM Element.</p>
-         * <p>This has implementations of <code>startDrag</code>, <code>onDrag</code> and <code>endDrag</code>
-         * which perform the dragging action. If extra logic is needed at these points, use
-         * {@link Function#createInterceptor createInterceptor} or {@link Function#createSequence createSequence} to
-         * augment the existing implementations.</p>
+         * If this Window is configured {@link #draggable}, this property will contain
+         * an instance of {@link Ext.dd.DD} which handles dragging the Window's DOM Element.
          * @type Ext.dd.DD
          * @property dd
          */
@@ -357,18 +341,18 @@ Ext.Window = Ext.extend(Ext.Panel, {
 
    // private
     onEsc : function(k, e){
-        if (this.activeGhost) {
-            this.unghost();
-        }
         e.stopEvent();
         this[this.closeAction]();
     },
 
     // private
     beforeDestroy : function(){
-        if(this.rendered){
+        if (this.rendered){
             this.hide();
-            this.clearAnchor();
+          if(this.doAnchor){
+                Ext.EventManager.removeResizeListener(this.doAnchor, this);
+              Ext.EventManager.un(window, 'scroll', this.doAnchor, this);
+            }
             Ext.destroy(
                 this.focusEl,
                 this.resizer,
@@ -445,13 +429,11 @@ Ext.Window = Ext.extend(Ext.Panel, {
             this.updateBox(box);
         }else{
             this.setSize(box);
-            if (Ext.isIE6 && Ext.isStrict) {
-                this.doLayout();
-            }
         }
         this.focus();
         this.updateHandles();
         this.saveState();
+        this.doLayout();
     },
 
     /**
@@ -459,11 +441,7 @@ Ext.Window = Ext.extend(Ext.Panel, {
      * window itself will receive focus.
      */
     focus : function(){
-        var f = this.focusEl,
-            db = this.defaultButton,
-            t = typeof db,
-            el,
-            ct;
+        var f = this.focusEl, db = this.defaultButton, t = typeof db;
         if(Ext.isDefined(db)){
             if(Ext.isNumber(db) && this.fbar){
                 f = this.fbar.items.get(db);
@@ -471,13 +449,6 @@ Ext.Window = Ext.extend(Ext.Panel, {
                 f = Ext.getCmp(db);
             }else{
                 f = db;
-            }
-            el = f.getEl();
-            ct = Ext.getDom(this.container);
-            if (el && ct) {
-                if (ct != document.body && !Ext.lib.Region.getRegion(ct).contains(Ext.lib.Region.getRegion(el.dom))){
-                    return;
-                }
             }
         }
         f = f || this.focusEl;
@@ -595,7 +566,7 @@ Ext.Window = Ext.extend(Ext.Panel, {
             callback: this.afterShow.createDelegate(this, [true], false),
             scope: this,
             easing: 'easeNone',
-            duration: this.showAnimDuration,
+            duration: 0.25,
             opacity: 0.5
         }));
     },
@@ -655,7 +626,7 @@ Ext.Window = Ext.extend(Ext.Panel, {
         this.proxy.shift(Ext.apply(this.animateTarget.getBox(), {
             callback: this.afterHide,
             scope: this,
-            duration: this.hideAnimDuration,
+            duration: 0.25,
             easing: 'easeNone',
             opacity: 0
         }));
@@ -700,7 +671,7 @@ Ext.Window = Ext.extend(Ext.Panel, {
                 var s = this.getSize();
                 offsets = {
                     right:-(s.width - 100),
-                    bottom:-(s.height - 25 + this.el.getConstrainOffset())
+                    bottom:-(s.height - 25)
                 };
             }
 
@@ -729,7 +700,7 @@ Ext.Window = Ext.extend(Ext.Panel, {
         }
         if(show !== false){
             this.el.show();
-            this.focus.defer(10, this);
+            this.focus();
             if(Ext.isMac && Ext.isGecko2){ // work around stupid FF 2.0/Mac scroll bar bug
                 this.cascade(this.setAutoScroll);
             }
@@ -903,44 +874,22 @@ Ext.Window = Ext.extend(Ext.Panel, {
      * @return {Ext.Window} this
      */
     anchorTo : function(el, alignment, offsets, monitorScroll){
-        this.clearAnchor();
-        this.anchorTarget = {
-            el: el,
-            alignment: alignment,
-            offsets: offsets
-        };
+      if(this.doAnchor){
+          Ext.EventManager.removeResizeListener(this.doAnchor, this);
+          Ext.EventManager.un(window, 'scroll', this.doAnchor, this);
+      }
+      this.doAnchor = function(){
+          this.alignTo(el, alignment, offsets);
+      };
+      Ext.EventManager.onWindowResize(this.doAnchor, this);
 
-        Ext.EventManager.onWindowResize(this.doAnchor, this);
-        var tm = typeof monitorScroll;
-        if(tm != 'undefined'){
-            Ext.EventManager.on(window, 'scroll', this.doAnchor, this,
-                {buffer: tm == 'number' ? monitorScroll : 50});
-        }
-        return this.doAnchor();
-    },
-
-    /**
-     * Performs the anchor, using the saved anchorTarget property.
-     * @return {Ext.Window} this
-     * @private
-     */
-    doAnchor : function(){
-        var o = this.anchorTarget;
-        this.alignTo(o.el, o.alignment, o.offsets);
-        return this;
-    },
-
-    /**
-     * Removes any existing anchor from this window. See {@link #anchorTo}.
-     * @return {Ext.Window} this
-     */
-    clearAnchor : function(){
-        if(this.anchorTarget){
-            Ext.EventManager.removeResizeListener(this.doAnchor, this);
-            Ext.EventManager.un(window, 'scroll', this.doAnchor, this);
-            delete this.anchorTarget;
-        }
-        return this;
+      var tm = typeof monitorScroll;
+      if(tm != 'undefined'){
+          Ext.EventManager.on(window, 'scroll', this.doAnchor, this,
+              {buffer: tm == 'number' ? monitorScroll : 50});
+      }
+      this.doAnchor();
+      return this;
     },
 
     /**
@@ -1001,20 +950,19 @@ Ext.Window = Ext.extend(Ext.Panel, {
 Ext.reg('window', Ext.Window);
 
 // private - custom Window DD implementation
-Ext.Window.DD = Ext.extend(Ext.dd.DD, {
-    
-    constructor : function(win){
-        this.win = win;
-        Ext.Window.DD.superclass.constructor.call(this, win.el.id, 'WindowDD-'+win.id);
-        this.setHandleElId(win.header.id);
-        this.scroll = false;        
-    },
-    
+Ext.Window.DD = function(win){
+    this.win = win;
+    Ext.Window.DD.superclass.constructor.call(this, win.el.id, 'WindowDD-'+win.id);
+    this.setHandleElId(win.header.id);
+    this.scroll = false;
+};
+
+Ext.extend(Ext.Window.DD, Ext.dd.DD, {
     moveOnly:true,
     headerOffsets:[100, 25],
     startDrag : function(){
         var w = this.win;
-        this.proxy = w.ghost(w.initialConfig.cls);
+        this.proxy = w.ghost();
         if(w.constrain !== false){
             var so = w.el.shadowOffset;
             this.constrainTo(w.container, {right: so, left: so, bottom: so});

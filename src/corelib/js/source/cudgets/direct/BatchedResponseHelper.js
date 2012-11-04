@@ -20,7 +20,7 @@ Ext.namespace('com.conjoon.cudgets.direct');
  * See http://www.extjs.com/forum/showthread.php?t=84090.
  *
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  *
  * @class com.conjoon.cudgets.direct.BatchedResponseHelper
  * @singleton

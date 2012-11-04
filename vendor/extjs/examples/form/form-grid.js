@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
+ * licensing@extjs.com
+ * http://www.extjs.com/license
  */
 Ext.onReady(function(){
 
@@ -176,19 +176,17 @@ Ext.onReady(function(){
                 xtype: 'radiogroup',
                 columns: 'auto',
                 fieldLabel: 'Rating',
+                name: 'rating',
 // A radio group: A setValue on any of the following 'radio' inputs using the numeric
 // 'rating' field checks the radio instance which has the matching inputValue.
                 items: [{
-                    name: 'rating',
-                    inputValue: 0,
+                    inputValue: '0',
                     boxLabel: 'A'
                 }, {
-                    name: 'rating',
-                    inputValue: 1,
+                    inputValue: '1',
                     boxLabel: 'B'
                 }, {
-                    name: 'rating',
-                    inputValue: 2,
+                    inputValue: '2',
                     boxLabel: 'C'
                 }]
             }]

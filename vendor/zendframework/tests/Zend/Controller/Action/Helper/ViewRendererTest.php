@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ViewRendererTest.php 24593 2012-01-05 20:35:02Z matthew $
+ * @version    $Id: ViewRendererTest.php 23976 2011-05-03 17:36:13Z ralph $
  */
 
 // Call Zend_Controller_Action_Helper_ViewRendererTest::main() if this source file is executed directly.
@@ -41,7 +41,7 @@ require_once dirname(__FILE__) . '/../../_files/modules/bar/controllers/IndexCon
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Controller
  * @group      Zend_Controller_Action
@@ -827,19 +827,6 @@ class Zend_Controller_Action_Helper_ViewRendererTest extends PHPUnit_Framework_T
         $body = $this->response->getBody();
         $this->assertContains('fooUseHelper invoked', $body, 'Received ' . $body);
     }
-    /**
-     * @group ZF-10725
-     */
-    public function testThatCharactersStrippedFromActionNameByDispatcherAreAlsoStrippedFromViewScriptName()
-    {
-        $this->request->setModuleName('default')
-                      ->setControllerName('foo')
-                      ->setActionName('-myBar-');
-        $controller = new Bar_IndexController($this->request, $this->response, array());
-        $this->helper->setActionController($controller);
-        $scriptName = $this->helper->getViewScript();
-        $this->assertEquals('foo/my-bar.phtml', $scriptName);
-    }
 
     public function testCorrectViewHelperPathShouldBePropagatedWhenSubControllerInvokedInDefaultModule()
     {
@@ -871,56 +858,10 @@ class Zend_Controller_Action_Helper_ViewRendererTest extends PHPUnit_Framework_T
         $this->assertEquals('B', $b->getViewSuffix());
         $this->assertNotEquals('B', $a->getViewSuffix());
     }
-    
-    /**
-     * @group ZF-10725
-     * @dataProvider providerViewScriptNameDoesNotIncludeDisallowedCharacters
-     */
-    public function testViewScriptNameDoesNotIncludeDisallowedCharacters($actionName)
-    {
-        $this->request->setModuleName('default')
-                      ->setControllerName('foo')
-                      ->setActionName($actionName);
-        $controller = new Bar_IndexController($this->request, $this->response, array());
-        $this->helper->setActionController($controller);
-        $scriptName = $this->helper->getViewScript();
-        $this->assertEquals('foo/my-bar.phtml', $scriptName);
-    }
-    
-    /**
-     * Data provider for testViewScriptNameDoesNotIncludeDisallowedCharacters
-     * @group ZF-10725
-     * @return array
-     */
-    public function providerViewScriptNameDoesNotIncludeDisallowedCharacters()
-    {
-        return array(
-            array('myBar-'),
-            array('-myBar'),
-            array('-myBar-'),
-            array('-MyBar-'),
-            array('MyBar-'),
-            array('-MyBar')
-        );
-    }
 
     protected function _normalizePath($path)
     {
         return str_replace(array('/', '\\'), '/', $path);
-    }
-
-    /**
-     * @group ZF-10725
-     */
-    public function testActionsWithLeadingCapitalLettersShouldNotInvokeTruncatedViewScripts()
-    {
-        $this->request->setModuleName('default')
-                      ->setControllerName('Controller')
-                      ->setActionName('Action');
-        $controller = new Bar_IndexController($this->request, $this->response, array());
-        $this->helper->setActionController($controller);
-        $scriptName = $this->helper->getViewScript();
-        $this->assertEquals('controller/action.phtml', $scriptName);
     }
 }
 

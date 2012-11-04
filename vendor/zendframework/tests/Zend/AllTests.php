@@ -16,9 +16,9 @@
  * @category   Zend
  * @package    Zend
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 24764 2012-05-06 00:18:27Z adamlundrigan $
+ * @version    $Id: AllTests.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
@@ -46,7 +46,6 @@ require_once 'Zend/Crypt/AllTests.php';
 require_once 'Zend/DateTest.php';
 require_once 'Zend/Date/AllTests.php';
 require_once 'Zend/DebugTest.php';
-require_once 'Zend/EventManager/AllTests.php';
 require_once 'Zend/ExceptionTest.php';
 require_once 'Zend/Feed/AllTests.php';
 require_once 'Zend/File/AllTests.php';
@@ -113,7 +112,7 @@ require_once 'Zend/XmlRpc/AllTests.php';
  * @package    Zend
  * @subpackage UnitTests
  * @group      Zend
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_AllTests
@@ -189,7 +188,6 @@ class Zend_AllTests
         $suite->addTest(Zend_Db_AllTests::suite());
         $suite->addTestSuite('Zend_DebugTest');
         $suite->addTest(Zend_Dom_AllTests::suite());
-        $suite->addTest(Zend_EventManager_AllTests::suite());
         $suite->addTestSuite('Zend_ExceptionTest');
         $suite->addTest(Zend_Feed_AllTests::suite());
         $suite->addTest(Zend_File_AllTests::suite());

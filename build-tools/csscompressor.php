@@ -18,7 +18,7 @@
  * directly to the conjoon project, except for css files loaded from vendor libraries,
  * such as Ext JS or Ext user extensions.
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  * @version 0.2
  */
 $cssPath      = "../src/corelib/js/resources/css";
@@ -116,13 +116,14 @@ if (file_exists($dropFilePath)) {
     unlink($dropFilePath);
 }
 
+fwrite(STDOUT, "Calling yuicompressor...\n");
+
 $java = "java.exe";
 if (strtolower(PHP_OS) === "linux") {
     fwrite(STDOUT, "I assume I'm currently running in a *nix environment...\n");
     $java = "java";
 }
 
-fwrite(STDOUT, "Calling yuicompressor...\n");
 $cmd = "$java -jar \"".$yuiPath."\" --type css \"".$temp."\" -o \"".$dropFilePath."\"";
 
 shell_exec($cmd);

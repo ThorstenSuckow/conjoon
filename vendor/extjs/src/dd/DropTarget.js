@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
+ * licensing@extjs.com
+ * http://www.extjs.com/license
  */
 /**
  * @class Ext.dd.DropTarget
@@ -13,21 +13,21 @@
  * @param {Mixed} el The container element
  * @param {Object} config
  */
-Ext.dd.DropTarget = Ext.extend(Ext.dd.DDTarget, {
+Ext.dd.DropTarget = function(el, config){
+    this.el = Ext.get(el);
     
-    constructor : function(el, config){
-        this.el = Ext.get(el);
+    Ext.apply(this, config);
     
-        Ext.apply(this, config);
+    if(this.containerScroll){
+        Ext.dd.ScrollManager.register(this.el);
+    }
     
-        if(this.containerScroll){
-            Ext.dd.ScrollManager.register(this.el);
-        }
-    
-        Ext.dd.DropTarget.superclass.constructor.call(this, this.el.dom, this.ddGroup || this.group, 
-              {isTarget: true});        
-    },
-    
+    Ext.dd.DropTarget.superclass.constructor.call(this, this.el.dom, this.ddGroup || this.group, 
+          {isTarget: true});
+
+};
+
+Ext.extend(Ext.dd.DropTarget, Ext.dd.DDTarget, {
     /**
      * @cfg {String} ddGroup
      * A named drag drop group to which this object belongs.  If a group is specified, then this object will only
@@ -111,12 +111,5 @@ Ext.dd.DropTarget = Ext.extend(Ext.dd.DDTarget, {
      */
     notifyDrop : function(dd, e, data){
         return false;
-    },
-    
-    destroy : function(){
-        Ext.dd.DropTarget.superclass.destroy.call(this);
-        if(this.containerScroll){
-            Ext.dd.ScrollManager.unregister(this.el);
-        }
     }
 });

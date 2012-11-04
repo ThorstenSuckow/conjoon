@@ -33,7 +33,7 @@
  to rebuild the project, use the build.xml found in this folder which will
  also call this build file.
 
- @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ @author Thorsten Suckow-Homberg <ts@siteartwork.de>
 -->
 
 <project name="conjoon-login" default="_build_install_login_helper" basedir="./">
@@ -87,7 +87,6 @@
         </php>
         <append destFile="${conjoon.login.jsmerge.tempfile}">
             <filterchain>
-                <filterreader classname="filters.ProcessDevFragments" />
                 <filterreader classname="filters.AddLinebreak" />
                 <striplinecomments>
                     <comment value="#" />

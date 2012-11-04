@@ -12,6 +12,12 @@
  * $URL$
  */
 
+/*@REMOVE@*/
+if (Ext.version != '3.1.1') {
+    throw("Ext.version " + Ext.version + " detected, please check Overrides.js");
+}
+/*@REMOVE@*/
+
 /**
  * Provides common overwrite functionality for Ext components to match
  * behavior as wished.
@@ -48,19 +54,14 @@ Ext.lib.Ajax = function() {
     /**
      * @type {Number} _concurrentRequests The number of max. concurrent requests requests allowed.
      */
-    var _concurrentRequests = 2;
+    var _concurrentRequests = 6;
 
     switch (true) {
-        case Ext.isIE8:
-            _concurrentRequests = window.maxConnectionsPerServer;
-        break;
         case Ext.isIE:
-            _concurrentRequests = 2;
-        break;
-        case Ext.isSafari:
-        case Ext.isChrome:
-        case Ext.isGecko3:
-            _concurrentRequests = 4;
+            if (!window.maxConnectionsPerServer) {
+                throw("\"window.maxConnectionsPerServer\" not found");
+            }
+            _concurrentRequests = window.maxConnectionsPerServer;
         break;
     }
 
@@ -504,7 +505,7 @@ Ext.lib.Ajax = function() {
  * Adds focus/blur events to Ext.Viewport which generally translate to
  * browser window focus/blur.
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 Ext.Viewport.prototype.initComponent = Ext.Viewport.prototype.initComponent.createInterceptor(
     function() {
@@ -561,53 +562,3 @@ Ext.Viewport.prototype.initComponent = Ext.Viewport.prototype.initComponent.crea
         this._activeElement = document.activeElement;
     }
 );
-
-/*@REMOVE@*/
-if (Ext.version != '3.4.0') {
-    throw(
-        "Check override for Ext.ProgressBar in Overrides.js"
-    );
-}
-/*@REMOVE@*/
-/**
- * This override removes the back-text of the progress bar to overcome
- * rendering issues win Google Chrome when bot text elements have the
- * color black and are on top of each other. So this override is mainly
- * to show the progress bar text all the time in the color black (doesn't
- * adjust it's size based on the progress, it's always visible if text
- * is provided)
- */
-
-var _overrideOnRender       = Ext.ProgressBar.prototype.onRender;
-var _overrideUpdateProgress = Ext.ProgressBar.prototype.updateProgress;
-Ext.override(Ext.ProgressBar, {
-
-    // private
-    onRender : function(ct, position){
-
-        _overrideOnRender.call(this, ct, position);
-
-        this.textEl = Ext.get(this.progressBar.dom.firstChild);
-        this.textEl.addClass('x-hidden');
-        delete this.textTopEl;
-    },
-
-    updateProgress : function(value, text, animate){
-
-        var ret = _overrideUpdateProgress.call(this, value, text, animate);
-
-        if (Ext.isChrome) {
-            (function() {
-                this.textEl.setWidth(this.el.dom.firstChild.offsetWidth);
-                this.textEl.removeClass('x-hidden');
-            }).defer(50, this);
-        } else {
-            this.textEl.setWidth(this.el.dom.firstChild.offsetWidth);
-            this.textEl.removeClass('x-hidden');
-        }
-
-        return ret;
-    }
-});
-delete _overrideOnRender;
-delete _overrideUpdateProgress;

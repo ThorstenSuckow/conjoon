@@ -1,12 +1,12 @@
 /**
  * Ext.ux.grid.livegrid.GridPanel
- * Copyright (c) 2007-2012, http://www.siteartwork.de
+ * Copyright (c) 2007-2008, http://www.siteartwork.de
  *
  * Ext.ux.grid.livegrid.GridPanel is licensed under the terms of the
  *                  GNU Open Source GPL 3.0
  * license.
  *
- * Commercial use is prohibited. Visit <http://ext-livegrid.com>
+ * Commercial use is prohibited. Visit <http://www.siteartwork.de/livegrid>
  * if you need to obtain a commercial license.
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -85,13 +85,13 @@ Ext.ux.grid.livegrid.GridPanel = Ext.extend(Ext.grid.GridPanel, {
 
 });/**
  * Ext.ux.grid.livegrid.GridView
- * Copyright (c) 2007-2012, http://www.siteartwork.de
+ * Copyright (c) 2007-2008, http://www.siteartwork.de
  *
  * Ext.ux.grid.livegrid.GridView is licensed under the terms of the
  *                  GNU Open Source GPL 3.0
  * license.
  *
- * Commercial use is prohibited. Visit <http://ext-livegrid.com>
+ * Commercial use is prohibited. Visit <http://www.siteartwork.de/livegrid>
  * if you need to obtain a commercial license.
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -121,13 +121,6 @@ Ext.namespace('Ext.ux.grid.livegrid');
 Ext.ux.grid.livegrid.GridView = function(config) {
 
     this.addEvents({
-        /**
-         * @event reset
-         * Fires when the grid resets.
-         * @param {Ext.ux.grid.livegrid.GridView} this
-         * @param {Boolean} forceReload
-         */
-        'reset' : true,
         /**
          * @event beforebuffer
          * Fires when the store is about to buffer new data.
@@ -384,15 +377,11 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
      *
      * @param {Boolean} forceReload <tt>true</tt> to reload the buffers contents,
      *                              othwerwise <tt>false</tt>
-     * @params {Object} addParams optional object of properties which get treated as
-     *                            params added to the "options" argument for the
-     *                            load() method if forceReload invokes a call
-     *                            call to this method
      *
      * @return {Boolean} Whether the store loads after reset(true); returns false
      * if any of the attached beforeload listeners cancels the load-event
      */
-    reset : function(forceReload, addParams)
+    reset : function(forceReload)
     {
         if (forceReload === false) {
             this.ds.modified = [];
@@ -407,36 +396,43 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
 
             var _ofn = this.processRows;
             this.processRows = Ext.emptyFn;
-            this.suspendEvents();
             this.refresh(true);
-            this.resumeEvents();
             this.processRows = _ofn;
             this.processRows(0);
 
             this.fireEvent('cursormove', this, 0,
                            Math.min(this.ds.totalLength, this.visibleRows-this.rowClipped),
                            this.ds.totalLength);
-            this.fireEvent('reset', this, forceReload);
             return false;
         } else {
-            var params = Ext.apply({}, addParams),
-                sInfo  = this.ds.sortInfo;
+
+            var params = {};
+            var sInfo = this.ds.sortInfo;
 
             if (sInfo) {
-                params = Ext.apply(params, {
+                params = {
                     dir  : sInfo.direction,
                     sort : sInfo.field
-                });
+                };
             }
 
-            this.fireEvent('reset', this, forceReload);
             return this.ds.load({params : params});
         }
+
     },
 
 // {{{ ------------adjusted methods for applying custom behavior----------------
 
-    afterRenderUI : function()
+    /**
+     * Overwritten so the {@link Ext.ux.grid.livegrid.DragZone} can be used
+     * with this view implementation.
+     *
+     * Since detaching a previously created DragZone from a grid panel seems to
+     * be impossible, a little workaround will tell the parent implementation
+     * that drad/drop is not enabled for this view's grid, and right after that
+     * the custom DragZone will be created, if neccessary.
+     */
+    renderUI : function()
     {
         var g = this.grid;
         var dEnabled = g.enableDragDrop || g.enableDrag;
@@ -444,7 +440,7 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
         g.enableDragDrop = false;
         g.enableDrag     = false;
 
-        this._gridViewSuperclass.afterRenderUI.call(this);
+        this._gridViewSuperclass.renderUI.call(this);
 
         var g = this.grid;
 
@@ -1197,11 +1193,9 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
 
         skipStripe = skipStripe || !this.grid.stripeRows;
 
-        var cursor      = this.rowIndex;
-        var rows        = this.getRows();
-        var index       = 0;
-        var sm          = this.grid.selModel;
-        var allSelected = sm.isAllSelected();
+        var cursor     = this.rowIndex;
+        var rows       = this.getRows();
+        var index      = 0;
 
         var row = null;
         for (var idx = 0, len = rows.length; idx < len; idx++) {
@@ -1214,7 +1208,7 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
             }
 
             if (paintSelections !== false) {
-                if (sm.isSelected(this.ds.getAt(index)) === true) {
+                if (this.grid.selModel.isSelected(this.ds.getAt(index)) === true) {
                     this.addRowClass(index, this.selectedRowClass);
                 } else {
                     this.removeRowClass(index, this.selectedRowClass);
@@ -1628,13 +1622,13 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
         var maskMsg = data(dom, 'maskMsg');
 
         if (show) {
-            (function(){mask.setDisplayed(true);
+            mask.setDisplayed(true);
             maskMsg.setDisplayed(true);
             maskMsg.center(this._loadMaskAnchor);
             // this lines will help IE8 to re-calculate the height of the loadmask
             if(Ext.isIE && !(Ext.isIE7 && Ext.isStrict) && this._loadMaskAnchor.getStyle('height') == 'auto'){
 	            mask.setSize(undefined, this._loadMaskAnchor.getHeight());
-	        }}).defer(1000, this);
+	        }
         } else {
             mask.setDisplayed(false);
             maskMsg.setDisplayed(false);
@@ -1881,13 +1875,13 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
 
 });/**
  * Ext.ux.grid.livegrid.JsonReader
- * Copyright (c) 2007-2012, http://www.siteartwork.de
+ * Copyright (c) 2007-2008, http://www.siteartwork.de
  *
  * Ext.ux.grid.livegrid.JsonReader is licensed under the terms of the
  *                  GNU Open Source GPL 3.0
  * license.
  *
- * Commercial use is prohibited. Visit <http://ext-livegrid.com>
+ * Commercial use is prohibited. Visit <http://www.siteartwork.de/livegrid>
  * if you need to obtain a commercial license.
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -1969,13 +1963,13 @@ Ext.extend(Ext.ux.grid.livegrid.JsonReader, Ext.data.JsonReader, {
 
 });/**
  * Ext.ux.grid.livegrid.RowSelectionModel
- * Copyright (c) 2007-2012, http://www.siteartwork.de
+ * Copyright (c) 2007-2008, http://www.siteartwork.de
  *
  * Ext.ux.grid.livegrid.RowSelectionModel is licensed under the terms of the
  *                  GNU Open Source GPL 3.0
  * license.
  *
- * Commercial use is prohibited. Visit <http://ext-livegrid.com>
+ * Commercial use is prohibited. Visit <http://www.siteartwork.de/livegrid>
  * if you need to obtain a commercial license.
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -2016,9 +2010,6 @@ Ext.ux.grid.livegrid.RowSelectionModel = function(config) {
     });
 
     Ext.apply(this, config);
-
-    this.allSelected = false;
-    this.excludes    = [];
 
     this.pendingSelections = {};
 
@@ -2270,11 +2261,6 @@ Ext.extend(Ext.ux.grid.livegrid.RowSelectionModel, Ext.grid.RowSelectionModel, {
         }
 
         var r = index;
-
-        if (this.allSelected && !this.excludes[r.id]) {
-            return true;
-        }
-
         return (r && this.selections.key(r.id) ? true : false);
     },
 
@@ -2294,10 +2280,6 @@ Ext.extend(Ext.ux.grid.livegrid.RowSelectionModel, Ext.grid.RowSelectionModel, {
 
         if (!isSelected) {
             return;
-        }
-
-        if (this.allSelected) {
-            this.excludes[record.id] = true;
         }
 
         var store = this.grid.store;
@@ -2351,9 +2333,6 @@ Ext.extend(Ext.ux.grid.livegrid.RowSelectionModel, Ext.grid.RowSelectionModel, {
         delete this.pendingSelections[index];
 
         if (r) {
-            if (this.allSelected) {
-                this.excludes[r.id] = true;
-            }
             this.selections.remove(r);
         }
         if(!preventViewNotify){
@@ -2389,7 +2368,6 @@ Ext.extend(Ext.ux.grid.livegrid.RowSelectionModel, Ext.grid.RowSelectionModel, {
             if (r) {
                 this.selections.add(r);
                 delete this.pendingSelections[index];
-                delete this.excludes[r.id];
             } else {
                 this.pendingSelections[index] = true;
             }
@@ -2542,8 +2520,6 @@ Ext.extend(Ext.ux.grid.livegrid.RowSelectionModel, Ext.grid.RowSelectionModel, {
             this.pendingSelections    = {};
         }
         this.last = false;
-        this.allSelected = false;
-        this.excludes = [];
     },
 
 
@@ -2575,55 +2551,20 @@ Ext.extend(Ext.ux.grid.livegrid.RowSelectionModel, Ext.grid.RowSelectionModel, {
             }
         }
 
-    },
-
-    /**
-     * Returns true if all rows available are selected.
-     */
-    isAllSelected : function()
-    {
-        return this.allSelected;
-    },
-
-    /**
-     * Selects all rows if the selection model
-     * {@link Ext.grid.AbstractSelectionModel#isLocked is not locked}.
-     */
-    selectAll : function()
-    {
-        if(this.isLocked()){
-            return;
-        }
-
-        this.excludes = [];
-        this.selectRange(0, this.grid.store.getTotalCount(), false);
-        this.allSelected = true;
-    },
-
-    /**
-     * Returns an object with all records currently being excluded,
-     * whereas the key is the id of the record, and it's value is
-     * set to boolean true.
-     */
-    getExcludes : function()
-    {
-        return this.excludes;
     }
-
-
 
 });
 
 
 /**
  * Ext.ux.grid.livegrid.Store
- * Copyright (c) 2007-2012, http://www.siteartwork.de
+ * Copyright (c) 2007-2008, http://www.siteartwork.de
  *
  * Ext.ux.grid.livegrid.Store is licensed under the terms of the
  *                  GNU Open Source GPL 3.0
  * license.
  *
- * Commercial use is prohibited. Visit <http://ext-livegrid.com>
+ * Commercial use is prohibited. Visit <http://www.siteartwork.de/livegrid>
  * if you need to obtain a commercial license.
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -3124,13 +3065,13 @@ Ext.extend(Ext.ux.grid.livegrid.Store, Ext.data.Store, {
     // private
     sortData : function(f, direction)
     {
-        var snap = this.snapshot;
-
-        this.snapshot = false;
-
-        Ext.ux.grid.livegrid.Store.superclass.sortData.apply(this, arguments);
-
-        this.snapshot = snap;
+        direction = direction || 'ASC';
+        var st = this.fields.get(f).sortType;
+        var fn = function(r1, r2){
+            var v1 = st(r1.data[f]), v2 = st(r2.data[f]);
+            return v1 > v2 ? 1 : (v1 < v2 ? -1 : 0);
+        };
+        this.data.sort(direction, fn);
     },
 
 
@@ -3220,184 +3161,14 @@ Ext.extend(Ext.ux.grid.livegrid.Store, Ext.data.Store, {
     findBy : function(){}
 
 });/**
- * Ext.ux.grid.livegrid.CheckboxSelectionModel
- * Copyright (c) 2007-2012, http://www.siteartwork.de
- *
- * Ext.ux.grid.livegrid.CheckboxSelectionModel is licensed under the terms of the
- *                  GNU Open Source GPL 3.0
- * license.
- *
- * Commercial use is prohibited. Visit <http://ext-livegrid.com>
- * if you need to obtain a commercial license.
- *
- * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License, or any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program. If not, see <http://www.gnu.org/licenses/gpl.html>.
- *
- */
-
-Ext.namespace('Ext.ux.grid.livegrid');
-
-/**
- * @class Ext.ux.grid.livegrid.CheckboxSelectionModel
- * @extends Ext.ux.grid.livegrid.RowSelectionModel
- * @constructor
- * @param {Object} config
- *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
- */
-Ext.ux.grid.livegrid.CheckboxSelectionModel = Ext.extend(Ext.ux.grid.livegrid.RowSelectionModel, {
-
-    /**
-     * @cfg {Boolean} checkOnly <tt>true</tt> if rows can only be selected by clicking on the
-     * checkbox column (defaults to <tt>false</tt>).
-     */
-    /**
-     * @cfg {Number} width The default width in pixels of the checkbox column (defaults to <tt>20</tt>).
-     */
-    width : 20,
-
-    // private
-    menuDisabled : true,
-    sortable : false,
-    fixed : true,
-    dataIndex : '',
-    id : 'checker',
-    headerCheckbox : null,
-    markAll : false,
-
-    constructor : function()
-    {
-        if (!this.header) {
-            this.header = Ext.grid.CheckboxSelectionModel.prototype.header;
-        }
-
-        this.sortable = false;
-
-        Ext.ux.grid.livegrid.CheckboxSelectionModel.superclass.constructor.call(this);
-    },
-
-    // private
-    initEvents : function()
-    {
-        Ext.ux.grid.livegrid.CheckboxSelectionModel.superclass.initEvents.call(this);
-
-        this.grid.view.on('reset', function(gridView, forceReload) {
-                this.headerCheckbox = new Ext.Element(
-                    gridView.getHeaderCell(this.grid.getColumnModel().getIndexById(this.id)).firstChild
-                );
-                if (this.markAll && forceReload === false) {
-                    this.headerCheckbox.addClass('x-grid3-hd-checker-on');
-                }
-        }, this);
-
-        Ext.grid.CheckboxSelectionModel.prototype.initEvents.call(this);
-    },
-
-    // private
-    onMouseDown : function(e, t)
-    {
-        if(e.button === 0 && t.className == 'x-grid3-row-checker') {
-            e.stopEvent();
-            var row = e.getTarget('.x-grid3-row');
-            if(row){
-                if (this.headerCheckbox) {
-                    this.markAll = false;
-                    this.headerCheckbox.removeClass('x-grid3-hd-checker-on');
-                }
-            }
-        }
-
-        return Ext.grid.CheckboxSelectionModel.prototype.onMouseDown.call(this, e, t);
-    },
-
-    // private
-    onHdMouseDown : function(e, t)
-    {
-        if (t.className == 'x-grid3-hd-checker' && !this.headerCheckbox) {
-            this.headerCheckbox = new Ext.Element(t.parentNode);
-        }
-
-        return Ext.grid.CheckboxSelectionModel.prototype.onHdMouseDown.call(this, e, t);
-    },
-
-    // private
-    renderer : function(v, p, record)
-    {
-        return Ext.grid.CheckboxSelectionModel.prototype.renderer.call(this, v, p, record);
-    },
-
-// -------- overrides
-
-    /**
-     * Overriden to prevent selections by shift-clicking
-     */
-    handleMouseDown : function(g, rowIndex, e)
-    {
-        if (e.shiftKey) {
-            return;
-        }
-
-        this.markAll = false;
-
-        if (this.headerCheckbox) {
-            this.headerCheckbox.removeClass('x-grid3-hd-checker-on');
-        }
-
-        Ext.ux.grid.livegrid.CheckboxSelectionModel.superclass.handleMouseDown.call(this, g, rowIndex, e);
-    },
-
-    /**
-     * Overriden to clear header sort state
-     */
-    clearSelections : function(fast)
-    {
-        if(this.isLocked()){
-            return;
-        }
-
-        this.markAll = false;
-
-        if (this.headerCheckbox) {
-            this.headerCheckbox.removeClass('x-grid3-hd-checker-on');
-        }
-
-        Ext.ux.grid.livegrid.CheckboxSelectionModel.superclass.clearSelections.call(this, fast);
-    },
-
-    /**
-     * Selects all rows if the selection model
-     * {@link Ext.grid.AbstractSelectionModel#isLocked is not locked}.
-     */
-    selectAll : function()
-    {
-        Ext.ux.grid.livegrid.CheckboxSelectionModel.superclass.selectAll.call(this);
-
-        this.markAll = true;
-
-        if (this.headerCheckbox) {
-            this.headerCheckbox.addClass('x-grid3-hd-checker-on');
-        }
-    }
-
-
-});/**
  * Ext.ux.grid.livegrid.Toolbar
- * Copyright (c) 2007-2012, http://www.siteartwork.de
+ * Copyright (c) 2007-2008, http://www.siteartwork.de
  *
  * Ext.ux.grid.livegrid.Toolbar is licensed under the terms of the
  *                  GNU Open Source GPL 3.0
  * license.
  *
- * Commercial use is prohibited. Visit <http://ext-livegrid.com>
+ * Commercial use is prohibited. Visit <http://www.siteartwork.de/livegrid>
  * if you need to obtain a commercial license.
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -3624,13 +3395,13 @@ Ext.ux.grid.livegrid.Toolbar = Ext.extend(Ext.Toolbar, {
     }
 });/**
  * Ext.ux.grid.livegrid.DragZone
- * Copyright (c) 2007-2012, http://www.siteartwork.de
+ * Copyright (c) 2007-2008, http://www.siteartwork.de
  *
  * Ext.ux.grid.livegrid.DragZone is licensed under the terms of the
  *                  GNU Open Source GPL 3.0
  * license.
  *
- * Commercial use is prohibited. Visit <http://ext-livegrid.com>
+ * Commercial use is prohibited. Visit <http://www.siteartwork.de/livegrid>
  * if you need to obtain a commercial license.
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -3706,13 +3477,13 @@ Ext.extend(Ext.ux.grid.livegrid.DragZone, Ext.grid.GridDragZone, {
     }
 });/**
  * Ext.ux.grid.livegrid.EditorGridPanel
- * Copyright (c) 2007-2012, http://www.siteartwork.de
+ * Copyright (c) 2007-2008, http://www.siteartwork.de
  *
  * Ext.ux.grid.livegrid.EditorGridPanel is licensed under the terms of the
  *                  GNU Open Source GPL 3.0
  * license.
  *
- * Commercial use is prohibited. Visit <http://ext-livegrid.com>
+ * Commercial use is prohibited. Visit <http://www.siteartwork.de/livegrid>
  * if you need to obtain a commercial license.
  *
  * This program is free software: you can redistribute it and/or modify it under

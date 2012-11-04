@@ -20,7 +20,7 @@ Ext.namespace('com.conjoon.groupware.workbench');
  * @class com.conjoon.groupware.workbench.PanelDragSource
  * @extends Ext.Panel.DD
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 com.conjoon.groupware.workbench.PanelDragSource = function() {
 

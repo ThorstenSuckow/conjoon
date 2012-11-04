@@ -127,52 +127,6 @@ com.conjoon.SystemMessageManager = function() {
         },
 
         /**
-         * Shows a dialog with an progress bar.
-         * Update the progress bar's state via "updateProgress()".
-         *
-         * @param {com.conjoon.SystemMessage} message
-         * @param {Object} options
-         */
-        progress : function(message, options)
-        {
-            var msg = Ext.MessageBox;
-
-            var c = {};
-
-            Ext.apply(c, message);
-
-            c.msg = c.text;
-            delete c.text;
-
-            Ext.apply(c, {
-                buttons   : false,
-                cls       : 'com-conjoon-msgbox-wait',
-                progress  : true,
-                draggable : false,
-                progress  : true,
-                closable  : false,
-                minWidth  : 300
-            });
-
-            Ext.apply(c, options);
-            this.show(c);
-        },
-
-        /**
-         * Updates the progress bar if it is currently shown and of type
-         * "progress".
-         *
-         * @param {Number} value
-         * @param {String} progressText
-         * @param {String} msg optional, if provided will override the
-         * dialogs message text
-         */
-        updateProgress : function(value, progressText, msg)
-        {
-            Ext.MessageBox.updateProgress(value, progressText, msg);
-        },
-
-        /**
          * Shows a dialog with an infinite loading progress bar.
          *
          * @param {com.conjoon.SystemMessage} message
@@ -239,33 +193,6 @@ com.conjoon.SystemMessageManager = function() {
             Ext.MessageBox.hide();
         },
 
-        /**
-         * Shows a dialog representing an information.
-         *
-         * @param {com.conjoon.SystemMessage} message
-         * @param {Object} options
-         */
-        info : function(message, options)
-        {
-            var msg = Ext.MessageBox;
-
-            var c = {};
-
-            Ext.apply(c, message);
-
-            c.msg = c.text;
-            delete c.text;
-
-            Ext.apply(c, {
-                buttons : msg.OK,
-                icon    : msg.INFO,
-                cls     : 'com-conjoon-msgbox-info',
-                width   : 375
-            });
-
-            Ext.apply(c, options);
-            this.show(c);
-        },
 
         /**
          * Shows a dialog indicating an error happened.

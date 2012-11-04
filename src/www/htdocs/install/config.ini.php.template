@@ -89,14 +89,6 @@ edition = {EDITION}
 ; dates depend on the proper setting of this value (for example: date/time for emails being send)
 locale.date.timezone = {LOCALE.DATE.TIMEZONE}
 
-; This allows to cache the plugins needed by the Zend Framework; a list of
-; include_once statements will be added to the bootstrapper, which includes
-; all found plugins so Zend framework does not have to look them up each time.
-; While stat calls to the native filesystem are greatly reduced using the
-; plugin cache, there might be a tradeoff in performance due to the additional
-; include_once statements.
-zf.use_plugin_cache = 1
-
 ; Twitter specific parameters for the Oauth process.
 twitter.oauth.callbackUrl    = ./service/twitter.account/authorize.okay
 twitter.oauth.siteUrl        = http://twitter.com/oauth
@@ -290,10 +282,6 @@ email.accounts.caching = {CACHE.EMAIL.ACCOUNTS.CACHING}
 email.accounts.frontend.lifetime = 31536000
 email.accounts.backend.cache_dir = {CACHE.EMAIL.ACCOUNTS.BACKEND.CACHE_DIR}
 
-; namespace "email.folders.root_type" for cached root types of folders
-email.folders_root_type.caching = {CACHE.EMAIL.FOLDERS.ROOT_TYPE.CACHING}
-email.folders_root_type.frontend.lifetime = 31536000
-email.folders_root_type.backend.cache_dir = {CACHE.EMAIL.FOLDERS.ROOT_TYPE.BACKEND.CACHE_DIR}
 
 ;;;;;;;;;;;;;;;;;;;
 ;;  CACHE FEEDS  ;;
@@ -341,69 +329,6 @@ db.metadata.backend.hashed_directory_level = 0
 ; namespace "twitter.accounts" for cached twitter account lists.
 twitter.accounts.caching = {CACHE.TWITTER.ACCOUNTS.CACHING}
 twitter.accounts.backend.cache_dir = {CACHE.TWITTER.ACCOUNTS.BACKEND.CACHE_DIR}
-
-
-;;;;;;;;;;;;;;;;;;;;;
-;;    FILES/LOB    ;;
-;;;;;;;;;;;;;;;;;;;;;
-[files]
-; The maximum size allowed for a single file upload. This value should be equal
-; or less to your php.ini setting post_max_size and the configuration option
-; database.variables.max_allowed_packet. If the value exceeds those limits,
-; always the minimum of post max size and max_allowed_packet will be used for
-; determing max allowed upload filesize. Please note, that this value is
-; never ignored even if you choose to write LOBs into the local filesystem of
-; your server
-upload.max_size = {FILES.UPLOAD.MAX_SIZE}
-
-; Tells whether LOBs (large objects) will be stored in the filesystem. By default,
-; conjoon stores LOBs in the database. However, there are reasons why you would
-; want to store this data in the native filesystem, specially performancewise.
-; You can enable/disable this value during runtime, and conjoon will still provide
-; the application with the needed data. However, make sure you did/do not delete
-; the related folders where the LOBs of a user can be found, and do not change
-; this values during runtime without moving the folders to their new locations.
-; If this property is set to "0", files will not be stored in the filesystem.
-; However, if this was previously set to "1", data which was stored in the
-; database will be flagged as stored in the file system. So before changing the dirs
-; make sure you move all content to the new location (according to the following
-; *.dir config options) - once data was flagged as stored in the filesystem,
-; conjoon will try to retrieve this data based on the available information.
-storage.use_filesystem = {FILES.STORAGE.USE_FILESYSTEM}
-
-; if files.storage.use_filesystem is activated, the following configuration
-; properties tell the application where to store/look up related LOBs.
-; if you do not provide absolute paths, the application will assume those
-; directories are relative to the application_path.
-; NOTE:
-; YOU ARE RESPONSIBLE FOR TAKING CARE OF PROPER SETTING THE PERMISSIONS FOR
-; THE SPECIFIED FOLDERS. MAKE SURE THOSE FOLDERS ARE ONLY ACCESSIBLE BY PHP/
-; YOUR WEBSERVER. MAKE SURE YOU FREQUENTLY DO A BACKUP OF THOSE FOLDERS.
-; IF YOU ARE NOT SURE WHAT YOU ARE DOING, SET storage.filesystem TO 0 and
-; LET conjoon TAKE CARE OF STORING LOBs IN THE DATABASE
-
-; [EMAIL-MODULE]
-; The path to the folder where attachments will be stored.
-; Either absolute or relative to the application_path setting.
-; TAKE CARE OF PROPER FILE PERMISSIONS!
-storage.email.attachments.dir = {FILES.STORAGE.EMAIL.ATTACHMENTS.DIR}
-
-; the path to the folder where inbox data will be stored
-; (header/bodies). Either absolute or relative to the application_path setting.
-; TAKE CARE OF PROPER FILE PERMISSIONS!
-storage.email.inbox.dir = {FILES.STORAGE.EMAIL.INBOX.DIR}
-
-; the path to the folder where outbox data will be stored
-; (header/bodies). Either absolute or relative to the application_path setting.
-; TAKE CARE OF PROPER FILE PERMISSIONS!
-storage.email.outbox.dir = {FILES.STORAGE.EMAIL.OUTBOX.DIR}
-
-; [FILE_MODULE]
-; the path to the folder where files for a user get stored, for
-; example when a user uploads a file.  Either absolute or relative to the
-; application_path setting.
-; TAKE CARE OF PROPER FILE PERMISSIONS!
-storage.files.default.dir = {FILES.STORAGE.FILES.DEFAULT.DIR}
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;

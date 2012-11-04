@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
+ * licensing@extjs.com
+ * http://www.extjs.com/license
  */
 /**
  * @class Ext.data.Field
@@ -11,49 +11,109 @@
  * <p>Developers do not need to instantiate this class. Instances are created by {@link Ext.data.Record.create}
  * and cached in the {@link Ext.data.Record#fields fields} property of the created Record constructor's <b>prototype.</b></p>
  */
-Ext.data.Field = Ext.extend(Object, {
-    
-    constructor : function(config){
-        if(Ext.isString(config)){
-            config = {name: config};
-        }
-        Ext.apply(this, config);
-        
-        var types = Ext.data.Types,
-            st = this.sortType,
-            t;
+Ext.data.Field = function(config){
+    if(typeof config == "string"){
+        config = {name: config};
+    }
+    Ext.apply(this, config);
 
-        if(this.type){
-            if(Ext.isString(this.type)){
-                this.type = Ext.data.Types[this.type.toUpperCase()] || types.AUTO;
-            }
-        }else{
-            this.type = types.AUTO;
-        }
+    if(!this.type){
+        this.type = "auto";
+    }
 
-        // named sortTypes are supported, here we look them up
-        if(Ext.isString(st)){
-            this.sortType = Ext.data.SortTypes[st];
-        }else if(Ext.isEmpty(st)){
-            this.sortType = this.type.sortType;
-        }
+    var st = Ext.data.SortTypes;
+    // named sortTypes are supported, here we look them up
+    if(typeof this.sortType == "string"){
+        this.sortType = st[this.sortType];
+    }
 
-        if(!this.convert){
-            this.convert = this.type.convert;
+    // set default sortType for strings and dates
+    if(!this.sortType){
+        switch(this.type){
+            case "string":
+                this.sortType = st.asUCString;
+                break;
+            case "date":
+                this.sortType = st.asDate;
+                break;
+            default:
+                this.sortType = st.none;
         }
-    },
-    
+    }
+
+    // define once
+    var stripRe = /[\$,%]/g;
+
+    // prebuilt conversion function for this field, instead of
+    // switching every time we're reading a value
+    if(!this.convert){
+        var cv, dateFormat = this.dateFormat;
+        switch(this.type){
+            case "":
+            case "auto":
+            case undefined:
+                cv = function(v){ return v; };
+                break;
+            case "string":
+                cv = function(v){ return (v === undefined || v === null) ? '' : String(v); };
+                break;
+            case "int":
+                cv = function(v){
+                    return v !== undefined && v !== null && v !== '' ?
+                        parseInt(String(v).replace(stripRe, ""), 10) : '';
+                    };
+                break;
+            case "float":
+                cv = function(v){
+                    return v !== undefined && v !== null && v !== '' ?
+                        parseFloat(String(v).replace(stripRe, ""), 10) : '';
+                    };
+                break;
+            case "bool":
+                cv = function(v){ return v === true || v === "true" || v == 1; };
+                break;
+            case "date":
+                cv = function(v){
+                    if(!v){
+                        return '';
+                    }
+                    if(Ext.isDate(v)){
+                        return v;
+                    }
+                    if(dateFormat){
+                        if(dateFormat == "timestamp"){
+                            return new Date(v*1000);
+                        }
+                        if(dateFormat == "time"){
+                            return new Date(parseInt(v, 10));
+                        }
+                        return Date.parseDate(v, dateFormat);
+                    }
+                    var parsed = Date.parse(v);
+                    return parsed ? new Date(parsed) : null;
+                };
+                break;
+            default:
+                cv = function(v){ return v; };
+                break;
+
+        }
+        this.convert = cv;
+    }
+};
+
+Ext.data.Field.prototype = {
     /**
      * @cfg {String} name
      * The name by which the field is referenced within the Record. This is referenced by, for example,
-     * the <code>dataIndex</code> property in column definition objects passed to {@link Ext.grid.ColumnModel}.
-     * <p>Note: In the simplest case, if no properties other than <code>name</code> are required, a field
+     * the <tt>dataIndex</tt> property in column definition objects passed to {@link Ext.grid.ColumnModel}.
+     * <p>Note: In the simplest case, if no properties other than <tt>name</tt> are required, a field
      * definition may consist of just a String for the field name.</p>
      */
     /**
-     * @cfg {Mixed} type
-     * (Optional) The data type for automatic conversion from received data to the <i>stored</i> value if <code>{@link Ext.data.Field#convert convert}</code>
-     * has not been specified. This may be specified as a string value. Possible values are
+     * @cfg {String} type
+     * (Optional) The data type for conversion to displayable value if <tt>{@link Ext.data.Field#convert convert}</tt>
+     * has not been specified. Possible values are
      * <div class="mdetail-params"><ul>
      * <li>auto (Default, implies no conversion)</li>
      * <li>string</li>
@@ -61,16 +121,13 @@ Ext.data.Field = Ext.extend(Object, {
      * <li>float</li>
      * <li>boolean</li>
      * <li>date</li></ul></div>
-     * <p>This may also be specified by referencing a member of the {@link Ext.data.Types} class.</p>
-     * <p>Developers may create their own application-specific data types by defining new members of the
-     * {@link Ext.data.Types} class.</p>
      */
     /**
      * @cfg {Function} convert
      * (Optional) A function which converts the value provided by the Reader into an object that will be stored
      * in the Record. It is passed the following parameters:<div class="mdetail-params"><ul>
      * <li><b>v</b> : Mixed<div class="sub-desc">The data value as read by the Reader, if undefined will use
-     * the configured <code>{@link Ext.data.Field#defaultValue defaultValue}</code>.</div></li>
+     * the configured <tt>{@link Ext.data.Field#defaultValue defaultValue}</tt>.</div></li>
      * <li><b>rec</b> : Mixed<div class="sub-desc">The data object containing the row as read by the Reader.
      * Depending on the Reader type, this could be an Array ({@link Ext.data.ArrayReader ArrayReader}), an object
      *  ({@link Ext.data.JsonReader JsonReader}), or an XML element ({@link Ext.data.XMLReader XMLReader}).</div></li>
@@ -124,24 +181,15 @@ var myData = [
      */
     /**
      * @cfg {String} dateFormat
-     * <p>(Optional) Used when converting received data into a Date when the {@link #type} is specified as <code>"date"</code>.</p>
-     * <p>A format string for the {@link Date#parseDate Date.parseDate} function, or "timestamp" if the
+     * (Optional) A format string for the {@link Date#parseDate Date.parseDate} function, or "timestamp" if the
      * value provided by the Reader is a UNIX timestamp, or "time" if the value provided by the Reader is a
-     * javascript millisecond timestamp. See {@link Date}</p>
+     * javascript millisecond timestamp.
      */
     dateFormat: null,
-    
-    /**
-     * @cfg {Boolean} useNull
-     * <p>(Optional) Use when converting received data into a Number type (either int or float). If the value cannot be parsed,
-     * null will be used if useNull is true, otherwise the value will be 0. Defaults to <tt>false</tt>
-     */
-    useNull: false,
-    
     /**
      * @cfg {Mixed} defaultValue
      * (Optional) The default value used <b>when a Record is being created by a {@link Ext.data.Reader Reader}</b>
-     * when the item referenced by the <code>{@link Ext.data.Field#mapping mapping}</code> does not exist in the data
+     * when the item referenced by the <tt>{@link Ext.data.Field#mapping mapping}</tt> does not exist in the data
      * object (i.e. undefined). (defaults to "")
      */
     defaultValue: "",
@@ -189,15 +237,15 @@ sortType: function(value) {
     sortType : null,
     /**
      * @cfg {String} sortDir
-     * (Optional) Initial direction to sort (<code>"ASC"</code> or  <code>"DESC"</code>).  Defaults to
-     * <code>"ASC"</code>.
+     * (Optional) Initial direction to sort (<tt>"ASC"</tt> or  <tt>"DESC"</tt>).  Defaults to
+     * <tt>"ASC"</tt>.
      */
     sortDir : "ASC",
     /**
      * @cfg {Boolean} allowBlank
-     * (Optional) Used for validating a {@link Ext.data.Record record}, defaults to <code>true</code>.
+     * (Optional) Used for validating a {@link Ext.data.Record record}, defaults to <tt>true</tt>.
      * An empty value here will cause {@link Ext.data.Record}.{@link Ext.data.Record#isValid isValid}
-     * to evaluate to <code>false</code>.
+     * to evaluate to <tt>false</tt>.
      */
     allowBlank : true
-});
+};

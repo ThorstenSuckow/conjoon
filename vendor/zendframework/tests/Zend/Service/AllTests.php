@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Service
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 24838 2012-05-31 11:37:11Z adamlundrigan $
+ * @version    $Id: AllTests.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
@@ -35,6 +35,7 @@ require_once 'Zend/Service/LiveDocx/AllTests.php';
 require_once 'Zend/Service/Nirvanix/AllTests.php';
 require_once 'Zend/Service/ReCaptcha/AllTests.php';
 require_once 'Zend/Service/ShortUrl/AllTests.php';
+require_once 'Zend/Service/Simpy/AllTests.php';
 require_once 'Zend/Service/SlideShareTest.php';
 require_once 'Zend/Service/StrikeIron/AllTests.php';
 require_once 'Zend/Service/Technorati/AllTests.php';
@@ -46,7 +47,7 @@ require_once 'Zend/Service/Yahoo/AllTests.php';
  * @category   Zend
  * @package    Zend_Service
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Service
  */
@@ -82,6 +83,7 @@ class Zend_Service_AllTests
         $suite->addTest(Zend_Service_Nirvanix_AllTests::suite());
         $suite->addTest(Zend_Service_ReCaptcha_AllTests::suite());
         $suite->addTest(Zend_Service_ShortUrl_AllTests::suite());
+        $suite->addTest(Zend_Service_Simpy_AllTests::suite());
         $suite->addTestSuite('Zend_Service_SlideShareTest');
         $suite->addTest(Zend_Service_StrikeIron_AllTests::suite());
         $suite->addTest(Zend_Service_Technorati_AllTests::suite());

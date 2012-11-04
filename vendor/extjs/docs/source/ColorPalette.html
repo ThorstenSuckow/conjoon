@@ -6,13 +6,7 @@
     <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
 </head>
 <body  onload="prettyPrint();">
-    <pre class="prettyprint lang-js">/*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
- */
-<div id="cls-Ext.ColorPalette"></div>/**
+    <pre class="prettyprint lang-js"><div id="cls-Ext.ColorPalette"></div>/**
  * @class Ext.ColorPalette
  * @extends Ext.Component
  * Simple color palette class for choosing colors.  The palette can be rendered to any container.<br />
@@ -140,7 +134,7 @@ cp.colors = ['000000', '993300', '333300'];
         if(this.value){
             var s = this.value;
             this.value = null;
-            this.select(s, true);
+            this.select(s);
         }
     },
 
@@ -156,9 +150,8 @@ cp.colors = ['000000', '993300', '333300'];
     <div id="method-Ext.ColorPalette-select"></div>/**
      * Selects the specified color in the palette (fires the {@link #select} event)
      * @param {String} color A valid 6-digit color hex code (# will be stripped if included)
-     * @param {Boolean} suppressEvent (optional) True to stop the select event from firing. Defaults to <tt>false</tt>.
      */
-    select : function(color, suppressEvent){
+    select : function(color){
         color = color.replace('#', '');
         if(color != this.value || this.allowReselect){
             var el = this.el;
@@ -167,9 +160,7 @@ cp.colors = ['000000', '993300', '333300'];
             }
             el.child('a.color-'+color).addClass('x-color-palette-sel');
             this.value = color;
-            if(suppressEvent !== true){
-                this.fireEvent('select', this, color);
-            }
+            this.fireEvent('select', this, color);
         }
     }
 
@@ -177,6 +168,7 @@ cp.colors = ['000000', '993300', '333300'];
      * @cfg {String} autoEl @hide
      */
 });
-Ext.reg('colorpalette', Ext.ColorPalette);</pre>    
+Ext.reg('colorpalette', Ext.ColorPalette);
+</pre>    
 </body>
 </html>

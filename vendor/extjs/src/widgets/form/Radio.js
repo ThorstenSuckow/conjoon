@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
+ * licensing@extjs.com
+ * http://www.extjs.com/license
  */
 /**
  * @class Ext.form.Radio
@@ -34,8 +34,22 @@ Ext.form.Radio = Ext.extend(Ext.form.Checkbox, {
      */
     getGroupValue : function(){
     	var p = this.el.up('form') || Ext.getBody();
-        var c = p.child('input[name="'+this.el.dom.name+'"]:checked', true);
+        var c = p.child('input[name='+this.el.dom.name+']:checked', true);
         return c ? c.value : null;
+    },
+
+    // private
+    onClick : function(){
+    	if(this.el.dom.checked != this.checked){
+			var els = this.getCheckEl().select('input[name=' + this.el.dom.name + ']');
+			els.each(function(el){
+				if(el.dom.id == this.id){
+					this.setValue(true);
+				}else{
+					Ext.getCmp(el.dom.id).setValue(false);
+				}
+			}, this);
+		}
     },
 
     /**
@@ -45,26 +59,13 @@ Ext.form.Radio = Ext.extend(Ext.form.Checkbox, {
      * @return {Ext.form.Field} this
      */
     setValue : function(v){
-    	var checkEl,
-            els,
-            radio;
     	if (typeof v == 'boolean') {
             Ext.form.Radio.superclass.setValue.call(this, v);
         } else if (this.rendered) {
-            checkEl = this.getCheckEl();
-            radio = checkEl.child('input[name="' + this.el.dom.name + '"][value="' + v + '"]', true);
-            if(radio){
-                Ext.getCmp(radio.id).setValue(true);
+            var r = this.getCheckEl().child('input[name=' + this.el.dom.name + '][value=' + v + ']', true);
+            if(r){
+                Ext.getCmp(r.id).setValue(true);
             }
-        }
-        if(this.rendered && this.checked){
-            checkEl = checkEl || this.getCheckEl();
-            els = this.getCheckEl().select('input[name="' + this.el.dom.name + '"]');
-			els.each(function(el){
-				if(el.dom.id != this.id){
-					Ext.getCmp(el.dom.id).setValue(false);
-				}
-			}, this);
         }
         return this;
     },
@@ -72,7 +73,7 @@ Ext.form.Radio = Ext.extend(Ext.form.Checkbox, {
     // private
     getCheckEl: function(){
         if(this.inGroup){
-            return this.el.up('.x-form-radio-group');
+            return this.el.up('.x-form-radio-group')
         }
         return this.el.up('form') || Ext.getBody();
     }

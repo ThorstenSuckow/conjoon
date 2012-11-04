@@ -6,13 +6,7 @@
     <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
 </head>
 <body  onload="prettyPrint();">
-    <pre class="prettyprint lang-js">/*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
- */
-<div id="cls-Ext.KeyNav"></div>/**
+    <pre class="prettyprint lang-js"><div id="cls-Ext.KeyNav"></div>/**
  * @class Ext.KeyNav
  * <p>Provides a convenient wrapper for normalized keyboard navigation.  KeyNav allows you to bind
  * navigation keys to function calls that will get called when the keys are pressed, providing an easy
@@ -69,8 +63,8 @@ Ext.KeyNav.prototype = {
 
     // private
     relay : function(e){
-        var k = e.getKey(),
-            h = this.keyToHandler[k];
+        var k = e.getKey();
+        var h = this.keyToHandler[k];
         if(h && this[h]){
             if(this.doRelay(e, this[h], h) !== true){
                 e[this.defaultEventAction]();
@@ -80,7 +74,7 @@ Ext.KeyNav.prototype = {
 
     // private
     doRelay : function(e, h, hname){
-        return h.call(this.scope || this, e, hname);
+        return h.call(this.scope || this, e);
     },
 
     // possible handlers
@@ -96,7 +90,6 @@ Ext.KeyNav.prototype = {
     del : false,
     home : false,
     end : false,
-    space : false,
 
     // quick lookup hash
     keyToHandler : {
@@ -111,8 +104,7 @@ Ext.KeyNav.prototype = {
         35 : "end",
         13 : "enter",
         27 : "esc",
-        9  : "tab",
-        32 : "space"
+        9  : "tab"
     },
     
     stopKeyUp: function(e) {

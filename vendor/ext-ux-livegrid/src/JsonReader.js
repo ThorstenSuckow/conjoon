@@ -1,12 +1,12 @@
 /**
  * Ext.ux.grid.livegrid.JsonReader
- * Copyright (c) 2007-2012, http://www.siteartwork.de
+ * Copyright (c) 2007-2008, http://www.siteartwork.de
  *
  * Ext.ux.grid.livegrid.JsonReader is licensed under the terms of the
  *                  GNU Open Source GPL 3.0
  * license.
  *
- * Commercial use is prohibited. Visit <http://ext-livegrid.com>
+ * Commercial use is prohibited. Visit <http://www.siteartwork.de/livegrid>
  * if you need to obtain a commercial license.
  *
  * This program is free software: you can redistribute it and/or modify it under

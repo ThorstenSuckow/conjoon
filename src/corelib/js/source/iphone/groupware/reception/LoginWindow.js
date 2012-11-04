@@ -21,7 +21,7 @@ Ext.namespace('com.conjoon.iphone.groupware.reception');
  * @class com.conjoon.iphone.groupware.reception.LoginWindow
  * @extends com.conjoon.groupware.reception.LoginWindow
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 com.conjoon.iphone.groupware.reception.LoginWindow = Ext.extend(com.conjoon.groupware.reception.LoginWindow, {
 

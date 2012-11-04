@@ -17,7 +17,7 @@ Ext.namespace('com.conjoon.cudgets');
 /**
  * An override for Ext.ListView to use in com.conjoon.cudgets.SettingsContainer.
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  *
  * @class com.conjoon.cudgets.ListView
  * @extends Ext.ListView
@@ -57,7 +57,16 @@ com.conjoon.cudgets.ListView = Ext.extend(Ext.ListView, {
              * @param {Ext.ListView} listView
              * @param {Ext.data.Record} record The selected record
              */
-            'beforeentryselect'
+            'beforeentryselect',
+            /**
+             * @event beforeentrydeselect
+             * Gets fired when an entry is about to be deselected. Event listeners
+             * should return false to cancel this event.
+             *
+             * @param {Ext.ListView} listView
+             * @param {Ext.data.Record} record The record that is about to get deselected
+             */
+            'beforeentrydeselect'
         );
 
 

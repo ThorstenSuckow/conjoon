@@ -16,7 +16,7 @@
 /**
  * This is a very simple bootstrap file for the conjoon setup process.
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 
 if (version_compare(PHP_VERSION, '5.2.5' , '<')) {

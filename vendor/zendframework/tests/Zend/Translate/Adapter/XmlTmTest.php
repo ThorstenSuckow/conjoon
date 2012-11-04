@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Translate
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: XmlTmTest.php 24649 2012-02-26 03:37:54Z adamlundrigan $
+ * @version    $Id: XmlTmTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
@@ -29,7 +29,7 @@ require_once 'Zend/Translate/Adapter/XmlTm.php';
  * @category   Zend
  * @package    Zend_Translate
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Translate
  */
@@ -63,19 +63,6 @@ class Zend_Translate_Adapter_XmlTmTest extends PHPUnit_Framework_TestCase
             $this->fail("exception expected");
         } catch (Zend_Translate_Exception $e) {
             $this->assertContains('Mismatched tag at line', $e->getMessage());
-        }
-    }
-    
-    /**
-     * @group ZF-12012
-     */
-    public function testErrorOnCreateIncludesFilename()
-    {
-        try {
-            $adapter = new Zend_Translate_Adapter_XmlTm(dirname(__FILE__) . '/_files/nofile.xmltm', 'en');
-            $this->fail("exception expected");
-        } catch (Zend_Translate_Exception $e) {
-            $this->assertContains('nofile.xmltm', $e->getMessage());
         }
     }
 

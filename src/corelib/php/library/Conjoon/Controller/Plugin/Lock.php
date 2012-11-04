@@ -29,7 +29,7 @@ require_once 'Zend/Controller/Plugin/Abstract.php';
   * @subpackage Plugin
   * @category Plugins
   *
-  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
   */
 class Conjoon_Controller_Plugin_Lock extends Zend_Controller_Plugin_Abstract {
 

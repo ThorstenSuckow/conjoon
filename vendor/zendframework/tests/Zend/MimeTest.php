@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Mime
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
@@ -30,7 +30,7 @@ require_once 'Zend/Mime.php';
  * @category   Zend
  * @package    Zend_Mime
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Mime
  */
@@ -71,17 +71,6 @@ class Zend_MimeTest extends PHPUnit_Framework_TestCase
 
         $qp = Zend_Mime::encodeQuotedPrintable($text);
         $this->assertEquals(quoted_printable_decode($qp), $text);
-    }
-
-    /**
-     * @group ZF-10074
-     */
-    public function testEncodeQuotedPrintableWhenTextHasZeroAtTheEnd()
-    {
-        $raw = str_repeat('x',72) . '0';
-        $quoted = Zend_Mime::encodeQuotedPrintable($raw, 72);
-        $expected = quoted_printable_decode($quoted);        
-        $this->assertEquals($expected, $raw);
     }
 
     public function testBase64()

@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
+ * licensing@extjs.com
+ * http://www.extjs.com/license
  */
 Ext.ns('Ext.ux.tree');
 
@@ -37,15 +37,17 @@ Ext.ux.tree.XmlTreeLoader = Ext.extend(Ext.tree.TreeLoader, {
 
     // private override
     processResponse : function(response, node, callback){
-        var xmlData = response.responseXML,
-            root = xmlData.documentElement || xmlData;
+        var xmlData = response.responseXML;
+        var root = xmlData.documentElement || xmlData;
 
         try{
             node.beginUpdate();
             node.appendChild(this.parseXml(root));
             node.endUpdate();
 
-            this.runCallback(callback, scope || node, [node]);
+            if(typeof callback == "function"){
+                callback(this, node);
+            }
         }catch(e){
             this.handleFailure(response);
         }

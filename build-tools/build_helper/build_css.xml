@@ -25,7 +25,7 @@
  to rebuild the project, use the build.xml found in this folder which will
  also call this build file.
 
- @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ @author Thorsten Suckow-Homberg <ts@siteartwork.de>
 -->
 
 <project name="conjoon-css" default="_build_install_css_deploy" basedir="./">

@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Soap
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AutoDiscoverTest.php 24842 2012-05-31 18:31:28Z rob $
+ * @version    $Id: AutoDiscoverTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /** Zend_Soap_AutoDiscover */
@@ -38,7 +38,7 @@ require_once "_files/commontypes.php";
  * @category   Zend
  * @package    Zend_Soap
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Soap
  */
@@ -739,15 +739,8 @@ class Zend_Soap_AutoDiscoverTest extends PHPUnit_Framework_TestCase
         $this->assertNotContains("?wsdl", $uri);
         $this->assertEquals("http://localhost/my_script.php", $uri);
 
-        // IIS with ISAPI_Rewrite
+        // IIS
         $_SERVER = array('HTTP_X_REWRITE_URL' => '/my_script.php?wsdl', 'SERVER_NAME' => 'localhost');
-        $server = new Zend_Soap_AutoDiscover();
-        $uri = $server->getUri()->getUri();
-        $this->assertNotContains("?wsdl", $uri);
-        $this->assertEquals("http://localhost/my_script.php", $uri);
-
-        // IIS with Microsoft Rewrite Module
-        $_SERVER = array('HTTP_X_ORIGINAL_URL' => '/my_script.php?wsdl', 'SERVER_NAME' => 'localhost');
         $server = new Zend_Soap_AutoDiscover();
         $uri = $server->getUri()->getUri();
         $this->assertNotContains("?wsdl", $uri);

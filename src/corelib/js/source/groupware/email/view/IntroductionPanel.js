@@ -296,9 +296,7 @@ com.conjoon.groupware.email.view.IntroductionPanel = Ext.extend(Ext.BoxComponent
      */
     onDestroy : function()
     {
-        if (this.readEmailLink) {
-            Ext.fly(this.readEmailLink).un('click', this._onReadEmailClick, this);
-        }
+        Ext.fly(this.readEmailLink).un('click', this._onReadEmailClick, this);
     },
 
     /**
@@ -337,9 +335,7 @@ com.conjoon.groupware.email.view.IntroductionPanel = Ext.extend(Ext.BoxComponent
             return;
         }
 
-        var attrType = node.attributes.type;
-
-        if (attrType != 'accounts_root' && attrType != 'root') {
+        if (node.attributes.type != 'accounts_root') {
             this.lastClkNode = null;
             return;
         }

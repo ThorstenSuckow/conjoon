@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Service_DeveloperGarden
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: OfflineClientTest.php 24791 2012-05-11 06:18:17Z bate $
+ * @version    $Id: OfflineClientTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
@@ -35,9 +35,9 @@ require_once 'Zend/Service/DeveloperGarden/IpLocation.php';
  * @category   Zend
  * @package    Zend_Service_DeveloperGarden
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: OfflineClientTest.php 24791 2012-05-11 06:18:17Z bate $
+ * @version    $Id: OfflineClientTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 class Zend_Service_DeveloperGarden_OfflineClientTest extends PHPUnit_Framework_TestCase
 {
@@ -130,10 +130,6 @@ class Zend_Service_DeveloperGarden_OfflineClientTest extends PHPUnit_Framework_T
 
     public function testGetSoapClient()
     {
-        if (!extension_loaded('soap')) {
-            $this->markTestSkipped('SOAP extension is not loaded');
-        }
-
         $options = array(
             'Username' => 'Zend',
             'Password' => 'Framework',
@@ -247,10 +243,6 @@ class Zend_Service_DeveloperGarden_OfflineClientTest extends PHPUnit_Framework_T
 
     public function testGetClientOptionsWithWsdlCache()
     {
-        if (!extension_loaded('soap')) {
-            $this->markTestSkipped('SOAP extension is not loaded');
-        }
-
         $this->assertNull(
             Zend_Service_DeveloperGarden_SecurityTokenServer_Cache::setWsdlCache(WSDL_CACHE_BOTH)
         );

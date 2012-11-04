@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
+ * licensing@extjs.com
+ * http://www.extjs.com/license
  */
 /**
  * @class Ext.state.Provider
@@ -10,21 +10,19 @@
  * for encoding and decoding <b>typed</b> variables including dates and defines the
  * Provider interface.
  */
-Ext.state.Provider = Ext.extend(Ext.util.Observable, {
-    
-    constructor : function(){
-        /**
-         * @event statechange
-         * Fires when a state change occurs.
-         * @param {Provider} this This state provider
-         * @param {String} key The state key which was changed
-         * @param {String} value The encoded value for the state
-         */
-        this.addEvents("statechange");
-        this.state = {};
-        Ext.state.Provider.superclass.constructor.call(this);
-    },
-    
+Ext.state.Provider = function(){
+    /**
+     * @event statechange
+     * Fires when a state change occurs.
+     * @param {Provider} this This state provider
+     * @param {String} key The state key which was changed
+     * @param {String} value The encoded value for the state
+     */
+    this.addEvents("statechange");
+    this.state = {};
+    Ext.state.Provider.superclass.constructor.call(this);
+};
+Ext.extend(Ext.state.Provider, Ext.util.Observable, {
     /**
      * Returns the current value for a key
      * @param {String} name The key name
@@ -61,48 +59,31 @@ Ext.state.Provider = Ext.extend(Ext.util.Observable, {
      * @return {Mixed} The decoded value
      */
     decodeValue : function(cookie){
-        /**
-         * a -> Array
-         * n -> Number
-         * d -> Date
-         * b -> Boolean
-         * s -> String
-         * o -> Object
-         * -> Empty (null)
-         */
-        var re = /^(a|n|d|b|s|o|e)\:(.*)$/,
-            matches = re.exec(unescape(cookie)),
-            all,
-            type,
-            v,
-            kv;
-        if(!matches || !matches[1]){
-            return; // non state cookie
-        }
-        type = matches[1];
-        v = matches[2];
+        var re = /^(a|n|d|b|s|o)\:(.*)$/;
+        var matches = re.exec(unescape(cookie));
+        if(!matches || !matches[1]) return; // non state cookie
+        var type = matches[1];
+        var v = matches[2];
         switch(type){
-            case 'e':
-                return null;
-            case 'n':
+            case "n":
                 return parseFloat(v);
-            case 'd':
+            case "d":
                 return new Date(Date.parse(v));
-            case 'b':
-                return (v == '1');
-            case 'a':
-                all = [];
+            case "b":
+                return (v == "1");
+            case "a":
+                var all = [];
                 if(v != ''){
                     Ext.each(v.split('^'), function(val){
                         all.push(this.decodeValue(val));
                     }, this);
                 }
                 return all;
-           case 'o':
-                all = {};
+           case "o":
+                var all = {};
                 if(v != ''){
                     Ext.each(v.split('^'), function(val){
-                        kv = val.split('=');
+                        var kv = val.split('=');
                         all[kv[0]] = this.decodeValue(kv[1]);
                     }, this);
                 }
@@ -118,36 +99,30 @@ Ext.state.Provider = Ext.extend(Ext.util.Observable, {
      * @return {String} The encoded value
      */
     encodeValue : function(v){
-        var enc,
-            flat = '',
-            i = 0,
-            len,
-            key;
-        if(v == null){
-            return 'e:1';    
-        }else if(typeof v == 'number'){
-            enc = 'n:' + v;
-        }else if(typeof v == 'boolean'){
-            enc = 'b:' + (v ? '1' : '0');
+        var enc;
+        if(typeof v == "number"){
+            enc = "n:" + v;
+        }else if(typeof v == "boolean"){
+            enc = "b:" + (v ? "1" : "0");
         }else if(Ext.isDate(v)){
-            enc = 'd:' + v.toGMTString();
+            enc = "d:" + v.toGMTString();
         }else if(Ext.isArray(v)){
-            for(len = v.length; i < len; i++){
+            var flat = "";
+            for(var i = 0, len = v.length; i < len; i++){
                 flat += this.encodeValue(v[i]);
-                if(i != len - 1){
-                    flat += '^';
+                if(i != len-1) flat += "^";
+            }
+            enc = "a:" + flat;
+        }else if(typeof v == "object"){
+            var flat = "";
+            for(var key in v){
+                if(typeof v[key] != "function" && v[key] !== undefined){
+                    flat += key + "=" + this.encodeValue(v[key]) + "^";
                 }
             }
-            enc = 'a:' + flat;
-        }else if(typeof v == 'object'){
-            for(key in v){
-                if(typeof v[key] != 'function' && v[key] !== undefined){
-                    flat += key + '=' + this.encodeValue(v[key]) + '^';
-                }
-            }
-            enc = 'o:' + flat.substring(0, flat.length-1);
+            enc = "o:" + flat.substring(0, flat.length-1);
         }else{
-            enc = 's:' + v;
+            enc = "s:" + v;
         }
         return escape(enc);
     }
@@ -239,18 +214,17 @@ Ext.state.Manager = function(){
  * Create a new CookieProvider
  * @param {Object} config The configuration object
  */
-Ext.state.CookieProvider = Ext.extend(Ext.state.Provider, {
-    
-    constructor : function(config){
-        Ext.state.CookieProvider.superclass.constructor.call(this);
-        this.path = "/";
-        this.expires = new Date(new Date().getTime()+(1000*60*60*24*7)); //7 days
-        this.domain = null;
-        this.secure = false;
-        Ext.apply(this, config);
-        this.state = this.readCookies();
-    },
-    
+Ext.state.CookieProvider = function(config){
+    Ext.state.CookieProvider.superclass.constructor.call(this);
+    this.path = "/";
+    this.expires = new Date(new Date().getTime()+(1000*60*60*24*7)); //7 days
+    this.domain = null;
+    this.secure = false;
+    Ext.apply(this, config);
+    this.state = this.readCookies();
+};
+
+Ext.extend(Ext.state.CookieProvider, Ext.state.Provider, {
     // private
     set : function(name, value){
         if(typeof value == "undefined" || value === null){
@@ -269,15 +243,13 @@ Ext.state.CookieProvider = Ext.extend(Ext.state.Provider, {
 
     // private
     readCookies : function(){
-        var cookies = {},
-            c = document.cookie + ";",
-            re = /\s?(.*?)=(.*?);/g,
-    	    matches,
-            name,
-            value;
+        var cookies = {};
+        var c = document.cookie + ";";
+        var re = /\s?(.*?)=(.*?);/g;
+    	var matches;
     	while((matches = re.exec(c)) != null){
-            name = matches[1];
-            value = matches[2];
+            var name = matches[1];
+            var value = matches[2];
             if(name && name.substring(0,3) == "ys-"){
                 cookies[name.substr(3)] = this.decodeValue(value);
             }

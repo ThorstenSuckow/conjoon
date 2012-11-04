@@ -86,15 +86,7 @@ com.conjoon.util.Json = function() {
                     };
                 }
             } else {
-
-                if (!Ext.isObject(error)) {
-                    return {
-                        message   : error,
-                        code      :  -1,
-                        level     : 'critical',
-                        title     : com.conjoon.Gettext.gettext("Unknown Error")
-                    };
-                } else if (error.level == 'critical') {
+                if (error.level == 'critical') {
                     error.title = error.title || com.conjoon.Gettext.gettext("Unexpected Error");
                     error.message = '<b>'
                                     +com.conjoon.Gettext.gettext("An unexpected error occured. The server returned the following response:")

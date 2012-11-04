@@ -94,6 +94,7 @@
 
 .dijitOffScreen {
 	position: absolute;
+	visibility: hidden;
 	left: 50%;
 	top: -10000px;
 }

@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Tool
  * @subpackage Framework
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: View.php 24593 2012-01-05 20:35:02Z matthew $
+ * @version    $Id: View.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
@@ -28,7 +28,7 @@ require_once 'Zend/Tool/Project/Provider/Abstract.php';
 /**
  * @category   Zend
  * @package    Zend_Tool
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Tool_Project_Provider_View extends Zend_Tool_Project_Provider_Abstract
@@ -90,7 +90,7 @@ class Zend_Tool_Project_Provider_View extends Zend_Tool_Project_Provider_Abstrac
      * @param string $controllerName
      * @param string $actionNameOrSimpleName
      */
-    public function create($controllerName, $actionNameOrSimpleName, $module = null)
+    public function create($controllerName, $actionNameOrSimpleName)
     {
 
         if ($controllerName == '' || $actionNameOrSimpleName == '') {
@@ -100,7 +100,7 @@ class Zend_Tool_Project_Provider_View extends Zend_Tool_Project_Provider_Abstrac
 
         $profile = $this->_loadProfile();
 
-        $view = self::createResource($profile, $actionNameOrSimpleName, $controllerName, $module);
+        $view = self::createResource($profile, $actionNameOrSimpleName, $controllerName);
 
         if ($this->_registry->getRequest()->isPretend()) {
             $this->_registry->getResponse(

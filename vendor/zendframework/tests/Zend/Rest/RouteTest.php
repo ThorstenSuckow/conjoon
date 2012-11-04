@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Rest
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: RouteTest.php 24593 2012-01-05 20:35:02Z matthew $
+ * @version    $Id: RouteTest.php 24013 2011-05-04 21:19:12Z ralph $
  */
 
 /** Zend_Rest_Route */
@@ -38,7 +38,7 @@ if (!defined("PHPUnit_MAIN_METHOD")) {
  * @category   Zend
  * @package    Zend_Rest
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Rest
  */
@@ -89,7 +89,7 @@ class Zend_Rest_RouteTest extends PHPUnit_Framework_TestCase
         $route = new Zend_Rest_Route($this->_front);
         $this->assertEquals(2, $route->getVersion());
     }
-
+    
     public function test_getInstance_fromINIConfig()
     {
     	require_once('Zend/Config/Ini.php');
@@ -100,7 +100,7 @@ class Zend_Rest_RouteTest extends PHPUnit_Framework_TestCase
     	$route = $router->getRoute('rest');
     	$this->assertType('Zend_Rest_Route', $route);
     	$this->assertEquals('object', $route->getDefault('controller'));
-
+    	
     	$request = $this->_buildRequest('GET', '/mod/project');
     	$values = $this->_invokeRouteMatch($request, array(), $route);
     	$this->assertEquals('mod', $values['module']);
@@ -112,7 +112,7 @@ class Zend_Rest_RouteTest extends PHPUnit_Framework_TestCase
     	$this->assertEquals('mod', $values['module']);
     	$this->assertEquals('user', $values['controller']);
     	$this->assertEquals('post', $values['action']);
-
+    	
     	$request = $this->_buildRequest('GET', '/other');
     	$values = $this->_invokeRouteMatch($request, array(), $route);
     	$this->assertFalse($values);
@@ -184,7 +184,7 @@ class Zend_Rest_RouteTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(123456789, $values['changedSince']);
         $this->assertEquals('active', $values['status']);
     }
-
+    
     /**
      * @group ZF-10964
      */
@@ -226,7 +226,7 @@ class Zend_Rest_RouteTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('get', $values['action']);
         $this->assertEquals('zendframework', $values['id']);
     }
-
+    
     public function test_RESTfulApp_GET_project_byIdentifier_urlencoded()
     {
         $request = $this->_buildRequest('GET', '/project/zend+framework');
@@ -731,7 +731,7 @@ class Zend_Rest_RouteTest extends PHPUnit_Framework_TestCase
         $request = $this->_buildRequest('POST', '/mod/index');
         $config = array('mod'=>array('user'));
         $values = $this->_invokeRouteMatch($request, $config);
-
+    
         $this->assertFalse($values);
     }
 
@@ -740,7 +740,7 @@ class Zend_Rest_RouteTest extends PHPUnit_Framework_TestCase
         $request = $this->_buildRequest('POST', '/mod');
         $config = array('mod'=>array('user'));
         $values = $this->_invokeRouteMatch($request, $config);
-
+    
         $this->assertFalse($values);
     }
 
@@ -829,7 +829,7 @@ class Zend_Rest_RouteTest extends PHPUnit_Framework_TestCase
         $url = $route->assemble($params);
         $this->assertEquals('mod/user/index/foo/bar', $url);
     }
-
+    
     public function test_assemble_encode_param_values()
     {
         $route = new Zend_Rest_Route($this->_front, array(), array());
@@ -845,7 +845,7 @@ class Zend_Rest_RouteTest extends PHPUnit_Framework_TestCase
         $url = $route->assemble($params, false, false);
         $this->assertEquals('mod/user/index/foo/bar is n!ice', $url);
     }
-
+    
     /**
      * @group ZF-9823
      */

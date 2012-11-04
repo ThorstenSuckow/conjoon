@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Mail
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id$
  */
@@ -34,7 +34,7 @@ require_once 'Zend/Mail/Transport/File.php';
  * @category   Zend
  * @package    Zend_Mail
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Mail
  */
@@ -118,7 +118,7 @@ class Zend_Mail_FileTransportTest extends PHPUnit_Framework_TestCase
     public function testNotWritablePathFailure()
     {
         $transport = new Zend_Mail_Transport_File(array(
-            'callback' => array($this, 'directoryNotExisting')
+            'path' => $this->_tmpdir . '/not_existing/directory'
         ));
 
         $mail = $this->_prepareMail();
@@ -180,10 +180,5 @@ class Zend_Mail_FileTransportTest extends PHPUnit_Framework_TestCase
         $this->assertContains('oleg@example.com', $entry);
         // and default callback part
         $this->assertContains('ZendMail', $entry);
-    }
-
-    public function directoryNotExisting($transport)
-    {
-        return $this->_tmpdir . '/not_existing/directory';
     }
 }

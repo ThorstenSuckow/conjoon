@@ -16,7 +16,7 @@
 /**
  * Cleans up session and finishes the installation wizard.
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 
 $_SESSION = array();

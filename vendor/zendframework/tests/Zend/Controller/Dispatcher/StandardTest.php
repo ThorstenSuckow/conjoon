@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: StandardTest.php 24861 2012-06-01 23:40:13Z adamlundrigan $
+ * @version    $Id: StandardTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_Controller_Dispatcher_StandardTest::main() if this source file is executed directly.
@@ -36,7 +36,7 @@ require_once 'Zend/Controller/Response/Cli.php';
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Controller
  * @group      Zend_Controller_Dispatcher
@@ -75,15 +75,6 @@ class Zend_Controller_Dispatcher_StandardTest extends PHPUnit_Framework_TestCase
     public function tearDown()
     {
         unset($this->_dispatcher);
-    }
-
-    /**
-     * @group ZF-9800
-     */
-    public function testFormatModuleName()
-    {
-        $this->assertEquals('Test', $this->_dispatcher->formatModuleName('test'));
-        $this->assertEquals('TestFoo', $this->_dispatcher->formatModuleName('test-foo'));
     }
 
     public function testFormatControllerName()
@@ -480,7 +471,7 @@ class Zend_Controller_Dispatcher_StandardTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @group ZF-3034
+     * @see ZF-3034
      */
     public function testIsValidModuleShouldNormalizeModuleName()
     {
@@ -542,42 +533,6 @@ class Zend_Controller_Dispatcher_StandardTest extends PHPUnit_Framework_TestCase
         $test = $this->_dispatcher->loadClass($class);
         $this->assertEquals('Bar_IndexController', $test);
         $this->assertTrue(class_exists($test));
-    }
-
-    /**
-     * @group ZF-9800
-     */
-    public function testLoadClassLoadsControllerInSpecifiedModuleWithHyphenatedModuleName()
-    {
-        $front = Zend_Controller_Front::getInstance();
-        $front->addModuleDirectory(dirname(__FILE__) . '/../_files/modules');
-        $dispatcher = $front->getDispatcher();
-
-        $request = new Zend_Controller_Request_Simple();
-        $request->setControllerName('foo')
-                ->setModuleName('baz-bat');
-        $class = $dispatcher->getControllerClass($request);
-        $this->assertEquals('FooController', $class);
-        $test = $dispatcher->loadClass($class);
-        $this->assertEquals('BazBat_FooController', $test);
-        $this->assertTrue(class_exists($test));
-    }
-
-    /**
-     * @group ZF-9800
-     */
-    public function testDispatcherCanDispatchControllersFromModuleWithHyphenatedName()
-    {
-        $front = Zend_Controller_Front::getInstance();
-        $front->addModuleDirectory(dirname(__FILE__) . '/../_files/modules');
-        $dispatcher = $front->getDispatcher();
-
-        $request = new Zend_Controller_Request_Simple();
-        $request->setModuleName('baz-bat')->setControllerName('foo');
-        $response = new Zend_Controller_Response_Cli();
-        $dispatcher->dispatch($request, $response);
-        $body = $dispatcher->getResponse()->getBody();
-        $this->assertContains("BazBat_FooController::indexAction() called", $body, $body);
     }
 
     public function testLoadClassLoadsControllerInDefaultModuleWithModulePrefixWhenRequested()

@@ -24,7 +24,7 @@
  *
  * @package Conjoon_Controller
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 class Conjoon_Controller_DispatchHelper {
 

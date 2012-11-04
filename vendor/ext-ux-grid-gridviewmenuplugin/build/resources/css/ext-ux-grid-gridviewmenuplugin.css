@@ -1,1 +1,12 @@
-.ext-ux-grid-gridviewmenuplugin-menuBtn.x-grid3-hd-btn{display:block;}
+/*
+ * Ext.ux.grid.GridViewMenuPlugin
+ * Copyright(c) 2008-2010, Thorsten Suckow-Homberg <ts@siteartwork.de>.
+ * 
+ * This code is licensed under GNU LESSER GENERAL PUBLIC LICENSE.
+ * 
+ * This project is released as a sub project of conjoon <http://www.conjoon.org>
+ */
+
+.ext-ux-grid-gridviewmenuplugin-menuBtn.x-grid3-hd-btn {
+    display:block;
+}

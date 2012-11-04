@@ -6,13 +6,7 @@
     <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
 </head>
 <body  onload="prettyPrint();">
-    <pre class="prettyprint lang-js">/*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
- */
-<div id="cls-Ext.form.ComboBox"></div>/**
+    <pre class="prettyprint lang-js"><div id="cls-Ext.form.ComboBox"></div>/**
  * @class Ext.form.ComboBox
  * @extends Ext.form.TriggerField
  * <p>A combobox control with support for autocomplete, remote-loading, paging and many other features.</p>
@@ -154,11 +148,16 @@ Ext.form.ComboBox = Ext.extend(Ext.form.TriggerField, {
      * @cfg {String} hiddenName If specified, a hidden form field with this name is dynamically generated to store the
      * field's data value (defaults to the underlying DOM element's name). Required for the combo's value to automatically
      * post during a form submission.  See also {@link #valueField}.
+     * <p><b>Note</b>: the hidden field's id will also default to this name if {@link #hiddenId} is not specified.
+     * The ComboBox {@link Ext.Component#id id} and the <tt>{@link #hiddenId}</tt> <b>should be different</b>, since
+     * no two DOM nodes should share the same id.  So, if the ComboBox <tt>{@link Ext.form.Field#name name}</tt> and
+     * <tt>hiddenName</tt> are the same, you should specify a unique <tt>{@link #hiddenId}</tt>.</p>
      */
     <div id="cfg-Ext.form.ComboBox-hiddenId"></div>/**
      * @cfg {String} hiddenId If <tt>{@link #hiddenName}</tt> is specified, <tt>hiddenId</tt> can also be provided
-     * to give the hidden field a unique id.  The <tt>hiddenId</tt> and combo {@link Ext.Component#id id} should be 
-     * different, since no two DOM nodes should share the same id.
+     * to give the hidden field a unique id (defaults to the <tt>{@link #hiddenName}</tt>).  The <tt>hiddenId</tt>
+     * and combo {@link Ext.Component#id id} should be different, since no two DOM
+     * nodes should share the same id.
      */
     <div id="cfg-Ext.form.ComboBox-hiddenValue"></div>/**
      * @cfg {String} hiddenValue Sets the initial value of the hidden field if {@link #hiddenName} is
@@ -447,7 +446,7 @@ var combo = new Ext.form.ComboBox({
                     d.push([value, o.text]);
                 }
                 this.store = new Ext.data.ArrayStore({
-                    idIndex: 0,
+                    'id': 0,
                     fields: ['value', 'text'],
                     data : d,
                     autoDestroy: true
@@ -494,7 +493,7 @@ var combo = new Ext.form.ComboBox({
         Ext.form.ComboBox.superclass.onRender.call(this, ct, position);
         if(this.hiddenName){
             this.hiddenField = this.el.insertSibling({tag:'input', type:'hidden', name: this.hiddenName,
-                    id: (this.hiddenId || Ext.id())}, 'before', true);
+                    id: (this.hiddenId||this.hiddenName)}, 'before', true);
 
         }
         if(Ext.isGecko){
@@ -517,38 +516,26 @@ var combo = new Ext.form.ComboBox({
         }
     },
 
-    getParentZIndex : function(){
-        var zindex;
-        if (this.ownerCt){
-            this.findParentBy(function(ct){
-                zindex = parseInt(ct.getPositionEl().getStyle('z-index'), 10);
-                return !!zindex;
-            });
-        }
-        return zindex;
-    },
-    
-    getZIndex : function(listParent){
-        listParent = listParent || Ext.getDom(this.getListParent() || Ext.getBody());
-        var zindex = parseInt(Ext.fly(listParent).getStyle('z-index'), 10);
-        if(!zindex){
-            zindex = this.getParentZIndex();
-        }
-        return (zindex || 12000) + 5;
-    },
-
     // private
     initList : function(){
         if(!this.list){
             var cls = 'x-combo-list',
-                listParent = Ext.getDom(this.getListParent() || Ext.getBody());
+                listParent = Ext.getDom(this.getListParent() || Ext.getBody()),
+                zindex = parseInt(Ext.fly(listParent).getStyle('z-index') ,10);
+
+            if (this.ownerCt && !zindex){
+                this.findParentBy(function(ct){
+                    zindex = parseInt(ct.getPositionEl().getStyle('z-index'), 10);
+                    return !!zindex;
+                });
+            }
 
             this.list = new Ext.Layer({
                 parentEl: listParent,
                 shadow: this.shadow,
                 cls: [cls, this.listClass].join(' '),
                 constrain:false,
-                zindex: this.getZIndex(listParent)
+                zindex: (zindex || 12000) + 5
             });
 
             var lw = this.listWidth || Math.max(this.wrap.getWidth(), this.minListWidth);
@@ -740,33 +727,17 @@ var menu = new Ext.menu.Menu({
     },
 
     reset : function(){
+        Ext.form.ComboBox.superclass.reset.call(this);
         if(this.clearFilterOnReset && this.mode == 'local'){
             this.store.clearFilter();
         }
-        Ext.form.ComboBox.superclass.reset.call(this);
     },
 
     // private
     initEvents : function(){
         Ext.form.ComboBox.superclass.initEvents.call(this);
 
-        <div id="prop-Ext.form.ComboBox-keyNav"></div>/**
-         * @property keyNav
-         * @type Ext.KeyNav
-         * <p>A {@link Ext.KeyNav KeyNav} object which handles navigation keys for this ComboBox. This performs actions
-         * based on keystrokes typed when the input field is focused.</p>
-         * <p><b>After the ComboBox has been rendered</b>, you may override existing navigation key functionality,
-         * or add your own based upon key names as specified in the {@link Ext.KeyNav KeyNav} class.</p>
-         * <p>The function is executed in the scope (<code>this</code> reference of the ComboBox. Example:</p><pre><code>
-myCombo.keyNav.esc = function(e) {  // Override ESC handling function
-    this.collapse();                // Standard behaviour of Ext's ComboBox.
-    this.setValue(this.startValue); // We reset to starting value on ESC
-};
-myCombo.keyNav.tab = function() {   // Override TAB handling function
-    this.onViewClick(false);        // Select the currently highlighted row
-};
-</code></pre>
-         */
+
         this.keyNav = new Ext.KeyNav(this.el, {
             "up" : function(e){
                 this.inKeyMode = true;
@@ -791,11 +762,7 @@ myCombo.keyNav.tab = function() {   // Override TAB handling function
             },
 
             "tab" : function(e){
-                if (this.forceSelection === true) {
-                    this.collapse();
-                } else {
-                    this.onViewClick(false);
-                }
+                this.collapse();
                 return true;
             },
 
@@ -856,7 +823,7 @@ myCombo.keyNav.tab = function() {   // Override TAB handling function
     // private
     onResize : function(w, h){
         Ext.form.ComboBox.superclass.onResize.apply(this, arguments);
-        if(!isNaN(w) && this.isVisible() && this.list){
+        if(this.isVisible() && this.list){
             this.doResize(w);
         }else{
             this.bufferSize = w;
@@ -943,16 +910,11 @@ myCombo.keyNav.tab = function() {   // Override TAB handling function
     },
 
     // private
-    assertValue : function(){
-        var val = this.getRawValue(),
-            rec;
+    assertValue  : function(){
 
-        if(this.valueField && Ext.isDefined(this.value)){
-            rec = this.findRecord(this.valueField, this.value);
-        }
-        if(!rec || rec.get(this.displayField) != val){
+        var val = this.getRawValue(),
             rec = this.findRecord(this.displayField, val);
-        }
+
         if(!rec && this.forceSelection){
             if(val.length > 0 && val != this.emptyText){
                 this.el.dom.value = Ext.value(this.lastSelectionText, '');
@@ -961,17 +923,12 @@ myCombo.keyNav.tab = function() {   // Override TAB handling function
                 this.clearValue();
             }
         }else{
-            if(rec && this.valueField){
-                // onSelect may have already set the value and by doing so
-                // set the display field properly.  Let's not wipe out the
-                // valueField here by just sending the displayField.
-                if (this.value == val){
-                    return;
-                }
+            if(rec){
                 val = rec.get(this.valueField || this.displayField);
             }
             this.setValue(val);
         }
+
     },
 
     // private
@@ -1257,13 +1214,13 @@ myCombo.keyNav.tab = function() {   // Override TAB handling function
 
     // private
     getParams : function(q){
-        var params = {},
-            paramNames = this.store.paramNames;
+        var p = {};
+        //p[this.queryParam] = q;
         if(this.pageSize){
-            params[paramNames.start] = 0;
-            params[paramNames.limit] = this.pageSize;
+            p.start = 0;
+            p.limit = this.pageSize;
         }
-        return params;
+        return p;
     },
 
     <div id="method-Ext.form.ComboBox-collapse"></div>/**
@@ -1281,7 +1238,7 @@ myCombo.keyNav.tab = function() {   // Override TAB handling function
 
     // private
     collapseIf : function(e){
-        if(!this.isDestroyed && !e.within(this.wrap) && !e.within(this.list)){
+        if(!e.within(this.wrap) && !e.within(this.list)){
             this.collapse();
         }
     },
@@ -1293,25 +1250,11 @@ myCombo.keyNav.tab = function() {   // Override TAB handling function
         if(this.isExpanded() || !this.hasFocus){
             return;
         }
-
-        if(this.title || this.pageSize){
-            this.assetHeight = 0;
-            if(this.title){
-                this.assetHeight += this.header.getHeight();
-            }
-            if(this.pageSize){
-                this.assetHeight += this.footer.getHeight();
-            }
-        }
-
         if(this.bufferSize){
             this.doResize(this.bufferSize);
             delete this.bufferSize;
         }
         this.list.alignTo.apply(this.list, [this.el].concat(this.listAlign));
-
-        // zindex can change, re-check it and set it if necessary
-        this.list.setZIndex(this.getZIndex());
         this.list.show();
         if(Ext.isGecko2){
             this.innerList.setOverflow('auto'); // necessary for FF 2.0/Mac

@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
+ * licensing@extjs.com
+ * http://www.extjs.com/license
  */
 /**
  * @class Ext.TabPanel
@@ -559,7 +559,7 @@ new Ext.TabPanel({
      * <li><b>cls</b> : String<div class="sub-desc">The CSS class name</div></li>
      * <li><b>iconCls</b> : String<div class="sub-desc">A CSS class to provide appearance for an icon.</div></li>
      * </ul></div>
-     * @param {Ext.BoxComponent} item The {@link Ext.BoxComponent BoxComponent} for which to create a selector element in the tab strip.
+     * @param {BoxComponent} item The {@link Ext.BoxComponent BoxComponent} for which to create a selector element in the tab strip.
      * @return {Object} An object hash containing the properties required to render the selector element.
      */
     getTemplateArgs : function(item) {
@@ -588,6 +588,9 @@ new Ext.TabPanel({
         if(this.rendered){
             var items = this.items;
             this.initTab(c, items.indexOf(c));
+            if(items.getCount() == 1 && !this.collapsed){
+                this.syncSize();
+            }
             this.delegateUpdates();
         }
     },
@@ -740,14 +743,13 @@ new Ext.TabPanel({
 
     // private
     delegateUpdates : function(){
-        var rendered = this.rendered;
         if(this.suspendUpdates){
             return;
         }
-        if(this.resizeTabs && rendered){
+        if(this.resizeTabs && this.rendered){
             this.autoSizeTabs();
         }
-        if(this.enableTabScroll && rendered){
+        if(this.enableTabScroll && this.rendered){
             this.autoScrollTabs();
         }
     },
@@ -815,15 +817,13 @@ new Ext.TabPanel({
                     Ext.fly(oldEl).removeClass('x-tab-strip-active');
                 }
             }
-            this.activeTab = item;
             if(item){
                 var el = this.getTabEl(item);
                 Ext.fly(el).addClass('x-tab-strip-active');
+                this.activeTab = item;
                 this.stack.add(item);
 
                 this.layout.setActiveItem(item);
-                // Need to do this here, since setting the active tab slightly changes the size
-                this.delegateUpdates();
                 if(this.scrolling){
                     this.scrollToTab(item, this.animScroll);
                 }
@@ -863,11 +863,10 @@ new Ext.TabPanel({
             pos = this.getScrollPos(),
             l = this.edge.getOffsetsTo(this.stripWrap)[0] + pos;
 
-        if(!this.enableTabScroll || cw < 20){ // 20 to prevent display:none issues
+        if(!this.enableTabScroll || count < 1 || cw < 20){ // 20 to prevent display:none issues
             return;
         }
-        if(count == 0 || l <= tw){
-            // ensure the width is set if there's no tabs
+        if(l <= tw){
             wd.scrollLeft = 0;
             wrap.setWidth(tw);
             if(this.scrolling){

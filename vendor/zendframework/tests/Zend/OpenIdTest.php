@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_OpenId
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: OpenIdTest.php 24593 2012-01-05 20:35:02Z matthew $
+ * @version    $Id: OpenIdTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
@@ -35,7 +35,7 @@ require_once 'Zend/OpenId/ResponseHelper.php';
  * @category   Zend
  * @package    Zend_OpenId
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_OpenId
  */
@@ -342,7 +342,7 @@ class Zend_OpenIdTest extends PHPUnit_Framework_TestCase
 
         $url = 'http://example.com/test.php?Foo=Bar#Baz';
         $this->assertTrue( Zend_OpenId::normalizeUrl($url) );
-        $this->assertSame( 'http://example.com/test.php?Foo=Bar#Baz', $url );
+        $this->assertSame( 'http://example.com/test.php?Foo=Bar', $url );
     }
 
     /**

@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Ldap
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: OfflineTest.php 24593 2012-01-05 20:35:02Z matthew $
+ * @version    $Id: OfflineTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
@@ -33,7 +33,7 @@ require_once 'Zend/Ldap/Node.php';
  * @category   Zend
  * @package    Zend_Ldap
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Ldap
  * @group      Zend_Ldap_Node
@@ -594,74 +594,5 @@ class Zend_Ldap_Node_OfflineTest extends Zend_Ldap_TestCase
         $node->test=array('value1', 'value2', 'value3', 'value3');
         $node->removeFromAttribute('test', array('value1', 'value3'));
         $this->assertEquals(array('value2'), $node->test);
-    }
-
-    /**
-     * ZF-11611
-     */
-    public function testRdnAttributesHandleMultiValuedAttribute()
-    {
-        $data = array(
-        	'dn' => 'cn=funkygroup,ou=Groupes,dc=domain,dc=local',
-        	'objectClass' => array(
-        		'groupOfNames',
-        		'top',
-        	),
-        	'cn' => array(
-        		'The Funkygroup',
-        		'funkygroup',
-        	),
-        	'member' => 'uid=john-doe,ou=Users,dc=domain,dc=local',
-        );
-
-        $node = Zend_Ldap_Node::fromArray($data, true);
-        $changedData = $node->getChangedData();
-        $this->assertTrue(empty($changedData));
-    }
-
-	/**
-     * ZF-11611
-     */
-    public function testRdnAttributesHandleMultiValuedAttribute2()
-    {
-        $data = array(
-        	'dn' => 'cn=funkygroup,ou=Groupes,dc=domain,dc=local',
-        	'objectClass' => array(
-        		'groupOfNames',
-        		'top',
-        	),
-        	'member' => 'uid=john-doe,ou=Users,dc=domain,dc=local',
-        );
-
-        $node = Zend_Ldap_Node::fromArray($data, true);
-        $cn = $node->getAttribute('cn');
-        $this->assertEquals(array(
-            0 => 'funkygroup'
-        ), $cn);
-    }
-
-	/**
-     * ZF-11611
-     */
-    public function testRdnAttributesHandleMultiValuedAttribute3()
-    {
-        $data = array(
-        	'dn' => 'cn=funkygroup,ou=Groupes,dc=domain,dc=local',
-        	'objectClass' => array(
-        		'groupOfNames',
-        		'top',
-        	),
-        	'cn' => array(
-        	    0 => 'The Funkygroup'
-        	),
-        	'member' => 'uid=john-doe,ou=Users,dc=domain,dc=local',
-        );
-
-        $node = Zend_Ldap_Node::fromArray($data, true);
-        $cn = $node->getAttribute('cn');
-        $this->assertEquals(array(
-           0 => 'The Funkygroup',
-           1 => 'funkygroup',
-        ), $cn);
     }
 }

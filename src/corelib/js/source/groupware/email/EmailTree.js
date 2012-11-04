@@ -97,7 +97,6 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
 
         this.root = new Ext.tree.AsyncTreeNode({
             id            : 'root',
-            idForPath     : 'root',
             iconCls       : 'com-conjoon-groupware-email-EmailTree-rootIcon',
             draggable     : false,
             isTarget      : false,
@@ -113,12 +112,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
         });
 
         var store = com.conjoon.groupware.email.AccountStore.getInstance();
-
-        Ext.ux.util.MessageBus.subscribe(
-            'com.conjoon.groupware.email.account.added',
-            this._onAccountAdded,
-            this
-        );
+        this.mon(store, 'add', this._onAccountStoreAdd, this);
 
         /**
          * The loader responsible for loading nodes into the tree.
@@ -343,7 +337,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
         node.disable();
 
         if (!this.editingNodesStorage) {
-            this.editingNodesStorage = {};
+            this.editingNodesStorage = new Array();
         } else if (this.editingNodesStorage[nodeConfig.child.id]) {
             throw("com.conjoon.groupware.email.EmailTree::saveNode - cannot "+
                   "execute request since the editing node was already in the queue.")
@@ -365,12 +359,11 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
             case 'move':
                 url    = './groupware/email.folder/move.folder/format/json';
                 params = {
-                    parentId   : nodeConfig.newParent,
-                    parentPath : nodeConfig.newParentPath,
-                    id         : nodeConfig.child.id,
-                    path       : node.attributes.tmpPath
+                    //newParentId : nodeConfig.newParent,
+                    parentId : nodeConfig.newParent,
+                    id       : nodeConfig.child.id
+                    //name        : nodeConfig.child.value
                 };
-                delete node.attributes.tmpPath;
                 successFn = this.onNodeMoveSuccess;
             break;
 
@@ -379,8 +372,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
                 params = {
                     parentId : nodeConfig.parent,
                     id       : nodeConfig.child.id,
-                    name     : nodeConfig.child.value,
-                    path     : node.getPath('idForPath')
+                    name     : nodeConfig.child.value
                 };
                 successFn = this.onNodeEditSuccess;
             break;
@@ -392,8 +384,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
                     // this property is actually needed if we need to
                     // restore a previously state, so do not remove it!
                     id       : nodeConfig.child.id,
-                    name     : nodeConfig.child.value,
-                    path     : node.getPath('idForPath')
+                    name     : nodeConfig.child.value
                 };
                 successFn = this.onNodeAddSuccess;
             break;
@@ -548,12 +539,6 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
             this.fireEvent("nodedrop", dropEvent);
             return false;
         }
-
-        // temp store the path
-        var node = dropEvent.data.node;
-        node.attributes.tmpPath = node.getPath('idForPath');
-
-        return true;
     },
 
     /**
@@ -576,13 +561,6 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
 
         if (source instanceof Ext.ux.grid.livegrid.DragZone) {
             return source.isDropValid === true;
-        }
-
-        var sourcePath = dragOverEvent.data.node.getPath('idForPath');
-        var targetPath = dragOverEvent.target.getPath('idForPath');
-
-        if (sourcePath.split('/')[2] != targetPath.split('/')[2]) {
-            return false;
         }
 
         return true;
@@ -653,10 +631,9 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
         }
 
         var nodeConfig = {
-            mode          : 'move',
-            parent        : oldParent.id,
-            newParent     : newParent.id,
-            newParentPath : newParent.getPath('idForPath'),
+            mode      : 'move',
+            parent    : oldParent.id,
+            newParent : newParent.id,
             child     : {
                 id         : node.id,
                 value      : node.text,
@@ -675,7 +652,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
      * reverted. As soon as the editor hides, the state for the failed component
      * will be undone.
      */
-    taskQueue : {},
+    taskQueue : new Array(),
     onRequestFailure : function(response, parameters)
     {
         if (this.nodeEditor.isVisible() && !this.taskQueue[parameters.params.id]) {
@@ -739,9 +716,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
             return;
         }
 
-        var values = json.getResponseValues(response.responseText);
-
-        this.resetState(parameters.params.id, false, values.folder);
+        this.resetState(parameters.params.id, false);
     },
 
     /**
@@ -761,9 +736,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
             return;
         }
 
-        var values = json.getResponseValues(response.responseText);
-
-        this.resetState(parameters.params.id, false, values.folder);
+        this.resetState(parameters.params.id, false);
     },
 
     /**
@@ -786,7 +759,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
 
         var values = json.getResponseValues(responseText);
 
-        this.resetState(parameters.params.id, false, values.folder);
+        this.resetState(parameters.params.id, false, values.id);
     },
 
     /**
@@ -814,14 +787,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
                     parentNode.resumeEvents();
                     this.resumeEvents();
                 } else {
-                    if (Ext.isObject(newId)) {
-                        this.changeNodeAttributes(
-                            node, nodeId, newId.id,
-                            newId.idForPath,
-                            newId.pendingCount,
-                            newId.isSelectable
-                        );
-                    }
+
                 }
             break;
 
@@ -831,15 +797,6 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
                     node.suspendEvents();
                     node.setText(this.editingNodesStorage[nodeId].startValue);
                     node.resumeEvents();
-                } else {
-                    if (Ext.isObject(newId)) {
-                        this.changeNodeAttributes(
-                            node, nodeId, newId.id,
-                            newId.idForPath,
-                            newId.pendingCount,
-                            newId.isSelectable
-                        );
-                    }
                 }
             break;
 
@@ -853,14 +810,15 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
                     parentNode.resumeEvents();
                     this.resumeEvents();
                 } else {
-                    if (Ext.isObject(newId)) {
-                        this.changeNodeAttributes(
-                            node, nodeId, newId.id,
-                            newId.idForPath,
-                            newId.pendingCount,
-                            newId.isSelectable
-                        );
-                    }
+                    Ext.fly(node.getUI().elNode).set({'ext:tree-node-id' : newId});
+                    Ext.fly(node.getUI().elNode).set({'id'               : newId});
+                    node.id = newId;
+                    var tmp = this.nodeHash[nodeId];
+                    this.nodeHash[newId] = tmp;
+                    delete this.nodeHash[nodeId];
+                    this.pendingItemStore.add(new com.conjoon.groupware.email.PendingNodeItemRecord({
+                        pending : 0
+                    }, newId));
                 }
             break;
 
@@ -869,48 +827,6 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
 
         delete this.editingNodesStorage[nodeId];
 
-    },
-
-    /**
-     * Changes all node attributes based on the specified arguments.
-     * Does also re-create an entry in pendingItemStore.
-     *
-     * @param {Ext.tree.Node} node
-     * @param {String} oldId
-     * @param {String} newId
-     * @param {String} idForPath
-     * @param {Number} pendingCount
-     * @param {Number} isSelectable
-     */
-    changeNodeAttributes : function(
-        node, oldId, newId, idForPath, pendingCount, isSelectable
-    )
-    {
-        if (oldId != newId) {
-            Ext.fly(node.getUI().elNode).set({'ext:tree-node-id' : newId});
-            Ext.fly(node.getUI().elNode).set({'id'               : newId});
-            node.id = newId;
-            node.attributes.idForPath    = idForPath;
-            node.attributes.isSelectable = isSelectable;
-
-            node.getUI().setSelectable(isSelectable);
-
-            var tmp = this.nodeHash[oldId];
-            this.nodeHash[newId] = tmp;
-            delete this.nodeHash[oldId];
-
-            var oldRec = this.pendingItemStore.getById(oldId);
-
-            if (oldRec) {
-                this.pendingItemStore.remove(oldRec);
-            }
-
-            this.pendingItemStore.add(
-                new com.conjoon.groupware.email.PendingNodeItemRecord({
-                    pending : pendingCount
-                }, newId)
-            );
-        }
     },
 
     /**
@@ -962,14 +878,14 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
             pendingCount  : 0,
             childCount    : 0,
             allowChildren : true,
-            isLocked      : false,
+            isLocked        : false,
             type          : 'folder',
             iconCls       : 'com-conjoon-groupware-email-EmailTree-folderIcon',
             uiProvider    : com.conjoon.groupware.email.PendingNodeUI
         }));
 
         if (!this.appendingNodesStorage) {
-            this.appendingNodesStorage = {};
+            this.appendingNodesStorage = new Array();
         }
 
         node.select();
@@ -1321,60 +1237,21 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
     },
 
     /**
-     * Listener for the com.conjoon.groupware.email.account.added message.
      * Tries to reload this tree if no email accounts where configured
-     * on initial load. As soon as accounts are available, the panel will
+     * on initial load. Ass soon as accounts are available, the panel will
      * try to build the tree.
-     *
-     * @param {String} subject
-     * @param {Object} message
      */
-    _onAccountAdded : function(subject, message)
+    _onAccountStoreAdd : function()
     {
-        if (!this.rendered) {
-            return;
-        }
-
-        if (this.root.firstChild == null) {
+        if (this.root.firstChild == null && this.rendered) {
             this.root.reload();
-        } else {
-
-            var childs  = this.root.childNodes;
-            var folder  = message.rootFolder;
-            var account = message.account;
-
-            // for now, only IMAP will be considered.
-            // do a check first and throw an exception, this can be removed
-            // later on when full support for multiple folder hierarchies is given
-            for (var i = 0, len = childs.length; i < len; i++) {
-                if (childs[i].id == folder.id) {
-                    // assume multiple accounts in one folder
-                    return;
-                }
-            }
-
-            // check first if there are already IMAP folders, but no
-            // accounts_root
-            if (folder.type == 'accounts_root') {
-                var node = this.treeLoader.createNode(folder);
-                this.root.appendChild(node);
-                return;
-            }
-
-            // for now, only IMAP will be considered.
-            if (account.get('protocol') === 'IMAP') {
-                // append a new node!
-                var node = this.treeLoader.createNode(folder);
-                this.root.appendChild(node);
-                return;
-            }
-
-            // this should not happen
-            throw(
-                "com.conjoon.groupware.email.EmailTree._onAccountAdd() - "
-                + "could not add folder for new account"
-            );
         }
+
+        com.conjoon.groupware.email.AccountStore.getInstance().un(
+            'add',
+            this._onAccountStoreAdd,
+            this
+        );
     }
 
 

@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_XmlRpc
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version $Id: ResponseTest.php 25033 2012-08-17 19:50:08Z matthew $
+ * @version $Id: ResponseTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 require_once 'Zend/XmlRpc/Response.php';
@@ -28,7 +28,7 @@ require_once 'Zend/XmlRpc/Response.php';
  * @category   Zend
  * @package    Zend_XmlRpc
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_XmlRpc
  */
@@ -252,26 +252,4 @@ EOD;
     {
         $this->_errorOccured = true;
     }
-
-    /**
-     * @group ZF-12293
-     */
-    public function testDoesNotAllowExternalEntities()
-    {
-        $payload = file_get_contents(dirname(__FILE__) . '/_files/ZF12293-response.xml');
-        $payload = sprintf($payload, 'file://' . realpath(dirname(__FILE__) . '/_files/ZF12293-payload.txt'));
-        $this->_response->loadXml($payload);
-        $value = $this->_response->getReturnValue();
-        $this->assertTrue(empty($value));
-        if (is_string($value)) {
-            $this->assertNotContains('Local file inclusion', $value);
-        }
-    }
-
-     public function testShouldDisallowsDoctypeInRequestXmlAndReturnFalseOnLoading()
-     {
-         $payload = file_get_contents(dirname(__FILE__) . '/_files/ZF12293-response.xml');
-         $payload = sprintf($payload, 'file://' . realpath(dirname(__FILE__) . '/_files/ZF12293-payload.txt'));
-         $this->assertFalse($this->_response->loadXml($payload));
-     }
 }

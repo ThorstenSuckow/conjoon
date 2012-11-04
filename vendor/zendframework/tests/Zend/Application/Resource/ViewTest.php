@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Application
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ViewTest.php 24593 2012-01-05 20:35:02Z matthew $
+ * @version    $Id: ViewTest.php 23992 2011-05-04 03:32:01Z ralph $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
@@ -35,7 +35,7 @@ require_once 'Zend/Application/Resource/View.php';
  * @category   Zend
  * @package    Zend_Application
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Application
  */
@@ -227,20 +227,6 @@ class Zend_Application_Resource_ViewTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('barbazoo', $view->bar);
     }
 
-    /**
-     * @group ZF-11579
-     */
-    public function testViewResourceDoesNotReinjectViewRenderer()
-    {
-        require_once dirname(__FILE__) . '/TestAsset/ViewRenderer.php';
-        $viewRenderer = new Zend_Application_Resource_TestAsset_ViewRenderer();
-        Zend_Controller_Action_HelperBroker::addHelper($viewRenderer);
-
-        $resource = new Zend_Application_Resource_View(array('encoding' => 'UTF-8'));
-        $view = $resource->init();
-
-        $this->assertSame($view, $viewRenderer->view);
-    }
 }
 
 

@@ -20,7 +20,7 @@ require_once 'Zend/Log.php';
 
 /**
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 class Conjoon_Log {
 

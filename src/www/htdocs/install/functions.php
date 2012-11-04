@@ -16,7 +16,7 @@
 /**
  * Utility methods for the conjoon installation process.
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 
 /**

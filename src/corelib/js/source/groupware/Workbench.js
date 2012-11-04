@@ -124,15 +124,7 @@ com.conjoon.groupware.Workbench = Ext.extend(Ext.Viewport, {
             document.body.appendChild(div);
             Ext.fly(div).on('mousedown', function() {
                 if (lastActiveElement) {
-                    try {
-                        lastActiveElement.focus();
-                    } catch (e) {
-                        // in FF, this might throw an error on some elements,
-                        // for example the HtmlFileChooserButton may throw that
-                        // setting focus from a none chrome context is forbidden
-                        // so we will silently ignore this
-                        // ignore
-                    }
+                    lastActiveElement.focus();
                 }
                 (function(){
                     if (!this._focusLayer) {

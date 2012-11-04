@@ -82,14 +82,12 @@ dojo.declare(
 
 	resize: function(){
 		// Resize is called when we are first made visible (it's called from startup()
-		// if we are initially visible). If this is the first time we've been made
+		// if we are initially visible).   If this is the first time we've been made
 		// visible then show our first child.
-		if(!this._hasBeenShown){
+		var selected = this.selectedChildWidget;
+		if(selected && !this._hasBeenShown){
 			this._hasBeenShown = true;
-			var selected = this.selectedChildWidget;
-			if(selected){
-				this._showChild(selected);
-			}
+			this._showChild(selected);
 		}
 		this.inherited(arguments);
 	},

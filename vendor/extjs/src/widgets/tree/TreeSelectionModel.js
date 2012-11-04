@@ -1,42 +1,41 @@
 /*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
+ * licensing@extjs.com
+ * http://www.extjs.com/license
  */
 /**
  * @class Ext.tree.DefaultSelectionModel
  * @extends Ext.util.Observable
  * The default single selection for a TreePanel.
  */
-Ext.tree.DefaultSelectionModel = Ext.extend(Ext.util.Observable, {
-    
-    constructor : function(config){
-        this.selNode = null;
+Ext.tree.DefaultSelectionModel = function(config){
+   this.selNode = null;
    
-        this.addEvents(
-            /**
-             * @event selectionchange
-             * Fires when the selected node changes
-             * @param {DefaultSelectionModel} this
-             * @param {TreeNode} node the new selection
-             */
-            'selectionchange',
+   this.addEvents(
+       /**
+        * @event selectionchange
+        * Fires when the selected node changes
+        * @param {DefaultSelectionModel} this
+        * @param {TreeNode} node the new selection
+        */
+       'selectionchange',
 
-            /**
-             * @event beforeselect
-             * Fires before the selected node changes, return false to cancel the change
-             * @param {DefaultSelectionModel} this
-             * @param {TreeNode} node the new selection
-             * @param {TreeNode} node the old selection
-             */
-            'beforeselect'
-        );
+       /**
+        * @event beforeselect
+        * Fires before the selected node changes, return false to cancel the change
+        * @param {DefaultSelectionModel} this
+        * @param {TreeNode} node the new selection
+        * @param {TreeNode} node the old selection
+        */
+       'beforeselect'
+   );
 
-        Ext.apply(this, config);
-        Ext.tree.DefaultSelectionModel.superclass.constructor.call(this);    
-    },
-    
+    Ext.apply(this, config);
+    Ext.tree.DefaultSelectionModel.superclass.constructor.call(this);
+};
+
+Ext.extend(Ext.tree.DefaultSelectionModel, Ext.util.Observable, {
     init : function(tree){
         this.tree = tree;
         tree.mon(tree.getTreeEl(), 'keydown', this.onKeyDown, this);
@@ -211,24 +210,23 @@ Ext.tree.DefaultSelectionModel = Ext.extend(Ext.util.Observable, {
  * @extends Ext.util.Observable
  * Multi selection for a TreePanel.
  */
-Ext.tree.MultiSelectionModel = Ext.extend(Ext.util.Observable, {
-    
-    constructor : function(config){
-        this.selNodes = [];
-        this.selMap = {};
-        this.addEvents(
-            /**
-             * @event selectionchange
-             * Fires when the selected nodes change
-             * @param {MultiSelectionModel} this
-             * @param {Array} nodes Array of the selected nodes
-             */
-            'selectionchange'
-        );
-        Ext.apply(this, config);
-        Ext.tree.MultiSelectionModel.superclass.constructor.call(this);    
-    },
-    
+Ext.tree.MultiSelectionModel = function(config){
+   this.selNodes = [];
+   this.selMap = {};
+   this.addEvents(
+       /**
+        * @event selectionchange
+        * Fires when the selected nodes change
+        * @param {MultiSelectionModel} this
+        * @param {Array} nodes Array of the selected nodes
+        */
+       'selectionchange'
+   );
+    Ext.apply(this, config);
+    Ext.tree.MultiSelectionModel.superclass.constructor.call(this);
+};
+
+Ext.extend(Ext.tree.MultiSelectionModel, Ext.util.Observable, {
     init : function(tree){
         this.tree = tree;
         tree.mon(tree.getTreeEl(), 'keydown', this.onKeyDown, this);
@@ -314,7 +312,7 @@ Ext.tree.MultiSelectionModel = Ext.extend(Ext.util.Observable, {
      * @return {Array}
      */
     getSelectedNodes : function(){
-        return this.selNodes.concat([]);
+        return this.selNodes;    
     },
 
     onKeyDown : Ext.tree.DefaultSelectionModel.prototype.onKeyDown,

@@ -16,7 +16,7 @@
 /**
  * Tests the path where the libs folder was moved to.
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 
 $LIBPATH = array();

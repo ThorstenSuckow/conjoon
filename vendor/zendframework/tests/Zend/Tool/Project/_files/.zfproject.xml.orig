@@ -3,6 +3,7 @@
   <projectDirectory>
     <projectProfileFile/>
     <applicationDirectory>
+      <apisDirectory enabled="false"/>
       <configsDirectory>
           <applicationConfigFile type="ini" />
       </configsDirectory>
@@ -13,7 +14,6 @@
       <layoutsDirectory enabled="false"/>
       <modelsDirectory/>
       <modulesDirectory enabled="false"/>
-      <servicesDirectory enabled="false"/>
       <viewsDirectory>
         <viewScriptsDirectory>
           <viewControllerScriptsDirectory forControllerName="index">

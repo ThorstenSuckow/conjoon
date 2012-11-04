@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
+ * licensing@extjs.com
+ * http://www.extjs.com/license
  */
 /**
  * Czech Translations
@@ -47,44 +47,27 @@ Date.monthNames = [
    "Prosinec"
 ];
 
-Date.shortMonthNames = {
-    "Leden"     : "Led",
-    "Únor"      : "Úno",
-    "Březen"    : "Bře",
-    "Duben"     : "Dub",
-    "Květen"    : "Kvě",
-    "Červen"    : "Čer",
-    "Červenec"  : "Čvc",
-    "Srpen"     : "Srp",
-    "Září"      : "Zář",
-    "Říjen"     : "Říj",
-    "Listopad"  : "Lis",
-    "Prosinec"  : "Pro"
-};
-
-
 Date.getShortMonthName = function(month) {
-  return Date.shortMonthNames[Date.monthNames[month]];
+  return Date.monthNames[month].substring(0, 3);
 };
 
 Date.monthNumbers = {
-   "Leden"      : 0,
-   "Únor"       : 1,
-   "Březen"     : 2,
-   "Duben"      : 3,
-   "Květen"     : 4,
-   "Červen"     : 5,
-   "Červenec"   : 6,
-   "Srpen"      : 7,
-   "Září"       : 8,
-   "Říjen"      : 9,
-   "Listopad"   : 10,
-   "Prosinec"   : 11
+  Jan : 0,
+  Feb : 1,
+  Mar : 2,
+  Apr : 3,
+  May : 4,
+  Jun : 5,
+  Jul : 6,
+  Aug : 7,
+  Sep : 8,
+  Oct : 9,
+  Nov : 10,
+  Dec : 11
 };
 
-
 Date.getMonthNumber = function(name) {
-  return Date.monthNumbers[name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase()];
+  return Date.monthNumbers[name.substring(0, 1).toUpperCase() + name.substring(1, 3).toLowerCase()];
 };
 
 Date.dayNames = [
@@ -178,8 +161,7 @@ if(Ext.form.DateField){
       maxText           : "Datum v tomto poli nesmí být novější než {0}",
       invalidText       : "{0} není platným datem - zkontrolujte zda-li je ve formátu {1}",
       format            : "d.m.Y",
-      altFormats        : "d/m/Y|d-m-y|d-m-Y|d/m|d-m|dm|dmy|dmY|d|Y-m-d",
-      startDay          : 1
+      altFormats        : "d/m/Y|d-m-y|d-m-Y|d/m|d-m|dm|dmy|dmY|d|Y-m-d"
    });
 }
 

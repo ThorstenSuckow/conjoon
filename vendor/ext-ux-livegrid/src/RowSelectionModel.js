@@ -1,12 +1,12 @@
 /**
  * Ext.ux.grid.livegrid.RowSelectionModel
- * Copyright (c) 2007-2012, http://www.siteartwork.de
+ * Copyright (c) 2007-2008, http://www.siteartwork.de
  *
  * Ext.ux.grid.livegrid.RowSelectionModel is licensed under the terms of the
  *                  GNU Open Source GPL 3.0
  * license.
  *
- * Commercial use is prohibited. Visit <http://ext-livegrid.com>
+ * Commercial use is prohibited. Visit <http://www.siteartwork.de/livegrid>
  * if you need to obtain a commercial license.
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -47,9 +47,6 @@ Ext.ux.grid.livegrid.RowSelectionModel = function(config) {
     });
 
     Ext.apply(this, config);
-
-    this.allSelected = false;
-    this.excludes    = [];
 
     this.pendingSelections = {};
 
@@ -301,11 +298,6 @@ Ext.extend(Ext.ux.grid.livegrid.RowSelectionModel, Ext.grid.RowSelectionModel, {
         }
 
         var r = index;
-
-        if (this.allSelected && !this.excludes[r.id]) {
-            return true;
-        }
-
         return (r && this.selections.key(r.id) ? true : false);
     },
 
@@ -325,10 +317,6 @@ Ext.extend(Ext.ux.grid.livegrid.RowSelectionModel, Ext.grid.RowSelectionModel, {
 
         if (!isSelected) {
             return;
-        }
-
-        if (this.allSelected) {
-            this.excludes[record.id] = true;
         }
 
         var store = this.grid.store;
@@ -382,9 +370,6 @@ Ext.extend(Ext.ux.grid.livegrid.RowSelectionModel, Ext.grid.RowSelectionModel, {
         delete this.pendingSelections[index];
 
         if (r) {
-            if (this.allSelected) {
-                this.excludes[r.id] = true;
-            }
             this.selections.remove(r);
         }
         if(!preventViewNotify){
@@ -420,7 +405,6 @@ Ext.extend(Ext.ux.grid.livegrid.RowSelectionModel, Ext.grid.RowSelectionModel, {
             if (r) {
                 this.selections.add(r);
                 delete this.pendingSelections[index];
-                delete this.excludes[r.id];
             } else {
                 this.pendingSelections[index] = true;
             }
@@ -573,8 +557,6 @@ Ext.extend(Ext.ux.grid.livegrid.RowSelectionModel, Ext.grid.RowSelectionModel, {
             this.pendingSelections    = {};
         }
         this.last = false;
-        this.allSelected = false;
-        this.excludes = [];
     },
 
 
@@ -606,42 +588,7 @@ Ext.extend(Ext.ux.grid.livegrid.RowSelectionModel, Ext.grid.RowSelectionModel, {
             }
         }
 
-    },
-
-    /**
-     * Returns true if all rows available are selected.
-     */
-    isAllSelected : function()
-    {
-        return this.allSelected;
-    },
-
-    /**
-     * Selects all rows if the selection model
-     * {@link Ext.grid.AbstractSelectionModel#isLocked is not locked}.
-     */
-    selectAll : function()
-    {
-        if(this.isLocked()){
-            return;
-        }
-
-        this.excludes = [];
-        this.selectRange(0, this.grid.store.getTotalCount(), false);
-        this.allSelected = true;
-    },
-
-    /**
-     * Returns an object with all records currently being excluded,
-     * whereas the key is the id of the record, and it's value is
-     * set to boolean true.
-     */
-    getExcludes : function()
-    {
-        return this.excludes;
     }
-
-
 
 });
 

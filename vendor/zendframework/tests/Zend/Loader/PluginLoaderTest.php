@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Loader
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: PluginLoaderTest.php 24877 2012-06-04 14:04:53Z adamlundrigan $
+ * @version    $Id: PluginLoaderTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_Loader_PluginLoaderTest::main() if this source file is executed directly.
@@ -33,7 +33,7 @@ require_once 'Zend/Loader/PluginLoader.php';
  * @category   Zend
  * @package    Zend_Loader
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Loader
  */
@@ -509,25 +509,6 @@ class Zend_Loader_PluginLoaderTest extends PHPUnit_Framework_TestCase
             $this->assertContains('Prefix My_Namespace_ / Path ZF9721', $e->getMessage());
         }
         $this->assertEquals(1, count($loader->getPaths('My_Namespace_')));
-    }
-
-    /**
-     * @group ZF-11330
-     */
-    public function testLoadClassesWithBackslashInName()
-    {
-        if (version_compare(PHP_VERSION, '5.3.0', '<')) {
-            $this->markTestSkipped(__CLASS__ . '::' . __METHOD__ . ' requires PHP 5.3.0 or greater');
-            return;
-        }
-        $loader = new Zend_Loader_PluginLoader(array());
-        $loader->addPrefixPath('Zfns\\', dirname(__FILE__) . '/_files/Zfns');
-        try {
-            $className = $loader->load('Foo\\Bar');
-        } catch (Exception $e) {
-            $this->fail(sprintf("Failed loading helper with backslashes in name"));
-        }
-        $this->assertEquals('Zfns\\Foo\\Bar', $className);
     }
 }
 

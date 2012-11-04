@@ -27,7 +27,7 @@ require_once 'Conjoon/Filter/Input.php';
  * @package    Conjoon_Filter_Input
  * @category   Filter
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 class Conjoon_Modules_Groupware_Email_Item_Filter_Request extends Conjoon_Filter_Input {
 

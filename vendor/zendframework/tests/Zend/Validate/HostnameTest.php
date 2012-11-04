@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Validate
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: HostnameTest.php 24593 2012-01-05 20:35:02Z matthew $
+ * @version    $Id: HostnameTest.php 23972 2011-05-03 16:26:36Z ralph $
  */
 
 /**
@@ -30,7 +30,7 @@ require_once 'Zend/Validate/Hostname.php';
  * @category   Zend
  * @package    Zend_Validate
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Validate
  */
@@ -402,26 +402,15 @@ class Zend_Validate_HostnameTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Ensure that a trailing "." in a local hostname is permitted
+     * Ensure that a trailing "." in a hostname (but not ip) is permitted
      *
      * @group ZF-6363
      */
     public function testTrailingDot()
     {
-        $valuesExpected = array(
-            array(Zend_Validate_Hostname::ALLOW_ALL, true, array('example.', 'example.com.', '~ex%20ample.com.')),
-            array(Zend_Validate_Hostname::ALLOW_ALL, false, array('example..',)),
-            array(Zend_Validate_Hostname::ALLOW_ALL, true, array('1.2.3.4.')),
-            array(Zend_Validate_Hostname::ALLOW_DNS, false, array('example..', '~ex%20ample..')),
-            array(Zend_Validate_Hostname::ALLOW_LOCAL, true, array('example.', 'example.com.')),
-        );
-
-        foreach ($valuesExpected as $element) {
-            $validator = new Zend_Validate_Hostname($element[0]);
-            foreach ($element[2] as $input) {
-                $this->assertEquals($element[1], $validator->isValid($input), implode("\n", $validator->getMessages()) . $input);
-            }
-        }
+        $this->assertTrue($this->_validator->isValid('example.com.'));
+        $this->assertFalse($this->_validator->isValid('example.com..'));
+        $this->assertFalse($this->_validator->isValid('1.2.3.4.'));
     }
     
     /**
@@ -439,20 +428,6 @@ class Zend_Validate_HostnameTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($validator->isValid('::192.9.5.5'));
         $this->assertTrue($validator->isValid('::FFFF:129.144.52.38'));
         $this->assertTrue($validator->isValid('2010:836B:4179::836B:4179'));
-    }
-    
-    /**
-     * @group ZF-11796
-     */
-    public function testIDNSI()
-    {
-        $validator = new Zend_Validate_Hostname(Zend_Validate_Hostname::ALLOW_ALL);
-        
-        $this->assertTrue($validator->isValid('Test123.si'));
-        $this->assertTrue($validator->isValid('țest123.si'));
-        $this->assertTrue($validator->isValid('tĕst123.si'));
-        $this->assertTrue($validator->isValid('tàrø.si'));
-        $this->assertFalse($validator->isValid('رات.si'));
     }
 
 }

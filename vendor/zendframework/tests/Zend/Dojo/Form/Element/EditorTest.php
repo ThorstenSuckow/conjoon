@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: EditorTest.php 24593 2012-01-05 20:35:02Z matthew $
+ * @version    $Id: EditorTest.php 23921 2011-05-02 19:11:31Z matthew $
  */
 
 // Call Zend_Dojo_Form_Element_EditorTest::main() if this source file is executed directly.
@@ -43,7 +43,7 @@ require_once 'Zend/Dojo/View/Helper/Dojo.php';
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Dojo
  * @group      Zend_Dojo_Form
@@ -290,27 +290,6 @@ class Zend_Dojo_Form_Element_EditorTest extends PHPUnit_Framework_TestCase
         $this->element->setMinHeight('10');
         $this->assertEquals($this->element->getDijitParam('minHeight'), $this->element->getMinHeight());
         $this->assertEquals('10em', $this->element->getMinHeight());
-    }
-
-    /** @group ZF-11511 */
-    public function testShouldNotHaveExtraPluginsByDefault()
-    {
-        $extraPlugins = $this->element->getExtraPlugins();
-        $this->assertTrue(empty($extraPlugins));
-    }
-
-    /** @group ZF-11511 */
-    public function testExtraPluginAccessorsShouldProxyToDijitParams()
-    {
-        $this->element->setExtraPlugins(array('undo', 'bold', 'italic'));
-        $this->assertTrue($this->element->hasDijitParam('extraPlugins'));
-        $this->assertTrue($this->element->hasExtraPlugin('bold'));
-        $this->assertEquals($this->element->getDijitParam('extraPlugins'), $this->element->getExtraPlugins());
-
-        $this->element->removeExtraPlugin('bold');
-        $this->assertFalse($this->element->hasExtraPlugin('bold'), var_export($this->element->getExtraPlugins(), 1));
-        $extraPlugins = $this->element->getDijitParam('extraPlugins');
-        $this->assertNotContains('bold', $extraPlugins, var_export($extraPlugins, 1));
     }
 }
 

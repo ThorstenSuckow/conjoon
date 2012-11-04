@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Cloud
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -39,15 +39,10 @@ require_once 'Zend/Cloud/QueueService/AllTests.php';
 require_once 'Zend/Cloud/StorageService/AllTests.php';
 
 /**
- * @see Zend_Cloud_Infrastructure_AllTests
- */
-require_once 'Zend/Cloud/Infrastructure/AllTests.php';
-
-/**
  * @category   Zend
  * @package    Zend_Cloud
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Cloud
  */
@@ -65,8 +60,7 @@ class Zend_Cloud_AllTests
         $suite->addTest(Zend_Cloud_DocumentService_AllTests::suite());
         $suite->addTest(Zend_Cloud_QueueService_AllTests::suite());
         $suite->addTest(Zend_Cloud_StorageService_AllTests::suite());
-        $suite->addTest(Zend_Cloud_Infrastructure_AllTests::suite());
-        
+
         return $suite;
     }
 }

@@ -23,7 +23,7 @@ require_once 'Zend/Controller/Action.php';
  * The errorAction will be called whenever an exception was throwsn
  * in any action and not trapped.
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 class ErrorController extends Zend_Controller_Action {
 
@@ -37,7 +37,6 @@ class ErrorController extends Zend_Controller_Action {
         $conjoonContext = $this->_helper->conjoonContext();
 
         $conjoonContext->addActionContext('error', 'json')
-                       ->addActionContext('error', 'jsonHtml')
                        ->initContext();
     }
 
@@ -60,15 +59,14 @@ class ErrorController extends Zend_Controller_Action {
 
         $this->getResponse()->clearBody();
 
-        $userId = $this->_helper->registryAccess()->getUserId();
-
         /**
-         * @see Conjoon_Modules_Default_Registry_Facade
+         * @see Conjoon_Modules_Default_Registry
          */
-        require_once 'Conjoon/Modules/Default/Registry/Facade.php';
+        require_once 'Conjoon/Modules/Default/Registry.php';
 
-        $this->view->title = Conjoon_Modules_Default_Registry_Facade::getInstance()
-                             ->getValueForKeyAndUserId('/base/conjoon/name', $userId);
+        $this->view->title = Conjoon_Modules_Default_Registry::get(
+            '/base/conjoon/name'
+        );
 
         foreach ($result as $key => $value) {
             $this->view->{$key} = $value;

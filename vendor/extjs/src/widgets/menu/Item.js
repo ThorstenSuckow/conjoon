@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
+ * licensing@extjs.com
+ * http://www.extjs.com/license
  */
 /**
  * @class Ext.menu.Item
@@ -54,12 +54,6 @@ Ext.menu.Item = Ext.extend(Ext.menu.BaseItem, {
      * @cfg {Number} showDelay Length of time in milliseconds to wait before showing this item (defaults to 200)
      */
     showDelay: 200,
-    
-    /**
-     * @cfg {String} altText The altText to use for the icon, if it exists. Defaults to <tt>''</tt>.
-     */
-    altText: '',
-    
     // doc'd in BaseItem
     hideDelay: 200,
 
@@ -69,20 +63,8 @@ Ext.menu.Item = Ext.extend(Ext.menu.BaseItem, {
     initComponent : function(){
         Ext.menu.Item.superclass.initComponent.call(this);
         if(this.menu){
-            // If array of items, turn it into an object config so we
-            // can set the ownerCt property in the config
-            if (Ext.isArray(this.menu)){
-                this.menu = { items: this.menu };
-            }
-            
-            // An object config will work here, but an instance of a menu
-            // will have already setup its ref's and have no effect
-            if (Ext.isObject(this.menu)){
-                this.menu.ownerCt = this;
-            }
-            
             this.menu = Ext.menu.MenuMgr.get(this.menu);
-            this.menu.ownerCt = undefined;
+            this.menu.ownerCt = this;
         }
     },
 
@@ -95,7 +77,7 @@ Ext.menu.Item = Ext.extend(Ext.menu.BaseItem, {
                         ' target="{hrefTarget}"',
                     '</tpl>',
                  '>',
-                     '<img alt="{altText}" src="{icon}" class="x-menu-item-icon {iconCls}"/>',
+                     '<img src="{icon}" class="x-menu-item-icon {iconCls}"/>',
                      '<span class="x-menu-item-text">{text}</span>',
                  '</a>'
              );
@@ -118,8 +100,7 @@ Ext.menu.Item = Ext.extend(Ext.menu.BaseItem, {
             hrefTarget: this.hrefTarget,
             icon: this.icon || Ext.BLANK_IMAGE_URL,
             iconCls: this.iconCls || '',
-            text: this.itemText||this.text||'&#160;',
-            altText: this.altText || ''
+            text: this.itemText||this.text||'&#160;'
         };
     },
 
@@ -149,8 +130,6 @@ Ext.menu.Item = Ext.extend(Ext.menu.BaseItem, {
 
     //private
     beforeDestroy: function(){
-        clearTimeout(this.showTimer);
-        clearTimeout(this.hideTimer);
         if (this.menu){
             delete this.menu.ownerCt;
             this.menu.destroy();

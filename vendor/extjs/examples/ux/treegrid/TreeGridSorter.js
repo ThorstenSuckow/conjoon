@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
+ * licensing@extjs.com
+ * http://www.extjs.com/license
  */
 Ext.ns('Ext.ux.tree');
 
@@ -54,34 +54,30 @@ Ext.ux.tree.TreeGridSorter = Ext.extend(Ext.tree.TreeSorter, {
         tree.on('headerclick', this.onHeaderClick, this);
         tree.ddAppendOnly = true;
 
-        var me = this;
+        me = this;
         this.defaultSortFn = function(n1, n2){
 
-            var desc = me.dir && me.dir.toLowerCase() == 'desc',
-                prop = me.property || 'text',
-                sortType = me.sortType,
-                caseSensitive = me.caseSensitive === true,
-                leafAttr = me.leafAttr || 'leaf',
-                attr1 = n1.attributes,
-                attr2 = n2.attributes;
+            var dsc = me.dir && me.dir.toLowerCase() == 'desc';
+            var p = me.property || 'text';
+            var sortType = me.sortType;
+            var fs = me.folderSort;
+            var cs = me.caseSensitive === true;
+            var leafAttr = me.leafAttr || 'leaf';
 
-            if(me.folderSort){
-                if(attr1[leafAttr] && !attr2[leafAttr]){
+            if(fs){
+                if(n1.attributes[leafAttr] && !n2.attributes[leafAttr]){
                     return 1;
                 }
-                if(!attr1[leafAttr] && attr2[leafAttr]){
+                if(!n1.attributes[leafAttr] && n2.attributes[leafAttr]){
                     return -1;
                 }
             }
-            var prop1 = attr1[prop],
-                prop2 = attr2[prop],
-                v1 = sortType ? sortType(prop1) : (caseSensitive ? prop1 : prop1.toUpperCase());
-                v2 = sortType ? sortType(prop2) : (caseSensitive ? prop2 : prop2.toUpperCase());
-                
+            var v1 = sortType ? sortType(n1) : (cs ? n1.attributes[p] : n1.attributes[p].toUpperCase());
+            var v2 = sortType ? sortType(n2) : (cs ? n2.attributes[p] : n2.attributes[p].toUpperCase());
             if(v1 < v2){
-                return desc ? +1 : -1;
+                return dsc ? +1 : -1;
             }else if(v1 > v2){
-                return desc ? -1 : +1;
+                return dsc ? -1 : +1;
             }else{
                 return 0;
             }
@@ -130,8 +126,8 @@ Ext.ux.tree.TreeGridSorter = Ext.extend(Ext.tree.TreeSorter, {
 
     // private
     updateSortIcon : function(col, dir){
-        var sc = this.sortClasses,
-            hds = this.tree.innerHd.select('td').removeClass(sc);
+        var sc = this.sortClasses;
+        var hds = this.tree.innerHd.select('td').removeClass(sc);
         hds.item(col).addClass(sc[dir == 'desc' ? 1 : 0]);
     }
 });

@@ -197,7 +197,8 @@ doh.extend(doh.Deferred, {
 			if(this.fired == -1){
 				this.errback(new Error("Deferred(unfired)"));
 			}
-		}else if(this.fired == 0 && this.results[0] && this.results[0].cancel){
+		}else if(this.fired == 0 &&
+					(this.results[0] instanceof doh.Deferred)){
 			this.results[0].cancel();
 		}
 	},
@@ -296,7 +297,7 @@ doh.extend(doh.Deferred, {
 			try {
 				res = f(res);
 				fired = ((res instanceof Error) ? 1 : 0);
-				if(res && res.addCallback){
+				if(res instanceof doh.Deferred){
 					cb = function(res){
 						self._continue(res);
 					};
@@ -914,9 +915,9 @@ doh._runPerfFixture = function(/*String*/groupName, /*Object*/fixture){
 							state.countdown--;
 							if(state.countdown){
 								var ret = fixture.runTest(doh);
-								if(ret && ret.addCallback){
-									// Deferreds have to be handled async,
-									// otherwise we just keep looping.
+								if(ret instanceof doh.Deferred){
+									//Deferreds have to be handled async,
+									//otherwise we just keep looping.
 									var atState = {
 										countdown: state.countdown
 									};
@@ -1014,7 +1015,7 @@ doh._calcTrialIterations =  function(/*String*/ groupName, /*Object*/ fixture){
 				if(state.curIter < state.iterations){
 					try{
 						var ret = testFunc(doh);
-						if(ret && ret.addCallback){
+						if(ret instanceof doh.Deferred){
 							var aState = {
 								start: state.start,
 								curIter: state.curIter + 1,
@@ -1079,7 +1080,7 @@ doh._runRegFixture = function(/*String*/groupName, /*Object*/fixture){
 	// if we get a deferred back from the test runner, we know we're
 	// gonna wait for an async result. It's up to the test code to trap
 	// errors and give us an errback or callback.
-	if(ret && ret.addCallback){
+	if(ret instanceof doh.Deferred){
 		tg.inFlight++;
 		ret.groupName = groupName;
 		ret.fixture = fixture;
@@ -1445,7 +1446,7 @@ tests = doh;
 		}
 	}catch(e){
 		print("\n"+doh._line);
-		print("The Dojo Unit Test Harness, $Rev: 26956 $");
+		print("The Dojo Unit Test Harness, $Rev: 22059 $");
 		print("Copyright (c) 2010, The Dojo Foundation, All Rights Reserved");
 		print(doh._line, "\n");
 

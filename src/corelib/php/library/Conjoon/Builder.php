@@ -54,7 +54,7 @@
  * @package    Conjoon
  * @subpackage Builder
  *
- * @author Thorsten-Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten-Suckow-Homberg <ts@siteartwork.de>
  */
 abstract class Conjoon_Builder {
 
@@ -83,12 +83,6 @@ abstract class Conjoon_Builder {
      * cached objects
      */
     protected $_buildClass = null;
-
-    /**
-     * @var bool $_noBuildClassNeeded Explicitely set this to true if you do
-     * not need a build class required before cache gets resolved
-     */
-    protected $_noBuildClassNeeded = false;
 
     /**
      * Constructor.
@@ -197,9 +191,7 @@ abstract class Conjoon_Builder {
         $this->_checkValidGetOptions($options);
 
         // prevent serialized PHP_IMCOMPLETE_CLASS
-        if ($this->_noBuildClassNeeded !== true) {
-            require_once str_replace('_', '/', $this->_buildClass) . '.php';
-        }
+        require_once str_replace('_', '/', $this->_buildClass) . '.php';
 
         $cacheId = $this->buildId($options);
         $tagList = $this->getTagList($options);

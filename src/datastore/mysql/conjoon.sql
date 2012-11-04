@@ -358,41 +358,13 @@ ALTER TABLE `{DATABASE.TABLE.PREFIX}service_twitter_accounts` CHANGE `update_int
 
 ALTER TABLE `{DATABASE.TABLE.PREFIX}users` CHANGE `auth_token` `auth_token` VARCHAR( 32 ) NULL;
 
-ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_accounts` ADD `inbox_connection_type` ENUM( 'SSL', 'TLS' ) NULL AFTER `port_outbox`,
-ADD `outbox_connection_type` ENUM( 'SSL', 'TLS' ) NULL AFTER `inbox_connection_type` ;
-
-CREATE TABLE IF NOT EXISTS `{DATABASE.TABLE.PREFIX}groupware_email_imap_mapping` (`id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
-`groupware_email_accounts_id` INT UNSIGNED NOT NULL ,`global_name` TEXT NULL ,`type` ENUM( 'INBOX', 'OUTBOX', 'SENT', 'DRAFT', 'TRASH' )
-NOT NULL ,PRIMARY KEY ( `id` )) ENGINE = MYISAM;
-
- CREATE TABLE IF NOT EXISTS `{DATABASE.TABLE.PREFIX}registry` (
-`id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
-`key` VARCHAR( 255 ) NOT NULL ,
-`parent_id` INT UNSIGNED NOT NULL
-) ENGINE = MYISAM;
-
- CREATE TABLE IF NOT EXISTS `{DATABASE.TABLE.PREFIX}registry_values` (
-`registry_id` INT UNSIGNED NOT NULL ,
-`user_id` INT UNSIGNED NOT NULL ,
-`name` VARCHAR( 255 ) NOT NULL ,
-`value` TEXT NOT NULL ,
-`type` ENUM( 'STRING', 'INTEGER', 'BOOLEAN', 'FLOAT') NOT NULL,
-INDEX ( `registry_id` , `user_id` )
-) ENGINE = MYISAM;
-
-ALTER TABLE `{DATABASE.TABLE.PREFIX}registry_values` ADD PRIMARY KEY ( `user_id` , `name` );
-
-ALTER TABLE `{DATABASE.TABLE.PREFIX}registry` ADD UNIQUE (`key` ,`parent_id`);
-
-ALTER TABLE `{DATABASE.TABLE.PREFIX}registry_values` ADD `is_editable` BOOL NOT NULL DEFAULT '1';
-
-
 ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments` ADD `key` VARCHAR( 32 ) NOT NULL AFTER `id`;
 
 UPDATE `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments` SET `key`=MD5(RAND()) WHERE `key` = '';
 
 ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments` ADD UNIQUE `key` ( `key` );
 
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments` CHANGE `content` `content` LONGBLOB NOT NULL;
 
 ALTER TABLE `{DATABASE.TABLE.PREFIX}service_twitter_accounts` DROP `password`;
 
@@ -411,33 +383,7 @@ ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items` CHANGE `references` `
 
 ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_feeds_items_flags` CHANGE `guid` `guid` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
 
-CREATE TABLE  IF NOT EXISTS  `{DATABASE.TABLE.PREFIX}groupware_files_folders` (
-`id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
-`name` VARCHAR( 255 ) NOT NULL ,
-`is_child_allowed` BOOL NOT NULL ,
-`is_locked` BOOL NOT NULL ,
-`type` ENUM( 'temp', 'trash' ) NOT NULL ,
-`parent_id` INT NOT NULL
-) ENGINE = MYISAM;
-
- CREATE TABLE  IF NOT EXISTS  `{DATABASE.TABLE.PREFIX}groupware_files` (
-`id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
-`groupware_files_folders_id` INT UNSIGNED NOT NULL ,
-`key` VARCHAR( 32 ) NOT NULL ,
-`name` VARCHAR( 255 ) NOT NULL ,
-`mime_type` VARCHAR( 255 ) NOT NULL ,
-`content` LONGBLOB NULL,
-`storage_container` VARCHAR( 255 ) NULL
-) ENGINE = MYISAM;
-
-CREATE TABLE IF NOT EXISTS `{DATABASE.TABLE.PREFIX}groupware_files_folders_users` (
-  `groupware_files_folders_id` int(10) unsigned NOT NULL,
-  `users_id` int(10) unsigned NOT NULL,
-  `relationship` enum('owner') NOT NULL
-) ENGINE=MyISAM;
-
-ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_files_folders_users` ADD PRIMARY KEY ( `groupware_files_folders_id`  , `users_id` );
-
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_contact_items` ENGINE = InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_contact_items_email` ENGINE = InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_contact_items_flags` ENGINE = InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_accounts` ENGINE = InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
@@ -455,139 +401,3 @@ ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_feeds_items` ENGINE = InnoDB DEFAU
 ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_feeds_items_flags` ENGINE = InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 ALTER TABLE `{DATABASE.TABLE.PREFIX}service_twitter_accounts` ENGINE = InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 ALTER TABLE `{DATABASE.TABLE.PREFIX}users` ENGINE = InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
-
--- CN-474
-ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_feeds_items` CHANGE `title` `title` TEXT CHARACTER SET utf8 COLLATE utf8_bin NOT NULL;
-
-ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_contact_items` ENGINE = InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
-ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_imap_mapping` ENGINE = InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
-ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_files` ENGINE = InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
-ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_files_folders` ENGINE = InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
-ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_files_folders_users` ENGINE = InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
-ALTER TABLE `{DATABASE.TABLE.PREFIX}registry` ENGINE = InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
-ALTER TABLE `{DATABASE.TABLE.PREFIX}registry_values` ENGINE = InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
-
-ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_contact_items`
-CHANGE `first_name` `first_name` VARCHAR( 128 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-CHANGE `last_name` `last_name` VARCHAR( 128 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL;
-
-ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_contact_items_email`
-CHANGE `email_address` `email_address` TEXT CHARACTER SET utf8 COLLATE utf8_bin NOT NULL;
-
-ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_accounts`
-CHANGE `name` `name` VARCHAR(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-CHANGE `address` `address` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-CHANGE `reply_address` `reply_address` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
-CHANGE `protocol` `protocol` ENUM('POP3','IMAP') CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT 'POP3',
-CHANGE `server_inbox` `server_inbox` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-CHANGE `server_outbox` `server_outbox` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-CHANGE `username_inbox` `username_inbox` VARCHAR(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-CHANGE `username_outbox` `username_outbox` VARCHAR(64) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
-CHANGE `user_name` `user_name` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-CHANGE `password_inbox` `password_inbox` VARCHAR(32) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-CHANGE `password_outbox` `password_outbox` VARCHAR(32) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
-CHANGE `signature` `signature` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
-CHANGE `inbox_connection_type` `inbox_connection_type` ENUM('SSL','TLS') CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
-CHANGE `outbox_connection_type` `outbox_connection_type` ENUM('SSL','TLS') CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL;
-
-ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_folders`
-CHANGE `name` `name` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-CHANGE `meta_info` `meta_info` ENUM( 'inbox', 'draft', 'sent', 'outbox' ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT 'inbox';
-
-ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_folders_users`
-CHANGE `relationship` `relationship` ENUM( 'owner' ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL;
-
-ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_imap_mapping`
-CHANGE `global_name` `global_name` TEXT CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL ,
-CHANGE `type` `type` ENUM( 'INBOX', 'OUTBOX', 'SENT', 'DRAFT', 'TRASH' ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL;
-
-ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items`
-CHANGE `subject` `subject` TEXT CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
-CHANGE `from` `from` TEXT CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-CHANGE `reply_to` `reply_to` TEXT CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
-CHANGE `to` `to` TEXT CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-CHANGE `cc` `cc` TEXT CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
-CHANGE `bcc` `bcc` TEXT CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
-CHANGE `in_reply_to` `in_reply_to` TEXT CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
-CHANGE `references` `references` MEDIUMTEXT CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
-CHANGE `content_text_plain` `content_text_plain` LONGTEXT CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
-CHANGE `content_text_html` `content_text_html` LONGTEXT CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
-CHANGE `recipients` `recipients` TEXT CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-CHANGE `sender` `sender` TEXT CHARACTER SET utf8 COLLATE utf8_bin NOT NULL;
-
-ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments`
-CHANGE `key` `key` VARCHAR( 32 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL ,
-CHANGE `file_name` `file_name` TINYTEXT CHARACTER SET utf8 COLLATE utf8_bin NOT NULL ,
-CHANGE `mime_type` `mime_type` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL ,
-CHANGE `encoding` `encoding` VARCHAR( 32 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL ,
-CHANGE `content_id` `content_id` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL;
-
-ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_inbox`
-CHANGE `hash` `hash` VARCHAR( 32 ) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL ,
-CHANGE `message_id` `message_id` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL ,
-CHANGE `uid` `uid` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL;
-
-ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_references`
-CHANGE `reference_type` `reference_type` ENUM( '', 'reply', 'reply_all', 'forward' ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL;
-
-ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_feeds_accounts`
-CHANGE `uri` `uri` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL ,
-CHANGE `link` `link` TINYTEXT CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL ,
-CHANGE `description` `description` TINYTEXT CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL ,
-CHANGE `title` `title` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL ,
-CHANGE `name` `name` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL;
-
-ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_feeds_items`
-CHANGE `description` `description` TEXT CHARACTER SET utf8 COLLATE utf8_bin NOT NULL ,
-CHANGE `link` `link` TINYTEXT CHARACTER SET utf8 COLLATE utf8_bin NOT NULL ,
-CHANGE `guid` `guid` TINYTEXT CHARACTER SET utf8 COLLATE utf8_bin NOT NULL ,
-CHANGE `author` `author` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL ,
-CHANGE `author_uri` `author_uri` TEXT CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL ,
-CHANGE `author_email` `author_email` TEXT CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL;
-
-ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_feeds_items`
-CHANGE `content` `content` MEDIUMTEXT CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL;
-
-ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_feeds_items_flags`
-CHANGE `guid` `guid` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL;
-
-
-ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_files`
-CHANGE `key` `key` VARCHAR( 32 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL ,
-CHANGE `name` `name` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL ,
-CHANGE `mime_type` `mime_type` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL ,
-CHANGE `storage_container` `storage_container` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL;
-
-ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_files_folders` CHANGE `name` `name` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL ,
-CHANGE `type` `type` ENUM( 'temp', 'trash' ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL;
-
-ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_files_folders_users`
-CHANGE `relationship` `relationship` ENUM( 'owner' ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL;
-
-ALTER TABLE `{DATABASE.TABLE.PREFIX}registry`
-CHANGE `key` `key` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL;
-
-ALTER TABLE `{DATABASE.TABLE.PREFIX}registry_values`
-CHANGE `name` `name` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL ,
-CHANGE `value` `value` TEXT CHARACTER SET utf8 COLLATE utf8_bin NOT NULL ,
-CHANGE `type` `type` ENUM( 'STRING', 'INTEGER', 'BOOLEAN', 'FLOAT' ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL;
-
-ALTER TABLE `{DATABASE.TABLE.PREFIX}service_twitter_accounts`
-CHANGE `name` `name` VARCHAR( 15 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL ,
-CHANGE `twitter_id` `twitter_id` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL ,
-CHANGE `oauth_token` `oauth_token` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL ,
-CHANGE `oauth_token_secret` `oauth_token_secret` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL;
-
-ALTER TABLE `{DATABASE.TABLE.PREFIX}users`
-CHANGE `firstname` `firstname` VARCHAR( 32 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL ,
-CHANGE `lastname` `lastname` VARCHAR( 64 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL ,
-CHANGE `email_address` `email_address` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL ,
-CHANGE `user_name` `user_name` VARCHAR( 64 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL ,
-CHANGE `password` `password` VARCHAR( 32 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL ,
-CHANGE `auth_token` `auth_token` VARCHAR( 32 ) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL;
-
--- CN-469
-ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_folders` CHANGE `type`
-`type` ENUM( 'accounts_root', 'root', 'root_remote', 'inbox',
-'spam', 'trash', 'draft', 'sent', 'outbox', 'folder' )
-CHARACTER SET utf8 COLLATE utf8_bin NOT NULL;

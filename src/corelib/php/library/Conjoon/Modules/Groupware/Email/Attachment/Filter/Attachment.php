@@ -32,9 +32,11 @@ require_once 'Conjoon/Filter/Raw.php';
  * @package    Conjoon_Filter_Input
  * @category   Filter
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 class Conjoon_Modules_Groupware_Email_Attachment_Filter_Attachment extends Conjoon_Filter_Input {
+
+    const CONTEXT_DOWNLOAD_REQUEST = 'download_request';
 
     protected $_presence = array(
          self::CONTEXT_CREATE => array(
@@ -45,11 +47,19 @@ class Conjoon_Modules_Groupware_Email_Attachment_Filter_Attachment extends Conjo
             'content',
             'contentId',
             'key'
+        ),
+        self::CONTEXT_DOWNLOAD_REQUEST => array(
+            'id',
+            'key',
+            'downloadCookieName'
         )
     );
 
     protected $_filters = array(
-         'groupwareEmailItemsId' => array(
+        'id' => array(
+            'Int'
+        ),
+        'groupwareEmailItemsId' => array(
             'Int'
          ),
          'fileName' => array(
@@ -67,10 +77,17 @@ class Conjoon_Modules_Groupware_Email_Attachment_Filter_Attachment extends Conjo
          'content' => array(),
          'contentId' => array(
             'StringTrim'
+         ),
+         'downloadCookieName' => array(
+            'StringTrim'
          )
     );
 
     protected $_validators = array(
+        'id' => array(
+            'allowEmpty' => false,
+            'default'    => 0
+         ),
         'groupwareEmailItemsId' => array(
             'allowEmpty' => false
          ),
@@ -96,6 +113,9 @@ class Conjoon_Modules_Groupware_Email_Attachment_Filter_Attachment extends Conjo
          'key' => array(
             'allowEmpty' => false,
             array('StringLength', 32, 32)
+         ),
+         'downloadCookieName' => array(
+            'allowEmpty' => false
          )
     );
 

@@ -23,7 +23,7 @@ require_once 'Zend/Controller/Action.php';
  * Action controller for login/logout.
  *
  * @uses Zend_Controller_Action
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 class ReceptionController extends Zend_Controller_Action {
 
@@ -199,16 +199,13 @@ class ReceptionController extends Zend_Controller_Action {
         $this->view->tokenFailure = true;
 
         /**
-         * @see Conjoon_Modules_Default_Registry_Facade
+         * @see Conjoon_Modules_Default_Registry
          */
-        require_once 'Conjoon/Modules/Default/Registry/Facade.php';
+        require_once 'Conjoon/Modules/Default/Registry.php';
 
-        $this->view->title = Conjoon_Modules_Default_Registry_Facade
-                             ::getInstance()
-                             ->getValueForKeyAndUserId(
-                                 '/base/conjoon/name',
-                                 0
-                             );
+        $this->view->title = Conjoon_Modules_Default_Registry::get(
+            '/base/conjoon/name'
+        );
 
         /**
          * @see Zend_Registry
@@ -280,18 +277,16 @@ class ReceptionController extends Zend_Controller_Action {
         }
 
         /**
-         * @see Conjoon_Modules_Default_Registry_Facade
+         * @see Conjoon_Modules_Default_Registry
          */
-        require_once 'Conjoon/Modules/Default/Registry/Facade.php';
+        require_once 'Conjoon/Modules/Default/Registry.php';
 
-        $this->view->title = Conjoon_Modules_Default_Registry_Facade::getInstance()
-                             ->getValueForKeyAndUserId(
-                                 '/base/conjoon/name',
-                                 $this->_helper->registryAccess()->getUserId()
-                             );
+        $this->view->title = Conjoon_Modules_Default_Registry::get(
+            '/base/conjoon/name'
+        );
 
-        $this->view->success = false;
-        $this->view->error   = $error->getDto();
+        $this->view->success    = false;
+        $this->view->error      = $error->getDto();
 
     }
 

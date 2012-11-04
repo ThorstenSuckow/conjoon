@@ -29,11 +29,6 @@ require_once 'Conjoon/Filter/FormBoolToInt.php';
 require_once 'Zend/Validate/Hostname.php';
 
 /**
- * @see Zend_Filter_Null
- */
-require_once 'Zend/Filter/Null.php';
-
-/**
  * An input-filter class defining all validators and filters needed when
  * processing input data for mutating or creating Email-Accounts.
  *
@@ -41,7 +36,7 @@ require_once 'Zend/Filter/Null.php';
  * @package    Conjoon_Filter_Input
  * @category   Filter
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 class Conjoon_Modules_Groupware_Email_Account_Filter_Account extends Conjoon_Filter_Input {
 
@@ -72,15 +67,12 @@ class Conjoon_Modules_Groupware_Email_Account_Filter_Account extends Conjoon_Fil
                 'isSignatureUsed',
                 'portInbox',
                 'portOutbox',
-                'isCopyLeftOnServer',
-                'inboxConnectionType',
-                'outboxConnectionType',
+                'isCopyLeftOnServer'
 
         ),
         'create' =>
             array(
                 'name',
-                'protocol',
                 'address',
                 'serverInbox',
                 'serverOutbox',
@@ -89,11 +81,8 @@ class Conjoon_Modules_Groupware_Email_Account_Filter_Account extends Conjoon_Fil
                 'userName',
                 'isOutboxAuth',
                 'passwordInbox',
-                'passwordOutbox',
-                'portInbox',
-                'portOutbox',
-                'inboxConnectionType',
-                'outboxConnectionType'
+                'passwordOutbox'
+
         )
     );
 
@@ -152,12 +141,6 @@ class Conjoon_Modules_Groupware_Email_Account_Filter_Account extends Conjoon_Fil
         ),
         'portOutbox' => array(
             'Int'
-        ),
-        'inboxConnectionType' => array(
-            array('Null', Zend_Filter_Null::STRING)
-        ),
-        'outboxConnectionType' => array(
-            array('Null', Zend_Filter_Null::STRING)
         ),
         'isCopyLeftOnServer' => array(
             'FormBoolToInt'
@@ -225,20 +208,12 @@ class Conjoon_Modules_Groupware_Email_Account_Filter_Account extends Conjoon_Fil
             'allowEmpty' => true,
             'default'    => 0
          ),
-        'inboxConnectionType' => array(
-            'allowEmpty' => true,
-            'default'    => null
-         ),
-        'outboxConnectionType' => array(
-            'allowEmpty' => true,
-            'default'    => null
-         ),
         'portInbox'          => array(
             'allowEmpty' => true,
             'default'    => 110,
             array('Between', 0, 65535)
         ),
-        'portOutbox'     => array(
+        'portOutbox'         => array(
             'allowEmpty' => true,
             'default'    => 25,
             array('Between', 0, 65535)
@@ -260,7 +235,7 @@ class Conjoon_Modules_Groupware_Email_Account_Filter_Account extends Conjoon_Fil
     {
         switch ($this->_context) {
             case self::CONTEXT_UPDATE:
-                if (!isset($this->_data['isOutboxAuth']) || !$this->_data['isOutboxAuth']) {
+                if (!$this->_data['isOutboxAuth']) {
                    $this->_validatorRules['passwordOutbox']['allowEmpty'] = true;
                    $this->_validatorRules['usernameOutbox']['allowEmpty'] = true;
                 } else {
@@ -270,7 +245,7 @@ class Conjoon_Modules_Groupware_Email_Account_Filter_Account extends Conjoon_Fil
             break;
 
             case self::CONTEXT_CREATE:
-               if (!isset($this->_data['isOutboxAuth']) || !$this->_data['isOutboxAuth']) {
+               if (!$this->_data['isOutboxAuth']) {
                    $this->_validatorRules['passwordOutbox']['allowEmpty'] = true;
                    $this->_validatorRules['usernameOutbox']['allowEmpty'] = true;
                } else {

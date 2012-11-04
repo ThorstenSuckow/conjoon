@@ -19,7 +19,7 @@ Ext.namespace('com.conjoon.cudgets.settings');
  * The dialog has 3 buttons - ok, apply, cancel. For each button additional listeners
  * will be installed.
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  *
  * @class com.conjoon.cudgets.settings.Dialog
  * @extends Ext.Window

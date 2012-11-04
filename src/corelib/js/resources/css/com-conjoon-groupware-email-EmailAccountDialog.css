@@ -28,6 +28,13 @@
     margin-bottom:5px;
 }
 
+.com-conjoon-groupware-email-EmailAccountDialog-serverCard-col1 {
+    width:180px;
+}
+
+.com-conjoon-groupware-email-EmailAccountDialog-serverCard-col2 {
+    width:80px;
+}
 
 .com-conjoon-groupware-email-EmailAccountDialog-accountGrid .x-grid3-row {
     border:none;

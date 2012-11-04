@@ -31,7 +31,7 @@ require_once 'phing/filters/ChainableReader.php';
  * Additionally, any @see doc blocks preceeding the require_once statements will
  * be removed, too.
  *
- * @author    Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author    Thorsten Suckow-Homberg <ts@siteartwork.de>
 *  @author    Marc Steinert <marc@bithub.net>
  * @see       FilterReader
  */

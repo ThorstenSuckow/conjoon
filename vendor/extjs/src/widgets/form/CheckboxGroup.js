@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
+ * licensing@extjs.com
+ * http://www.extjs.com/license
  */
 /**
  * @class Ext.form.CheckboxGroup
@@ -147,7 +147,7 @@ Ext.form.CheckboxGroup = Ext.extend(Ext.form.Field, {
                     var cc = Ext.apply({items:[]}, colCfg);
                     cc[this.columns[i] <= 1 ? 'columnWidth' : 'width'] = this.columns[i];
                     if(this.defaults){
-                        cc.defaults = Ext.apply(cc.defaults || {}, this.defaults);
+                        cc.defaults = Ext.apply(cc.defaults || {}, this.defaults)
                     }
                     cols.push(cc);
                 };
@@ -236,28 +236,22 @@ Ext.form.CheckboxGroup = Ext.extend(Ext.form.Field, {
         });
         this.fireEvent('change', this, arr);
     },
-    
-    /**
-     * Runs CheckboxGroup's validations and returns an array of any errors. The only error by default
-     * is if allowBlank is set to true and no items are checked.
-     * @return {Array} Array of all validation errors
-     */
-    getErrors: function() {
-        var errors = Ext.form.CheckboxGroup.superclass.getErrors.apply(this, arguments);
-        
-        if (!this.allowBlank) {
+
+    // private
+    validateValue : function(value){
+        if(!this.allowBlank){
             var blank = true;
-            
             this.eachItem(function(f){
-                if (f.checked) {
+                if(f.checked){
                     return (blank = false);
                 }
             });
-            
-            if (blank) errors.push(this.blankText);
+            if(blank){
+                this.markInvalid(this.blankText);
+                return false;
+            }
         }
-        
-        return errors;
+        return true;
     },
 
     // private
@@ -268,25 +262,13 @@ Ext.form.CheckboxGroup = Ext.extend(Ext.form.Field, {
         }
 
         var dirty = false;
-        
         this.eachItem(function(item){
             if(item.isDirty()){
                 dirty = true;
                 return false;
             }
         });
-        
         return dirty;
-    },
-
-    // private
-    setReadOnly : function(readOnly){
-        if(this.rendered){
-            this.eachItem(function(item){
-                item.setReadOnly(readOnly);
-            });
-        }
-        this.readOnly = readOnly;
     },
 
     // private
@@ -304,6 +286,14 @@ Ext.form.CheckboxGroup = Ext.extend(Ext.form.Field, {
     },
 
     // private
+    doLayout: function(){
+        if(this.rendered){
+            this.panel.forceLayout = this.ownerCt.forceLayout;
+            this.panel.doLayout();
+        }
+    },
+
+    // private
     onResize : function(w, h){
         this.panel.setSize(w, h);
         this.panel.doLayout();
@@ -316,14 +306,10 @@ Ext.form.CheckboxGroup = Ext.extend(Ext.form.Field, {
             this.eachItem(function(c){
                 if(c.setValue){
                     c.setValue(false);
-                    c.originalValue = c.getValue();
                 }
             });
-            // Set items stored in originalValue, ugly - set a flag to reset the originalValue
-            // during the horrible onSetValue.  This will allow trackResetOnLoad to function.
-            this.resetOriginal = true;
+            // Set items stored in originalValue
             this.setValue(this.originalValue);
-            delete this.resetOriginal;
         } else {
             this.eachItem(function(c){
                 if(c.reset){
@@ -369,28 +355,13 @@ myCheckboxGroup.setValue('cb-col-1,cb-col-3');
         return this;
     },
 
-    /**
-     * @private
-     * Sets the values of one or more of the items within the CheckboxGroup
-     * @param {String|Array|Object} id Can take multiple forms. Can be optionally:
-     * <ul>
-     *   <li>An ID string to be used with a second argument</li>
-     *   <li>An array of the form ['some', 'list', 'of', 'ids', 'to', 'mark', 'checked']</li>
-     *   <li>An array in the form [true, true, false, true, false] etc, where each item relates to the check status of
-     *       the checkbox at the same index</li>
-     *   <li>An object containing ids of the checkboxes as keys and check values as properties</li>
-     * </ul>
-     * @param {String} value The value to set the field to if the first argument was a string
-     */
+
     onSetValue: function(id, value){
         if(arguments.length == 1){
             if(Ext.isArray(id)){
                 Ext.each(id, function(val, idx){
                     if (Ext.isObject(val) && val.setValue){ // array of checkbox components to be checked
                         val.setValue(true);
-                        if (this.resetOriginal === true) {
-                            val.originalValue = val.getValue();
-                        }
                     } else { // an array of boolean values
                         var item = this.items.itemAt(idx);
                         if(item){
@@ -420,9 +391,6 @@ myCheckboxGroup.setValue('cb-col-1,cb-col-3');
     // private
     beforeDestroy: function(){
         Ext.destroy(this.panel);
-        if (!this.rendered) {
-            Ext.destroy(this.items);
-        }
         Ext.form.CheckboxGroup.superclass.beforeDestroy.call(this);
 
     },
@@ -462,15 +430,10 @@ myCheckboxGroup.setValue('cb-col-1,cb-col-3');
         return out;
     },
 
-    /**
-     * @private
-     * Convenience function which passes the given function to every item in the composite
-     * @param {Function} fn The function to call
-     * @param {Object} scope Optional scope object
-     */
-    eachItem: function(fn, scope) {
+    // private
+    eachItem: function(fn){
         if(this.items && this.items.each){
-            this.items.each(fn, scope || this);
+            this.items.each(fn, this);
         }
     },
 

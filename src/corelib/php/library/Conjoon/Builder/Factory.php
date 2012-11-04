@@ -20,7 +20,7 @@
  * @package    Conjoon
  * @subpackage Builder
  *
- * @author Thorsten-Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten-Suckow-Homberg <ts@siteartwork.de>
  */
 class Conjoon_Builder_Factory {
 
@@ -60,17 +60,6 @@ class Conjoon_Builder_Factory {
                 return new Conjoon_Modules_Groupware_Email_Message_Builder($cache, $model);
 
             break;
-
-            case Conjoon_Keys::CACHE_EMAIL_FOLDERS_ROOT_TYPE:
-
-                /**
-                 * @see Conjoon_Modules_Groupware_Email_Folder_FolderRootTypeBuilder
-                 */
-                require_once 'Conjoon/Modules/Groupware/Email/Folder/FolderRootTypeBuilder.php';
-
-                return new Conjoon_Modules_Groupware_Email_Folder_FolderRootTypeBuilder($cache, $model);
-
-                break;
 
             case Conjoon_Keys::CACHE_EMAIL_ACCOUNTS:
 

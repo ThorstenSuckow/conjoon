@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ActionTest.php 24593 2012-01-05 20:35:02Z matthew $
+ * @version    $Id: ActionTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_Controller_ActionTest::main() if this source file is executed directly.
@@ -36,7 +36,7 @@ require_once 'Zend/Controller/Response/Cli.php';
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Controller
  * @group      Zend_Controller_Action
@@ -223,7 +223,7 @@ class Zend_Controller_ActionTest extends PHPUnit_Framework_TestCase
     public function testSetParam()
     {
         $this->_controller->setParam('foo', 'bar');
-        $params = $this->_controller->getAllParams();
+        $params = $this->_controller->getParams();
         $this->assertTrue(isset($params['foo']));
         $this->assertEquals('bar', $params['foo']);
     }
@@ -257,7 +257,7 @@ class Zend_Controller_ActionTest extends PHPUnit_Framework_TestCase
         $this->_controller->setParam('bar', 'baz');
         $this->_controller->setParam('boo', 'bah');
 
-        $params = $this->_controller->getAllParams();
+        $params = $this->_controller->getParams();
         $this->assertEquals('bar', $params['foo']);
         $this->assertEquals('baz', $params['bar']);
         $this->assertEquals('bah', $params['boo']);
@@ -544,6 +544,37 @@ class Zend_Controller_ActionTest_TestController extends Zend_Controller_Action
     public function bar()
     {
         $this->getResponse()->setBody("Should never see this\n");
+    }
+
+    public function forward($action, $controller = null, $module = null, array $params = null)
+    {
+        $this->_forward($action, $controller, $module, $params);
+    }
+
+    public function hasParam($param)
+    {
+        return $this->_hasParam($param);
+    }
+
+    public function getParams()
+    {
+        return $this->_getAllParams();
+    }
+
+    public function setParam($key, $value)
+    {
+        $this->_setParam($key, $value);
+        return $this;
+    }
+
+    public function getParam($key, $default)
+    {
+        return $this->_getParam($key, $default);
+    }
+
+    public function redirect($url, $code = 302, $prependBase = true)
+    {
+        $this->_redirect($url, array('code' => $code, 'prependBase' => $prependBase));
     }
 }
 

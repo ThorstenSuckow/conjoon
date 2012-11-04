@@ -1,75 +1,48 @@
 /*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
+ * licensing@extjs.com
+ * http://www.extjs.com/license
  */
 Ext.ns('Ext.samples');
 
 
 Ext.samples.samplesCatalog = [{
     title: 'Combination Examples',
-    samples: [
-        {
-            text: 'Feed Viewer',
-            url:  'feed-viewer/view.html',
-            icon: 'feeds.gif',
-            desc: 'RSS feed reader example application that features a swappable reader panel layout.'
-        },
-        {
-            text: 'Web Desktop',
-            url:  'desktop/desktop.html',
-            icon: 'desktop.gif',
-            desc: 'Demonstrates how one could build a desktop in the browser using Ext components including a module plugin system.'
-        },
-        /*{
-            text: 'Image Organizer',
-            url:  'image-organizer/index.html',
-            icon: 'image-organizer.gif',
-            desc: 'Image management application example utilizing MySQL lite and Ext.Direct.',
-            status: 'new'
-        }*/
-        {
-            text: 'Ext JS Calendar',
-            url:  'calendar/index.html',
-            icon: 'calendar.gif',
-            desc: 'Example Calendar application. Demonstrates the new Day, Week and Month views and how to combine them.',
-            status: 'new'
-        },
-        {
-            text: 'Ext JS API Documentation',
-            url:  '../docs/index.html',
-            icon: 'docs.gif',
-            desc: 'API Documentation application.'
-        },
-        {
-            text: 'Ext JS Forum Browser',
-            url:  'forum/forum.html',
-            icon: 'forum.gif',
-            desc: 'Ext JS online forums browser application.',
-            status: 'modified'
-        },
-        {
-            text: 'Image Viewer',
-            url:  'organizer/organizer.html',
-            icon: 'organizer.gif',
-            desc: 'DataView and TreePanel example that demonstrates dragging data items from a DataView into a TreePanel.'
-        },
-        {
-            text: 'Themes Viewer',
-            url:  'themes/index.html',
-            icon: 'themes.gif',
-            desc: 'View and test every Ext component against bundled Ext themes, or, your own custom themes.',
-            status: 'new'
-        }
-        // {
-        //     text: 'Pivot Grid',
-        //     url:  'pivotgrid/reconfigurable.html',
-        //     icon: 'pivotgrid.gif',
-        //     desc: 'An example demonstrating how to reconfigure a PivotGrid at run time',
-        //     status: 'new'
-        // }
-    ]
+    samples: [{
+        text: 'Feed Viewer',
+        url:  'feed-viewer/view.html',
+        icon: 'feeds.gif',
+        desc: 'RSS feed reader example application that features a swappable reader panel layout.'
+    },{
+        text: 'Web Desktop',
+        url:  'desktop/desktop.html',
+        icon: 'desktop.gif',
+        desc: 'Demonstrates how one could build a desktop in the browser using Ext components including a module plugin system.'
+    }/*,{
+        text: 'Image Organizer',
+        url:  'image-organizer/index.html',
+        icon: 'image-organizer.gif',
+        desc: 'Image management application example utilizing MySQL lite and Ext.Direct.',
+        status: 'new'
+    }*/,{
+        text: 'Ext JS API Documentation',
+        url:  '../docs/index.html',
+        icon: 'docs.gif',
+        desc: 'API Documentation application.',
+        status: 'updated'
+    },{
+        text: 'Ext JS Forum Browser',
+        url:  'forum/forum.html',
+        icon: 'forum.gif',
+        desc: 'Ext JS online forums browser application.',
+        status: 'modified'
+    },{
+        text: 'Image Viewer',
+        url:  'organizer/organizer.html',
+        icon: 'organizer.gif',
+        desc: 'DataView and TreePanel example that demonstrates dragging data items from a DataView into a TreePanel.'
+    }]
 },{
     title: 'Offline Support',
     samples: [{
@@ -109,34 +82,7 @@ Ext.samples.samplesCatalog = [{
         desc: 'A grid embedded within a FormPanel that uses the Accessibility theme.'
 
     }]
-},
-{
-    title: 'Pivot Grid',
-    samples: [
-        {
-            text: 'Pivot Grid',
-            url:  'pivotgrid/simple.html',
-            icon: 'pivotgrid.gif',
-            desc: 'The powerful new PivotGrid component, demonstrating data reduction and analysis capabilities.',
-            status: 'new'
-        },
-        {
-            text: 'Customised Pivot Grid',
-            url:  'pivotgrid/countries.html',
-            icon: 'pivotgrid-cellcls.gif',
-            desc: 'A PivotGrid with its appearance customised based on summarized data',
-            status: 'new'
-        },
-        {
-            text: 'Pivot Grid Examples',
-            url:  'pivotgrid/people.html',
-            icon: 'pivotgrid-people.gif',
-            desc: 'Several Pivot Grids showing different views of the same data source',
-            status: 'new'
-        }
-    ]
-},
-{
+},{
     title: 'Grids',
     samples: [{
         text: 'Basic Array Grid',
@@ -252,13 +198,6 @@ Ext.samples.samplesCatalog = [{
         url: 'grid/ColumnHeaderGroup.html',
         icon: 'grid-columngrouping.gif',
         desc: 'An extension that adds the capability of grouping Column headers in the GridPanel',
-        status: 'new'
-    },
-    {
-        text: 'Multiple Sorting',
-        url: 'grid/multiple-sorting.html',
-        icon: 'grid-multiple-sorting.png',
-        desc: 'An example that shows multi-level sorting in a Grid Panel.',
         status: 'new'
     }]
 },{
@@ -476,33 +415,19 @@ Ext.samples.samplesCatalog = [{
         text: 'Spinner Field',
         url:  'spinner/spinner.html',
         icon: 'form-spinner.gif',
-        desc: 'An example of a custom spinner widget.'
+        desc: 'An example of a custom spinner widget.',
+        status: 'new'
     },{
         text: 'MultiSelect and ItemSelector',
         url:  'multiselect/multiselect-demo.html',
         icon: 'form-multiselect.gif',
         desc: 'Example controls for selecting a list of items in forms.'
-    },
-    {
-        text: 'Slider Field',
-        url:  'slider/slider-field.html',
-        icon: 'form-slider.png',
-        desc: 'Example usage of an Ext.Slider to select a number value in a form.',
-	    status : 'new'
-    },
-    {
+    },{
         text: 'Forms with vBox layout',
         url:  'form/vbox-form.html',
         icon: 'form-vbox.gif',
         desc: 'Example usage of the vBox layout with forms. An added bonus is the FieldReplicator plugin.',
-	    status : 'new'
-    },
-    {
-        text  : 'Composite Fields',
-        url   : 'form/composite-field.html',
-        icon  : 'form-composite.png',
-        desc  : 'Example usage of the Composite Fields to place several fields on a single form row.',
-	    status: 'new'
+	status : 'new'
     }]
 },{
     title: 'Toolbars and Menus',
@@ -529,22 +454,7 @@ Ext.samples.samplesCatalog = [{
         url:  'menu/actions.html',
         icon: 'toolbar-actions.gif',
         desc: 'Bind the same behavior to multiple buttons, toolbar and menu items using the Ext.Action class.'
-    },
-    {
-        text: 'Reorderable Toolbar',
-        url:  'toolbar/reorderable.html',
-        icon: 'toolbar-reorderable.png',
-        desc: 'Items within a toolbar can be reordered using this plugin.',
-        status: 'new'
-    },
-    {
-        text: 'Droppable Toolbar',
-        url:  'toolbar/droppable.html',
-        icon: 'toolbar-droppable.png',
-        desc: 'Items can be dropped onto a Toolbar and easily turned into items with this plugin.',
-        status: 'new'
-    },
-    {
+    },{
         text: 'Status Bar',
         url:  'statusbar/statusbar-demo.html',
         icon: 'statusbar-demo.gif',
@@ -560,39 +470,25 @@ Ext.samples.samplesCatalog = [{
 },{
     title: 'Templates and DataView',
     samples: [{
-        text  : 'Templates',
-        url   : 'core/templates.html',
-        icon  : 'templates.gif',
-        desc  : 'A simple example of rendering views from templates bound to data objects.'
+        text: 'Templates',
+        url: 'core/templates.html',
+        icon: 'templates.gif',
+        desc: 'A simple example of rendering views from templates bound to data objects.'
     },{
-        text  : 'DataView',
-        url   : 'view/data-view.html',
-        icon  : 'data-view.gif',
-        desc  : 'A basic DataView with custom plugins for editable labels and drag selection of items.'
+        text: 'DataView',
+        url: 'view/data-view.html',
+        icon: 'data-view.gif',
+        desc: 'A basic DataView with custom plugins for editable labels and drag selection of items.'
     },{
-        text  : 'DataView (advanced)',
-        url   : 'view/chooser.html',
-        icon  : 'chooser.gif',
-        desc  : 'A more customized DataView supporting sorting and filtering with multiple templates.'
+        text: 'DataView (advanced)',
+        url: 'view/chooser.html',
+        icon: 'chooser.gif',
+        desc: 'A more customized DataView supporting sorting and filtering with multiple templates.'
     },{
-        text  : 'ListView',
-        url   : 'view/list-view.html',
-        icon  : 'list-view.gif',
-        desc  : 'A high performance tabular DataView to be used as a lightweight grid.',
-        status: 'new'
-    },
-    {
-        text  : 'Animated DataView',
-        url   : 'view/animated-dataview.html',
-        icon  : 'animated-dataview.png',
-        desc  : 'Transition animation plugin applied to a standard DataView',
-        status: 'new'
-    },
-    {
-        text  : 'Multi-sort DataView',
-        url   : 'view/multisort-dataview.html',
-        icon  : 'multisort-dataview.png',
-        desc  : 'Example demonstrating the ability to sort a DataView by multiple sorters.',
+        text: 'ListView',
+        url: 'view/list-view.html',
+        icon: 'list-view.gif',
+        desc: 'A high performance tabular DataView to be used as a lightweight grid.',
         status: 'new'
     }]
 },{
@@ -662,8 +558,7 @@ Ext.samples.samplesCatalog = [{
         text: 'Slider',
         url: 'slider/slider.html',
         icon: 'slider.gif',
-        desc: 'A slider component that supports vertical mode, snapping, tooltips, customized styles and multiple thumbs.',
-        status: 'updated'
+        desc: 'A slider component that supports vertical mode, snapping, tooltips, customized styles and more.'
     },{
         text: 'QuickTips',
         url: 'simple-widgets/qtips.html',

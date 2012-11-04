@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
+ * licensing@extjs.com
+ * http://www.extjs.com/license
  */
 /**
  * @class Ext.tree.ColumnResizer
@@ -80,7 +80,6 @@ Ext.tree.ColumnResizer = Ext.extend(Ext.util.Observable, {
     },
 
     onStart : function(e){
-        this.dragHeadersDisabled = this.tree.headersDisabled;
         this.tree.headersDisabled = true;
         this.proxy = this.tree.body.createChild({cls:'x-treegrid-resizer'});
         this.proxy.setHeight(this.tree.body.getHeight());
@@ -103,8 +102,7 @@ Ext.tree.ColumnResizer = Ext.extend(Ext.util.Observable, {
 
     onEnd : function(e){
         var nw = this.proxy.getWidth(),
-            tree = this.tree,
-            disabled = this.dragHeadersDisabled;
+            tree = this.tree;
         
         this.proxy.remove();
         delete this.dragHd;
@@ -113,7 +111,7 @@ Ext.tree.ColumnResizer = Ext.extend(Ext.util.Observable, {
         tree.updateColumnWidths();
         
         setTimeout(function(){
-            tree.headersDisabled = disabled;
+            tree.headersDisabled = false;
         }, 100);
     }
 });

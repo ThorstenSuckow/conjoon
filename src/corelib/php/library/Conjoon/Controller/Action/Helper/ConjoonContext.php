@@ -66,17 +66,6 @@ class Conjoon_Controller_Action_Helper_ConjoonContext extends Zend_Controller_Ac
 
         parent::__construct();
         $this->addContext('iphone', array('suffix' => 'iphone'));
-
-        // this context will json enocde the view variables, but send the generated
-        // string as text/html instead of application/json
-        $this->addContext('jsonHtml', array(
-            'suffix'    => 'jsonHtml',
-            'headers'   => array('Content-Type' => 'text/html'),
-            'callbacks' => array(
-                'init' => 'initJsonContext',
-                'post' => 'postJsonContext'
-            )
-        ));
     }
 
     /**

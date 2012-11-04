@@ -29,7 +29,7 @@ require_once 'Zend/Config/Ini.php';
  * @package Conjoon_Config
  *
  * @author Zend
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 class Conjoon_Config_Array extends Zend_Config_Ini {
 

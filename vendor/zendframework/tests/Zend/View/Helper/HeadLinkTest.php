@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: HeadLinkTest.php 24858 2012-06-01 01:24:17Z adamlundrigan $
+ * @version    $Id: HeadLinkTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_View_Helper_HeadLinkTest::main() if this source file is executed directly.
@@ -43,7 +43,7 @@ require_once 'Zend/View.php';
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_View
  * @group      Zend_View_Helper
@@ -466,35 +466,6 @@ class Zend_View_Helper_HeadLinkTest extends PHPUnit_Framework_TestCase
     {
         $this->helper->appendStylesheet(array('href' => '/bar/baz', 'id' => 'foo'));
         $this->assertContains('id="foo"', $this->helper->toString());
-    }
-
-    /**
-     * @group ZF-11811
-     */
-    public function testHeadLinkAllowsOverrideOfRelAttribute()
-    {
-        $this->helper->appendStylesheet('/css/auth.less', 'all', null, array('rel' => 'stylesheet/less'));
-        $this->assertEquals(1, substr_count($this->helper->toString(), "rel=\""));
-        $this->assertContains('rel="stylesheet/less"', $this->helper->toString());
-    }
-
-    /**
-     * @group ZF-11643
-     */
-    public function testSizesAttributeIsSupported()
-    {
-        $this->helper->headLink(
-            array(
-                 'rel'   => 'icon',
-                 'href'  => 'favicon.png',
-                 'sizes' => '16x16',
-                 'type'  => 'image/png',
-            )
-        );
-
-        $expected = '<link href="favicon.png" rel="icon" type="image/png" sizes="16x16" >';
-
-        $this->assertEquals($expected, $this->helper->toString());
     }
 }
 

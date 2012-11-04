@@ -18,7 +18,7 @@ Ext.namespace('com.conjoon.cudgets.settings.ui');
  * Builds and layouts the SettingsContainer's layout and its components.
  *
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  *
  * @class com.conjoon.cudgets.settings.ui.DefaultContainerUi
  */
@@ -84,12 +84,6 @@ com.conjoon.cudgets.settings.ui.DefaultContainerUi.prototype = {
      * destroy request is invoked.
      */
     destroyMsg : com.conjoon.Gettext.gettext("Removing..."),
-
-    /**
-     * @sfg {String} emptyText The default text to show in the entries list
-     * if there is no data available. Defaults to "no data".
-     */
-    emptyText : 'no data',
 
     /**
      * @cfg {String} updateAndDestroyMsg The default title to show in a load mask when
@@ -226,7 +220,7 @@ com.conjoon.cudgets.settings.ui.DefaultContainerUi.prototype = {
             singleSelect : true,
             cls          : 'listView',
             height       : this.entryContainerHeight,
-            emptyText    : this.emptyText,
+            emptyText    : com.conjoon.Gettext.gettext("No data"),
             hideHeaders  : true,
             columns: [{
                 dataIndex : this.container.storeSync.dataIndex

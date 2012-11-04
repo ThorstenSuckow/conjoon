@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_XmlRpc
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version $Id: ValueTest.php 24593 2012-01-05 20:35:02Z matthew $
+ * @version $Id: ValueTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 require_once 'Zend/XmlRpc/Value.php';
@@ -41,14 +41,12 @@ require_once 'Zend/Date.php';
  * @category   Zend
  * @package    Zend_XmlRpc
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_XmlRpc
  */
 class Zend_XmlRpc_ValueTest extends PHPUnit_Framework_TestCase
 {
-    public $xmlRpcDateFormat = 'Ymd\\TH:i:s';
-
     // Boolean
     public function testFactoryAutodetectsBoolean()
     {
@@ -577,8 +575,8 @@ class Zend_XmlRpc_ValueTest extends PHPUnit_Framework_TestCase
 
         $this->assertXmlRpcType('dateTime', $val);
 
-        $expected = new Datetime($native);
-        $this->assertSame($expected->format($this->xmlRpcDateFormat), $val->getValue());
+        $expected = '1997-07-16T19:20+01:00';
+        $this->assertSame(strtotime($native), strtotime($val->getValue()));
     }
 
     public function testMarshalDateTimeFromNativeStringProducesIsoOutput()
@@ -589,14 +587,17 @@ class Zend_XmlRpc_ValueTest extends PHPUnit_Framework_TestCase
 
         $this->assertXmlRpcType('dateTime', $val);
 
-        $expected = new DateTime($native);
+        $expected = date('c', strtotime($native));
+        $expected = substr($expected, 0, strlen($expected) - 6);
+        $expected = str_replace('-', '', $expected);
         $received = $val->getValue();
-        $this->assertEquals($expected->format($this->xmlRpcDateFormat), $received);
+        $this->assertEquals($expected, $received);
     }
 
     public function testMarshalDateTimeFromInvalidString()
     {
-        $this->setExpectedException('Exception', "foobarbaz");
+        $this->setExpectedException('Zend_XmlRpc_Value_Exception',
+            "Cannot convert given value 'foobarbaz' to a timestamp");
         Zend_XmlRpc_Value::getXmlRpcValue('foobarbaz', Zend_XmlRpc_Value::XMLRPC_TYPE_DATETIME);
     }
 
@@ -608,17 +609,6 @@ class Zend_XmlRpc_ValueTest extends PHPUnit_Framework_TestCase
 
         $this->assertXmlRpcType('dateTime', $val);
         $this->assertSame($native, strtotime($val->getValue()));
-    }
-
-    /**
-     * @group ZF-11588
-     */
-    public function testMarshalDateTimeBeyondUnixEpochFromNativeStringPassedToConstructor()
-    {
-        $native = '2040-01-01T00:00:00';
-        $value  = new Zend_XmlRpc_Value_DateTime($native);
-        $expected = new DateTime($native);
-        $this->assertSame($expected->format($this->xmlRpcDateFormat), $value->getValue());
     }
 
     /**
@@ -635,10 +625,7 @@ class Zend_XmlRpc_ValueTest extends PHPUnit_Framework_TestCase
 
         $this->assertXmlRpcType('dateTime', $val);
         $this->assertEquals('dateTime.iso8601', $val->getType());
-
-        $expected = new DateTime($iso8601);
-        $this->assertSame($expected->format($this->xmlRpcDateFormat), $val->getValue());
-
+        $this->assertSame(strtotime($iso8601), strtotime($val->getValue()));
         $this->assertEquals($this->wrapXml($xml), $val->saveXml());
     }
 

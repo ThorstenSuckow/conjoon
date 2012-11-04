@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Captcha
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: DumbTest.php 24748 2012-05-05 00:27:40Z adamlundrigan $
+ * @version    $Id: DumbTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_Captcha_DumbTest::main() if this source file is executed directly.
@@ -32,7 +32,7 @@ require_once 'Zend/View.php';
  * @category   Zend
  * @package    Zend_Captcha
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Captcha
  */
@@ -90,35 +90,6 @@ class Zend_Captcha_DumbTest extends PHPUnit_Framework_TestCase
         $html = $this->captcha->render(new Zend_View);
         $this->assertContains(strrev($word), $html);
         $this->assertNotContains($word, $html);
-    }
-
-    /**
-     * @group ZF-11522
-     */
-    public function testDefaultLabelIsUsedWhenNoAlternateLabelSet()
-    {
-        $this->assertEquals('Please type this word backwards', $this->captcha->getLabel());
-    }
-
-    /**
-     * @group ZF-11522
-     */
-    public function testChangeLabelViaSetterMethod()
-    {
-        $this->captcha->setLabel('Testing');
-        $this->assertEquals('Testing', $this->captcha->getLabel());
-    }
-
-    /**
-     * @group ZF-11522
-     */
-    public function testRendersLabelUsingProvidedValue()
-    {
-        $this->captcha->setLabel('Testing 123');
-
-        $id   = $this->captcha->generate('test');
-        $html = $this->captcha->render(new Zend_View);
-        $this->assertContains('Testing 123', $html);
     }
 }
 

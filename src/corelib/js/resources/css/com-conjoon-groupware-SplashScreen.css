@@ -12,10 +12,11 @@
  * $URL$
  */
 
-.com-conjoon-groupware-SplashScreen {
+.com-conjoon-groupware-SplashScreen-wrap {
     position:absolute;
     height:100%;
     width:100%;
+    z-index:1000000;
     top:0;
     left:0;
     background-image:url(../images/startup-bg.png);
@@ -24,18 +25,13 @@
     background-color:#355899;
 }
 
-.com-conjoon-groupware-SplashScreen .wrap {
-    height:100%;
-    width:100%;
-}
-
-.com-conjoon-groupware-SplashScreen .body {
+.com-conjoon-groupware-SplashScreen-body {
     height:315px;
     width:481px;
     background-image:url(../images/splash.png);
 }
 
-.com-conjoon-groupware-SplashScreen .body .errorPanel {
+.com-conjoon-groupware-SplashScreen-body .errorPanel {
     background-image:url(../images/splashscreen-error-bg.png);
     color:#FFFFFF;
     height:85px;
@@ -47,39 +43,39 @@
     display:none;
 }
 
-.com-conjoon-groupware-SplashScreen .body .errorPanel .textContainer {
+.com-conjoon-groupware-SplashScreen-body .errorPanel .textContainer {
     background-image:url(../images/32x32/actions/splashscreen-startup-error.png);
     background-repeat:no-repeat;
     height:86px;
     padding:0px 0px 0px 42px;
 }
 
-.com-conjoon-groupware-SplashScreen .body .errorPanel .textContainer .message {
+.com-conjoon-groupware-SplashScreen-body .errorPanel .textContainer .message {
     overflow:auto;
     height:60px;
 }
 
-.com-conjoon-groupware-SplashScreen .body .errorPanel .textContainer .notice {
+.com-conjoon-groupware-SplashScreen-body .errorPanel .textContainer .notice {
     font-weight:bold;
 }
 
-.com-conjoon-groupware-SplashScreen .progressBar {
+.com-conjoon-groupware-SplashScreen-progressBar {
     background-image:url(../images/splash-loading-bar.gif);
     background-repeat:no-repeat;
     height:20px;
 }
 
-.com-conjoon-groupware-SplashScreen .wrap .loadingCont .loading {
+.com-conjoon-groupware-SplashScreen-wrap .loadingCont .loading {
     background-image:url(../images/loading-processing.gif);
     background-repeat:no-repeat;
     height:20px;
     padding-left:20px;
 }
 
-.com-conjoon-groupware-SplashScreen .wrap .loadingCont .loading.done {
+.com-conjoon-groupware-SplashScreen-wrap .loadingCont .loading.done {
     background-image:url(../images/16x16/actions/groupware-success.png);
 }
 
-.com-conjoon-groupware-SplashScreen .wrap .loadingCont .loading.fail {
+.com-conjoon-groupware-SplashScreen-wrap .loadingCont .loading.fail {
     background-image:url(../images/16x16/actions/groupware-failure.png);
 }

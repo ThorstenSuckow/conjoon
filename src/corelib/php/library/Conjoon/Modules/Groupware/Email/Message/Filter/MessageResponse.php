@@ -36,7 +36,7 @@ require_once 'Conjoon/Filter/Raw.php';
  * @package    Conjoon_Modules_Groupware_Email
  * @category   Filter
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 class Conjoon_Modules_Groupware_Email_Message_Filter_MessageResponse extends Conjoon_Filter_Input {
 
@@ -91,7 +91,9 @@ class Conjoon_Modules_Groupware_Email_Message_Filter_MessageResponse extends Con
         'bcc' => array(
             array('EmailRecipients', false, false)
         ),
-
+        'date' => array(
+            'DateUtcToLocal'
+        )
     );
 
     protected function _init()
@@ -188,22 +190,13 @@ class Conjoon_Modules_Groupware_Email_Message_Filter_MessageResponse extends Con
                     ':-X'     => '<span class="emoticon sealed"></span>'
             ));
 
-            /**
-             * @see Conjoon_Text_Transformer_EmailAddressToHtml
-             */
-            require_once 'Conjoon/Text/Transformer/EmailAddressToHtml.php';
-
-            $transformer = new Conjoon_Text_Transformer_EmailAddressToHtml();
-
-            $data['body'] = $transformer->transform(
-                $plainToHtmlFilter->filter(
-                    $signatureFilter->filter(
-                        $quoteFilter->filter(
-                            $urlFilter->filter(
-                                $emoticonFilter->filter(
-                                    $lineFeedFilter->filter(
-                                        $data['body']
-                                    )
+            $data['body'] = $plainToHtmlFilter->filter(
+                $signatureFilter->filter(
+                    $quoteFilter->filter(
+                        $urlFilter->filter(
+                            $emoticonFilter->filter(
+                                $lineFeedFilter->filter(
+                                    $data['body']
                                 )
                             )
                         )

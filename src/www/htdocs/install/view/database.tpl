@@ -147,17 +147,16 @@ Please provide the name of the database.
 </tr>
 
 <tr>
- <td colspan="2">You can enter a prefix here that gets prepended to the tables created by conjoon.
-   This is helpful in cases where there is only one database available that gets used by multiple
-   applications, to prevent namespace clashes.
-  <br />
-  <div class="info_box">
+<td colspan="2">You can enter a prefix here that gets prepended to the tables created by conjoon.
+    This is helpful in cases where there is only one database available that gets used by multiple
+    applications, to prevent namespace clashes.
+    <br />
+    <div class="info_box">
         <strong>Note:</strong>
         The prefix entered here gets exactly prepended as specified. For example, specifying the prefix "cj_" will
         rename the table "users" to "cj_users". <br />Leave the field empty if you do not want to use
         a table prefix. This is only recommended for databases that were created explicitly for conjoon.
-  </div>
- </td>
+    </div>
 </tr>
 <?php if ($DATABASE['db_table_prefix_failed']) {?>
 <tr>

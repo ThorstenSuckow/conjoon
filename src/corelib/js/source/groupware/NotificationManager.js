@@ -39,9 +39,6 @@ com.conjoon.groupware.NotificationManager = function(){
             case 'emailAttachment':
                 fileName = options.attachmentName;
             break;
-            case 'file':
-                fileName = options.fileName;
-            break;
         }
 
         new Ext.ux.ToastWindow({

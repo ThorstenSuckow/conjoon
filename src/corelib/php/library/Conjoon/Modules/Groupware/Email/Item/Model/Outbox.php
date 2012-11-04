@@ -27,7 +27,7 @@ require_once 'Conjoon/Db/Table.php';
  * @subpackage Model
  * @category Model
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 class Conjoon_Modules_Groupware_Email_Item_Model_Outbox extends Conjoon_Db_Table {
 

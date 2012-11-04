@@ -51,8 +51,8 @@ dojo.loadInit(function(){
 		for(var i = 0; i < renderers.length; ++i){
 			switch(renderers[i]){
 				case "svg":
-					// the next test is from https://github.com/phiggins42/has.js
-					if("SVGAngle" in dojo.global){
+					//	iPhone OS builds greater than 5F1 should have SVG.
+					if(!dojo.isIE && (!iPhoneOsBuild || iPhoneOsBuild >= 0x5f1) && !androidVersion && !dojo.isAIR){
 						dojox.gfx.renderer = "svg";
 					}
 					break;

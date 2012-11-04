@@ -24,11 +24,6 @@ require_once 'Conjoon/BeanContext.php';
 require_once 'Conjoon/Modules/Groupware/Email/Draft/Dto.php';
 
 /**
- * @see Conjoon_Modules_Groupware_Email_Attachment
- */
-require_once 'Conjoon/Modules/Groupware/Email/Attachment.php';
-
-/**
  * Class modelling an email draft, i.e. a message that is about to be send.
  *
  * @uses       Conjoon_BeanContext
@@ -36,7 +31,7 @@ require_once 'Conjoon/Modules/Groupware/Email/Attachment.php';
  * @package    Conjoon_Groupware
  * @subpackage Email
  *
- * @author Thorsten-Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten-Suckow-Homberg <ts@siteartwork.de>
  */
 
 class Conjoon_Modules_Groupware_Email_Draft implements Conjoon_BeanContext, Serializable {
@@ -53,17 +48,15 @@ class Conjoon_Modules_Groupware_Email_Draft implements Conjoon_BeanContext, Seri
     private $to;
     private $cc;
     private $bcc;
-    private $attachments;
 
     /**
      * Constructor.
      */
     public function __construct()
     {
-        $this->to          = array();
-        $this->cc          = array();
-        $this->bcc         = array();
-        $this->attachments = array();
+        $this->to  = array();
+        $this->cc  = array();
+        $this->bcc = array();
     }
 
 // -------- accessors
@@ -80,7 +73,6 @@ class Conjoon_Modules_Groupware_Email_Draft implements Conjoon_BeanContext, Seri
     public function getBcc(){return $this->bcc;}
     public function getInReplyTo(){return $this->inReplyTo;}
     public function getReferences(){return $this->references;}
-    public function getAttachments(){return $this->attachments;}
 
 
     public function setId($id){$this->id = $id;}
@@ -95,11 +87,8 @@ class Conjoon_Modules_Groupware_Email_Draft implements Conjoon_BeanContext, Seri
     public function setBcc(Array $bcc){$this->bcc = $bcc;}
     public function setInReplyTo($inReplyTo){$this->inReplyTo = $inReplyTo;}
     public function setReferences($references){$this->references = $references;}
-    public function setAttachments(array $attachments){$this->attachments = $attachments;}
 
-    public function addAttachment(Conjoon_Modules_Groupware_Email_Attachment $attachment) {
-        $this->attachments[] = $attachment;
-    }
+
 
 // -------- interface Serializable
     /**
@@ -163,12 +152,6 @@ class Conjoon_Modules_Groupware_Email_Draft implements Conjoon_BeanContext, Seri
                         $to[] = $this->to[$i]->getDto();
                     }
                     $dto->$key = $to;
-                } else if ($key == 'attachments') {
-                    $attachments = array();
-                    for ($i = 0; $i < count($this->attachments); $i++) {
-                        $attachments[] = $this->attachments[$i]->getDto();
-                    }
-                    $dto->$key = $attachments;
                 } else {
                     $dto->$key = $value;
                 }
@@ -198,10 +181,6 @@ class Conjoon_Modules_Groupware_Email_Draft implements Conjoon_BeanContext, Seri
         for ($i = 0; $i < count($this->to); $i++) {
             $to[] = $this->to[$i]->toArray();
         }
-        $attachments = array();
-        for ($i = 0; $i < count($this->attachments); $i++) {
-            $attachments[] = $this->attachments[$i]->toArray();
-        }
 
         return array(
 
@@ -215,7 +194,6 @@ class Conjoon_Modules_Groupware_Email_Draft implements Conjoon_BeanContext, Seri
             'to'                       => $to,
             'cc'                       => $cc,
             'bcc'                      => $bcc,
-            'attachments'              => $attachments,
             'inReplyTo'                => $this->inReplyTo,
             'references'               => $this->references
         );
@@ -250,12 +228,6 @@ class Conjoon_Modules_Groupware_Email_Draft implements Conjoon_BeanContext, Seri
                     $bcc[] = $this->bcc[$i]->__toString();
                 }
                 $strs[] = 'bcc: ['.implode(',', $bcc).']';
-            } else if ($key == 'attachments') {
-                $attachments = array();
-                for ($i = 0; $i < count($this->attachments); $i++) {
-                    $attachments[] = $this->attachments[$i]->__toString();
-                }
-                $strs[] = 'attachments: ['.implode(';', $attachments).']';
             } else {
                 $strs[] = $key.': '.$value;
             }

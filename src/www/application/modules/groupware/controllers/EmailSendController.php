@@ -20,7 +20,7 @@ require_once 'Zend/Controller/Action.php';
 
 /**
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 class Groupware_EmailSendController extends Zend_Controller_Action {
 
@@ -65,9 +65,7 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
      *       field. Addresses may be separated by a comma "," or a semicolon ";"
      * - bcc: An json encoded array with all addresses being specified in the "bcc"
      *        field. Addresses may be separated by a comma "," or a semicolon ";"
-     * - attachments: An array with attachments, structure according to
-     * com.conjoon.cudgets.data.FileRecord. ids for files will be stored in
-     * the orgId property
+     *
      * The view awaits a fully configured email item as the response.
      */
     public function sendAction()
@@ -92,28 +90,10 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
              return;
         }
 
-        /**
-         * @see Conjoon_Modules_Groupware_Email_Address
-         */
+
         require_once 'Conjoon/Modules/Groupware/Email/Address.php';
-
-        /**
-         * @see Conjoon_Modules_Groupware_Email_Draft
-         */
         require_once 'Conjoon/Modules/Groupware/Email/Draft.php';
-
-
-        /**
-         * @see Conjoon_BeanContext_Inspector
-         */
         require_once 'Conjoon/BeanContext/Inspector.php';
-
-
-        $postedAttachments = $data['attachments'];
-        $data['attachments'] = array();
-
-        $removeAttachmentIds = $data['removedAttachments'];
-        unset($data['removedAttachments']);
 
         // create the message object here
         $to  = array();
@@ -146,15 +126,7 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
         $data['bcc'] = $bcc;
 
         // get the specified account for the user
-
-        /**
-         * @see Conjoon_BeanContext_Decorator
-         */
         require_once 'Conjoon/BeanContext/Decorator.php';
-
-        /**
-         * @see Conjoon_Keys
-         */
         require_once 'Conjoon/Keys.php';
 
         $accountDecorator = new Conjoon_BeanContext_Decorator(
@@ -186,38 +158,10 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
                 true
         );
 
-        $updateCache = false;
-
-        // check whether we need to apply attachments for a previously saved
-        // draft
-        if ($message->getId() > 0) {
-
-            $updateCache = true;
-
-            /**
-             * @see Conjoon_Modules_Groupware_Email_Attachment_Filter_AttachmentResponse
-             */
-            require_once 'Conjoon/Modules/Groupware/Email/Attachment/Filter/AttachmentResponse.php';
-            $attDecorator = new Conjoon_BeanContext_Decorator(
-                'Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment',
-                new Conjoon_Modules_Groupware_Email_Attachment_Filter_AttachmentResponse(
-                    array(),
-                    Conjoon_Modules_Groupware_Email_Attachment_Filter_AttachmentResponse::CONTEXT_RESPONSE
-                )
-            );
-            $atts = $attDecorator->getAttachmentsForItemAsEntity($message->getId());
-            $message->setAttachments($atts);
-        }
-
-        /**
-         * @see Conjoon_Modules_Groupware_Email_Sender
-         */
         require_once 'Conjoon/Modules/Groupware/Email/Sender.php';
 
         try {
-            $mail = Conjoon_Modules_Groupware_Email_Sender::send(
-                $message, $account, $postedAttachments, $removeAttachmentIds
-            );
+            $mail = Conjoon_Modules_Groupware_Email_Sender::send($message, $account);
         } catch (Exception $e) {
             require_once 'Conjoon/Error.php';
             $error = new Conjoon_Error();
@@ -259,8 +203,7 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
         );
 
         $item = $itemDecorator->saveSentEmailAsDto(
-            $message, $account, $userId, $mail, $data['type'], $data['referencesId'],
-            $postedAttachments, $removeAttachmentIds
+            $message, $account, $userId, $mail, $data['type'], $data['referencesId']
         );
 
         if (!$item) {
@@ -275,22 +218,6 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
             $this->view->item    = null;
             return;
         }
-
-        if ($updateCache) {
-
-            /**
-             * @see Conjoon_Modules_Groupware_Email_Message_Facade
-             */
-            require_once 'Conjoon/Modules/Groupware/Email/Message/Facade.php';
-
-            // update cache
-            Conjoon_Modules_Groupware_Email_Message_Facade::getInstance()
-                ->removeMessageFromCache(
-                    $item->id,
-                    $this->_helper->registryAccess()->getUserId()
-            );
-        }
-
 
         // if the sent email referenced an existing message, tr to fetch this message
         // and send it along as context-referenced item

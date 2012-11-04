@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
+ * licensing@extjs.com
+ * http://www.extjs.com/license
  */
 /* Grid3 styles */
 .x-grid3 {
@@ -69,16 +69,6 @@
 	text-overflow: ellipsis;
     padding:3px 3px 3px 5px;
     white-space: nowrap;
-}
-
-/* ActionColumn, reduce padding to accommodate 16x16 icons in normal row height */
-.x-action-col-cell .x-grid3-cell-inner {
-    padding-top: 1px;
-    padding-bottom: 1px;
-}
-
-.x-action-col-icon {
-    cursor: pointer;
 }
 
 .x-grid3-hd-inner {
@@ -358,7 +348,7 @@ td.x-grid3-hd-over .x-grid3-hd-inner, td.sort-desc .x-grid3-hd-inner, td.sort-as
 .x-grid3-col-dd {
     border:0 none;
     padding:0;
-    background-color:transparent;
+    background:transparent;
 }
 
 .x-dd-drag-ghost .x-grid3-dd-wrap {
@@ -571,15 +561,6 @@ a.x-grid3-hd-btn:hover {
 .ext-ie6 .x-grid3-header {
     position: relative;
 }
-
-/* Fix WebKit bug in Grids */
-.ext-webkit .x-grid-panel .x-panel-bwrap{
-    -webkit-user-select:none;
-}
-.ext-webkit .x-tbar-page-number{
-    -webkit-user-select:ignore;
-}
-/* end*/
 
 /* column lines */
 .x-grid-with-col-lines .x-grid3-row td.x-grid3-cell {

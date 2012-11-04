@@ -102,7 +102,7 @@
  * @category   Conjoon
  * @package    Conjoon_BeanContext
  *
- * @author Thorsten-Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten-Suckow-Homberg <ts@siteartwork.de>
  */
 interface Conjoon_BeanContext {
 
