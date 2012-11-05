@@ -48,9 +48,24 @@ com.conjoon.cudgets.localCache.Adapter = function() {
         /**
          * @event beforebuild
          * Gets fired before an attempt is made to build the local cache.
+         * Listeners should return false to cancel invoking a build.
          * @param {com.conjoon.cudgets.localCache.Adapter}
          */
         'beforebuild',
+        /**
+         * @event build
+         * Gets fired after the beforebuild event if no buildcancel was
+         * triggered and tells the observers that the request for building is
+         * now happening.
+         * @param {com.conjoon.cudgets.localCache.Adapter}
+         */
+        'build',
+        /**
+         * @event buildcancel
+         * Gets fired when any listener for the beforebuild-event returns false.
+         * @param {com.conjoon.cudgets.localCache.Adapter}
+         */
+        'buildcancel',
         /**
          * @event buildsuccess
          * gets fired when building the cache was successfull.

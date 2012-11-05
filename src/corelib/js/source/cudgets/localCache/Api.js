@@ -34,7 +34,9 @@ com.conjoon.cudgets.localCache.Api = function() {
         clearfailure : [],
         beforebuild  : [],
         buildsuccess : [],
-        buildfailure : []
+        buildfailure : [],
+        buildcancel  : [],
+        build        : []
     };
 
     var checkForAdapter = function() {
@@ -48,6 +50,12 @@ com.conjoon.cudgets.localCache.Api = function() {
         switch (type) {
             case 'beforebuild':
                 return listeners.beforebuild;
+
+            case 'buildcancel':
+                return listeners.buildcancel;
+
+            case 'build':
+                return listeners.build;
 
             case 'beforeclear':
                 return listeners.beforeclear;
@@ -98,14 +106,25 @@ com.conjoon.cudgets.localCache.Api = function() {
 
     var callListener = function(type, adapter) {
 
-        var cb             = getListenersForType(type);
-        var callbackConfig = null;
+        var cb             = getListenersForType(type),
+            callbackConfig = null,
+            ret            = true;
 
         for (var i = 0, len = cb.length; i < len; i++) {
             callbackConfig = cb[i];
-            callbackConfig[0].call(callbackConfig[1], adapter);
+
+            if (type == 'beforebuild') {
+                ret = callbackConfig[0].call(callbackConfig[1], adapter);
+
+                if (ret === false) {
+                    break;
+                }
+            } else {
+                callbackConfig[0].call(callbackConfig[1], adapter);
+            }
         }
 
+        return ret;
     };
 
     return {
@@ -142,6 +161,16 @@ com.conjoon.cudgets.localCache.Api = function() {
             addListener('beforebuild', fn, scope);
         },
 
+        onBuild : function(fn, scope)
+        {
+            addListener('build', fn, scope);
+        },
+
+        onBuildCancel : function(fn, scope)
+        {
+            addListener('buildcancel', fn, scope);
+        },
+
         onBuildSuccess : function(fn, scope)
         {
             addListener('buildsuccess', fn, scope);
@@ -170,6 +199,16 @@ com.conjoon.cudgets.localCache.Api = function() {
         unBeforeBuild : function(fn, scope)
         {
             removeListener('beforebuild', fn, scope);
+        },
+
+        unBuildCancel : function(fn, scope)
+        {
+            removeListener('buildcancel', fn, scope);
+        },
+
+        unBuild : function(fn, scope)
+        {
+            removeListener('build', fn, scope);
         },
 
         unBuildSuccess : function(fn, scope)
@@ -241,12 +280,22 @@ com.conjoon.cudgets.localCache.Api = function() {
             );
             appAdapter.on(
                 'beforebuild',
-                function(adapter){callListener('beforebuild', adapter);},
+                function(adapter){return callListener('beforebuild', adapter);},
+                Api
+            );
+            appAdapter.on(
+                'build',
+                function(adapter){return callListener('build', adapter);},
                 Api
             );
             appAdapter.on(
                 'buildsuccess',
                 function(adapter){callListener('buildsuccess', adapter);},
+                Api
+            );
+            appAdapter.on(
+                'buildcancel',
+                function(adapter){callListener('buildcancel', adapter);},
                 Api
             );
             appAdapter.on(
