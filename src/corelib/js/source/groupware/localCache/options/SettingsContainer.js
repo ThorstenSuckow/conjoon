@@ -189,6 +189,32 @@ com.conjoon.groupware.localCache.options.SettingsContainer = Ext.extend(Ext.Cont
     },
 
     /**
+     * Returns true if there are any outstanding changes in the caching
+     * container.
+     *
+     * @return {Boolean}
+     */
+    isCachingOptionDirty : function()
+    {
+        var cachingContainer = this.getCachingContainer(),
+            mapping          = cachingContainer.getRegistryCheckboxMapping(),
+            enableAll        = cachingContainer.getCacheAllCheckbox().getValue(),
+            Registry         = com.conjoon.groupware.Registry,
+            checked          = false,
+            i                = null;
+
+        for (var i in mapping) {
+            checked = (enableAll ? true : mapping[i].getValue());
+
+            if (Registry.get(i) != checked) {
+                return true;
+            }
+        }
+
+        return false;
+    },
+
+    /**
      * Saves the configuration.
      *
      * @return {Boolean} true if there were values which have to be saved

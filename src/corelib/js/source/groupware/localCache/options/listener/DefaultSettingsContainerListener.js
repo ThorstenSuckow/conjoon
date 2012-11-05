@@ -62,7 +62,7 @@ com.conjoon.groupware.localCache.options.listener.DefaultSettingsContainerListen
         Api.onBeforeClear(this.onLocalCacheApiBeforeClear,   this);
         Api.onClearSuccess(this.onLocalCacheApiClearSuccess, this);
         Api.onClearFailure(this.onLocalCacheApiClearFailure, this);
-        Api.onBeforeBuild(this.onLocalCacheApiBeforeBuild,   this);
+        Api.onBuild(this.onLocalCacheApiBuild,               this);
         Api.onBuildSuccess(this.onLocalCacheApiBuildSuccess, this);
         Api.onBuildFailure(this.onLocalCacheApiBuildFailure, this);
 
@@ -85,7 +85,7 @@ com.conjoon.groupware.localCache.options.listener.DefaultSettingsContainerListen
         Api.unBeforeClear(this.onLocalCacheApiBeforeClear,   this);
         Api.unClearSuccess(this.onLocalCacheApiClearSuccess, this);
         Api.unClearFailure(this.onLocalCacheApiClearFailure, this);
-        Api.unBeforeBuild(this.onLocalCacheApiBeforeBuild,   this);
+        Api.unBuild(this.onLocalCacheApiBuild,               this);
         Api.unBuildSuccess(this.onLocalCacheApiBuildSuccess, this);
         Api.unBuildFailure(this.onLocalCacheApiBuildFailure, this);
     },
@@ -178,12 +178,12 @@ com.conjoon.groupware.localCache.options.listener.DefaultSettingsContainerListen
     },
 
     /**
-     * Listener for the local cache Api's "beforebuild" event. Will call the
+     * Listener for the local cache Api's "build" event. Will call the
      * setRequestPending() method of the container.
      *
      * @param {com.conjoon.cudgets.localCache.Adapter} adapter
      */
-    onLocalCacheApiBeforeBuild : function(adapter)
+    onLocalCacheApiBuild : function(adapter)
     {
         this.container.setRequestPending(true, this.container.REQUEST_BUILD);
     },

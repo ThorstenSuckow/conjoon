@@ -108,6 +108,7 @@ com.conjoon.groupware.localCache.options.listener.DefaultOptionsDialogListener.p
         Api.onClearSuccess(this.onLocalCacheApiClearSuccess, this);
         Api.onClearFailure(this.onLocalCacheApiClearFailure, this);
         Api.onBeforeBuild(this.onLocalCacheApiBeforeBuild,   this);
+        Api.onBuild(this.onLocalCacheApiBuild,               this);
         Api.onBuildSuccess(this.onLocalCacheApiBuildSuccess, this);
         Api.onBuildFailure(this.onLocalCacheApiBuildFailure, this);
 
@@ -136,6 +137,7 @@ com.conjoon.groupware.localCache.options.listener.DefaultOptionsDialogListener.p
         Api.unClearSuccess(this.onLocalCacheApiClearSuccess, this);
         Api.unClearFailure(this.onLocalCacheApiClearFailure, this);
         Api.unBeforeBuild(this.onLocalCacheApiBeforeBuild,   this);
+        Api.unBuild(this.onLocalCacheApiBuild,               this);
         Api.unBuildSuccess(this.onLocalCacheApiBuildSuccess, this);
         Api.unBuildFailure(this.onLocalCacheApiBuildFailure, this);
     },
@@ -223,6 +225,70 @@ com.conjoon.groupware.localCache.options.listener.DefaultOptionsDialogListener.p
      * @param {com.conjoon.cudgets.localCache.Adapter} adapter
      */
     onLocalCacheApiBeforeBuild : function(adapter)
+    {
+        if (!this.dialog.getSettingsContainer().isCachingOptionDirty()) {
+            return true;
+        }
+
+        this.dialog.showConfirmDialog(
+            com.conjoon.Gettext.gettext("Confirm changes"),
+            com.conjoon.Gettext.gettext("You have made changes to the cache. Do you wish to save those changes first?"),
+            this.onConfirmSubmitChanges, this
+        );
+
+        return false;
+    },
+
+    /**
+     * Callback for the confirm dialog.
+     * buttonId "yes" will save the settings, then rebuild the cache. "no"
+     * will simply rebuild the cache without considering the changes.
+     *
+     * @param {String} buttonId The id of the button that was clicked.
+     *                          Either "yes" or "no"
+     *
+     * @throws Exception if buttonId did not equal to yes or no
+     */
+    onConfirmSubmitChanges : function(buttonId)
+    {
+        var settingsContainer = this.dialog.getSettingsContainer(),
+            Api               = com.conjoon.cudgets.localCache.Api,
+            func              = function() {
+                Api.unBeforeBuild(this.onLocalCacheApiBeforeBuild, this);
+                settingsContainer.getCachingContainer().rebuildCache();
+                Api.onBeforeBuild(this.onLocalCacheApiBeforeBuild, this);
+            },
+            single            = {single : true},
+            applyFunc         = function() {
+                settingsContainer.on('setsuccess', func, this, single);
+            };
+
+        if (buttonId == 'yes') {
+
+            settingsContainer.on('beforeset', applyFunc, this, single);
+            settingsContainer.on('setfailure', function() {
+                settingsContainer.un('setsuccess', func, this);
+            }, this, single);
+
+            this.dialog.getSettingsContainer().saveSettings();
+            return;
+        }
+
+        if (buttonId == 'no') {
+            func.call(this);
+            return;
+        }
+
+        // not yes or no? throw exception to indicate that something went wrong
+        throw("buttonId was \""+buttonId+"\"");
+    },
+
+    /**
+     * Listener for the local cache Api's "build" event.
+     *
+     * @param {com.conjoon.cudgets.localCache.Adapter} adapter
+     */
+    onLocalCacheApiBuild : function(adapter)
     {
         this.applyButtonDisabled = this.dialog.getApplyButton().disabled;
         this.dialog.setControlsDisabled(true, true);

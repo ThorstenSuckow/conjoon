@@ -191,6 +191,28 @@ com.conjoon.groupware.localCache.options.ui.DefaultOptionsDialogUi.prototype = {
         });
 
         com.conjoon.SystemMessageManager.error(msg);
+    },
+
+    /**
+     * Shows a confirmation dialog.
+     *
+     * @param {String} title The title for the dialog
+     * @param {String} msg The msg for the dialog
+     * @param {Function} callback The callback for confirmation
+     *                            (ok button clicked)
+     * @param {Object} scope The scope for the callback
+     */
+    buildConfirmDialog : function(title, msg, callback, scope)
+    {
+        var msg = new com.conjoon.SystemMessage({
+            title : title,
+            text  : msg,
+            type  : com.conjoon.SystemMessage.TYPE_CONFIRM
+        });
+
+        com.conjoon.SystemMessageManager.confirm(
+            msg, {fn : callback, scope : scope}
+        );
     }
 
 };

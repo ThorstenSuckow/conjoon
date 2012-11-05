@@ -56,31 +56,24 @@ com.conjoon.groupware.localCache.Html5Adapter = function() {
         var EventManager = Ext.EventManager;
 
         EventManager.on(appCache, 'error', function(e) {
-            //console.log('error');
             this.fireEvent('error', this, e);
         } , this);
         EventManager.on(appCache, 'noupdate', function(e) {
-            //console.log('noupdate');
             this.fireEvent('noupdate', this, e);
         } , this);
         EventManager.on(appCache, 'downloading', function(e) {
-            //console.log('downloading');
             this.fireEvent('downloading', this, e);
         } , this);
         EventManager.on(appCache, 'progress', function(e) {
-            //console.log('progress');
             this.fireEvent('progress', this, e);
         } , this);
         EventManager.on(appCache, 'updateready', function(e) {
-            //console.log('updateready');
             this.fireEvent('updateready', this, e);
         } , this);
         EventManager.on(appCache, 'cached', function(e) {
-            //console.log('cached');
             this.fireEvent('cached', this, e);
         } , this);
         EventManager.on(appCache, 'obsolete', function(e) {
-            //console.log('obsolete');
             this.fireEvent('obsolete', this, e);
         } , this);
     }
@@ -174,7 +167,12 @@ Ext.extend(com.conjoon.groupware.localCache.Html5Adapter, com.conjoon.cudgets.lo
      */
     buildCache : function()
     {
-        this.fireEvent('beforebuild', this);
+        if(this.fireEvent('beforebuild', this) === false) {
+            this.fireEvent('buildcancel', this);
+            return;
+        }
+
+        this.fireEvent('build', this);
 
         com.conjoon.defaultProvider.applicationCache.setClearFlag(
             {clear : true},

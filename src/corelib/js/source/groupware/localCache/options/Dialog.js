@@ -177,6 +177,20 @@ com.conjoon.groupware.localCache.options.Dialog = Ext.extend(Ext.Window, {
     showErrorDialog : function(title, msg)
     {
         this.ui.buildErrorDialog(title, msg);
+    },
+
+    /**
+     * Shows a confirm dialog with the specified message.
+     *
+     * @param {String} title The title for the dialog
+     * @param {String} msg The message to display
+     * @param {Function} callback The callback for confirmation
+     *                            (ok button clicked)
+     * @param {Object} scope The scope for the callback
+     */
+    showConfirmDialog : function(title, msg, callback, scope)
+    {
+        this.ui.buildConfirmDialog(title, msg, callback, scope);
     }
 
 });
