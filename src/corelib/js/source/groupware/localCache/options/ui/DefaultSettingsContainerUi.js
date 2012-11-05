@@ -110,7 +110,7 @@ com.conjoon.groupware.localCache.options.ui.DefaultSettingsContainerUi.prototype
                             items  : [
                                 this.container.getCachingContainer()
                             ],
-                            disabled : !cacheAvailable,
+                            disabled : !cacheAvailable
                         })
                     ]
                 })
