@@ -62,15 +62,8 @@ class ApplicationCacheController extends Zend_Controller_Action {
     public function getManifestAction()
     {
         $this->_response->setHeader(
-            'Content-Type', 'text/cache-manifest', true);
-       // $this->_response->setHeader(
-       //     'Expires', 'Mon, 26 Jul 1990 05:00:00 GMT', true);
-       // $this->_response->setHeader(
-       //     'Last-Modified', gmdate('D, d M Y H:i:s') . ' GMT', true);
-       // $this->_response->setHeader(
-       //     'Pragma', 'no-cache', true);
-       // $this->_response->setHeader(
-       //     'Cache-Control', 'no-store, no-cache, must-revalidate', true);
+            'Content-Type', 'text/cache-manifest', true
+        );
 
         /**
          * @see Zend_Session_Namespace
