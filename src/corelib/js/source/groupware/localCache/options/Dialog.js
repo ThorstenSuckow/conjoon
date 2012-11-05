@@ -18,6 +18,9 @@ Ext.namespace('com.conjoon.groupware.localCache.options');
  * This options dialog lets the user manage his local Google Gear cache for static
  * resources from conjoon.
  *
+ * There may only be one instance opened of this dialog at a time.See code
+ * at the bottom of the file.
+ *
  * @class com.conjoon.groupware.localCache.options.Dialog
  * @extends Ext.Window
  */
