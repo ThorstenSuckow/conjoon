@@ -307,11 +307,15 @@ Ext.extend(com.conjoon.groupware.localCache.Html5Adapter, com.conjoon.cudgets.lo
     {
         this.progressIndex++;
 
+        this.cacheEntryCount = this.cacheEntryCount < this.progressIndex
+                               ? this.progressIndex
+                               : this.cacheEntryCount;
+
+
         com.conjoon.SystemMessageManager.updateProgress(
             this.progressIndex/this.cacheEntryCount,
             String.format(
-                this.progressText,
-                this.progressIndex, this.cacheEntryCount
+                this.progressText, this.progressIndex, this.cacheEntryCount
             )
         );
     },
@@ -442,6 +446,7 @@ Ext.extend(com.conjoon.groupware.localCache.Html5Adapter, com.conjoon.cudgets.lo
      * For example, if there are no entries in the manifest file, Chrome adds
      * silently two entries: one for the manifest, one for the file where the
      * manifest was loaded.
+     * Number for isGecko is just a guess.
      *
      * @return {Number}
      */
