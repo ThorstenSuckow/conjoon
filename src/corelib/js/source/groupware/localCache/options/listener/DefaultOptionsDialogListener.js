@@ -204,7 +204,7 @@ com.conjoon.groupware.localCache.options.listener.DefaultOptionsDialogListener.p
      */
     onLocalCacheApiClearSuccess : function(adapter)
     {
-        this.dialog.setControlsDisabled(false, true);
+        this.dialog.setControlsDisabled(false, this.applyButtonDisabled);
     },
 
     /**
@@ -214,7 +214,7 @@ com.conjoon.groupware.localCache.options.listener.DefaultOptionsDialogListener.p
      */
     onLocalCacheApiClearFailure : function(adapter)
     {
-        this.dialog.setControlsDisabled(false, true);
+        this.dialog.setControlsDisabled(false, this.applyButtonDisabled);
     },
 
     /**
