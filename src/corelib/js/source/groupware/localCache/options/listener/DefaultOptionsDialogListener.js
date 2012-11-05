@@ -224,6 +224,7 @@ com.conjoon.groupware.localCache.options.listener.DefaultOptionsDialogListener.p
      */
     onLocalCacheApiBeforeBuild : function(adapter)
     {
+        this.applyButtonDisabled = this.dialog.getApplyButton().disabled;
         this.dialog.setControlsDisabled(true, true);
     },
 
