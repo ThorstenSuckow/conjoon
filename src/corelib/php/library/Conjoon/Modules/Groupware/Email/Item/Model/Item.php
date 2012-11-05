@@ -691,8 +691,9 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
                     break;
                 }
 
-
             }
+
+            $adapter->commit();
         } catch (Exception $e) {
             $adapter->rollBack();
             return null;
@@ -864,6 +865,7 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
                 break;
             }
 
+            $adapter->commit();
         } catch (Exception $e) {
             $adapter->rollBack();
             return null;
