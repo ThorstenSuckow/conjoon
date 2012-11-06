@@ -40,5 +40,8 @@
  <br />
 
  <input style="width:700px" type="text" name="doc_path" value="<?php echo $_SESSION['doc_path']; ?>" />
+
+ <?php echo conjoon_configInfoSnippet('Document path/Base url', 'environment.base_url'); ?>
+
  <input type="hidden" name="doc_path_post" value="1" />
 </p>

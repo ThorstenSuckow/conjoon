@@ -48,6 +48,10 @@ The specified folder is not readable. Please check the file permissions or chose
 <?php } ?>
 
  <input style="width:700px" type="text" name="lib_path" value="<?php echo $_SESSION['lib_path']; ?>" />
+
+ <?php echo conjoon_configInfoSnippet('Library path', 'environment.include_path'); ?>
+
+
  <br />
  <br />
  <input id="aipcb" <?php echo ($_SESSION['add_include_path'] ? "checked=\"checked\"" :"" ); ?> type="checkbox" name="add_include_path" value="1" />  <label for="aipcb">Let conjoon add this path to php's include_path (uncheck this if you have access to the php.ini and can edit the include_path setting on your own)</label>

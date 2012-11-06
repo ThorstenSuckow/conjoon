@@ -55,9 +55,20 @@ session_start();
        $_SESSION['app_credentials'] = $INSTALLATION_INFO[count($INSTALLATION_INFO)-1]['app_credentials'];
    }
 
+    if (file_exists('../config.ini.php') && !isset($_SESSION['config_info'])) {
+        $_SESSION['remove_config_ini_php'] = true;
+        $_SESSION['config_info'] = @parse_ini_file('../config.ini.php', true);
+    }
+
+    if (!isset($_SESSION['config_info'])) {
+        $_SESSION['remove_config_ini_php'] = false;
+        $_SESSION['config_info']           = false;
+    }
+
    if (!isset($_SESSION['installation_info'])) {
        $_SESSION['installation_info'] = array();
    }
+
 
 
 // +----------------------------------------------------------------------------

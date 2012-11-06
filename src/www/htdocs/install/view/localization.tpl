@@ -27,6 +27,7 @@ For proper calculating times and dates, conjoon needs to know the timezone in wh
 <tr>
 <td colspan="2">Please chose the timezone in which the application runs in</td>
 </tr>
+
 <tr>
 <td>Application's timezone:</td>
 <td><select name="locale_timezone_default">
@@ -35,6 +36,10 @@ For proper calculating times and dates, conjoon needs to know the timezone in wh
     <?php } ?>
  </select></td>
 </tr>
+
+<tr><td colspan="2">
+    <?php echo conjoon_configInfoSnippet('Application\'s timezone', 'application.locale.date.timezone'); ?>
+</td></tr>
 
 <tr>
 <td colspan="2">&nbsp;</td>
@@ -57,6 +62,7 @@ value cannot be read or is erroneous.
     <?php } ?>
  </select></td>
 </tr>
+
 
 <tr>
 <td colspan="2">&nbsp;</td>

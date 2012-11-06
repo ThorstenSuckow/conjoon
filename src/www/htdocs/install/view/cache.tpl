@@ -61,6 +61,8 @@ Do you want to enable caching?
   <br />
  <input onclick="showCacheOptions(false);" id="radio_no" <?php echo !$CACHE['default.caching'] ? "checked=\"checked\"" : ""; ?> type="radio" name="default.caching" value="0" /><label for="radio_no">No</label>
 </div>
+<?php echo conjoon_cacheEnabledSnippet('Cache enabled', 'cache.default.caching'); ?>
+
 </p>
 
 <div id="cacheOptionsContainer" style="<?php echo $CACHE['default.caching'] ? "" : "display:none;" ?>">
@@ -78,6 +80,8 @@ Do you want to enable caching?
    <br />
   <input id="dbcache_no" <?php echo !$CACHE['db.metadata.caching'] ? "checked=\"checked\"" : ""; ?> type="radio" name="db.metadata.caching" value="0" /><label for="dbcache_no">No</label>
  </div>
+ <?php echo conjoon_cacheEnabledSnippet('Database metadata cache enabled', 'cache.db.metadata.caching'); ?>
+
 
  <!-- ERRORS -->
  <?php if (isset($CACHE['db.metadata.install_failed'])) { ?>
@@ -92,6 +96,7 @@ Do you want to enable caching?
   Path:
   <br />
   <input style="width:100%" id="db_cache_path" type="text" name="db.metadata.backend.cache_dir" value="<?php echo $CACHE['db.metadata.backend.cache_dir']; ?>" />
+  <?php echo conjoon_cacheDirSnippet('Database metadata cache directory', 'cache.db.metadata.backend.cache_dir'); ?>
  </p>
 <!-- ^^ EO DB CACHE -->
 
@@ -117,6 +122,8 @@ Do you want to enable caching?
    <br />
   <input id="emailmessage_no" <?php echo !$CACHE['email.message.caching'] ? "checked=\"checked\"" : ""; ?> type="radio" name="email.message.caching" value="0" /><label for="emailmessage_no">No</label>
  </div>
+ <?php echo conjoon_cacheEnabledSnippet('Email message cache enabled', 'cache.email.message.caching'); ?>
+
 
  <!-- ERRORS -->
  <?php if (isset($CACHE['email.message.install_failed'])) { ?>
@@ -131,6 +138,7 @@ Do you want to enable caching?
   Path:
   <br />
   <input style="width:100%" id="emailmessage_cache_path" type="text" name="email.message.backend.cache_dir" value="<?php echo $CACHE['email.message.backend.cache_dir']; ?>" />
+  <?php echo conjoon_cacheDirSnippet('Email message cache directory', 'cache.email.message.backend.cache_dir'); ?>
  <!-- ^^ EO EMAIL MESSAGES -->
 
  <!-- EMAIL ACCOUNTS -->
@@ -148,7 +156,7 @@ Do you want to enable caching?
    <br />
   <input id="emailaccounts_no" <?php echo !$CACHE['email.accounts.caching'] ? "checked=\"checked\"" : ""; ?> type="radio" name="email.accounts.caching" value="0" /><label for="emailaccounts_no">No</label>
  </div>
-
+ <?php echo conjoon_cacheEnabledSnippet('Email accounts cache enabled', 'cache.email.accounts.caching'); ?>
  <!-- ERRORS -->
  <?php if (isset($CACHE['email.accounts.install_failed'])) { ?>
      <?php if ($CACHE['email.accounts.install_failed'] === true) { ?>
@@ -162,6 +170,7 @@ Do you want to enable caching?
   Path:
   <br />
   <input style="width:100%" id="emailaccounts_cache_path" type="text" name="email.accounts.backend.cache_dir" value="<?php echo $CACHE['email.accounts.backend.cache_dir']; ?>" />
+  <?php echo conjoon_cacheDirSnippet('Email accounts cache directory', 'cache.email.accounts.backend.cache_dir'); ?>
  <!-- ^^ EO EMAIL ACCOUNTS -->
  </p>
 <!-- ^^ EO EMAIL CACHE -->
@@ -188,6 +197,7 @@ Do you want to enable caching?
    <br />
   <input id="fi_no" <?php echo !$CACHE['feed.item.caching'] ? "checked=\"checked\"" : ""; ?> type="radio" name="feed.item.caching" value="0" /><label for="fi_no">No</label>
  </div>
+ <?php echo conjoon_cacheEnabledSnippet('Feed item cache enabled', 'cache.feed.item.caching'); ?>
 
  <!-- ERRORS -->
  <?php if (isset($CACHE['feed.item.install_failed'])) { ?>
@@ -202,6 +212,7 @@ Do you want to enable caching?
   Path:
   <br />
   <input style="width:100%" id="fi_cache_path" type="text" name="feed.item.backend.cache_dir" value="<?php echo $CACHE['feed.item.backend.cache_dir']; ?>" />
+  <?php echo conjoon_cacheDirSnippet('Feed item cache directory', 'cache.feed.item.backend.cache_dir'); ?>
  <!-- ^^ EO FEED ITEMS -->
 
  <!-- FEED LISTS -->
@@ -217,6 +228,7 @@ Do you want to enable caching?
    <br />
   <input id="fl_no" <?php echo !$CACHE['feed.item_list.caching'] ? "checked=\"checked\"" : ""; ?> type="radio" name="feed.itemList.caching" value="0" /><label for="fl_no">No</label>
  </div>
+ <?php echo conjoon_cacheEnabledSnippet('Feed item list cache enabled', 'cache.feed.item_list.caching'); ?>
 
  <!-- ERRORS -->
  <?php if (isset($CACHE['feed.item_list.install_failed'])) { ?>
@@ -231,7 +243,8 @@ Do you want to enable caching?
   Path:
   <br />
   <input style="width:100%" id="fl_cache_path" type="text" name="feed.itemList.backend.cache_dir" value="<?php echo $CACHE['feed.item_list.backend.cache_dir']; ?>" />
- <!-- ^^ EO FEED LISTS -->
+  <?php echo conjoon_cacheDirSnippet('Feed item list cache directory', 'cache.feed.item_list.backend.cache_dir'); ?>
+<!-- ^^ EO FEED LISTS -->
 
 
  <!-- FEED ACCOUNTS -->
@@ -247,6 +260,7 @@ Do you want to enable caching?
    <br />
   <input id="fa_no" <?php echo !$CACHE['feed.account.caching'] ? "checked=\"checked\"" : ""; ?> type="radio" name="feed.account.caching" value="0" /><label for="fa_no">No</label>
  </div>
+<?php echo conjoon_cacheEnabledSnippet('Feed accounts cache enabled', 'cache.feed.account.caching'); ?>
 
  <!-- ERRORS -->
  <?php if (isset($CACHE['feed.account.install_failed'])) { ?>
@@ -261,7 +275,8 @@ Do you want to enable caching?
   Path:
   <br />
   <input style="width:100%" id="fa_cache_path" type="text" name="feed.account.backend.cache_dir" value="<?php echo $CACHE['feed.account.backend.cache_dir']; ?>" />
- <!-- ^^ EO FEED ACCOUNTS -->
+  <?php echo conjoon_cacheDirSnippet('Feed accounts cache directory', 'cache.feed.account.backend.cache_dir'); ?>
+<!-- ^^ EO FEED ACCOUNTS -->
 
 
  <!-- FEED ACCOUNTS -->
@@ -277,6 +292,7 @@ Do you want to enable caching?
    <br />
   <input id="fal_no" <?php echo !$CACHE['feed.account_list.caching'] ? "checked=\"checked\"" : ""; ?> type="radio" name="feed.accountList.caching" value="0" /><label for="fal_no">No</label>
  </div>
+ <?php echo conjoon_cacheEnabledSnippet('Feed account list cache enabled', 'cache.feed.account_list.caching'); ?>
 
  <!-- ERRORS -->
  <?php if (isset($CACHE['feed.account_list.install_failed'])) { ?>
@@ -291,6 +307,7 @@ Do you want to enable caching?
   Path:
   <br />
   <input style="width:100%" id="fal_cache_path" type="text" name="feed.accountList.backend.cache_dir" value="<?php echo $CACHE['feed.account_list.backend.cache_dir']; ?>" />
+  <?php echo conjoon_cacheDirSnippet('Feed account list cache directory', 'cache.feed.account_list.backend.cache_dir'); ?>
  <!-- ^^ EO FEED ACCOUNTS -->
 
 
@@ -310,6 +327,7 @@ Do you want to enable caching?
   <input id="fr_yes" <?php echo $CACHE['feed.reader.caching'] ? "checked=\"checked\"" : ""; ?> type="radio" name="feed.reader.caching" value="1" /><label for="fr_yes">Yes</label>
    <br />
   <input id="fr_no" <?php echo !$CACHE['feed.reader.caching'] ? "checked=\"checked\"" : ""; ?> type="radio" name="feed.reader.caching" value="0" /><label for="fr_no">No</label>
+   <?php echo conjoon_cacheEnabledSnippet('Feed reader cache enabled', 'cache.feed.reader.caching'); ?>
  </div>
 
  <!-- ERRORS -->
@@ -325,6 +343,7 @@ Do you want to enable caching?
   Path:
   <br />
   <input style="width:100%" id="fr_cache_path" type="text" name="feed.reader.backend.cache_dir" value="<?php echo $CACHE['feed.reader.backend.cache_dir']; ?>" />
+  <?php echo conjoon_cacheDirSnippet('Feed reader cache directory', 'cache.feed.reader.backend.cache_dir'); ?>
  <!-- ^^ EO FEED READER -->
 
  </p>
@@ -348,6 +367,7 @@ Do you want to enable caching?
    <br />
   <input id="ta_no" <?php echo !$CACHE['twitter.accounts.caching'] ? "checked=\"checked\"" : ""; ?> type="radio" name="twitter.accounts.caching" value="0" /><label for="ta_no">No</label>
  </div>
+ <?php echo conjoon_cacheEnabledSnippet('Twitter account cache enabled', 'cache.twitter.accounts.caching'); ?>
 
  <!-- ERRORS -->
  <?php if (isset($CACHE['twitter.accounts.install_failed'])) { ?>
@@ -362,6 +382,7 @@ Do you want to enable caching?
   Path:
   <br />
   <input style="width:100%" id="ta_cache_path" type="text" name="twitter.accounts.backend.cache_dir" value="<?php echo $CACHE['twitter.accounts.backend.cache_dir']; ?>" />
+  <?php echo conjoon_cacheDirSnippet('Twitter account cache directory', 'cache.twitter.accounts.backend.cache_dir'); ?>
  </p>
 <!-- ^^ EO DB CACHE -->
 

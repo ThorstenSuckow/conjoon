@@ -26,6 +26,26 @@ matches the prerequisites for conjoon and guide you through the several set up s
     Once conjoon is up and running, refer to the <a href="http://conjoon.org/wiki/display/DOC/conjoon+User%27s+Guide" target="_blank">conjoon User's Guide</a>
     which provides an extended end-user documentation.
 </div>
+
+<?php if ($_SESSION['remove_config_ini_php']) { ?>
+<br />
+<div class="warning_box">
+    We have detected an exisiting configuration file for conjoon (located at <i>../config.ini.php</i>).
+    <br />
+    conjoon will remove this file during the setup process. Please make sure you back up the data
+    found therein before proceeding.
+    <br/>
+    <br/>
+    <?php if ($WELCOME['config_okay_missing']) { ?>
+    <div class="error_box">
+        Please indicate that you have understood this.
+    </div>
+    <?php } ?>
+    <input id="config_okay" type="checkbox" name="config_okay" value="1" /> <label for="config_okay">Okay</label>
+    <br/>
+</div>
+<?php } ?>
+
 <p>
 If you have a support key, enter it now. If you do not have a support key, leave the field blank or
 enter your email address. This will help with identifying your installation in case you have requested
@@ -41,6 +61,7 @@ for the functionality of conjoon, but make sure you chose something that makes s
 <br />
 <br />
 Edition: <input type="text" name="edition" value="<?php echo isset($_SESSION['edition']) ? $_SESSION['edition'] : '' ; ?>" />
+<?php echo conjoon_configInfoSnippet('Edition', 'environment.edition'); ?>
 </p>
 <br />
 <p>
@@ -75,7 +96,7 @@ Once installation has finished successful, the file <i>installation.info.php</i>
 of the conjoon application will be updated with the data collected from this wizard. This will simplify
 further updating of conjoon. Please do not remove this file.
 </p>
-<h3>Setup process</h3>
+<h3>Setup Schedule</h3>
 <p>
 <pre style="border:1px dotted #5b5b5b; background:#dfdfdf">
 
@@ -133,13 +154,15 @@ If this is not the case, move the folder before you proceed!
 </div>
 <?php } ?>
 <p>
-<input id="license_agree" type="checkbox" name="license_agree" value="1" /> <label for="license_agree">I have read and understood the </label><a href="#" onclick="window.open('./license.php')">license terms</a>
+<input id="license_agree" type="checkbox" name="license_agree" value="1" /> <label for="license_agree">I have read, understood and agreed to the </label><a href="#" onclick="window.open('./license.php')">terms and conditions of the software license</a>.
 <br />
 <?php if ($WELCOME['backup_check_missing']) { ?>
 <div class="error_box">
   Hey, just curious if you gracefully ignored the hint to backing up your data before proceeding?
 </div>
 <?php } ?>
-<input id="backup_check" type="checkbox" name="backup_check" value="1" /> <label for="backup_check">I know that I should do a backup of all existing data before proceeding with the installation, and I know that I should do it right now</label>
+<input id="backup_check" type="checkbox" name="backup_check" value="1" /> <label for="backup_check">
+    Alright, I have made a back up of my data! Let's continue!
+</label>
 </p>
 <input type="hidden" name="welcome_post" value="1" />

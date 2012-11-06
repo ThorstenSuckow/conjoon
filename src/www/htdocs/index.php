@@ -32,7 +32,11 @@
            "<a href=\"./install/index.php\">".
            "./install/index.php</a>)");
    } else if (file_exists('./install')) {
-       die("<b>Error:</b><br /> Please delete the install directory first, or remove config.ini.php and refresh this page to run the installation wizard.");
+       die(
+            "<b>Error:</b><br /> Please delete the install directory first "
+            . "or run the setup wizard <a href=\"./install/index.php\">"
+            . "./install/index.php</a>."
+        );
    }
 @BUILD_ACTIVE@*/
 

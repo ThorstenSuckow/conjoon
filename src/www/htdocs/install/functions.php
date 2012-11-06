@@ -20,6 +20,114 @@
  */
 
 /**
+ * Returns true if the key could be found in a previous version of
+ * config.ini.php, otehrwise false.
+ *
+ * @param string $key
+ *
+ * @return boolean
+ */
+function conjoon_configInfoExists($key)
+{
+    $keys   = explode('.', $key);
+    $key    = array_shift($keys);
+    $remKey = implode('.', $keys);
+
+    if (isset($_SESSION['config_info'])
+        && isset($_SESSION['config_info'][$key])
+        && isset($_SESSION['config_info'][$key][$remKey])) {
+        return true;
+    }
+
+
+    return false;
+}
+
+/**
+ * Returns the value found withing the config.ini.php for this key, or false
+ * if it is not existing.
+ *
+ * @param string $key
+ *
+ * @return mixed
+ */
+function conjoon_getConfigInfo($key)
+{
+    if (!conjoon_configInfoExists($key)) {
+        return false;
+    }
+
+    $keys   = explode('.', $key);
+    $key    = array_shift($keys);
+    $remKey = implode('.', $keys);
+
+    return $_SESSION['config_info'][$key][$remKey];
+}
+
+/**
+ * Returns a special snippet to be used with cache settings
+ *
+ * @param $wording
+ * @param $key
+ *
+ * @return string
+ */
+function conjoon_cacheEnabledSnippet($wording, $key)
+{
+    if (!conjoon_configInfoExists($key)) {
+        return "";
+    }
+    return
+        "<table class=\"configInfo\"><tr>"
+        . "<td class=\"key\">"
+        . $wording ." (config.ini.php):</td>"
+        . "<td class=\"value\">" . (conjoon_getConfigInfo($key)
+            ? "Yes"
+            : "No")
+        . "</td></tr></table><br />";
+}
+
+/**
+ * Returns a special snippet to be used with cache settings
+ *
+ * @param $wording
+ * @param $key
+ *
+ * @return string
+ *
+ * @deprecated use conjoon_configInfoSnippet instead
+ */
+function conjoon_cacheDirSnippet($wording, $key)
+{
+    return conjoon_configInfoSnippet($wording, $key);
+}
+
+/**
+ * Returns a snippet to be used for showing config.ini.php settings.
+ *
+ * @param $wording
+ * @param $key
+ *
+ * @return string
+ *
+ */
+function conjoon_configInfoSnippet($wording, $key)
+{
+    if (!conjoon_configInfoExists($key)) {
+        return "";
+    }
+
+    return
+        "<table class=\"configInfo\"><tr>"
+        . "<td class=\"key\">"
+        . $wording ." (config.ini.php):</td>"
+        . "<td class=\"value\">" . (conjoon_getConfigInfo($key)
+                                              ? conjoon_getConfigInfo($key)
+                                              : '<code> - empty string - </code>')
+        . "</td></tr></table><br />";
+}
+
+/**
  * Reads out the max allowed packets setting for the database type.
  * Returns "0" if the value for this db setting could not be retrieved.
  *

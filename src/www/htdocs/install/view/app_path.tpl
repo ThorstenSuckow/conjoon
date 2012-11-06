@@ -51,7 +51,8 @@ The specified folder is not readable. Please check the file permissions or chose
 The specified folder is not writable. Please check the file permissions or chose another path.
 </div>
 <?php } ?>
-
  <input style="width:700px" type="text" name="app_path" value="<?php echo $_SESSION['app_path']; ?>" />
  <input type="hidden" name="app_path_post" value="1" />
 </p>
+
+<?php echo conjoon_configInfoSnippet('Application path', 'environment.application_path'); ?>

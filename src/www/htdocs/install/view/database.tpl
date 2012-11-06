@@ -77,7 +77,9 @@ mysql-adapter for PDO not available. Can't proceed. Please install the mysql-ada
     <?php } ?>
  </select></td>
 </tr>
-
+<tr><td colspan="2">
+    <?php echo conjoon_configInfoSnippet('Database type', 'database.adapter'); ?>
+</td></tr>
 <tr>
 <td colspan="2">&nbsp;</td>
 </tr>
@@ -98,7 +100,9 @@ Please provide the host where the database runs on.
 <td>Database host:</td>
 <td><input type="text" name="db_host" value="<?php echo (($_SESSION['db_host'] !== null) ? $_SESSION['db_host'] : '127.0.0.1') ?>" /></td>
 </tr>
-
+<tr><td colspan="2">
+    <?php echo conjoon_configInfoSnippet('Database host', 'database.params.host'); ?>
+</td></tr>
 
 <tr>
 <td colspan="2">&nbsp;</td>
@@ -119,7 +123,9 @@ Please provide the port where your database service listens to.
 <td>Database port:</td>
 <td><input type="text" name="db_port" value="<?php echo (($_SESSION['db_port'] !== null) ? $_SESSION['db_port'] : '3306') ?>" /></td>
 </tr>
-
+<tr><td colspan="2">
+    <?php echo conjoon_configInfoSnippet('Database port', 'database.params.port'); ?>
+</td></tr>
 
 <tr>
 <td colspan="2">&nbsp;</td>
@@ -140,6 +146,9 @@ Please provide the name of the database.
 <td>Database:</td>
 <td><input type="text" name="db" value="<?php echo (($_SESSION['db'] !== null) ? $_SESSION['db'] : '') ?>" /></td>
 </tr>
+<tr><td colspan="2">
+    <?php echo conjoon_configInfoSnippet('Database', 'database.params.dbname'); ?>
+</td></tr>
 
 
 <tr>
@@ -171,7 +180,9 @@ A table prefix may only contain letters, numbers and underscores. For example, a
 <td>Table prefix:</td>
 <td><input type="text" name="db_table_prefix" value="<?php echo (($_SESSION['db_table_prefix'] !== null) ? $_SESSION['db_table_prefix'] : '') ?>" /></td>
 </tr>
-
+<tr><td colspan="2">
+    <?php echo conjoon_configInfoSnippet('Table prefix', 'database.table.prefix'); ?>
+</td></tr>
 
 <tr>
 <td colspan="2">&nbsp;</td>
@@ -193,6 +204,10 @@ Please provide the user name.
 <td>Database user:</td>
 <td><input type="text" name="db_user" value="<?php echo (($_SESSION['db_user'] !== null) ? $_SESSION['db_user'] : '') ?>" /></td>
 </tr>
+<tr><td colspan="2">
+    <?php echo conjoon_configInfoSnippet('Database user', 'database.params.username'); ?>
+</td></tr>
+
 
 <tr>
 <td colspan="2">&nbsp;</td>
@@ -228,6 +243,10 @@ The value you provided for the max_allowed_packet failed. The value must not be 
 <td>Max allowed packet:</td>
 <td><input type="text" name="max_allowed_packet" value="<?php echo (($_SESSION['max_allowed_packet'] !== null) ? $_SESSION['max_allowed_packet'] : '') ?>" /></td>
 </tr>
+<tr><td colspan="2">
+    <?php echo conjoon_configInfoSnippet('Max allowed packet', 'database.variables.max_allowed_packet'); ?>
+</td></tr>
+
 
 </tbody>
 </table>

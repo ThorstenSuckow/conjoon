@@ -234,6 +234,8 @@ if (isset($_POST['install_post'])) {
                  $configini);
 
 
+    // overwrite the file completely, even if it still exists from a previous
+    // installation!
     file_put_contents('../config.ini.php', $configini);
     $configini = "";
 

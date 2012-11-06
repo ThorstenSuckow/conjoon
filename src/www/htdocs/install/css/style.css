@@ -421,6 +421,7 @@ div.aligncenter {
     padding:5px;
     margin:5px;
     color:#005f12;
+    border-radius:7px;
 }
 
 .warning_box {
@@ -429,6 +430,7 @@ div.aligncenter {
     padding:5px;
     margin:5px;
     color:#7a7300;
+    border-radius:7px;
 }
 
 .error_box {
@@ -437,6 +439,7 @@ div.aligncenter {
     padding:5px;
     margin:5px;
     color:#770000;
+    border-radius:7px;
 }
 
 .info_box {
@@ -445,9 +448,28 @@ div.aligncenter {
     padding:5px;
     margin:5px;
     color:#404040;
+    border-radius:7px;
 }
 
 td {
     font-size:12px !important;
     padding:4px;
 }
+
+table.configInfo {
+    background-color:#ffefb7;
+    width:100%;
+    border:1px solid #ffc835;
+    border-radius:7px;
+}
+
+table.configInfo td.key {
+    font-style:italic;
+    width:320px;
+    border-right:1px solid #ffc835;
+}
+
+table.configInfo td.value {
+}
+
+
