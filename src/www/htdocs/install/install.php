@@ -234,7 +234,6 @@ if (isset($_POST['install_post'])) {
                  $configini);
 
 
-
     file_put_contents('../config.ini.php', $configini);
     $configini = "";
 
@@ -322,16 +321,18 @@ if (isset($_POST['install_post'])) {
     file_put_contents('../installation.info.php', $installationinfo);
     $installationinfo = "";
 
-    // import the sql file for the selected database
-    $path = realpath('./files/datastore/mysql/conjoon.sql');
-    conjoon_createTables($path, $_SESSION['db_adapter'], array(
+    $dbConnInfo = array(
         'host'     => $_SESSION['db_host'],
         'port'     => $_SESSION['db_port'],
         'database' => $_SESSION['db'],
         'user'     => $_SESSION['db_user'],
         'password' => $_SESSION['db_password'],
         'prefix'   => $_SESSION['db_table_prefix']
-    ));
+    );
+
+    // import the sql file for the selected database
+    $path = realpath('./files/datastore/mysql/conjoon.sql');
+    conjoon_createTables($path, $_SESSION['db_adapter'], $dbConnInfo);
     $table = "";
     sleep(1);
     // create root user if needed
@@ -342,15 +343,12 @@ if (isset($_POST['install_post'])) {
             'firstname'     => $_SESSION['app_credentials']['firstname'],
             'lastname'      => $_SESSION['app_credentials']['lastname'],
             'email_address' => $_SESSION['app_credentials']['email_address']
-        ), array(
-            'host'     => $_SESSION['db_host'],
-            'port'     => $_SESSION['db_port'],
-            'database' => $_SESSION['db'],
-            'user'     => $_SESSION['db_user'],
-            'password' => $_SESSION['db_password'],
-            'prefix'   => $_SESSION['db_table_prefix']
-        ));
+        ), $dbConnInfo);
     }
+    sleep(1);
+    // add fixtures
+    $path = realpath('./files/datastore/mysql/fixtures.sql');
+    conjoon_insertFixtures($path, $_SESSION['db_adapter'], $dbConnInfo);
 
     // move libs folders
     $libFolders = explode(",", $_SESSION['setup_ini']['lib_path']['delete']);

@@ -193,6 +193,65 @@ function conjoon_createDatastructure($db, $path, $prefix = "")
 }
 
 /**
+ * Parses the sql file and executes the given statements.
+ *
+ * @param String $path The path to the sql file to execute
+ * @param Object $dbAdapter
+ * @param Array $dbConfig
+ */
+function conjoon_insertFixtures($path, $dbAdapter, Array $dbConfig)
+{
+    $path = str_replace("\\", "/", $path);
+
+    $dbType = strtolower(str_replace("pdo_", "", $dbAdapter));
+
+    $bytes = 0;
+
+    $prefix = $dbConfig['prefix'];
+
+    switch ($dbType) {
+        case 'mysql':
+            $db = new PDO(
+                $dbType . ":" .
+                    "host=" . $dbConfig['host'] . ";".
+                    "dbname=".$dbConfig['database'].";".
+                    "port=".$dbConfig['port'],
+                $dbConfig['user'], $dbConfig['password']
+            );
+            break;
+
+        default:
+            die("No support for adapter \"$dbType\"");
+            break;
+    }
+
+    $sqlFile = file_get_contents($path);
+
+    // remove sql comments
+    $sqlFile = preg_replace("/^--.*?$/ims", "", $sqlFile);
+    //replace prefix
+    $sqlFile = str_replace('{DATABASE.TABLE.PREFIX}', $prefix, $sqlFile);
+
+    $statements = explode(';', $sqlFile);
+
+    for ($i = 0, $len = count($statements); $i < $len; $i++) {
+        $statement = trim($statements[$i]);
+        if ($statement == "") {
+            continue;
+        }
+        InstallLogger::getInstance()->logMessage("[FIXTURE]: " . $statement);
+        if (!$db->query($statement)) {
+            $err = $db->errorInfo();
+            InstallLogger::getInstance()->logMessage(
+                "[FIXTURE:FAILED]: "
+                . (!empty($err) ? $err[1] : $statement)
+            );
+        };
+    }
+
+}
+
+/**
  * Creates an admin user, only if the user table is empty.
  *
  * @param string $user
