@@ -40,30 +40,31 @@ INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
 INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
 (10, 'php', 9);
 INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
-(18, 'applicationCache', 4);
+(11, 'environment', 4);
 INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
-(12, 'environment', 4);
+(12, 'environment', 9);
 INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
-(19, 'environment', 9);
+(13, 'applicationCache', 4);
+
+
 
 
 -- --
 -- registry_values
 -- --
-
 INSERT INTO `{DATABASE.TABLE.PREFIX}registry_values` (`registry_id`, `user_id`, `name`, `value`, `type`, `is_editable`) VALUES
-(18, 0, 'cache-flash', '0', 'BOOLEAN', 1);
+(6, 0, 'enabled', '1', 'BOOLEAN', 1);
 INSERT INTO `{DATABASE.TABLE.PREFIX}registry_values` (`registry_id`, `user_id`, `name`, `value`, `type`, `is_editable`) VALUES
-(18, 0, 'cache-html', '0', 'BOOLEAN', 1);
+(13, 0, 'cache-flash', '0', 'BOOLEAN', 1);
 INSERT INTO `{DATABASE.TABLE.PREFIX}registry_values` (`registry_id`, `user_id`, `name`, `value`, `type`, `is_editable`) VALUES
-(18, 0, 'cache-images', '0', 'BOOLEAN', 1);
+(13, 0, 'cache-html', '0', 'BOOLEAN', 1);
 INSERT INTO `{DATABASE.TABLE.PREFIX}registry_values` (`registry_id`, `user_id`, `name`, `value`, `type`, `is_editable`) VALUES
-(18, 0, 'cache-javascript', '0', 'BOOLEAN', 1);
+(13, 0, 'cache-images', '0', 'BOOLEAN', 1);
 INSERT INTO `{DATABASE.TABLE.PREFIX}registry_values` (`registry_id`, `user_id`, `name`, `value`, `type`, `is_editable`) VALUES
-(18, 0, 'cache-sounds', '0', 'BOOLEAN', 1);
+(13, 0, 'cache-javascript', '0', 'BOOLEAN', 1);
 INSERT INTO `{DATABASE.TABLE.PREFIX}registry_values` (`registry_id`, `user_id`, `name`, `value`, `type`, `is_editable`) VALUES
-(18, 0, 'cache-stylesheets', '0', 'BOOLEAN', 1);
+(13, 0, 'cache-sounds', '0', 'BOOLEAN', 1);
 INSERT INTO `{DATABASE.TABLE.PREFIX}registry_values` (`registry_id`, `user_id`, `name`, `value`, `type`, `is_editable`) VALUES
-(6, 0, 'enabled', '1', 'BOOLEAN', 0);
+(13, 0, 'cache-stylesheets', '0', 'BOOLEAN', 1);
 INSERT INTO `{DATABASE.TABLE.PREFIX}registry_values` (`registry_id`, `user_id`, `name`, `value`, `type`, `is_editable`) VALUES
-(18, 0, 'last-changed', '0', 'FLOAT', 1);
+(13, 0, 'last-changed', '0', 'FLOAT', 1);
