@@ -172,6 +172,38 @@ Do you want to enable caching?
   <input style="width:100%" id="emailaccounts_cache_path" type="text" name="email.accounts.backend.cache_dir" value="<?php echo $CACHE['email.accounts.backend.cache_dir']; ?>" />
   <?php echo conjoon_cacheDirSnippet('Email accounts cache directory', 'cache.email.accounts.backend.cache_dir'); ?>
  <!-- ^^ EO EMAIL ACCOUNTS -->
+
+<!-- EMAIL FOLDERS ROOT TYPES -->
+<br />
+<br />
+<h5>2.3 Email Folders' Root Type</h5>
+Enabling this option speeds up querying the type of an email folder's root folder.
+<br />
+<br />
+Do you want to enable caching of an email folder's root type?
+<div style="margin:5px">
+    <input id="emailfoldersroottype_yes" <?php echo $CACHE['email.folders_root_type.caching'] ? "checked=\"checked\"" : ""; ?> type="radio" name="email.foldersRootType.caching" value="1" /><label for="emailfoldersroottype_yes">Yes</label>
+    <br />
+    <input id="emailfoldersroottype_no" <?php echo !$CACHE['email.folders_root_type.caching'] ? "checked=\"checked\"" : ""; ?> type="radio" name="email.foldersRootType.caching" value="0" /><label for="emailfoldersroottype_no">No</label>
+</div>
+<?php echo conjoon_cacheEnabledSnippet('Email Folders\' Root Type cache enabled', 'cache.email.folders_root_type.caching'); ?>
+<!-- ERRORS -->
+<?php if (isset($CACHE['email.folders_root_type.install_failed'])) { ?>
+    <?php if ($CACHE['email.folders_root_type.install_failed'] === true) { ?>
+        <div class="error_box">
+            <b>ERROR</b><br />
+            <?php echo $FOLDER_CREATE_ERROR; ?>
+        </div>
+    <?php } ?>
+<?php } ?>
+<!-- ^^ EO ERRORS -->
+Path:
+<br />
+<input style="width:100%" id="emailfoldersroottype_cache_path" type="text" name="email.foldersRootType.backend.cache_dir" value="<?php echo $CACHE['email.folders_root_type.backend.cache_dir']; ?>" />
+<?php echo conjoon_cacheDirSnippet('Email Folders\' Root Type cache directory', 'cache.email.folders_root_type.backend.cache_dir'); ?>
+<!-- ^^ EO EMAIL ACCOUNTS -->
+
+
  </p>
 <!-- ^^ EO EMAIL CACHE -->
 

@@ -254,6 +254,17 @@ if (!$allApply) { ?>
       <td><?php echo $_SESSION['cache']['email.accounts.backend.cache_dir']; ?></td>
   </tr>
   <?php } ?>
+
+  <tr>
+    <td><i>Email Folders' Root Type caching enabled</i>:</td>
+    <td><?php echo $_SESSION['cache']['email.folders_root_type.caching'] ? "Yes" : "No" ; ?></td>
+  </tr>
+  <?php if ($_SESSION['cache']['email.folders_root_type.caching']) { ?>
+    <tr>
+        <td><i>Email Folders' Root Type accounts cache path</i>:</td>
+        <td><?php echo $_SESSION['cache']['email.folders_root_type.backend.cache_dir']; ?></td>
+    </tr>
+   <?php } ?>
   <!-- ^^ EO EMAIL CACHE -->
 
 <tr><td colspan="2">&nbsp;</td></tr>

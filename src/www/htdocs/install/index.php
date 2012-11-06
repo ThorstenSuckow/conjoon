@@ -83,6 +83,7 @@ session_start();
        $_SESSION['setup_ini'] = parse_ini_file('./setup.ini', true);
    }
 
+
 /*@REMOVE@*/
    if (!isset($_SESSION['current_version'])) {
        $_SESSION['current_version'] = '0.0';

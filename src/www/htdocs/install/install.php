@@ -86,6 +86,11 @@ if (isset($_SESSION['installation_info'])) {
             $INSTALL['CACHE_REMOVE']['FILES'][] = $_SESSION['installation_info']['cache.email.accounts.backend.cache_dir'];
         }
 
+        if (isset($_SESSION['installation_info']['cache.email.folders_root_type.backend.cache_dir'])
+            && file_exists($_SESSION['installation_info']['cache.email.folders_root_type.backend.cache_dir'])) {
+            $INSTALL['CACHE_REMOVE']['FILES'][] = $_SESSION['installation_info']['cache.email.folders_root_type.backend.cache_dir'];
+        }
+
         if (isset($_SESSION['installation_info']['cache.feed.item.backend.cache_dir'])
             && file_exists($_SESSION['installation_info']['cache.feed.item.backend.cache_dir'])) {
             $INSTALL['CACHE_REMOVE']['FILES'][] = $_SESSION['installation_info']['cache.feed.item.backend.cache_dir'];
@@ -191,6 +196,13 @@ if (isset($_POST['install_post'])) {
                     : "",
                  $configini);
 
+    $configini = str_replace("{CACHE.EMAIL.FOLDERS_ROOT_TYPE.CACHING}", $_SESSION['cache']['email.folders_root_type.caching'] ? '1' : '0', $configini);
+    $configini = str_replace("{CACHE.EMAIL.FOLDERS_ROOT_TYPE.BACKEND.CACHE_DIR}",
+        $_SESSION['cache']['email.folders_root_type.caching']
+            ? $_SESSION['cache']['email.folders_root_type.backend.cache_dir']
+            : "",
+        $configini);
+
     $configini = str_replace("{CACHE.FEED.ITEM.CACHING}", $_SESSION['cache']['feed.item.caching'] ? '1' : '0', $configini);
     $configini = str_replace("{CACHE.FEED.ITEM.BACKEND.CACHE_DIR}",
                     $_SESSION['cache']['feed.item.caching']
@@ -292,6 +304,9 @@ if (isset($_POST['install_post'])) {
 
               'cache.email.accounts.caching' => ".($_SESSION['cache']['email.accounts.caching'] ? "1" : "0").",
               ".($_SESSION['cache']['email.accounts.caching'] ? "'cache.email.accounts.backend.cache_dir' => '".$_SESSION['cache']['email.accounts.backend.cache_dir']."'," : "")."
+
+              'cache.email.folders_root_type.caching' => ".($_SESSION['cache']['email.folders_root_type.caching'] ? "1" : "0").",
+              ".($_SESSION['cache']['email.folders_root_type.caching'] ? "'cache.email.folders_root_type.backend.cache_dir' => '".$_SESSION['cache']['email.folders_root_type.backend.cache_dir']."'," : "")."
 
               'cache.feed.item.caching' => ".($_SESSION['cache']['feed.item.caching'] ? "1" : "0").",
               ".($_SESSION['cache']['feed.item.caching'] ? "'cache.feed.item.backend.cache_dir' => '".$_SESSION['cache']['feed.item.backend.cache_dir']."'," : "")."
@@ -424,6 +439,12 @@ if (isset($_POST['install_post'])) {
             @rmdir($_SESSION['installation_info']['cache.email.accounts.backend.cache_dir']);
         }
 
+        if (isset($_SESSION['installation_info']['cache.email.folders_root_type.backend.cache_dir'])
+            && file_exists($_SESSION['installation_info']['cache.email.folders_root_type.backend.cache_dir'])) {
+            @conjoon_rmdir($_SESSION['installation_info']['cache.email.folders_root_type.backend.cache_dir']);
+            @rmdir($_SESSION['installation_info']['cache.email.folders_root_type.backend.cache_dir']);
+        }
+
         if (isset($_SESSION['installation_info']['cache.feed.item.backend.cache_dir'])
             && file_exists($_SESSION['installation_info']['cache.feed.item.backend.cache_dir'])) {
             @conjoon_rmdir($_SESSION['installation_info']['cache.feed.item.backend.cache_dir']);
@@ -474,6 +495,10 @@ if (isset($_POST['install_post'])) {
 
         if ($_SESSION['cache']['email.accounts.caching']) {
             conjoon_mkdir($_SESSION['cache']['email.accounts.backend.cache_dir']);
+        }
+
+        if ($_SESSION['cache']['email.folders_root_type.caching']) {
+            conjoon_mkdir($_SESSION['cache']['email.folders_root_type.backend.cache_dir']);
         }
 
         if ($_SESSION['cache']['feed.item.caching']) {
