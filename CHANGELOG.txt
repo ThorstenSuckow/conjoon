@@ -1,4 +1,25 @@
-﻿2012-10-30 0.1.4.1
+﻿2012-11-04 0.1.4.2
+==================
+Release Notes - conjoon - Version 0.1.4.2
+
+** Bug
+    * [CN-493] - Date in Email Message Header is not properly adjusted to local
+                 timezone when viewing a message
+    * [CN-498] - Loading icon in Email Tab does not disappear in IE9
+    * [CN-502] - Opening Email Editor in IE8 throws error that keydown listener
+                 can not be installed
+    * [CN-503] - IE9 throws error "object does not support the property or
+                 method 'createContextualFragment'"
+    * [CN-504] - Editing a Blockquote in the EmailEditor does not work correct
+    * [CN-505] - Tree nodes from Email Folder Panel not clickable in IE9
+
+** Task
+    * [CN-495] - Check Ajax Queue implementation for IE based browsers and see
+                 whether the number of concurrent requests is valid for IE8
+                 and IE9
+
+
+2012-10-30 0.1.4.1
 ==================
 Release Notes - conjoon - Version 0.1.4.1
 

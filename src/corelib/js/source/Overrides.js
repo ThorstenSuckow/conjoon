@@ -12,6 +12,12 @@
  * $URL$
  */
 
+/*@REMOVE@*/
+if (Ext.version != '3.4.0') {
+    throw("Ext.version " + Ext.version + " detected, please check Overrides.js");
+}
+/*@REMOVE@*/
+
 /**
  * Provides common overwrite functionality for Ext components to match
  * behavior as wished.
@@ -48,19 +54,14 @@ Ext.lib.Ajax = function() {
     /**
      * @type {Number} _concurrentRequests The number of max. concurrent requests requests allowed.
      */
-    var _concurrentRequests = 2;
+    var _concurrentRequests = 6;
 
     switch (true) {
-        case Ext.isIE8:
-            _concurrentRequests = window.maxConnectionsPerServer;
-        break;
         case Ext.isIE:
-            _concurrentRequests = 2;
-        break;
-        case Ext.isSafari:
-        case Ext.isChrome:
-        case Ext.isGecko3:
-            _concurrentRequests = 4;
+            if (!window.maxConnectionsPerServer) {
+                throw("\"window.maxConnectionsPerServer\" not found");
+            }
+            _concurrentRequests = window.maxConnectionsPerServer;
         break;
     }
 

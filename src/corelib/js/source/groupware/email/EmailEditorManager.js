@@ -431,26 +431,6 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
     };
 
     /**
-     * Helps IE to stay in sync with midas. If not used when changes in the dom
-     * occur (inital setting value of editor, quoting) the html gets rendered
-     * wrong.
-     *
-     */
-    var _layoutEditor = function()
-    {
-        if (Ext.isIE) {
-            var els = htmlEditor.getDoc().body.getElementsByTagName('blockquote');
-
-            for (var i = 0; i < els.length; i++) {
-
-                var m = els[i].innerHTML;
-                els[i].innerHTML = "";
-                els[i].innerHTML = m;
-            }
-        }
-    }
-
-    /**
      * Wraps the message text after loading with a tag if needed.
      * While wrapping a pre tag around the text works in mozilla and safari,
      * IE won't, thus all whitespace-pairs get replaced with " &nbsp;" if
@@ -535,8 +515,6 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
             accountField.setValue(formValues[panelId].accountId);
             _attachSignature(panelId, formValues[panelId].accountId);
         }
-
-        _layoutEditor();
 
         recipientStore.removeAll();
         recipientStore.add(formValues[panelId].recipients);
@@ -932,6 +910,9 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
      * This will search for the first blockquote and split it in half to
      * make quoting possible.
      *
+     * Note:
+     * Always test with simple and multiple nested blockquotes
+     *
      */
     var onHtmlEditorEdit = function(string, eventObject)
     {
@@ -944,7 +925,9 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
         var id = '_'+(new Date()).getTime();
 
         if (Ext.isIE) {
-            splitRange.pasteHTML('<span id="'+id+'"></span>');
+            // by adding a &nbsp; into the splitRange, IE8 is able to
+            // split blockquotes properly
+            splitRange.pasteHTML('<span id="'+id+'">&nbsp;</span>');
             splitRange.collapse(false);
             splitRange.select();
         } else {
@@ -952,20 +935,53 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
         }
 
         var splitter = doc.getElementById(id);
-        splitter.id = "";
+        splitter.id  = "";
+
         var parent = splitter.parentNode;
         var quoteEl = null;
         var tagName = "";
+
+        if (Ext.isWebKit) {
+            var isNextTextNode = false;
+
+            // safari inserts 2x <br> at caret position.
+            // remove one in case we are in a blockquote
+            // we know 2 br's are inserted so check whether the
+            // previous sibling of the first is a br, too.
+            if (parent.tagName.toLowerCase() == 'blockquote'
+                || (splitter.nextSibling && !splitter.nextSibling.tagName)
+                || (splitter.previousSibling
+                 && splitter.previousSibling.previousSibling
+                 && splitter.previousSibling.previousSibling.previousSibling
+                 && splitter.previousSibling.previousSibling.previousSibling.tagName
+                 && splitter.previousSibling.previousSibling.previousSibling.tagName.toLowerCase() == 'blockquote')) {
+
+                if (splitter.nextSibling && !splitter.nextSibling.tagName) {
+                    isNextTextNode = true;
+                }
+
+                splitter.parentNode.removeChild(
+                    splitter.previousSibling.previousSibling
+                );
+            }
+
+            if (!isNextTextNode) {
+                htmlEditor.win.getSelection().collapse(splitter.previousSibling);
+            }
+        }
+
         while (parent && parent.tagName) {
             tagName = parent.tagName.toLowerCase();
+
             if (tagName == 'blockquote') {
+                isQuoted = true;
                 quoteEl = parent;
             } else if (quoteEl) {
                 break;
             }
+
             parent = parent.parentNode;
         }
-
 
         if (quoteEl) {
             eventObject.stopEvent();
@@ -973,9 +989,21 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
             var splitterClone = splitter.cloneNode(false);
             var dividedNode   = utilDom.divideNode(splitter , splitterClone, quoteEl);
 
-            var div = doc.createElement('div');
+            var div, id2 = +'_'+(new Date()).getTime()+'_';
+
+            if (Ext.isWebKit) {
+                htmlEditor.execCmd(
+                    'insertHTML',
+                    '<div id="'+id2+'"></div>'
+                );
+                div    = doc.getElementById(id2);
+                div.id = "";
+            } else {
+                div = doc.createElement('div');
+            }
+
             div.className = 'text';
-            div.innerHTML="&nbsp;";
+            div.innerHTML = "&nbsp;";
 
             if(!quoteEl.nextSibling){
                 quoteEl.parentNode.appendChild(div);
@@ -1018,9 +1046,6 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
                                     ""
                                 );
 
-            _layoutEditor();
-
-
             var cq = quoteEl.innerHTML.replace(/<blockquote>|<\/blockquote>|<br>|\s|&nbsp;/ig, "").trim();
             if (cq == "") {
                 quoteEl.parentNode.removeChild(quoteEl);
@@ -1033,6 +1058,7 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
         } else {
             splitter.parentNode.removeChild(splitter);
         }
+
 
     };
 
