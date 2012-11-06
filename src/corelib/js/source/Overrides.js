@@ -62,13 +62,13 @@ Ext.lib.Ajax = function() {
                 throw("\"window.maxConnectionsPerServer\" not found");
             }
             _concurrentRequests = window.maxConnectionsPerServer;
-        break;
+            break;
     }
 
     var activeX = [
-        'MSXML2.XMLHTTP.3.0',
-        'MSXML2.XMLHTTP',
-        'Microsoft.XMLHTTP'
+        'Msxml2.XMLHTTP.6.0',
+        'Msxml2.XMLHTTP.3.0',
+        'Msxml2.XMLHTTP'
     ], CONTENTTYPE = 'Content-Type';
 
     // private
@@ -120,7 +120,8 @@ Ext.lib.Ajax = function() {
             headerStr,
             conn = o.conn,
             t,
-            s;
+            s,
+            isBrokenStatus = conn.status == 1223;
 
         try {
             headerStr = o.conn.getAllResponseHeaders();
@@ -138,8 +139,9 @@ Ext.lib.Ajax = function() {
 
         return {
             tId : o.tId,
-            status : conn.status,
-            statusText : conn.statusText,
+            // Normalize the status and statusText when IE returns 1223, see the above link.
+            status : isBrokenStatus ? 204 : conn.status,
+            statusText : isBrokenStatus ? 'No Content' : conn.statusText,
             getResponseHeader : function(header){return headerObj[header.toLowerCase()];},
             getAllResponseHeaders : function(){return headerStr},
             responseText : conn.responseText,
@@ -153,6 +155,10 @@ Ext.lib.Ajax = function() {
     {
         //console.log(o.tId+" releasing");
         _activeRequests--;
+
+        if (o.tId) {
+            pub.conn[o.tId] = null;
+        }
 
         o.conn = null;
         o = null;
@@ -210,13 +216,13 @@ Ext.lib.Ajax = function() {
                             callback.failure.apply(callback.scope, [responseObject]);
                         }
                     }
-                break;
+                    break;
 
                 case 401:
-                Ext.ux.util.MessageBus.publish('ext.lib.ajax.authorizationRequired', {
-                    requestObject : o,
-                    rawResponse   : o.conn
-                });
+                    Ext.ux.util.MessageBus.publish('ext.lib.ajax.authorizationRequired', {
+                        requestObject : o,
+                        rawResponse   : o.conn
+                    });
 
                 default:
                     responseObject = createResponseObject(o, callback.argument);
@@ -235,9 +241,25 @@ Ext.lib.Ajax = function() {
         responseObject = null;
     }
 
-    // private
-    function handleReadyState(o, callback)
-    {
+    function checkResponse(o, callback, conn, tId, poll, cbTimeout){
+        if (conn && conn.readyState == 4) {
+            clearInterval(poll[tId]);
+            poll[tId] = null;
+
+            if (cbTimeout) {
+                clearTimeout(pub.timeout[tId]);
+                pub.timeout[tId] = null;
+            }
+            handleTransactionResponse(o, callback);
+        }
+    }
+
+    function checkTimeout(o, callback){
+        pub.abort(o, callback, true);
+    }
+
+
+    function handleReadyState(o, callback){
         callback = callback || {};
         var conn = o.conn,
             tId = o.tId,
@@ -245,26 +267,10 @@ Ext.lib.Ajax = function() {
             cbTimeout = callback.timeout || null;
 
         if (cbTimeout) {
-            pub.timeout[tId] = setTimeout(function() {
-                pub.abort(o, callback, true);
-            }, cbTimeout);
+            pub.conn[tId] = conn;
+            pub.timeout[tId] = setTimeout(checkTimeout.createCallback(o, callback), cbTimeout);
         }
-
-        poll[tId] = setInterval(
-            function() {
-                if (conn && conn.readyState == 4) {
-                    clearInterval(poll[tId]);
-                    poll[tId] = null;
-
-                    if (cbTimeout) {
-                        clearTimeout(pub.timeout[tId]);
-                        pub.timeout[tId] = null;
-                    }
-
-                    handleTransactionResponse(o, callback);
-                }
-            },
-            pub.pollInterval);
+        poll[tId] = setInterval(checkResponse.createCallback(o, callback, conn, tId, poll, cbTimeout), pub.pollInterval);
     }
 
     /**
@@ -280,11 +286,11 @@ Ext.lib.Ajax = function() {
             return null;
         } else {
             _queue.push({
-               o        : o,
-               method   : method,
-               uri      : uri,
-               callback : callback,
-               postData : postData
+                o        : o,
+                method   : method,
+                uri      : uri,
+                callback : callback,
+                postData : postData
             });
             //console.log(o.tId+" was put into the queue");
             var head = _processQueue();
@@ -396,34 +402,29 @@ Ext.lib.Ajax = function() {
             return asyncRequest(method || options.method || "POST", uri, cb, data);
         },
 
-        serializeForm : function(form)
-        {
+        serializeForm : function(form) {
             var fElements = form.elements || (document.forms[form] || Ext.getDom(form)).elements,
                 hasSubmit = false,
                 encoder = encodeURIComponent,
-                element,
-                options,
                 name,
-                val,
                 data = '',
-                type;
+                type,
+                hasValue;
 
-            Ext.each(fElements, function(element) {
+            Ext.each(fElements, function(element){
                 name = element.name;
                 type = element.type;
 
-                if (!element.disabled && name){
-                    if(/select-(one|multiple)/i.test(type)){
-                        Ext.each(element.options, function(opt) {
+                if (!element.disabled && name) {
+                    if (/select-(one|multiple)/i.test(type)) {
+                        Ext.each(element.options, function(opt){
                             if (opt.selected) {
-                                data += String.format("{0}={1}&",
-                                                     encoder(name),
-                                                     encoder((opt.hasAttribute ? opt.hasAttribute('value') : opt.getAttribute('value') !== null) ? opt.value : opt.text));
+                                hasValue = opt.hasAttribute ? opt.hasAttribute('value') : opt.getAttributeNode('value').specified;
+                                data += String.format("{0}={1}&", encoder(name), encoder(hasValue ? opt.value : opt.text));
                             }
                         });
-                    } else if(!/file|undefined|reset|button/i.test(type)) {
-                        if(!(/radio|checkbox/i.test(type) && !element.checked) && !(type == 'submit' && hasSubmit)){
-
+                    } else if (!(/file|undefined|reset|button/i.test(type))) {
+                        if (!(/radio|checkbox/i.test(type) && !element.checked) && !(type == 'submit' && hasSubmit)) {
                             data += encoder(name) + '=' + encoder(element.value) + '&';
                             hasSubmit = /submit/i.test(type);
                         }
@@ -439,9 +440,9 @@ Ext.lib.Ajax = function() {
         defaultXhrHeader : 'XMLHttpRequest',
         poll : {},
         timeout : {},
+        conn: {},
         pollInterval : 50,
         transactionId : 0,
-
 
         abort : function(o, callback, isTimeout)
         {
