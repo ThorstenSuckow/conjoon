@@ -42,7 +42,13 @@ if ($buildType != "dev" && $buildType != "build") {
 require_once '../src/corelib/php/library/Conjoon/Version.php';
 $version = Conjoon_Version::VERSION;
 
+
 $dropFileConfig = array(
+
+    'basePath' => array(
+        'build' => '../build/build/htdocs/install/files/conjoon_application/manifest/',
+        'dev'   => '../src/www/application/manifest/'
+    ),
 
     'flash'       => array(
         'build' => '../build/build/htdocs/install/files/conjoon_application/manifest/flash.list',
@@ -741,11 +747,76 @@ foreach ($foundFiles as $dropFile => $sections) {
 fwrite(STDOUT, "\n");
 fwrite(STDOUT, "Found $fileCount files.\n");
 
+fwrite(STDOUT, "Combining files...\n");
+
+$in       = array('flash', 'html', 'images', 'javascript', 'sounds', 'stylesheets');
+$out      = array(array());
+$basePath = $dropFileConfig['basePath'][$buildType];
+
+foreach ($in as $val1) {
+    $temp = $out;
+    foreach ($temp as $val2) {
+        $out[] = array_merge($val2, array($val1));
+    }
+}
+
+$fileCombos = array();
+
+if ($buildType != 'dev') {
+    for ($i = 0, $len = count($out); $i < $len; $i++) {
+        if (count($out[$i]) != 1) {
+            continue;
+        }
+
+        sort($out[$i], SORT_STRING);
+
+        $fileContent = "";
+
+        for ($a = 0, $lena = count($out[$i]); $a < $lena; $a++) {
+            $fileContent .= "\n" . file_get_contents(
+                $basePath . '/' . $out[$i][$a] . '.list'
+            );
+        }
+
+        $fileContent = "{BASE_PATH}"
+            . str_replace("\n", "\n{BASE_PATH}", trim($fileContent));
+
+        fwrite(STDOUT, "Writing ".implode('.', $out[$i]) . '.list'."\n");
+
+        file_put_contents(
+            $basePath . '/' . implode('.', $out[$i]) . '.list',
+            $fileContent
+        );
+    }
+}
+
+for ($i = 0, $len = count($out); $i < $len; $i++) {
+    if (count($out[$i]) <= 1) {
+        continue;
+    }
+
+    $fileContent = "";
+
+    for ($a = 0, $lena = count($out[$i]); $a < $lena; $a++) {
+        $fileContent .= "\n" . file_get_contents(
+            $basePath . '/' . $out[$i][$a] . '.list'
+        );
+    }
+
+    $fileContent = trim($fileContent);
+
+    fwrite(STDOUT, "Writing ".implode('.', $out[$i]) . '.list'."\n");
+
+    file_put_contents(
+        $basePath . '/' . implode('.', $out[$i]) . '.list',
+        $fileContent
+    );
+}
+
+
+fwrite(STDOUT, "Done!\n");
 
 $files = array();
-
-
-
 
 
 
