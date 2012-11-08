@@ -461,6 +461,27 @@
 
 
 <!--.............................................................................
+/////////////////////////// MANIFEST FILES \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+..............................................................................-->
+    <!-- builds conjoon related css and resources for build_install -->
+    <!-- not to be directly invoked -->
+    <target name="_build_install_manifest">
+        <property name="global.called._build_install_manifest" value="1" />
+        <property file="${file.tmpProperties}" />
+        <exportallowed targetfile="${file.tmpProperties}" allowed="global"  />
+        <exec
+            command='php ./resource-lister.php build'
+            dir="./build-tools"
+            passthru="true"
+            checkreturn="true"
+        />
+    </target>
+<!--.............................................................................
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/////////////////////////////////////////////
+..............................................................................-->
+
+
+<!--.............................................................................
 ////////////////////////////// MAIN TARGET \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 ..............................................................................-->
     <target if="global.valid_target" unless="global.called.build_install_helper"
@@ -479,6 +500,7 @@
           tofile="./build/build/htdocs/install/LICENSE.txt"
           overwrite="true"
         />
+        <phingcall target="_build_install_manifest" />
     </target>
 <!--.............................................................................
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/////////////////////////////////////////////
