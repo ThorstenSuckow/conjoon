@@ -28,9 +28,13 @@ if (version_compare(PHP_VERSION, '5.2.5' , '<')) {
 
 include_once './functions.php';
 
-session_start();
+@session_start();
 
-
+if (isset($_GET['nosession'])) {
+    session_destroy();
+    header("Location: ./index.php");
+    die();
+}
 
 // +----------------------------------------------------------------------------
 // | Check if user is currently  running an instance of conjoon
@@ -41,6 +45,9 @@ session_start();
            "The installation wizard has detected that you are currently running an instance "
            ."of conjoon. Please sign out of conjoon first, then reload this page. If you have "
            ."already closed your running instance of conjoon, deleting your cookies might help."
+           ."<br />You can also try to reload this page by clicking "
+           ."<a href=\"./index.php?nosession=1\">- here -</a>. Clicking "
+           ."this link will remove your conjoon session data."
        );
    }
 
