@@ -19,9 +19,96 @@
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 
+
+/**
+ * Searches through the HTML5 manifest files for {BASE_PATH} and replaces it with
+ * the value found in $basePath.
+ *
+ * @param $applicationDir
+ * @param $basePath
+ */
+function conjoon_updateHtml5ManifestFilesWithBasePath($applicationDir, $basePath)
+{
+    $dir = $applicationDir . '/manifest/';
+
+    $in  = array(
+        'flash',
+        'html',
+        'images',
+        'javascript',
+        'sounds',
+        'stylesheets'
+    );
+    $out = array(array());
+
+    foreach ($in as $val1) {
+        $temp = $out;
+        foreach ($temp as $val2) {
+            $out[] = array_merge($val2, array($val1));
+        }
+    }
+
+    $fileCombos = array();
+
+    for ($i = 0, $len = count($out); $i < $len; $i++) {
+        if (count($out[$i]) == 0) {
+            continue;
+        }
+
+        sort($out[$i], SORT_STRING);
+
+        $file = $dir . implode('.', $out[$i]) . '.list';
+
+        InstallLogger::getInstance()->logMessage(
+            "[HTML5 MANIFEST]: "
+            . "Trying to update \"" . $file ."\" "
+            . "with basePath \"".$basePath."\""
+        );
+
+        if (!file_exists($file)) {
+            InstallLogger::getInstance()->logMessage(
+                "[HTML5 MANIFEST]: "
+                . "File \"" . $file ."\" not found"
+            );
+
+            continue;
+        }
+
+        $fileContent = file_get_contents($file);
+
+        $fileContent = str_replace(
+            '{BASE_PATH}',
+            $basePath == "/"
+                ? ""
+                : '/' . trim($basePath, '/'),
+            $fileContent
+        );
+
+        $ret = file_put_contents($file, $fileContent);
+
+        if ($ret !== false) {
+            InstallLogger::getInstance()->logMessage(
+                "[HTML5 MANIFEST]: "
+                . "Updated \"" . $file ."\" "
+            );
+        } else {
+            InstallLogger::getInstance()->logMessage(
+                "[HTML5 MANIFEST]: "
+                    . "Failed to update \"" . $file ."\" "
+            );
+        }
+
+        $fileContent = "";
+    }
+
+
+
+}
+
+
 /**
  * Returns true if the key could be found in a previous version of
- * config.ini.php, otehrwise false.
+ * config.ini.php, otherwise false.
  *
  * @param string $key
  *

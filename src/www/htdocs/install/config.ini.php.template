@@ -67,6 +67,9 @@ application_path = {APPLICATION_PATH}
 ; under http://my.domain.com/, the value must be set to "/". If you configured
 ; your webserver so that the application is available under http://my.domain.com/app/,
 ; the value must be set to "app".
+; NOTE: Do not change this setting during runtime, since functionality depends on it.
+; you might seriously harm your installation. If you feel the need to change this
+; setting, do so by running the setup assistant instead.
 base_url = {BASE_URL}
 
 ; The value should be set to anything that provides more information about the

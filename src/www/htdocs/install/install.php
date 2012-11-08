@@ -417,6 +417,12 @@ if (isset($_POST['install_post'])) {
         }
     }
 
+    // work on HTML5 manifest files. Update them to use the configured base_url.
+    conjoon_updateHtml5ManifestFilesWithBasePath(
+        $_SESSION['app_path'] . "/" . $appFolder, $_SESSION['doc_path']
+    );
+
+
     // remove old cache folders
     if (isset($_SESSION['installation_info']['cache.default.caching'])
         && $_SESSION['installation_info']['cache.default.caching']) {
