@@ -13,12 +13,20 @@
 -->
 
 <p>
- Done! Please delete the install folder or move it from the document root due to security
- reasons. Once you are done with this, you can start working with conjoon!
+ The Setup Assistant has successfully configured conjoon. Please remove the
+ install-folder now and clear any opcode cache used by your system.
  <br />
-  If you are running any opcode cache, like APC, make sure to clear the cache now.
+ If you need to re-run the setup, upload a fresh copy of the conjoon files.
 </p>
 <br />
 <p>
- In case you have any problems running conjoon, please visit the forums at <a href="http://conjoon.org" target="_blank">http://conjoon.org</a>!
+ In case you have any problems running conjoon, or further questions,
+ please visit the conjoon community forums at
+<a href="http://conjoon.org" target="_blank">http://conjoon.org</a>!
+</p>
+<br />
+<p>
+    <a style="font-weight:bold" href="../?noappcache">
+        Alright, take me to my installation already!
+    </a>
 </p>
