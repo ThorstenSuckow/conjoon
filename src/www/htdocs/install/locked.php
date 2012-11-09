@@ -14,16 +14,9 @@
  */
 
 /**
- * Cleans up session and finishes the installation wizard.
+ * Shows message that conjoon is already installed.
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 
-$_SESSION = array();
-session_destroy();
-
-
-//finally, lock the installation
-file_put_contents('./inst.lock', date("Y-m-d H:i:s", time()));
-
-include_once './view/finish.tpl';
+include_once './view/locked.tpl';

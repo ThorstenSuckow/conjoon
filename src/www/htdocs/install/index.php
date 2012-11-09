@@ -55,22 +55,34 @@ if (isset($_GET['nosession'])) {
 // +----------------------------------------------------------------------------
 // | init install context
 // +----------------------------------------------------------------------------
-$action = isset($_GET['action']) ? trim((string)$_GET['action']) : '';
+    $action = isset($_GET['action']) ? trim((string)$_GET['action']) : '';
+
 
 // +----------------------------------------------------------------------------
 // | Check if user is authorized
 // +----------------------------------------------------------------------------
-if (!array_key_exists('com.conjoon.session.install.authorized', $_SESSION)) {
-    $action = $action == 'authorize_success' ? $action : 'authorize';
-} else if (array_key_exists('com.conjoon.session.install.authorized', $_SESSION)
-    && ($action == 'authorize' || $action == 'authorize_success')) {
-    $action = '';
-}
+    if (!array_key_exists('com.conjoon.session.install.authorized', $_SESSION)) {
+        $action = $action == 'authorize_success' ? $action : 'authorize';
+    } else if (array_key_exists('com.conjoon.session.install.authorized', $_SESSION)
+        && ($action == 'authorize' || $action == 'authorize_success')) {
+        $action = '';
+    }
+
+// +----------------------------------------------------------------------------
+// | Check if installation is locked
+// +----------------------------------------------------------------------------
+    if (file_exists('./inst.lock')
+        && $action != 'authorize' &&
+        $action != 'authorize_success') {
+        $action = 'locked';
+    }
+
 
 // +----------------------------------------------------------------------------
 // | PREPARE SESSION
 // +----------------------------------------------------------------------------
-    if (array_key_exists('com.conjoon.session.install.authorized', $_SESSION)) {
+    if (array_key_exists('com.conjoon.session.install.authorized', $_SESSION)
+        && $action != 'locked') {
 
         if (file_exists('../installation.info.php') && !isset($_SESSION['installation_info'])) {
             include_once '../installation.info.php';
@@ -362,6 +374,17 @@ if (!array_key_exists('com.conjoon.session.install.authorized', $_SESSION)) {
            header("Location: ./index.php?action=check");
            die();
        break;
+
+        // locked
+        case 'locked':
+            $VIEW['navigation'] = array(
+                'locked' => array(
+                    "Notice!", "./index.php",
+                    "./index.php"
+               )
+            );
+            include_once './locked.php';
+            break;
    }
 
    $VIEW['content'] = ob_get_contents();
