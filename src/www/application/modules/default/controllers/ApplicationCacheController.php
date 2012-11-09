@@ -79,8 +79,8 @@ class ApplicationCacheController extends Zend_Controller_Action {
             Conjoon_Keys::SESSION_APPLICATION_CACHE
         );
 
-        $fileList = array();
-        $userId   = $this->_helper->registryAccess()->getUserId();
+        $files  = array();
+        $userId = $this->_helper->registryAccess()->getUserId();
 
         /**
          * @see Conjoon_Modules_Default_ApplicationCache_Facade
@@ -94,7 +94,7 @@ class ApplicationCacheController extends Zend_Controller_Action {
 
             $applicationPath = $this->_helper->registryAccess()->getApplicationPath();
 
-            $fileList = $appCacheFacade->getManifestFileListForUserId(
+            $files = $appCacheFacade->getManifestFileListForUserId(
                 $userId, $applicationPath . '/manifest'
             );
         }
@@ -108,7 +108,7 @@ class ApplicationCacheController extends Zend_Controller_Action {
         $this->view->lastChanged    = $appCacheFacade
                                       ->getCacheLastChangedTimestampForUserId(
                                           $userId);
-        $this->view->fileList       = $fileList;
+        $this->view->files = $files;
     }
 
     /**

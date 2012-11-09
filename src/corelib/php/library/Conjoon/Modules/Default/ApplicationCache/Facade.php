@@ -72,7 +72,11 @@ class Conjoon_Modules_Default_ApplicationCache_Facade {
      * returned
      * @param string $folder The folder where the manifest files resist
      *
-     * @return array
+     * @return array an associative array with the following keys:
+     * - combinedFile: a file name that should point to a file which holds
+     * all the requested cache files already combined
+     * - fileList: an array with file names where all the entries for the
+     * requested caches can be found
      *
      * @throws InvalidArgumentException
      */
@@ -113,13 +117,29 @@ class Conjoon_Modules_Default_ApplicationCache_Facade {
 
         $fileList = array();
 
+        $combinedKeys = array();
+
+        foreach ($caches as $key => $value) {
+            if ($value) {
+                $combinedKeys[] = $key;
+            }
+        }
+
+        sort($combinedKeys, SORT_STRING);
+
+        $combinedFile = $folder . '/' . implode('.', $combinedKeys) . '.list';
+
         foreach ($caches as $key => $value) {
             if ($value) {
                 $fileList[] = $folder . '/' . $key . '.list';
             }
         }
 
-        return $fileList;
+        return array(
+            'combinedFile' => $combinedFile,
+            'fileList'     => $fileList
+
+        );
     }
 
     /**
@@ -193,7 +213,7 @@ class Conjoon_Modules_Default_ApplicationCache_Facade {
      *
      * @return integer
      *
-     * @throws InvalidArgumentException
+     * @throws InvalidArgumentException, RuntimeException
      */
     public function getCacheEntryCountForUserId($userId, $folder)
     {
@@ -205,13 +225,21 @@ class Conjoon_Modules_Default_ApplicationCache_Facade {
             );
         }
 
-        $fileList = $this->getManifestFileListForUserId($userId, $folder);
+        $files = $this->getManifestFileListForUserId($userId, $folder);
 
-        $count = 0;
-        for ($i = 0, $len = count($fileList); $i < $len; $i++) {
-            $res    = file_get_contents($fileList[$i]);
+        $combinedFile = $files['combinedFile'];
+        $fileList     = $files['fileList'];
+
+        $count = -1;
+
+        if (@file_exists($combinedFile)) {
+            $res    = file_get_contents($combinedFile);
             $res    = trim($res);
-            $count += $res ? count(explode("\n", $res)) : 0;
+            $count  = $res ? count(explode("\n", $res)) : 0;
+        } else {
+            throw new RuntimeException(
+                "Could not get cache count. Check if \"$combinedFile\" exists"
+            );
         }
 
         return $count;
