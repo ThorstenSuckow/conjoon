@@ -78,15 +78,15 @@ com.conjoon.groupware.workbench.Menubar = function(){
                     var dialog = new com.conjoon.groupware.email.EmailAccountDialog();
                     dialog.show();
                 }
-            }, {
+            }/*, {
                 text    : com.conjoon.Gettext.gettext("Folder mappings..."),
                 handler : function() {
                     com.conjoon.groupware.email.options.FolderMappingBaton.showDialog();
                 }
-            }]
+            }*/]
         });
 
-        _emailMenu.menu.on('beforeshow', _onEmailMenuBeforeShow);
+        //_emailMenu.menu.on('beforeshow', _onEmailMenuBeforeShow);
 
         return _emailMenu;
     };
