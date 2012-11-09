@@ -126,6 +126,8 @@ Ext.ux.grid.livegrid.GridView = function(config) {
          * Fires when the grid resets.
          * @param {Ext.ux.grid.livegrid.GridView} this
          * @param {Boolean} forceReload
+         * @param {Object} params Additional params which get passed to the
+         * store if forceReload was set to true
          */
         'reset' : true,
         /**
@@ -429,7 +431,7 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
                 });
             }
 
-            this.fireEvent('reset', this, forceReload);
+            this.fireEvent('reset', this, forceReload, params);
             return this.ds.load({params : params});
         }
     },

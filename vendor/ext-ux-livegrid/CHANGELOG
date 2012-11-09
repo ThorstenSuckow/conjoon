@@ -1,4 +1,10 @@
-﻿Version 0.6.1 (GPL)
+﻿Version 0.6.2 (GPL)
+09-November-2012
+ - ehancement: (GridView.js) added "params" to the list of arguments that get
+passed to listeners of the "reset" event to be able to send additional params
+to the backend if reset forces a reload of the store
+
+Version 0.6.1 (GPL)
 28-October-2012
  - fixed: (Store.js) fixed an issue where sortData() would not
 be working with ExtJS 3.4

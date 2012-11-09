@@ -345,9 +345,10 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
         this.mon(gm, 'rowdeselect', this.onRowDeselect, this, {buffer : 100});
 
         var gv = this.gridPanel.view;
-        this.mon(gv, 'rowremoved',   this.onRowRemoved,   this);
-        this.mon(gv, 'beforebuffer', this.onBeforeBuffer, this);
-        this.mon(gv, 'buffer',       this.onStoreBuffer,  this);
+        this.mon(gv, 'rowremoved',   this.onRowRemoved,         this);
+        this.mon(gv, 'beforebuffer', this.onBeforeBuffer,       this);
+        this.mon(gv, 'buffer',       this.onStoreBuffer,        this);
+        this.mon(gv, 'reset',        this.onGridPanelViewReset, this);
 
         var tp = this.treePanel;
         this.mon(tp, 'movenode', this.onMoveNode, this);
@@ -875,6 +876,30 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
     },
 
 // ------------------------------ Listeners ------------------------------------
+
+    /**
+     * Listens to the grid view's reset event and adds the
+     * groupwareEmailFoldersId to the list of params to be passed to the store.
+     * If, and only if forceReload is not set to false and params is a
+     * configuration object.
+     *
+     * @param {Ext.ux.grid.livegrid.GridView} view
+     * @param {Boolean} forceReload
+     * @param {Object} params
+     */
+    onGridPanelViewReset : function(view, forceReload, params)
+    {
+        if (!forceReload || !params) {
+            return;
+        }
+
+        var obj = this.clkNodeId
+                  ? {groupwareEmailFoldersId : this.clkNodeId}
+                  : {};
+
+        params = Ext.applyIf(params, obj);
+    },
+
     /**
      * Listener for a rowdblclick in the grid. Will open an new tab containing
      * the message, uneditable.
@@ -1599,9 +1624,7 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
                     this.gridPanel.loadMask.hide();
                 }
 
-                this.gridPanel.view.reset((attr.isSelectable ? true : false), {
-                    groupwareEmailFoldersId : this.clkNodeId
-                });
+                this.gridPanel.view.reset((attr.isSelectable ? true : false));
 
                 this.lastClkNodeId = this.clkNodeId;
             }
