@@ -237,7 +237,8 @@ class Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment
               `file_name`,
               `mime_type`,
               `encoding`,
-              `content`
+              `content`,
+              `content_id`
               )
               VALUES
               (
@@ -246,7 +247,8 @@ class Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment
                 :file_name,
                 :mime_type,
                 :encoding,
-                :content
+                :content,
+                :content_id
             )"
         );
 
@@ -260,6 +262,7 @@ class Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment
         $statement->bindParam(':mime_type', $data['mime_type'], PDO::PARAM_STR);
         $statement->bindParam(':encoding', $data['encoding'], PDO::PARAM_STR);
         $statement->bindParam(':content', $data['content'], PDO::PARAM_LOB);
+        $statement->bindParam(':content_id', $data['content_id'], PDO::PARAM_STR);
 
         $statement->execute();
 
