@@ -101,6 +101,12 @@ class Groupware_FileController extends Zend_Controller_Action {
             $data = $facade->getAttachmentDownloadDataForUserId(
                 $key, $id, $userId
             );
+
+            if ($data) {
+                $data['name']     = $data['file_name'];
+                $data['resource'] = $data['content'];
+            }
+            
         } else {
             /**
              * @see Conjoon_Modules_Groupware_Files_File_Facade
@@ -127,6 +133,21 @@ class Groupware_FileController extends Zend_Controller_Action {
             return;
         }
 
+        if (!isset($data['mimeType'])) {
+            /**
+             * @see Conjoon_Exception
+             */
+            require_once 'Conjoon/Exception.php';
+
+            throw new Conjoon_Exception(
+                "Sorry, but \"mimeType\" is missing. "
+                . "Maybe \"mime_type\" is available?"
+            );
+
+            return;
+
+        }
+
         $this->_helper->viewRenderer->setNoRender();
 
 
@@ -139,7 +160,7 @@ class Groupware_FileController extends Zend_Controller_Action {
                  ->setHeader('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT', true)
                  ->setHeader('Pragma', 'no-cache', true)
                  ->setHeader('Content-Description', ($name != "" ? $name : $data['name']), true)
-                 ->setHeader('Content-Type', $data['mime_type'], true)
+                 ->setHeader('Content-Type', $data['mimeType'], true)
                  ->setHeader('Content-Transfer-Encoding', 'binary', true)
                  ->setHeader(
                     'Content-Disposition',
