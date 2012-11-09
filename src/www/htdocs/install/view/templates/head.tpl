@@ -46,7 +46,7 @@
     <?php
         if ($VIEW['action'] == '') {
             echo $VIEW['navigation'][''][0];
-        } else {
+        } else if (isset($VIEW['navigation'][''][1])) {
             echo "<a href=\"".$VIEW['navigation'][''][1]."\">" .
                  $VIEW['navigation'][''][0] .
                  "</a> &gt; " .

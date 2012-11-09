@@ -39,7 +39,7 @@ if (isset($_GET['nosession'])) {
 // +----------------------------------------------------------------------------
 // | Check if user is currently  running an instance of conjoon
 // +----------------------------------------------------------------------------
-
+/*@BUILD_ACTIVE@
    if (array_key_exists('com.conjoon.session.authNamespace', $_SESSION)) {
         die(
            "The installation wizard has detected that you are currently running an instance "
@@ -50,67 +50,84 @@ if (isset($_GET['nosession'])) {
            ."this link will remove your conjoon session data."
        );
    }
-
-// +----------------------------------------------------------------------------
-// | Check if app was installed
-// +----------------------------------------------------------------------------
-   if (file_exists('../installation.info.php') && !isset($_SESSION['installation_info'])) {
-       include_once '../installation.info.php';
-       $_SESSION['installation_info'] = $INSTALLATION_INFO[count($INSTALLATION_INFO)-1];
-       $_SESSION['installation_info']['previous_version'] = $INSTALLATION_INFO[count($INSTALLATION_INFO)-1]['version'];
-       $_SESSION['installation_info']['first_version']    = $INSTALLATION_INFO[0]['version'];
-       $_SESSION['app_credentials'] = $INSTALLATION_INFO[count($INSTALLATION_INFO)-1]['app_credentials'];
-   }
-
-    if (file_exists('../config.ini.php') && !isset($_SESSION['config_info'])) {
-        $_SESSION['remove_config_ini_php'] = true;
-        $_SESSION['config_info'] = @parse_ini_file('../config.ini.php', true);
-    }
-
-    if (!isset($_SESSION['config_info'])) {
-        $_SESSION['remove_config_ini_php'] = false;
-        $_SESSION['config_info']           = false;
-    }
-
-   if (!isset($_SESSION['installation_info'])) {
-       $_SESSION['installation_info'] = array();
-   }
-
-
+@BUILD_ACTIVE@*/
 
 // +----------------------------------------------------------------------------
 // | init install context
 // +----------------------------------------------------------------------------
-   $action = isset($_GET['action']) ? trim((string)$_GET['action']) : '';
+$action = isset($_GET['action']) ? trim((string)$_GET['action']) : '';
+
+// +----------------------------------------------------------------------------
+// | Check if user is authorized
+// +----------------------------------------------------------------------------
+if (!array_key_exists('com.conjoon.session.install.authorized', $_SESSION)) {
+    $action = $action == 'authorize_success' ? $action : 'authorize';
+} else if (array_key_exists('com.conjoon.session.install.authorized', $_SESSION)
+    && ($action == 'authorize' || $action == 'authorize_success')) {
+    $action = '';
+}
+
+// +----------------------------------------------------------------------------
+// | PREPARE SESSION
+// +----------------------------------------------------------------------------
+    if (array_key_exists('com.conjoon.session.install.authorized', $_SESSION)) {
+
+        if (file_exists('../installation.info.php') && !isset($_SESSION['installation_info'])) {
+            include_once '../installation.info.php';
+            $_SESSION['installation_info'] = $INSTALLATION_INFO[count($INSTALLATION_INFO)-1];
+            $_SESSION['installation_info']['previous_version'] = $INSTALLATION_INFO[count($INSTALLATION_INFO)-1]['version'];
+            $_SESSION['installation_info']['first_version']    = $INSTALLATION_INFO[0]['version'];
+            $_SESSION['app_credentials'] = $INSTALLATION_INFO[count($INSTALLATION_INFO)-1]['app_credentials'];
+        }
+
+        if (file_exists('../config.ini.php') && !isset($_SESSION['config_info'])) {
+            $_SESSION['remove_config_ini_php'] = true;
+            $_SESSION['config_info'] = @parse_ini_file('../config.ini.php', true);
+        }
+
+        if (!isset($_SESSION['config_info'])) {
+            $_SESSION['remove_config_ini_php'] = false;
+            $_SESSION['config_info']           = false;
+        }
+
+        if (!isset($_SESSION['installation_info'])) {
+            $_SESSION['installation_info'] = array();
+        }
+
+
+        if (!isset($_SESSION['setup_ini'])) {
+            $_SESSION['setup_ini'] = parse_ini_file('./setup.ini', true);
+        }
+
+        /*@REMOVE@*/
+        if (!isset($_SESSION['current_version'])) {
+            $_SESSION['current_version'] = '0.0';
+        }
+        /*@REMOVE@*/
+
+        /*@BUILD_ACTIVE@
+        if ($action != 'install_success' && $action != 'finish') {
+            $ret = @include_once './files/'.$_SESSION['setup_ini']['lib_path']['folder'].'/Conjoon/Version.php';
+            if (!$ret || !file_exists('./files/'.$_SESSION['setup_ini']['app_path']['folder'])) {
+                die("Could not find libraries. ".
+                    "Make sure you are working on a ".
+                    "fresh copy of the install folder.");
+            }
+        }
+
+        if (!isset($_SESSION['current_version'])) {
+            $_SESSION['current_version'] = Conjoon_Version::VERSION;
+        }
+        @BUILD_ACTIVE@*/
+   }
+
+// +----------------------------------------------------------------------------
+// | Build the view...
+// +----------------------------------------------------------------------------
    $VIEW = array(
        'action' => $action
    );
 
-   if (!isset($_SESSION['setup_ini'])) {
-       $_SESSION['setup_ini'] = parse_ini_file('./setup.ini', true);
-   }
-
-
-/*@REMOVE@*/
-   if (!isset($_SESSION['current_version'])) {
-       $_SESSION['current_version'] = '0.0';
-   }
-/*@REMOVE@*/
-
-/*@BUILD_ACTIVE@
-   if ($action != 'install_success' && $action != 'finish') {
-       $ret = @include_once './files/'.$_SESSION['setup_ini']['lib_path']['folder'].'/Conjoon/Version.php';
-       if (!$ret || !file_exists('./files/'.$_SESSION['setup_ini']['app_path']['folder'])) {
-           die("Could not find libraries. ".
-               "Make sure you are working on a ".
-               "fresh copy of the install folder.");
-       }
-   }
-
-   if (!isset($_SESSION['current_version'])) {
-       $_SESSION['current_version'] = Conjoon_Version::VERSION;
-   }
-@BUILD_ACTIVE@*/
 
    // build navigation for available set up steps
    // its important that the navigation appears in the order the various steps
@@ -169,6 +186,21 @@ if (isset($_GET['nosession'])) {
 
    ob_start();
    switch ($action) {
+
+       case 'authorize':
+           $VIEW['navigation'] = array(
+               'authorize' => array(
+                   "Authentication", "./index.php?action='authorize",
+                   "./index.php?action=authorize_check"
+               )
+           );
+           include_once './authorize.php';
+           break;
+
+       case 'authorize_success':
+           header("Location: ./index.php");
+           die();
+           break;
 
        // actions for checking prerequisites
        case 'check':

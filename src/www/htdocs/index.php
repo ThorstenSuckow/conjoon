@@ -27,16 +27,8 @@
 // +----------------------------------------------------------------------------
 /*@BUILD_ACTIVE@
    if (!file_exists('./config.ini.php')) {
-       die("<b>Error:</b><br />config.ini.php not found. Either create it manually or ".
-           "run the installation script (" .
-           "<a href=\"./install/index.php\">".
-           "./install/index.php</a>)");
-   } else if (file_exists('./install')) {
-       die(
-            "<b>Error:</b><br /> Please delete the install directory first "
-            . "or run the setup wizard <a href=\"./install/index.php\">"
-            . "./install/index.php</a>."
-        );
+       die("<b>Error:</b><br />config.ini.php not found. "
+           . "Run the Setup Assistant or create it manually.");
    }
 @BUILD_ACTIVE@*/
 
@@ -68,6 +60,13 @@
 // +----------------------------------------------------------------------------
 
    include_once './configCacheFunctions.php';
+
+    try {
+        $config = conjoon_initConfigCache();
+    } catch (Exception $e) {
+        // definitely abort here!
+        die($e->getMessage());
+    }
 
    $config = conjoon_initConfigCache();
 
