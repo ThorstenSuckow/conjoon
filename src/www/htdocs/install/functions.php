@@ -470,6 +470,9 @@ function conjoon_createAdmin($dbAdapter, $userData, Array $config)
 
     $prefix = $config['prefix'];
 
+    // insert lowercase
+    $userData['user'] = strtolower($userData['user']);
+
     switch ($dbType) {
         case 'mysql':
             $db = new PDO(
@@ -498,14 +501,29 @@ function conjoon_createAdmin($dbAdapter, $userData, Array $config)
                     ?,?,?,?,?,?
                 )";
                 $sth = $db->prepare($sql);
-                $sth->execute(array(
+
+                InstallLogger::getInstance()->logMessage(
+                    "[CREATE_ADMIN]: $sql with values " . implode(", ", array_values($userData))
+                );
+
+                if (!$sth->execute(array(
                     $userData['firstname'],
                     $userData['lastname'],
                     $userData['email_address'],
                     $userData['user'],
                     md5($userData['password']),
                     1
-                ));
+                ))) {
+                    $err = $db->errorInfo();
+                    InstallLogger::getInstance()->logMessage(
+                        "[CREATE_ADMIN:FAILED]: Duplicate entry for user name or email address? "
+                            . (!empty($err) && isset($err[2]) ? $err[2] : $sql)
+                    );
+                }
+            } else {
+                InstallLogger::getInstance()->logMessage(
+                    "[CREATE_ADMIN:FAILED]: admin already in table"
+                );
             }
 
             $db = null;

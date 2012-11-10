@@ -46,7 +46,7 @@ $_SESSION['app_credentials_failed'] = false;
 
 if (isset($_POST['app_credentials_post'])) {
 
-    $user         = addslashes(trim($_POST['user']));
+    $user         = strtolower(addslashes(trim($_POST['user'])));
     $password     = addslashes(trim($_POST['password']));
     $firstname    = addslashes(trim($_POST['firstname']));
     $lastname     = addslashes(trim($_POST['lastname']));
