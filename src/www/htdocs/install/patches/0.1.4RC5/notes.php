@@ -21,7 +21,7 @@
 
 $PATCH_NOTES['0.1.4RC5'] = array(
     'headline'    => 'Patch introduced in 0.1.4RC5',
-    'title'       => 'Patch for converting multibyte charcaters to proper UTF-8
+    'title'       => 'Patch for converting multibyte characters to proper UTF-8
                      characters.',
     'description' => 'This patch will convert multibyte characters to proper
                       UTF-8 characters. This patch is required in order to keep
