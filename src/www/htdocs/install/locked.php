@@ -19,4 +19,8 @@
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 
+$_SESSION = array();
+session_destroy();
+
+
 include_once './view/locked.tpl';
