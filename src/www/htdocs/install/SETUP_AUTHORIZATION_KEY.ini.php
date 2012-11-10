@@ -43,5 +43,5 @@
 ;
 ; Here's an example of how a secure authorization key would look like:
 ;
-; CONJOON_AUTHORIZATION_KEY = jk1lWf89;
+; CONJOON_AUTHORIZATION_KEY = jk1lWf89
 CONJOON_AUTHORIZATION_KEY =
