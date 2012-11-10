@@ -27,22 +27,14 @@ matches the prerequisites for conjoon and guide you through the several set up s
     which provides an extended end-user documentation.
 </div>
 
-<?php if ($_SESSION['remove_config_ini_php']) { ?>
+<?php if (is_array($_SESSION['config_info'])) { ?>
 <br />
-<div class="warning_box">
-    We have detected an exisiting configuration file for conjoon (located at <i>../config.ini.php</i>).
+<div class="success_box">
+    We have detected an existing configuration file for conjoon (located at <i>../config.ini.php</i>).
     <br />
-    conjoon will remove this file during the setup process. Please make sure you back up the data
-    found therein before proceeding.
-    <br/>
-    <br/>
-    <?php if ($WELCOME['config_okay_missing']) { ?>
-    <div class="error_box">
-        Please indicate that you have understood this.
-    </div>
-    <?php } ?>
-    <input id="config_okay" type="checkbox" name="config_okay" value="1" /> <label for="config_okay">Okay</label>
-    <br/>
+    conjoon will display the data found in the configuration file throughout the
+    setup process so you will be able to compare this configuration to the
+    settings you have submitted during your last setup run.
 </div>
 <?php } ?>
 

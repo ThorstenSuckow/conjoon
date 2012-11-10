@@ -26,35 +26,6 @@
  $CHECK['parent_dir']          = str_replace("\\", "/", $pathinfo);
  $CHECK['parent_dir_writable'] = @is_writable($CHECK['parent_dir']);
 
-    /**
-     * The following block is responsible for removing the config.ini.php
-     * if found.
-     * The flag $_SESSION['config_ini_php_treated'] will only be set to true
-     * if the file could be removed, otherwise it will stay flagged as "false".
-     */
-    if (!isset($_SESSION['config_ini_php_treated'])) {
-        $_SESSION['config_ini_php_treated'] = false;
-    }
-
-    if (!$_SESSION['config_ini_php_treated']) {
-        if ($_SESSION['remove_config_ini_php']) {
-
-            if (file_exists('../config.ini.php')) {
-                unlink('../config.ini.php');
-                $CHECK['config_ini_php_removed'] =
-                    file_exists('../config.ini.php') === false;
-            } else {
-                $CHECK['config_ini_php_removed'] = false;
-            }
-
-            $_SESSION['config_ini_php_treated']
-                = $CHECK['config_ini_php_removed'];
-
-        } else {
-            $_SESSION['config_ini_php_treated'] = true;
-        }
-    }
-
  if ($CHECK['parent_dir_writable']) {
     $dirName  = 'conjoon_install_test';
     $i = 0;

@@ -20,23 +20,6 @@ not work! The wizard will let you continue with trying to setup conjoon, though.
 project in this cases is, however, not guaranteed.
 </p>
 
-<?php if ($_SESSION['remove_config_ini_php']) { ?>
-<!-- NOTE FOR REMOVING config.ini.php -->
-<h3>Removing config.ini.php</h3>
-<p>
-<div class="<?php echo ($_SESSION['config_ini_php_treated'] === true
-                        || $CHECK['config_ini_php_removed'] === true)
-                        ? 'success_box' : 'warning_box'; ?>">
-    <?php if ($_SESSION['config_ini_php_treated'] || $CHECK['config_ini_php_removed']) { ?>
-    Successfully removed <i>config.ini.php</i>.
-    <?php } else { ?>
-    Could not remove <i>config.ini.php</i>. I will try at a later point.
-    <?php } ?>
-</div>
-</p>
-<?php } ?>
-
-
 <!-- CHECK PHP VERSION -->
 <h3>1. Checking PHP Version</h3>
 <p>
