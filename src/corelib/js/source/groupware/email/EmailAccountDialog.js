@@ -435,7 +435,8 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
             items       : [new com.conjoon.groupware.util.FormIntro({
                 style     : 'margin:10px 0 10px 0;',
                 labelText : com.conjoon.Gettext.gettext("Fetch messages"),
-                text      : com.conjoon.Gettext.gettext("You can delete each message from the inbox server after downloading them. If you use additional software to organize your emails, it is suggested to leave this option off.<br />Note:<br />This option is not available for IMAP based accounts.")
+                text      : com.conjoon.Gettext.gettext("You can delete each message from the inbox server after downloading them. If you use additional software to organize your emails, it is suggested to leave this option off.")
+                /*text      : com.conjoon.Gettext.gettext("You can delete each message from the inbox server after downloading them. If you use additional software to organize your emails, it is suggested to leave this option off.<br />Note:<br />This option is not available for IMAP based accounts.")*/
             }),
             fields['isCopyLeftOnServer']
             ]
