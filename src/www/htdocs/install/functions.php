@@ -340,7 +340,15 @@ function conjoon_createDatastructure($db, $path, $prefix = "")
             continue;
         }
 
-        $db->query($statement);
+        InstallLogger::getInstance()->logMessage("[STRUCTURE]: " . $statement);
+        if (!$db->query($statement)) {
+            $err = $db->errorInfo();
+            InstallLogger::getInstance()->logMessage(
+                "[STRUCTURE:FAILED]: "
+                    . (!empty($err) ? $err[2] : $statement)
+            );
+        };
+
     }
 
     if ($migrate) {
@@ -439,7 +447,7 @@ function conjoon_insertFixtures($path, $dbAdapter, Array $dbConfig)
             $err = $db->errorInfo();
             InstallLogger::getInstance()->logMessage(
                 "[FIXTURE:FAILED]: "
-                . (!empty($err) ? $err[1] : $statement)
+                . (!empty($err) ? $err[2] : $statement)
             );
         };
     }
