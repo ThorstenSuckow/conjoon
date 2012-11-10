@@ -19,6 +19,10 @@
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 
+/**
+ * check if user is authorized to load script
+ */
+include('./scripts/check_auth.php');
 
 
 $CACHE = array();

@@ -19,6 +19,11 @@
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 
+/**
+ * check if user is authorized to load script
+ */
+include('./scripts/check_auth.php');
+
 $LOCALIZATION = array(
     'timezone_options' => array(),
     'date_timezone'    => date_default_timezone_get()

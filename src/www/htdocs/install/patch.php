@@ -19,6 +19,11 @@
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 
+/**
+ * check if user is authorized to load script
+ */
+include('./scripts/check_auth.php');
+
 $currentVersion  = $_SESSION['current_version'];
 $firstVersion    = isset($_SESSION['installation_info']['first_version'])
                    ? $_SESSION['installation_info']['first_version']

@@ -19,6 +19,11 @@
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 
+/**
+ * check if user is authorized to load script
+ */
+include('./scripts/check_auth.php');
+
 $DATABASE = array(
     'missing'                   => array(),
     'max_allowed_packet_failed' => false,

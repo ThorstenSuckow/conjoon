@@ -19,6 +19,11 @@
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 
+/**
+ * check if user is authorized to load script
+ */
+include('./scripts/check_auth.php');
+
 if (!isset($_SESSION['support_key'])) {
     if (isset($_SESSION['installation_info']['support_key'])) {
         $_SESSION['support_key'] = $_SESSION['installation_info']['support_key'];
