@@ -348,7 +348,7 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
             }),
             fields['name'],
             new com.conjoon.groupware.util.FormIntro({
-                style     : 'margin:15px 0 5px 0;',
+                style     : 'margin:25px 0 5px 0;',
                 labelText : com.conjoon.Gettext.gettext("Personal Informations"),
                 text      : com.conjoon.Gettext.gettext("The following informations will be visible to the recipients of your email messages.")
             }),
@@ -433,7 +433,7 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
             baseCls     : 'x-small-editor',
             labelAlign : 'left',
             items       : [new com.conjoon.groupware.util.FormIntro({
-                style     : 'margin:10px 0 5px 0;',
+                style     : 'margin:10px 0 10px 0;',
                 labelText : com.conjoon.Gettext.gettext("Fetch messages"),
                 text      : com.conjoon.Gettext.gettext("You can delete each message from the inbox server after downloading them. If you use additional software to organize your emails, it is suggested to leave this option off.<br />Note:<br />This option is not available for IMAP based accounts.")
             }),
@@ -448,7 +448,7 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
             baseCls     : 'x-small-editor',
             labelAlign : 'left',
             items       : [new com.conjoon.groupware.util.FormIntro({
-                style     : 'margin:10px 0 5px 0;',
+                style     : 'margin:10px 0 10px 0;',
                 labelText : com.conjoon.Gettext.gettext("Create signature"),
                 text      : com.conjoon.Gettext.gettext("You can create a signature which will then be appended to each message you send using this account.")
             }),
