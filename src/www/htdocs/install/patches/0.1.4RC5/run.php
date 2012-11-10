@@ -118,14 +118,14 @@ function patch_0_1_4RC5()
                    . implode(',', $updStr)
                    ." WHERE `id`=?";
 
-            InstallLogger::logMessage(
-                "Executing $sql"
-            );
-
             $sth = $dbNew->prepare($sql);
 
             $updValues = array_values($convert);
             array_push($updValues, $id);
+
+            InstallLogger::logMessage(
+                "Executing $sql with values " . implode(", ", $updValues)
+            );
 
             if (!$sth->execute($updValues)) {
                 $rt = $sth->errorInfo();
@@ -170,14 +170,14 @@ function patch_0_1_4RC5()
                 . implode(',', $updStr)
                 ." WHERE `id`=?";
 
-            InstallLogger::logMessage(
-                "Executing $sql"
-            );
-
             $sth = $dbNew->prepare($sql);
 
             $updValues = array_values($convert);
             array_push($updValues, $id);
+
+            InstallLogger::logMessage(
+                "Executing $sql with values " . implode(", ", $updValues)
+            );
 
             if (!$sth->execute($updValues)) {
                 $rt = $sth->errorInfo();
@@ -222,14 +222,14 @@ function patch_0_1_4RC5()
                 . implode(',', $updStr)
                 ." WHERE `id`=?";
 
-            InstallLogger::logMessage(
-                "Executing $sql"
-            );
-
             $sth = $dbNew->prepare($sql);
 
             $updValues = array_values($convert);
             array_push($updValues, $id);
+
+            InstallLogger::logMessage(
+                "Executing $sql with values " . implode(", ", $updValues)
+            );
 
             if (!$sth->execute($updValues)) {
                 $rt = $sth->errorInfo();
@@ -274,14 +274,14 @@ function patch_0_1_4RC5()
                 . implode(',', $updStr)
                 ." WHERE `id`=?";
 
-             InstallLogger::logMessage(
-                 "Executing $sql"
-             );
-
             $sth = $dbNew->prepare($sql);
 
             $updValues = array_values($convert);
             array_push($updValues, $id);
+
+            InstallLogger::logMessage(
+                "Executing $sql with values " . implode(", ", $updValues)
+            );
 
             if (!$sth->execute($updValues)) {
                 $rt = $sth->errorInfo();
