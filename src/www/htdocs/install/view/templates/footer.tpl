@@ -15,11 +15,11 @@
 <hr />
 <div id="footer">
     <p>
-        <a target="_blank" href="http://conjoon.org/">conjoon Project Home</a>
+        <a target="_blank" href="http://conjoon.org/">The conjoon Open Source Project</a>
         &#149;
         <a target="_blank" href="http://conjoon.org/forum">conjoon Forums</a>
         &#149;
-        conjoon is a project by <a target="_blank" href="http://conjoon.org//about/team">Thorsten Suckow-Homberg</a>
+        <a target="_blank" href="http://conjoon.org/wiki">conjoon Documentation</a>
     </p>
    </div>
   </div>
