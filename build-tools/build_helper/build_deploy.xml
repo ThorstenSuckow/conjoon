@@ -52,11 +52,103 @@
     </if>
 
 <!--.............................................................................
+//////////// TASK COLLECTING DEVELOPMENT DEPLOY RELATED INFO \\\\\\\\\\\\\\\\\\\
+..............................................................................-->
+    <!-- target for development releases -->
+    <target name="collect_dev">
+        <property file="${file.tmpProperties}" />
+        <property name="deploy.continue" value="y" />
+        <!-- development release -->
+        <if>
+            <not>
+                <isset property="deploy.development.upload.target_dir" />
+            </not>
+            <then>
+                <property name="deploy.force" value="0" />
+                <propertyprompt
+                    propertyName="deploy.development.upload.target_dir"
+                    defaultValue="/tmp"
+                    promptText="Enter the target directory for the development files"
+                />
+            </then>
+        </if>
+
+        <!-- USER CREDENTIALS -->
+        <if>
+            <not>
+                <isset property="deploy.development.host.address" />
+            </not>
+            <then>
+                <property name="deploy.force" value="0" />
+                <propertyprompt
+                    propertyName="deploy.development.host.address"
+                    defaultValue="127.0.0.1"
+                    promptText="Enter the name or address of the server to connect to"
+                />
+                <propertyprompt
+                    propertyName="deploy.development.host.port"
+                    defaultValue="22"
+                    promptText="Enter the port of the server to connect to"
+                />
+                <propertyprompt
+                    propertyName="deploy.development.host.user"
+                    defaultValue="anonymous"
+                    promptText="Enter the user name for connecting with the server"
+                />
+                <propertyprompt
+                    propertyName="deploy.development.host.password"
+                    defaultValue="*"
+                    promptText="Enter the password for authentication"
+                />
+            </then>
+        </if>
+
+        <!-- Show Info -->
+        <if>
+            <not>
+                <equals arg1="${deploy.force}" arg2="1" />
+            </not>
+            <then>
+                <echo>----------- UPLOADING A DEVELOPMENT RELEASE---------------</echo>
+                <echo>All data has been collected. Please review the information</echo>
+                <echo>you provided.</echo>
+                <echo>Directory information:</echo>
+                <echo>----------------------</echo>
+                <echo>Directory for development release: ${deploy.development.upload.target_dir}</echo>
+                <echo>Server information:</echo>
+                <echo>----------------------</echo>
+                <echo>Server address: ${deploy.development.host.address}</echo>
+                <echo>Server port: ${deploy.development.host.port}</echo>
+                <echo>Server user: ${deploy.development.host.user}</echo>
+                <echo>Server password: ****</echo>
+                <propertyprompt
+                    propertyName="deploy.continue"
+                    defaultValue="n"
+                    promptText="Type 'y' to continue. Anything else cancels the deploy process"
+                />
+            </then>
+        </if>
+
+        <!-- Prompt to continue -->
+        <if>
+            <equals arg1="${deploy.continue}" arg2="y" />
+            <then>
+                <echo message="Starting development deploy..." />
+            </then>
+            <else>
+                <fail message="User canceled!" />
+            </else>
+        </if>
+        <phingcall target="deploy_development" />
+    </target>
+
+
+<!--.............................................................................
 /////////////// TASK COLLECTING DEPLOY RELATED INFO \\\\\\\\\\\\\\\\\\\\\\\\\\\\
 ..............................................................................-->
     <target name="collect_info">
         <property file="${file.tmpProperties}" />
-        <property name="deploy.continue" value="yes" />
+        <property name="deploy.continue" value="y" />
 
         <!-- current -->
         <if>
@@ -111,6 +203,11 @@
             <then>
                 <property name="deploy.force" value="0" />
                 <propertyprompt
+                    propertyName="deploy.host.address"
+                    defaultValue="127.0.0.1"
+                    promptText="Enter the name or address of the server to connect to"
+                />
+                <propertyprompt
                     propertyName="deploy.host.port"
                     defaultValue="22"
                     promptText="Enter the port of the server to connect to"
@@ -125,11 +222,6 @@
                     defaultValue="*"
                     promptText="Enter the password for authentication"
                 />
-                <propertyprompt
-                    propertyName="deploy.host.address"
-                    defaultValue="127.0.0.1"
-                    promptText="Enter the name or address of the server to connect to"
-                />
             </then>
         </if>
 
@@ -138,7 +230,7 @@
                 <equals arg1="${deploy.force}" arg2="1" />
             </not>
             <then>
-                <echo>-------------------------------------</echo>
+                <echo>-----------------STABLE------------------------</echo>
                 <echo>All data has been collected. Please review the information</echo>
                 <echo>you provided.</echo>
                 <echo>Directory information:</echo>
@@ -155,13 +247,13 @@
                 <propertyprompt
                     propertyName="deploy.continue"
                     defaultValue="n"
-                    promptText="Type 'yes' to continue. Anything else cancels the deploy process"
+                    promptText="Type 'y' to continue. Anything else cancels the deploy process"
                 />
             </then>
         </if>
 
         <if>
-            <equals arg1="${deploy.continue}" arg2="yes" />
+            <equals arg1="${deploy.continue}" arg2="y" />
             <then>
                 <echo message="Starting deploy..." />
             </then>
@@ -183,6 +275,38 @@
     <target name="deploy_release">
         <property file="${file.tmpProperties}" />
         <phingcall target="ssh_task" />
+    </target>
+
+
+    <target name="deploy_development">
+        <property file="${file.tmpProperties}" />
+        <echo>Deleting previous development releases and indicating that we're busy...</echo>
+        <ssh username="${deploy.development.host.user}"
+            password="${deploy.development.host.password}"
+            port="${deploy.development.host.port}" host="${deploy.development.host.address}"
+            command="
+                rm ${deploy.development.upload.target_dir}/*;
+                touch ${deploy.development.upload.target_dir}/busy.lock;
+            "
+        />
+        <echo>Uploading development release. This could take a while...</echo>
+        <scp username="${deploy.development.host.user}"
+            password="${deploy.development.host.password}"
+            port="${deploy.development.host.port}" host="${deploy.development.host.address}"
+            todir="${deploy.development.upload.target_dir}"
+        >
+            <fileset dir="./build/packed" />
+        </scp>
+        <echo>Removing locks...</echo>
+        <ssh username="${deploy.development.host.user}"
+            password="${deploy.development.host.password}"
+            port="${deploy.development.host.port}" host="${deploy.development.host.address}"
+            command="
+                cd ${deploy.development.upload.target_dir};
+                rm ${deploy.development.upload.target_dir}/busy.lock;
+            "
+        />
+        <echo>Have fun!</echo>
     </target>
 <!--.............................................................................
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/////////////////////////////////////////////
