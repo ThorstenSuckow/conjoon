@@ -737,7 +737,6 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
                 $pathInfo['nodeId'], $userId
             );
         }
-        return;
 
         $account = $this->getImapAccountForFolderIdAndUserId($pathInfo['rootId'], $userId);
 

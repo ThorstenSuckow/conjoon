@@ -87,6 +87,7 @@ Ext.extend(com.conjoon.groupware.email.EmailTreeLoader, Ext.tree.TreeLoader, {
 
         switch (attr.type) {
             case 'root':
+            case 'root_remote':
             case 'accounts_root':
                 attr.iconCls       = 'com-conjoon-groupware-email-EmailTree-rootIcon',
                 attr.draggable     = false;
