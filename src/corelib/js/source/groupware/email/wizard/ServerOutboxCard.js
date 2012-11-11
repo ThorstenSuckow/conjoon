@@ -172,7 +172,7 @@ com.conjoon.groupware.email.wizard.ServerOutboxCard = Ext.extend(Ext.ux.Wiz.Card
 
     setProtocol : function(protocol)
     {
-        if (protocol !== 'POP3' && protocol !== 'IMAP') {
+        if (protocol !== 'POP' && protocol !== 'IMAP') {
             throw("Unknown Protocol \""+protocol+"\"");
         }
 
@@ -198,7 +198,7 @@ com.conjoon.groupware.email.wizard.ServerOutboxCard = Ext.extend(Ext.ux.Wiz.Card
                     TLS   : 465
                 },
 
-                POP3 : {
+                POP : {
                     never : 25,
                     SSL   : 465,
                     TLS   : 465

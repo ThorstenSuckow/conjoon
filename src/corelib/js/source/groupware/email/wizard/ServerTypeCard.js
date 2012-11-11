@@ -43,8 +43,8 @@ com.conjoon.groupware.email.wizard.ServerTypeCard = Ext.extend(Ext.ux.Wiz.Card, 
         this.radioPopField = new Ext.form.Radio({
             boxLabel   : com.conjoon.Gettext.gettext("POP"),
             name       : 'protocol',
-            checked    : true,
-            inputValue : 'POP3'
+            inputValue : 'POP',
+            checked    : true
         });
 
         this.radioImapField = new Ext.form.Radio({
@@ -65,4 +65,5 @@ com.conjoon.groupware.email.wizard.ServerTypeCard = Ext.extend(Ext.ux.Wiz.Card, 
 
         com.conjoon.groupware.email.wizard.ServerTypeCard.superclass.initComponent.call(this);
     }
+
 });
