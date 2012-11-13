@@ -38,24 +38,26 @@ require_once 'Conjoon/Text/Transformer.php';
  * @package    Conjoon_Text
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
- *
- * @deprecated use Conjoon_Text_Transformer_Email_EmailAddressToHtmlTransformer
  */
-class Conjoon_Text_Transformer_EmailAddressToHtml extends Conjoon_Text_Transformer {
+class Conjoon_Text_Transformer_Mail_EmailAddressToHtmlTransformer
+    extends Conjoon_Text_Transformer {
 
     /**
      * @inherit Conjoon_Text_Transformer::transform
      */
     public function transform($input)
     {
-        /**
-         * @see Conjoon_Text_Transformer_Mail_EmailAddressToHtmlTransformer
-         */
-        require_once 'Conjoon/Text/Transformer/Mail/EmailAddressToHtmlTransformer.php';
+        $output = "";
 
-        $transformer = new Conjoon_Text_Transformer_Mail_EmailAddressToHtmlTransformer();
+        $pattern = "/([_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.([a-z]){2,6}))/is";
 
-        return $transformer->transform($input);
+        $output = preg_replace(
+            $pattern,
+            "<a href=\"mailto:$1\">$1</a>",
+            $input
+        );
+
+        return $output;
     }
 
 }
