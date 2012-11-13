@@ -894,7 +894,12 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
         }
 
         var obj = this.clkNodeId
-                  ? {groupwareEmailFoldersId : this.clkNodeId}
+                  ? {
+                    groupwareEmailFoldersId : this.clkNodeId,
+                    path                    : this.treePanel.getNodeById(
+                                                  this.clkNodeId
+                                              ).getPath('idForPath')
+                  }
                   : {};
 
         params = Ext.applyIf(params, obj);
