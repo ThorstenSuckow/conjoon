@@ -18,6 +18,7 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
 }
 
 require_once 'Conjoon/Text/Transformer/EmailAddressesToHtmlTest.php';
+require_once 'Conjoon/Text/Transformer/MimeDecoderTest.php';
 
 /**
  * @category   Conjoon
@@ -48,6 +49,7 @@ class Conjoon_Text_Transformer_AllTests
         $suite = new PHPUnit_Framework_TestSuite('conjoon - Conjoon_Text_Transformer');
 
         $suite->addTestSuite('Conjoon_Text_Transformer_EmailAddressesToHtmlTest');
+        $suite->addTestSuite('Conjoon_Text_Transformer_MimeDecoderTest');
 
         return $suite;
     }
