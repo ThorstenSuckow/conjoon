@@ -53,50 +53,25 @@ class Conjoon_Filter_DateToUtc implements Zend_Filter_Interface
      * @throws Conjoon_Filter_Exception If Zend_Date could not handle the passed
      * argument. Note, that almost every time Zend_Date will try to convert
      * the passed argument to a date object.
+     *
+     * @deprecated use Conjoon_Date_Format::toUtc
      */
     public function filter($value)
     {
-        // we need to set the default timezone here since strtotime
-        // works with the timezone as returned by
-        // date_default_timezone_get()
-        $t = date_default_timezone_get();
-        date_default_timezone_set('UTC');
-        $d = strtotime($value);
-        date_default_timezone_set($t);
+        /**
+         * @see Conjoon_Date_Format
+         */
+        require_once 'Conjoon/Date/Format.php';
 
-        if ($d === false) {
-            try {
-                $date = new Zend_Date($value);
-            } catch (Zend_Date_Exception $e) {
-                /**
-                 * @see Conjoon_Filter_Exception
-                 */
-                require_once 'Conjoon/Filter/Exception.php';
+        try{
+            return Conjoon_Date_Format::toUtc($value);
+        } catch (Conjoon_Date_Exception $e) {
+            /**
+             * @see Conjoon_Filter_Exception
+             */
+            require_once 'Conjoon/Filter/Exception.php';
 
-                throw new Conjoon_Filter_Exception(
-                    "Problem with value for date \"$value\" - Zend_Date threw an"
-                    . " exception with the following message: "
-                    . $e->getMessage()
-                );
-            }
-        } else {
-            try {
-                $date = new Zend_Date($d);
-            } catch (Zend_Date_Exception $e) {
-                /**
-                 * @see Conjoon_Filter_Exception
-                 */
-                require_once 'Conjoon/Filter/Exception.php';
-
-                throw new Conjoon_Filter_Exception(
-                    "Problem with value for date \"$value\" - Zend_Date threw an"
-                    . " exception with the following message: "
-                    . $e->getMessage()
-                );
-            }
+            throw new Conjoon_Filter_Exception($e->getMessage());
         }
-
-        $date->setTimezone('UTC');
-        return $date->get('YYYY-MM-dd HH:mm:ss');
     }
 }
