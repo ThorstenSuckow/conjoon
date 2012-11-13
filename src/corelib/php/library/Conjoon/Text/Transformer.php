@@ -30,7 +30,7 @@ abstract class Conjoon_Text_Transformer {
      */
     protected $_options;
 
-    public function __construct($options = array())
+    public function __construct(Array $options = array())
     {
         $this->_options = $options;
     }
@@ -42,7 +42,7 @@ abstract class Conjoon_Text_Transformer {
      *
      * @return string
      *
-     * @throws Conjoon_Text_Transformer_Exception
+     * @throws Conjoon_Text_Transformer_Exception, Conjoon_Argument_Exception
      */
     abstract public function transform($input);
 
