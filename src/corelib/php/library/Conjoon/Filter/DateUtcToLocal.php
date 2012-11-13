@@ -38,6 +38,8 @@ require_once 'Zend/Date.php';
  * @package    Conjoon_Filter
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ *
+ * @deprecated use Conjoon_Date_Format::utcToLocal
  */
 class Conjoon_Filter_DateUtcToLocal implements Zend_Filter_Interface
 {
@@ -178,33 +180,11 @@ class Conjoon_Filter_DateUtcToLocal implements Zend_Filter_Interface
      */
     public function filter($value)
     {
-        $dt = date_default_timezone_get();
-        date_default_timezone_set('UTC');
-        $d = strtotime($value);
-        date_default_timezone_set($dt);
+        /**
+         * @see Conjoon_Date_Format
+         */
+        require_once 'Conjoon/Date/Format.php';
 
-        if ($d === false) {
-            try {
-                $date = new Zend_Date();
-                $date->setTimezone('UTC');
-                $date->set($value);
-            } catch (Zend_Date_Exception $e) {
-                $date = new Zend_Date("1970-01-01 00:00:00");
-            }
-        } else {
-            try {
-                $date = new Zend_Date();
-                $date->setTimezone('UTC');
-                $date->set($d);
-            } catch (Zend_Date_Exception $e) {
-                $date = new Zend_Date("1970-01-01 00:00:00");
-            }
-        }
-
-
-
-
-        $date->setTimezone($this->_timezone);
-        return $date->get("YYYY-MM-dd HH:mm:ss");
+        return Conjoon_Date_Format::utcToLocal($value, $this->getTimezone());
     }
 }
