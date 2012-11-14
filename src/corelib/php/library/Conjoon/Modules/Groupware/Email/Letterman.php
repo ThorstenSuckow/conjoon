@@ -918,7 +918,11 @@ class Conjoon_Modules_Groupware_Email_Letterman {
             if (is_int($saved) > 0) {
                 $fetchedEmailIds[] = $saved;
             } else {
-                $fetchedEmailErrors[] = $saved;
+                $fetchedEmailErrors[] = "Could not save Email Message with the "
+                                        . " subject \""
+                                        .$emailItem['subject']. "\""
+                                        . ", date \"".$emailItem['date']."\""
+                                        . ": " . $saved;
                 continue;
             }
 
