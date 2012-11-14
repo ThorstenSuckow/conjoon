@@ -596,3 +596,6 @@ CHARACTER SET utf8 COLLATE utf8_bin NOT NULL;
 ALTER TABLE `{DATABASE.TABLE.PREFIX}users` CHANGE `email_address` `email_address` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
 ALTER TABLE `{DATABASE.TABLE.PREFIX}users` CHANGE `user_name` `user_name` VARCHAR( 64 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
 ALTER TABLE `{DATABASE.TABLE.PREFIX}users` DROP INDEX `username`, ADD UNIQUE `username` ( `user_name` );
+
+-- CN-616
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments` CHANGE `content` `content` LONGBLOB NOT NULL;
