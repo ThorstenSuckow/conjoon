@@ -500,7 +500,64 @@ class Conjoon_Modules_Groupware_Email_Letterman {
         try {
 
             Conjoon_Util_Array::underscoreKeys($itemData);
-            $id = (int)$modelItem->insert($itemData);
+
+            try {
+
+                $id = (int)$modelItem->insert($itemData);
+
+            } catch (Zend_Db_Statement_Exception $zdse) {
+                // in very rare cases, there are 4-byte characters in a utf-8
+                // string, and mysql cannot handle them right since we use
+                // utf-8 collations. We'll strip those 4-byte characters away.
+                // see CN-619
+                $content = $itemData['content_text_plain'];
+                $i       = 0;
+                $len     = strlen($content);
+
+                $fourByteDetected = false;
+
+                while ($i < $len) {
+                    $ord = ord($content[$i]);
+                    switch (true) {
+                        case ($ord <= 127):
+                            $i += 1;
+                            break;
+                        case ($ord < 224):
+                            $i += 2;
+                            break;
+                        case ($ord < 240):
+                            $i += 3;
+                            break;
+                        default:
+                            $fourByteDetected = true;
+                            $content = substr($content, 0, $i)
+                                . substr($content, $i+4);
+
+                            $len -= 4;
+                            break;
+                    }
+                }
+
+                if ($fourByteDetected === true) {
+
+                    $lastResortData = $emailItem;
+                    $lastResortData['contentTextPlain'] = $content;
+                    $filterItem->setData($lastResortData);
+                    $lastResortItemData = $filterItem->getProcessedData();
+                    Conjoon_Util_Array::underscoreKeys($lastResortItemData);
+                    $id = (int)$modelItem->insert($lastResortItemData);
+
+                    /**
+                     * @see Conjoon_Log
+                     */
+                    require_once 'Conjoon/Log.php';
+
+                    Conjoon_Log::log(
+                        "Detected 4-byte character in content_text_plain for "
+                        ."Email message with id $id", Zend_Log::NOTICE
+                    );
+                }
+            }
 
             if ($id <= 0) {
                 return null;
