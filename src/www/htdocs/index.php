@@ -125,6 +125,13 @@ require_once 'Conjoon/Modules/Default/User.php';
  */
 require_once 'Zend/Loader/PluginLoader.php';
 
+/*@REMOVE@*/
+/**
+ * @see Zend_Controller_Exception
+ */
+require_once 'Zend/Controller/Exception.php';
+/*@REMOVE@*/
+
 // +----------------------------------------------------------------------------
 // | Welcome! Start the session!
 // +----------------------------------------------------------------------------
