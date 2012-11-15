@@ -599,3 +599,8 @@ ALTER TABLE `{DATABASE.TABLE.PREFIX}users` DROP INDEX `username`, ADD UNIQUE `us
 
 -- CN-616
 ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments` CHANGE `content` `content` LONGBLOB NOT NULL;
+
+-- CN-618
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_feeds_items` CHANGE `guid` `guid` TEXT CHARACTER SET utf8 COLLATE utf8_bin NOT NULL;
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_feeds_items` CHANGE `link` `link` TEXT CHARACTER SET utf8 COLLATE utf8_bin NOT NULL;
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_feeds_items_flags` CHANGE `guid` `guid` VARCHAR( 32 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL;
