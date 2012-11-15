@@ -1,4 +1,26 @@
-﻿2012-11-11 0.1.5.RC1
+﻿2012-11-15 0.1.5.RC2
+====================
+Release Notes - conjoon - Version 0.1.5RC2
+
+** Bug
+    * [CN-616] - Fetching Email with attachments gives error that content does
+                 not fit into field "content"
+    * [CN-617] - Email Grid hangs during scrolling and defers showing the
+                 loadmask
+    * [CN-618] - Feeds not properly imported since guid is longer than 256
+                 bytes
+    * [CN-619] - Saving Email Message gives sql error message "incorrect string
+                 value"...
+    * [CN-620] - Zend_Controller_Exception not found in
+                 Zend/Controller/Plugin/Broker.php on line 336
+    * [CN-621] - Warning not displayed from patch notes when choosing a patch
+
+** Improvement
+    * [CN-615] - If an error during fetching emails occurs, provide more details
+                 if it's related to SQL
+
+
+2012-11-11 0.1.5.RC1
 ====================
 Release Notes - conjoon - Version 0.1.5RC1
 
