@@ -56,18 +56,88 @@ class Conjoon_Filter_MimeDecodeHeader implements Zend_Filter_Interface
      *
      * @param  mixed $value
      * @return integer
-     *
-     * @deprecated use Conjoon_Text_Transformer_MimeDecoder
      */
     public function filter($value)
     {
-        /**
-         * @see Conjoon_Text_Transformer_MimeDecoder
-         */
-        require_once 'Conjoon/Text/Transformer/MimeDecoder.php';
+        $bid = '?q?';
+        $q = stripos($value, '?q?');
+        if ($q === false) {
+            $q = stripos($value, '?b?');
+            if ($q === false) {
+                return $value;
+            }
+            $bid = '?b?';
+        }
 
-        $transformer = new Conjoon_Text_Transformer_MimeDecoder();
+        $ms = array(trim($value));
 
-        return $transformer->transform($value);
+        if (strpos($value, "\r\n") !== false) {
+            $ms = explode("\r\n", $value);
+        } else if (strpos($value, "\r") !== false) {
+            $ms = explode("\r", $value);
+        } else if (strpos($value, "\n") !== false) {
+            $ms = explode("\n", $value);
+        } else if (strpos(trim($value), " ") !== false) {
+            $ms = explode(" ", trim($value));
+        }
+
+        $len = count($ms);
+
+        $spec = "";
+
+        if ($len > 1) {
+
+            $index = -1;
+            for ($i = 0; $i < $len; $i++) {
+                $ms[$i] = $ms[$i];
+                if (stripos($ms[$i], $bid) !== false) {
+                    if (strpos($ms[$i], '=') === 0) {
+                        $spec = ' ';
+                    }
+                    break;
+                }
+                $index = $i;
+            }
+
+            if ($index != -1) {
+                $spec = implode(" ", array_slice($ms, 0, $index+1)) . $spec;
+                $ms   = array_slice($ms, $index+1);
+            }
+
+            $ms[0] = substr($ms[0], 0, -2);
+            $chId  = substr($ms[0], 0, $q+3);
+            for ($i = 1, $len_i = count($ms); $i < $len_i; $i++) {
+                $f = strrpos($ms[$i], '?=');
+
+                if ($f != false) {
+                    $ms[$i] = trim($ms[$i]);
+                }
+                if ($ms[$i] == "") {
+                    continue;
+                }
+                $ms[$i] = str_replace($chId, "", $ms[$i]);
+
+                if ($f !== false) {
+                    $ms[$i] = substr($ms[$i], 0, -2);
+                }
+            }
+            $ms = implode("", $ms) . '?=';
+        } else {
+            $ms = implode("", $ms);
+        }
+
+        $s = preg_replace(
+            "/=(\d[a-f]|[a-f]{0,2}|[[:xdigit:]])/e",
+            "strtoupper('\\0')",
+            $ms
+        );
+
+        $ret = @iconv_mime_decode_headers('A: '.$s);
+
+        if (!is_array($ret) || (is_array($ret) && !isset($ret['A']))) {
+            return $value;
+        }
+
+        return $spec . $ret['A'];
     }
 }

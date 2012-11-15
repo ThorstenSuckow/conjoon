@@ -61,6 +61,7 @@ to the data storage by future versions of conjoon.
   </div>
  </td>
 </tr>
+<?php } ?>
 <?php if (isset($info['warning'])) { ?>
 <tr>
  <td>
@@ -69,7 +70,6 @@ to the data storage by future versions of conjoon.
   </div>
  </td>
 </tr>
-<?php } ?>
 <?php } ?>
 <tr>
  <td>

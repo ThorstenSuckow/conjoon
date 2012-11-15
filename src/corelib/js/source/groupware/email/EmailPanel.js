@@ -894,12 +894,7 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
         }
 
         var obj = this.clkNodeId
-                  ? {
-                    groupwareEmailFoldersId : this.clkNodeId,
-                    path                    : this.treePanel.getNodeById(
-                                                  this.clkNodeId
-                                              ).getPath('idForPath')
-                  }
+                  ? {groupwareEmailFoldersId : this.clkNodeId}
                   : {};
 
         params = Ext.applyIf(params, obj);
@@ -1611,10 +1606,7 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
                    ? node && node.attributes
                    : false;
 
-        if (attr !== false
-            && (attr.type != 'root_remote'
-                && attr.type != 'root'
-                && attr.type != 'accounts_root')) {
+        if (attr !== false && (attr.type != 'root' && attr.type != 'accounts_root')) {
             this.clkNodeId = node.id;
 
             this.previewButton.show();

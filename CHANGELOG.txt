@@ -1,4 +1,196 @@
-﻿2012-11-04 0.1.4.2
+﻿2012-11-15 0.1.5.RC2
+====================
+Release Notes - conjoon - Version 0.1.5RC2
+
+** Bug
+    * [CN-616] - Fetching Email with attachments gives error that content does
+                 not fit into field "content"
+    * [CN-617] - Email Grid hangs during scrolling and defers showing the
+                 loadmask
+    * [CN-618] - Feeds not properly imported since guid is longer than 256
+                 bytes
+    * [CN-619] - Saving Email Message gives sql error message "incorrect string
+                 value"...
+    * [CN-620] - Zend_Controller_Exception not found in
+                 Zend/Controller/Plugin/Broker.php on line 336
+    * [CN-621] - Warning not displayed from patch notes when choosing a patch
+
+** Improvement
+    * [CN-615] - If an error during fetching emails occurs, provide more details
+                 if it's related to SQL
+
+
+2012-11-11 0.1.5.RC1
+====================
+Release Notes - conjoon - Version 0.1.5RC1
+
+** Bug
+    * [CN-393] - Closing main email tab triggers error, cannot be reopened
+    * [CN-463] - Adding an Email Account throws a MySQL error when encryption
+                 method is not specified
+    * [CN-466] - Empty list of Twitter Accounts causes Twitter Account Dialog
+                 to display "no data" in it's list panel
+    * [CN-469] - Removing all Email Accounts throws error when trying to open
+                 related Email Folder
+    * [CN-471] - "Clear cache and disable cache afterwards" does not disable
+                 the cache, i.e. manifest file is not empty
+    * [CN-474] - MySQL strict mode gives error when feeds with overlong titles
+                 get imported
+    * [CN-478] - Leading colon prevents configuration file from being loaded
+    * [CN-479] - Step 1 from install wizard gives notice: "Notice: Use of
+                 undefined constant ENT_HTML401"
+    * [CN-480] - Setup Assistant's Table Prefix field in IE9 is not aligned
+                 properly
+    * [CN-483] - Conjoon_Filter_ShortenString does not consider delimiter
+                 length when computing max. number of characters in string to
+                 shorten
+    * [CN-486] - Port Inbox not properly set when changed from 110 to different
+                 value in Email Account Assistant
+    * [CN-508] - GridViewMenuPlugin throws error in Ext 3.4 if checkbox is
+                 clicked
+    * [CN-509] - Closing Email Tab throws error if IntroductionPanel hasn't
+                 been rendered yet
+    * [CN-510] - Clicking last remaining column to hidden in GridViewMenuPlugin
+                 unselects checkbox
+    * [CN-516] - Check if account is already in Twitter Store when importing
+                 new accounts from the Twitter Service
+    * [CN-518] - Email Account Wizard allows for adding an Account with a name
+                 already existing
+    * [CN-519] - Backend does not check if account with the same name for the
+                 same user already exists
+    * [CN-520] - Change logic for looking up already existing Twitter Account
+    * [CN-521] - Sending empty post to EmailAccountController quites with error
+                 notice
+    * [CN-522] - "Secure connection for Outbox" not visible on Finish-Card of
+                 Email Account Wizard
+    * [CN-523] - valuesValid() in EmailAccountDialog does not refer to the
+                 proper tab when outbox values are handled
+    * [CN-524] - Outbox fields in EmailAccountDialog marked as invalid, though
+                 they aren't
+    * [CN-526] - Load mask does not disappear if manifest is empty and rebuild
+                 of cache is requested
+    * [CN-529] - Number of files cached by default from the Application Cache
+                 differs between Chrome/Safari/Mozilla
+    * [CN-530] - Fixtures for registry do not allow application cache settings
+                 to be editable
+    * [CN-531] - Wrong behavior for Apply Button in Local Cache Dialog
+    * [CN-536] - Issue with wrong argument in
+                 Conjoon_Modules_Groupware_Email_Account_Model_Account
+                 ::removeAsDeletedFlaggedAccounts
+    * [CN-538] - Adding folders to existing ones does not work
+    * [CN-539] - Deleting a folder does not work
+    * [CN-542] - Moving Email Folders  does not work
+    * [CN-546] - Trailing comma in
+                 localCache.options.ui.DefaultSettingsContainerUi
+    * [CN-547] - Apply-Button does not get re-enabled after changing cache
+                 options
+    * [CN-553] - Update fixtures to make "sfx/enabled" editable
+    * [CN-557] - Flash (*.swf) files from Ext JS not considered during build
+                 process
+    * [CN-560] - Email Editor Tab does not open
+    * [CN-578] - Downloading an Email Message with attachment from POP3 server
+                 gives error message
+    * [CN-581] - Reloading the email grid using the toolbar button results in
+                 empty grid
+    * [CN-582] - Downloading an Email Attachment returns error message in file
+                 contents
+    * [CN-588] - InstallLogger does not log the proper statements when running
+                 0.1.4RC5 Patch
+    * [CN-589] - Column user_name in users table must be unique
+
+** Improvement
+    * [CN-374] - Wrap version check in cudgets library in build tags
+    * [CN-394] - Change wording for quick panels
+    * [CN-418] - Group Make a Suggestion- and Report a Bug-dialog into one
+                 dialog
+    * [CN-428] - Transform email addresses in email message view to clickable
+                 links
+    * [CN-439] - Add header data to message body when forwarding an email
+    * [CN-476] - Set encryption method radio boxes right before port field in
+                 Email Account Assistant
+    * [CN-501] - Add notice to difference config.ini.php and
+                 installation.info.php to install wizard if upgrading an older
+                 version
+    * [CN-513] - Change colors for links in signatures when viewing in Email
+                 Message View
+    * [CN-515] - Improve StatusBar's ProgressBar
+    * [CN-525] - Create better error message for cache build failure
+    * [CN-527] - Progress bar back text color should be white instead of black
+    * [CN-533] - Progress bar text in Google Chrome is not aligned properly
+    * [CN-534] - Change Protocol Fields in EmailAccountDialog from disabled
+                 TextField to DisplayField
+    * [CN-535] - Conjoon_Builder must allow for omitting $_buildClass
+    * [CN-543] - Move folder's model deleteFolder to Facade and delete
+                 recursively
+    * [CN-548] - Show confirm dialog before cache gets rebuild if changes in
+                 the File Settings have been detected
+    * [CN-552] - update index-scripts with html5 doctype
+    * [CN-559] - For the Setup Assistant, suppress session_start errors in
+                 index.php and provide functionality to invalidate existing
+                 session data
+    * [CN-567] - Update Application Cache Facade to utilize combined manifest
+                 files
+    * [CN-568] - Add more margin to elements on the Identiy and Settings Card
+                 from the Email Account Dialog
+    * [CN-574] - Improve install wizard by "locking" the folder after installation
+    * [CN-575] - Provide link to installation on Finish Card
+    * [CN-576] - Add authorization to install wizard
+    * [CN-579] - Error Messages from sql statements in InstallLogger shown as
+                 numeric codes instead of text messages
+    * [CN-580] - copy config.ini.php to install folder instead of removing it
+                 entirely
+    * [CN-590] - Update install wizard to consider lower case usernames only
+    * [CN-592] - Add deployment channel "development" to build tools
+
+** New Feature
+    * [CN-382] - Merge pluginLoader-cache from 0.1 branch into trunk
+
+** Task
+    * [CN-375] - Merge HTML5 Application Cache features into 0.1 branch
+    * [CN-416] - Change links from http://www.conjoon.org to http://conjoon.org
+    * [CN-419] - Update to ExtJS 3.4
+    * [CN-425] - Remove menu items in Help menu
+    * [CN-460] - Update to Zend Framework 1.12
+    * [CN-462] - Update Email Grid to changes that came with Ext.ux.Livegrid 0.6
+    * [CN-465] - Set default storage engine to InnoDB for tables from the
+                 merged branches and check merged sql file for validity
+    * [CN-467] - Add HTML5 Application Cache manifest file list creation to
+                 build process
+    * [CN-468] - Add cudgets library to file list for Application Cache manifest
+    * [CN-472] - Test Application Cache with nested document root and check if
+                 base path needs to be specified in manifest
+    * [CN-473] - update file headers with meta info in remaining files in main
+                 dev line
+    * [CN-477] - mark INSTALL.txt as outdated and refer to conjoon.org/wiki
+    * [CN-484] - Create fixtures for registry
+    * [CN-488] - Remove Card for chosing protocol in Email Account Assistant
+    * [CN-517] - Check behavior of Email Account Dialog in main dev line
+    * [CN-528] - Move bug overrides to ext-bug-overrides.js
+    * [CN-537] - add cache setup to install wizard
+    * [CN-545] - Bring 0.1.4.2 into main dev line
+    * [CN-566] - Remove Folder Mapping Menu Entry from Menu bar
+    * [CN-585] - Update install wizard's footer
+    * [CN-586] - remove note about IMAP protocol in Settings Tab in Email
+                 Accounts Dialog
+
+** Sub-task
+    * [CN-459] - Update Ext.ux.Livegrid to work with ExtJS 3.4 and import into
+                 vendor library
+    * [CN-461] - Check Zend_Service_Twitter for recent API changes and remove
+                 custom changes introduced in conjoon 0.1.4
+    * [CN-485] - Add fixtures to Install Wizard
+    * [CN-496] - Check Ajax Queue implementation against ExtJS 3.4
+    * [CN-507] - Add ProcessDevFragment-Filter to build process for conjoon
+                 javascript files
+    * [CN-550] - Add events to the Application Cache API for a more detailed
+                 cache build process
+    * [CN-558] - HTML5 manifest files should be created during install process
+                 with the proper base path
+    * [CN-570] - Create all possible combinations of manifest files during
+                 build process
+
+
+2012-11-04 0.1.4.2
 ==================
 Release Notes - conjoon - Version 0.1.4.2
 

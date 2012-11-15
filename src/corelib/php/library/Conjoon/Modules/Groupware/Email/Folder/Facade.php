@@ -737,6 +737,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
                 $pathInfo['nodeId'], $userId
             );
         }
+        return;
 
         $account = $this->getImapAccountForFolderIdAndUserId($pathInfo['rootId'], $userId);
 
@@ -902,12 +903,6 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
             $iFolders    = $imap->getFolders();
             $isRootLevel = true;
         } else {
-            /**
-             * @ticket CN-595
-             */
-            if ($path === "INBOX") {
-                $path = null;
-            }
             $iFolders = $imap->getFolders($path)->getChildren();
         }
 

@@ -154,7 +154,7 @@ If this is not the case, move the folder before you proceed!
 </div>
 <?php } ?>
 <input id="backup_check" type="checkbox" name="backup_check" value="1" /> <label for="backup_check">
-    Alright, I have made a back up of my data! Let's continue!
+    Alright, I have made a backup of my data! Let's continue!
 </label>
 </p>
 <input type="hidden" name="welcome_post" value="1" />
