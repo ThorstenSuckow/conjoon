@@ -1,39 +1,17 @@
-﻿2012-11-15 0.1.5.RC2
-====================
-Release Notes - conjoon - Version 0.1.5RC2
-
-** Bug
-    * [CN-616] - Fetching Email with attachments gives error that content does
-                 not fit into field "content"
-    * [CN-617] - Email Grid hangs during scrolling and defers showing the
-                 loadmask
-    * [CN-618] - Feeds not properly imported since guid is longer than 256
-                 bytes
-    * [CN-619] - Saving Email Message gives sql error message "incorrect string
-                 value"...
-    * [CN-620] - Zend_Controller_Exception not found in
-                 Zend/Controller/Plugin/Broker.php on line 336
-    * [CN-621] - Warning not displayed from patch notes when choosing a patch
-
-** Improvement
-    * [CN-615] - If an error during fetching emails occurs, provide more details
-                 if it's related to SQL
-
-
-2012-11-11 0.1.5.RC1
-====================
-Release Notes - conjoon - Version 0.1.5RC1
+﻿2012-11-18 0.1.5
+================
+Release Notes - conjoon - Version 0.1.5
 
 ** Bug
     * [CN-393] - Closing main email tab triggers error, cannot be reopened
     * [CN-463] - Adding an Email Account throws a MySQL error when encryption
                  method is not specified
-    * [CN-466] - Empty list of Twitter Accounts causes Twitter Account Dialog
-                 to display "no data" in it's list panel
+    * [CN-466] - Empty list of Twitter Accounts causes Twitter Account Dialog to
+                 display "no data" in it's list panel
     * [CN-469] - Removing all Email Accounts throws error when trying to open
                  related Email Folder
-    * [CN-471] - "Clear cache and disable cache afterwards" does not disable
-                 the cache, i.e. manifest file is not empty
+    * [CN-471] - "Clear cache and disable cache afterwards" does not disable the
+                 cache, i.e. manifest file is not empty
     * [CN-474] - MySQL strict mode gives error when feeds with overlong titles
                  get imported
     * [CN-478] - Leading colon prevents configuration file from being loaded
@@ -41,19 +19,18 @@ Release Notes - conjoon - Version 0.1.5RC1
                  undefined constant ENT_HTML401"
     * [CN-480] - Setup Assistant's Table Prefix field in IE9 is not aligned
                  properly
-    * [CN-483] - Conjoon_Filter_ShortenString does not consider delimiter
-                 length when computing max. number of characters in string to
-                 shorten
+    * [CN-483] - Conjoon_Filter_ShortenString does not consider delimiter length
+                 when computing max. number of characters in string to shorten
     * [CN-486] - Port Inbox not properly set when changed from 110 to different
                  value in Email Account Assistant
     * [CN-508] - GridViewMenuPlugin throws error in Ext 3.4 if checkbox is
                  clicked
-    * [CN-509] - Closing Email Tab throws error if IntroductionPanel hasn't
-                 been rendered yet
+    * [CN-509] - Closing Email Tab throws error if IntroductionPanel hasn't been
+                 rendered yet
     * [CN-510] - Clicking last remaining column to hidden in GridViewMenuPlugin
                  unselects checkbox
-    * [CN-516] - Check if account is already in Twitter Store when importing
-                 new accounts from the Twitter Service
+    * [CN-516] - Check if account is already in Twitter Store when importing new
+                 accounts from the Twitter Service
     * [CN-518] - Email Account Wizard allows for adding an Account with a name
                  already existing
     * [CN-519] - Backend does not check if account with the same name for the
@@ -75,8 +52,7 @@ Release Notes - conjoon - Version 0.1.5RC1
                  to be editable
     * [CN-531] - Wrong behavior for Apply Button in Local Cache Dialog
     * [CN-536] - Issue with wrong argument in
-                 Conjoon_Modules_Groupware_Email_Account_Model_Account
-                 ::removeAsDeletedFlaggedAccounts
+                 Conjoon_Modules_Groupware_Email_Account_Model_Account::removeAsDeletedFlaggedAccounts
     * [CN-538] - Adding folders to existing ones does not work
     * [CN-539] - Deleting a folder does not work
     * [CN-542] - Moving Email Folders  does not work
@@ -97,6 +73,17 @@ Release Notes - conjoon - Version 0.1.5RC1
     * [CN-588] - InstallLogger does not log the proper statements when running
                  0.1.4RC5 Patch
     * [CN-589] - Column user_name in users table must be unique
+    * [CN-616] - Fetching Email with attachments gives error that content does
+                 not fit into field "content"
+    * [CN-617] - Email Grid hangs during scrolling and defers showing the
+                 loadmask
+    * [CN-618] - Feeds not properly imported since guid is longer than 256
+                 bytes
+    * [CN-619] - Saving Email Message gives sql error message "incorrect string
+                 value"...
+    * [CN-620] - Zend_Controller_Exception not found in
+                 Zend/Controller/Plugin/Broker.php on line 336
+    * [CN-621] - Warning not displayed from patch notes when choosing a patch
 
 ** Improvement
     * [CN-374] - Wrap version check in cudgets library in build tags
@@ -122,8 +109,8 @@ Release Notes - conjoon - Version 0.1.5RC1
     * [CN-535] - Conjoon_Builder must allow for omitting $_buildClass
     * [CN-543] - Move folder's model deleteFolder to Facade and delete
                  recursively
-    * [CN-548] - Show confirm dialog before cache gets rebuild if changes in
-                 the File Settings have been detected
+    * [CN-548] - Show confirm dialog before cache gets rebuild if changes in the
+                 File Settings have been detected
     * [CN-552] - update index-scripts with html5 doctype
     * [CN-559] - For the Setup Assistant, suppress session_start errors in
                  index.php and provide functionality to invalidate existing
@@ -132,7 +119,8 @@ Release Notes - conjoon - Version 0.1.5RC1
                  files
     * [CN-568] - Add more margin to elements on the Identiy and Settings Card
                  from the Email Account Dialog
-    * [CN-574] - Improve install wizard by "locking" the folder after installation
+    * [CN-574] - Improve install wizard by "locking" the folder after
+                 installation
     * [CN-575] - Provide link to installation on Finish Card
     * [CN-576] - Add authorization to install wizard
     * [CN-579] - Error Messages from sql statements in InstallLogger shown as
@@ -141,6 +129,8 @@ Release Notes - conjoon - Version 0.1.5RC1
                  entirely
     * [CN-590] - Update install wizard to consider lower case usernames only
     * [CN-592] - Add deployment channel "development" to build tools
+    * [CN-615] - If an error during fetching emails occurs, provide more details
+                 if it's related to SQL
 
 ** New Feature
     * [CN-382] - Merge pluginLoader-cache from 0.1 branch into trunk
@@ -152,10 +142,10 @@ Release Notes - conjoon - Version 0.1.5RC1
     * [CN-425] - Remove menu items in Help menu
     * [CN-460] - Update to Zend Framework 1.12
     * [CN-462] - Update Email Grid to changes that came with Ext.ux.Livegrid 0.6
-    * [CN-465] - Set default storage engine to InnoDB for tables from the
-                 merged branches and check merged sql file for validity
-    * [CN-467] - Add HTML5 Application Cache manifest file list creation to
-                 build process
+    * [CN-465] - Set default storage engine to InnoDB for tables from the merged
+                 branches and check merged sql file for validity
+    * [CN-467] - Add HTML5 Application Cache manifest file list creation to build
+    process
     * [CN-468] - Add cudgets library to file list for Application Cache manifest
     * [CN-472] - Test Application Cache with nested document root and check if
                  base path needs to be specified in manifest
@@ -186,8 +176,8 @@ Release Notes - conjoon - Version 0.1.5RC1
                  cache build process
     * [CN-558] - HTML5 manifest files should be created during install process
                  with the proper base path
-    * [CN-570] - Create all possible combinations of manifest files during
-                 build process
+    * [CN-570] - Create all possible combinations of manifest files during build
+                 process
 
 
 2012-11-04 0.1.4.2
