@@ -34,19 +34,19 @@ class Conjoon_Filter_SortDirection implements Zend_Filter_Interface
      *
      * @param  mixed $value
      * @return integer
-     *
-     * @deprecated use Conjoon_Text_Transformer_SortDirectionTransformer
      */
     public function filter($value)
     {
-        /**
-         * @see Conjoon_Text_Transformer_SortDirectionTransformer
-         */
-        require_once 'Conjoon/Text/Transformer/SortDirectionTransformer.php';
+        $str = trim(strtolower((string)$value));
 
-        $transformer = new Conjoon_Text_Transformer_SortDirectionTransformer();
+        switch ($str) {
+            case 'asc':
+                return 'ASC';
+            case 'desc':
+                return 'DESC';
+            default:
+                return 'ASC';
 
-        return $transformer->transform($value);
+        }
     }
-
 }

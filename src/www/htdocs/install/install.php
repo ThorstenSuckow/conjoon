@@ -343,6 +343,15 @@ if (isset($_POST['install_post'])) {
     file_put_contents('../installation.info.php', $installationinfo);
     $installationinfo = "";
 
+    // PREPARE PATCHES, IF ANY!
+    foreach ($_SESSION['patches'] as $patch => $doApply) {
+        if ($doApply) {
+            if (file_exists('./patches/'.$patch.'/prepare.run.php')) {
+                include_once './patches/'.$patch.'/prepare.run.php';
+            }
+        }
+    }
+
     $dbConnInfo = array(
         'host'     => $_SESSION['db_host'],
         'port'     => $_SESSION['db_port'],

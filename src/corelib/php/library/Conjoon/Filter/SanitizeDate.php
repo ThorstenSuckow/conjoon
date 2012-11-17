@@ -24,7 +24,7 @@ require_once 'Zend/Filter/Interface.php';
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class Conjoon_Filter_SanitizeDate implements Zend_Filter_Interface
+class Conjoon_Filter_sanitizeDate implements Zend_Filter_Interface
 {
     /**
      * Defined by Zend_Filter_Interface
@@ -37,18 +37,12 @@ class Conjoon_Filter_SanitizeDate implements Zend_Filter_Interface
      *
      * @param  mixed $value
      * @return integer
-     *
-     * @deprecated use Conjoon_Text_Transformer_SanitizeDateStringTransformer
      */
     public function filter($value)
     {
-        /**
-         * @see Conjoon_Text_Transformer_DateStringSanitizer
-         */
-        require_once 'Conjoon/Text/Transformer/DateStringSanitizer.php';
+        $regex = '/(\(.*\))$/';
+        $str = preg_replace($regex, "", $value);
 
-        $transformer = new Conjoon_Text_Transformer_DateStringSanitizer();
-
-        return $transformer->transform($value);
+        return trim($str);
     }
 }

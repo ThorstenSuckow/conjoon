@@ -18,10 +18,6 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
 }
 
 require_once 'Conjoon/Text/Transformer/EmailAddressesToHtmlTest.php';
-require_once 'Conjoon/Text/Transformer/MimeDecoderTest.php';
-require_once 'Conjoon/Text/Transformer/DateStringSanitizerTest.php';
-require_once 'Conjoon/Text/Transformer/SortDirectionTransformerTest.php';
-require_once 'Conjoon/Text/Transformer/Mail/AllTests.php';
 
 /**
  * @category   Conjoon
@@ -52,10 +48,6 @@ class Conjoon_Text_Transformer_AllTests
         $suite = new PHPUnit_Framework_TestSuite('conjoon - Conjoon_Text_Transformer');
 
         $suite->addTestSuite('Conjoon_Text_Transformer_EmailAddressesToHtmlTest');
-        $suite->addTestSuite('Conjoon_Text_Transformer_MimeDecoderTest');
-        $suite->addTestSuite('Conjoon_Text_Transformer_DateStringSanitizerTest');
-        $suite->addTestSuite('Conjoon_Text_Transformer_SortDirectionTransformerTest');
-        $suite->addTest(Conjoon_Text_Transformer_Mail_AllTests::suite());
 
         return $suite;
     }

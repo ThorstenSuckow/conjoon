@@ -67,22 +67,23 @@ class Conjoon_Filter_EmailRecipientsToString implements Zend_Filter_Interface
 
         $pattern = '/[,@\[\];"]/';
 
-        /**
-         * @see Conjoon_Text_Transformer_EmailAddressNameQuoteTransformer
-         */
-        require_once 'Conjoon/Text/Transformer/EmailAddressNameQuoteTransformer.php';
-
-        $transformer = new Conjoon_Text_Transformer_EmailAddressNameQuoteTransformer();
-
         foreach ($value as $address) {
             if (isset($address[1])) {
 
                 $hit = $this->_useQuoting ? preg_match($pattern, $address[1]) : 0;
 
                 if ($hit != 0) {
-
-                    $parts[] = $transformer->transform($address[1]);
-
+                    // quote only if the string is not already quoted
+                    if  (substr($address[1], 0, 1) != '"' || substr($address[1], -1) != '"') {
+                        // if the string needs quoting, check if the quotes within the string
+                        // are already escaped
+                        if (strpos(trim($address[1], '"'), '\"') === false && strpos(trim($address[1], '"'), '"') !== false) {
+                            $address[1] = str_replace('"', '\"', $address[1]);
+                        }
+                        $parts[] = '"' . $address[1] . '"';
+                    } else {
+                        $parts[] = $address[1];
+                    }
                 } else {
                     $parts[] = $address[1];
                 }

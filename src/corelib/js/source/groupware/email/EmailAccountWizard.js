@@ -59,7 +59,7 @@ com.conjoon.groupware.email.EmailAccountWizard = Ext.extend(Ext.ux.Wiz, {
 
         this.serverInboxCard = new com.conjoon.groupware.email.wizard.ServerInboxCard();
 
-        this.serverTypeCard = new com.conjoon.groupware.email.wizard.ServerTypeCard();
+        //this.serverTypeCard = new new com.conjoon.groupware.email.wizard.ServerTypeCard();
 
         this.serverOutboxCard = new com.conjoon.groupware.email.wizard.ServerOutboxCard();
 
@@ -78,7 +78,7 @@ com.conjoon.groupware.email.EmailAccountWizard = Ext.extend(Ext.ux.Wiz, {
                 }]
             }),
 
-            this.serverTypeCard,
+            //new com.conjoon.groupware.email.wizard.ServerTypeCard(),
             new com.conjoon.groupware.email.EmailAccountWizardNameCard(),
             this.serverInboxCard,
             this.serverOutboxCard,
@@ -102,9 +102,9 @@ com.conjoon.groupware.email.EmailAccountWizard = Ext.extend(Ext.ux.Wiz, {
             .call(this, card);
 
         if (card === this.serverInboxCard || card === this.serverOutboxCard) {
-            var prot = 'POP', values;
+            var prot = 'POP3', values;
             if (this.serverTypeCard) {
-                values = this.serverTypeCard.form.getValues(false);
+                values = this.serverTypeCard.form.getFieldValues();
                 prot   = values['protocol'];
             }
 
@@ -132,6 +132,9 @@ com.conjoon.groupware.email.EmailAccountWizard = Ext.extend(Ext.ux.Wiz, {
                 values[a] = formValues[a];
             }
         }
+
+        // remove me
+        values['protocol'] = 'POP3';
 
         values['isOutboxAuth'] = values['isOutboxAuth'] == 'on' ? true : false;
 
@@ -483,7 +486,7 @@ com.conjoon.groupware.email.EmailAccountWizardFinishCard = Ext.extend(Ext.ux.Wiz
         var html = ts.master.apply({
             portInbox     : values.portInbox,
             portOutbox    : values.portOutbox,
-            protocol      : values.protocol,
+            protocol      : 'POP',//values.protocol,
             name          : values.name,
             userName      : values.userName,
             address       : values.address,

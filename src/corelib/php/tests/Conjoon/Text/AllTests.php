@@ -19,8 +19,7 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
 
 require_once 'Conjoon/Text/Template/AllTests.php';
 require_once 'Conjoon/Text/Transformer/AllTests.php';
-require_once 'Conjoon/Text/Parser/AllTests.php';
-require_once 'Conjoon/Text/TemplateTest.php';
+require_once 'Conjoon/Text/Template.php';
 
 /**
  * @category   Conjoon
@@ -51,10 +50,9 @@ class Conjoon_Text_AllTests
         $suite = new PHPUnit_Framework_TestSuite('conjoon - Conjoon_Text');
 
         $suite->addTest(Conjoon_Text_Template_AllTests::suite());
-        $suite->addTest(Conjoon_Text_Parser_AllTests::suite());
         $suite->addTest(Conjoon_Text_Transformer_AllTests::suite());
 
-        $suite->addTestSuite('Conjoon_Text_TemplateTest');
+        $suite->addTestSuite('Conjoon_Text_Template');
 
         return $suite;
     }
