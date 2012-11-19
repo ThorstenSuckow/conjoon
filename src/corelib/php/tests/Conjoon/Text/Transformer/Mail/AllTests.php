@@ -17,6 +17,7 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Conjoon_Text_Transformer_Mail_AllTests::main');
 }
 
+require_once 'Conjoon/Text/Transformer/Mail/PathToImapGlobalNameTransformerTest.php';
 require_once 'Conjoon/Text/Transformer/Mail/EmailAddressesToHtmlTransformerTest.php';
 require_once 'Conjoon/Text/Transformer/Mail/EmailAddressesNameQuoteTransformerTest.php';
 
@@ -48,6 +49,7 @@ class Conjoon_Text_Transformer_Mail_AllTests
     {
         $suite = new PHPUnit_Framework_TestSuite('conjoon - Conjoon_Text_Transformer_Mail');
 
+        $suite->addTestSuite('Conjoon_Text_Transformer_Mail_PathToImapGlobalNameTransformerTest');
         $suite->addTestSuite('Conjoon_Text_Transformer_Mail_EmailAddressesToHtmlTransformerTest');
         $suite->addTestSuite('Conjoon_Text_Transformer_Mail_EmailAddressNameQuoteTransformerTest');
 
