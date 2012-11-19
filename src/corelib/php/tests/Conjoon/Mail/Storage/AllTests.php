@@ -14,14 +14,13 @@
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
-    define('PHPUnit_MAIN_METHOD', 'Conjoon_Mail_AllTests::main');
+    define('PHPUnit_MAIN_METHOD', 'Conjoon_Mail_Storage_AllTests::main');
 }
 
+require_once 'Conjoon/Mail/Storage/ExceptionTest.php';
+require_once 'Conjoon/Mail/Storage/Pop3Test.php';
+require_once 'Conjoon/Mail/Storage/ImapTest.php';
 
-require_once 'Conjoon/Mail/SentTest.php';
-require_once 'Conjoon/Mail/MessageTest.php';
-require_once 'Conjoon/Mail/ExceptionTest.php';
-require_once 'Conjoon/Mail/Storage/AllTests.php';
 
 
 /**
@@ -31,7 +30,7 @@ require_once 'Conjoon/Mail/Storage/AllTests.php';
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class Conjoon_Mail_AllTests
+class Conjoon_Mail_Storage_AllTests
 {
     /**
      * Runs this test suite
@@ -50,11 +49,11 @@ class Conjoon_Mail_AllTests
      */
     public static function suite()
     {
-        $suite = new PHPUnit_Framework_TestSuite('conjoon - Conjoon_Mail');
+        $suite = new PHPUnit_Framework_TestSuite('conjoon - Conjoon_Mail_Storage');
 
-        $suite->addTestSuite('Conjoon_Mail_Exception');
-        $suite->addTestSuite('Conjoon_Mail_Message');
-        $suite->addTestSuite('Conjoon_Mail_Sent');
+        $suite->addTestSuite('Conjoon_Mail_Storage_Exception');
+        $suite->addTestSuite('Conjoon_Mail_Storage_Pop3');
+        $suite->addTestSuite('Conjoon_Mail_Storage_Imap');
 
         $suite->addTest(Conjoon_Mail_Storage_AllTests::suite());
 
@@ -62,6 +61,6 @@ class Conjoon_Mail_AllTests
     }
 }
 
-if (PHPUnit_MAIN_METHOD == 'Conjoon_Mail_AllTests::main') {
-    Conjoon_Mail_AllTests::main();
+if (PHPUnit_MAIN_METHOD == 'Conjoon_Mail_Storage_AllTests::main') {
+    Conjoon_Mail_Storage_AllTests::main();
 }
