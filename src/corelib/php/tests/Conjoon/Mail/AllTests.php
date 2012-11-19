@@ -23,6 +23,7 @@ require_once 'Conjoon/Mail/MessageTest.php';
 require_once 'Conjoon/Mail/ExceptionTest.php';
 require_once 'Conjoon/Mail/Storage/AllTests.php';
 require_once 'Conjoon/Mail/Protocol/AllTests.php';
+require_once 'Conjoon/Mail/Service/AllTests.php';
 
 /**
  * @category   Conjoon
@@ -58,6 +59,7 @@ class Conjoon_Mail_AllTests
 
         $suite->addTest(Conjoon_Mail_Storage_AllTests::suite());
         $suite->addTest(Conjoon_Mail_Protocol_AllTests::suite());
+        $suite->addTest(Conjoon_Mail_Service_AllTests::suite());
 
         return $suite;
     }
