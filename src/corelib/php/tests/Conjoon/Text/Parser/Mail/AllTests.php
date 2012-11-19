@@ -17,6 +17,7 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Conjoon_Text_Parser_Mail_AllTests::main');
 }
 
+require_once 'Conjoon/Text/Parser/Mail/MailboxFolderPathParserTest.php';
 require_once 'Conjoon/Text/Parser/Mail/EmailAddressIdentityParserTest.php';
 
 
@@ -48,6 +49,7 @@ class Conjoon_Text_Parser_Mail_AllTests
     {
         $suite = new PHPUnit_Framework_TestSuite('conjoon - Conjoon_Text_Parser_Mail');
 
+        $suite->addTestSuite('Conjoon_Text_Parser_Mail_MailboxFolderPathParserTest');
         $suite->addTestSuite('Conjoon_Text_Parser_Mail_EmailAddressIdentityParserTest');
 
         return $suite;
