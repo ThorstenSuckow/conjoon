@@ -30,6 +30,11 @@ abstract class Conjoon_Text_Parser {
      */
     protected $_options;
 
+    /**
+     * @param array $options
+     *
+     * @throws Conjoon_Argument_Exception
+     */
     public function __construct($options = array())
     {
         $this->_options = $options;
