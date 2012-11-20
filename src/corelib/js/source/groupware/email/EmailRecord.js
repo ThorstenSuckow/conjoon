@@ -16,7 +16,7 @@ Ext.namespace('com.conjoon.groupware.email');
 
 
 com.conjoon.groupware.email.EmailRecord = Ext.data.Record.create([
-    {name : 'id', type : 'int'},
+    {name : 'id', type : 'string'},
     {name : 'attachments'},
     {name : 'subject', type : 'string'},
     {name : 'from'},
