@@ -41,8 +41,8 @@ interface Conjoon_Mail_Service_ImapStorageService
     public function getHeaderListForGlobalName($globalName);
 
     /**
-     * Returns the message headers, flags and the bodystructure for all messages
-     * found for the global name.
+     * Returns the message headers, flags, uid and the bodystructure for all
+     * messages found for the global name.
      *
      * @param string $globalName
      *
@@ -51,10 +51,11 @@ interface Conjoon_Mail_Service_ImapStorageService
      *  - header: the raw header text
      *  - bodystructure: an array with the bodystructure informations
      *  - flags: an array with all flags for the message.
+     *  - uid: The uinique identifier
      *
      * @throws Conjoon_Mail_Service_MailServiceException
      * @throws Conjoon_Argument_Exception
      */
-    public function getHeaderAndMetaInformationForGlobalName($globalName);
+    public function getHeaderListAndMetaInformationForGlobalName($globalName);
 
 }

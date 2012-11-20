@@ -169,7 +169,7 @@ class Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade {
         $storage = new Conjoon_Mail_Storage_Imap($protocol);
 
 
-        $messageStruct = $storage->getHeaderAndMetaInformationForGlobalName(
+        $messageStruct = $storage->getHeaderListAndMetaInformationForGlobalName(
             $globalName
         );
 
@@ -247,6 +247,8 @@ class Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade {
             $sender = $identityParserSender->parse($header['from']);
             $header['sender'] = isset($sender[0][1]) ? $sender[0][1] : $sender[0][0];
 
+            // the uid
+            $header['uid'] = $messageStruct[$i]['uid'];
 
             $header['isAttachment']     = false;
             $header['isRead']           = false;
@@ -306,7 +308,7 @@ class Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade {
 
              $header =& $parsedHeaders[$i];
              $responseItems[] = array(
-                'id'                      => rand(1, 10000),
+                'id'                      => $header['uid'],
                 'recipients'              => $header['recipients'],
                 'sender'                  => $header['sender'],
                 'subject'                 => $htmlEntitiesFilter->filter(
