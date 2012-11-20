@@ -44,7 +44,8 @@ class Conjoon_Modules_Groupware_Email_Item_Filter_Request extends Conjoon_Filter
             'limit',
             'dir',
             'sort',
-            'groupwareEmailFoldersId'
+            'groupwareEmailFoldersId',
+            'path'
         ),
         self::CONTEXT_REQUEST_LATEST => array(
             'start',
@@ -75,7 +76,10 @@ class Conjoon_Modules_Groupware_Email_Item_Filter_Request extends Conjoon_Filter
          ),
          'minDate' => array(
             'Int'
-         )
+         ),
+        'path' => array(
+            'StringTrim'
+        )
     );
 
     protected $_validators = array(
@@ -100,7 +104,10 @@ class Conjoon_Modules_Groupware_Email_Item_Filter_Request extends Conjoon_Filter
         'groupwareEmailFoldersId' => array(
             'allowEmpty' => false,
             array('GreaterThan', 0)
-         )
+         ),
+        'path' => array(
+            'allowEmpty' => false
+        )
     );
 
     protected function _init()

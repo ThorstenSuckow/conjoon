@@ -320,6 +320,38 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
     }
 
     /**
+     * Returns the path transformed to the global imap name for the specified
+     * account. This considers the delimiter as read out from the specified
+     * IMAP account.
+     *
+     * @param Conjoon_Modules_Groupware_Email_Account_Dto $accountDto
+     * @param string $path
+     *
+     * @return string
+     *
+     */
+    public function getImapGlobalNameForAccountAndPath(
+        Conjoon_Modules_Groupware_Email_Account_Dto$accountDto, $path)
+    {
+
+        /**
+         * @see Conjoon_Modules_Groupware_Email_ImapHelper
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/ImapHelper.php';
+
+        $delim = Conjoon_Modules_Groupware_Email_ImapHelper
+                 ::getFolderDelimiterForImapAccount($accountDto);
+
+        $path = $this->_sanitizeImapPath($path, $delim);
+
+        if ($path === null) {
+            return false;
+        }
+
+        return $path;
+    }
+
+    /**
      * Creates a new folder/mailbox for the specified account at the specified
      * path.
      *
@@ -341,6 +373,8 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
 
         $this->_checkParam($account, 'checkForImap');
 
+        $path = $this->getImapGlobalNameForPath($account, $path, $delim);
+
         /**
          * @see Conjoon_Modules_Groupware_Email_ImapHelper
          */
@@ -358,9 +392,9 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
             );
         }
 
-        $path = $this->_sanitizeImapPath($path, $delim);
+        $path = $this->getImapGlobalNameForAccountAndPath($account, $path);
 
-        if ($path === false) {
+        if ($path === null) {
             return false;
         }
 
@@ -504,10 +538,10 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
             $account
         );
 
-        $path       = $this->_sanitizeImapPath($path, $delim);
-        $parentPath = $this->_sanitizeImapPath($parentPath, $delim);
+        $path       = $this->getImapGlobalNameForAccountAndPath($account, $path);
+        $parentPath = $this->getImapGlobalNameForAccountAndPath($account, $parentPath);
 
-        if ($path === false || $parentPath === false) {
+        if ($path === null || $parentPath === null) {
             return false;
         }
 
@@ -833,10 +867,10 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
             );
         }
 
-        $path    = $this->_sanitizeImapPath($path, $delim);
+        $path    = $this->getImapGlobalNameForAccountAndPath($account, $path);
         $newPath = $this->_sanitizeImapPath($path, $delim, true);
 
-        if ($path === false || $newPath === false) {
+        if ($path === null || $newPath === null) {
             return false;
         }
 
@@ -1006,24 +1040,30 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
      * @param boolean $popHead whether or not to remove the head of the
      * path
      *
-     * @return mixed The sanitized path or false if the string could not
+     * @return mixed The sanitized path or null if the string could not
      * be sanitized
+     *
+     * @deprecated
      */
     private function _sanitizeImapPath($path, $delim, $popHead = false)
     {
-        if ($path == "/" || $path == $delim) {
-            return false;
-        } else {
-            $path = rtrim(ltrim(str_replace('/', $delim, $path), $delim), $delim);
+        /**
+         * @see Conjoon_Text_Transformer_Mail_PathToImapGlobalNameTransformer
+         */
+        require_once 'Conjoon/Text/Transformer/Mail/PathToImapGlobalNameTransformer.php';
+
+        try {
+            $transformer = new Conjoon_Text_Transformer_Mail_PathToImapGlobalNameTransformer(
+                array(
+                    'delimiter' => $delim,
+                    'popTail'   => $popHead
+                )
+            );
+
+            return $transformer->transform($path);
+        } catch (Conjoon_Text_Transformer_Exception $e) {
+            return null;
         }
-
-        $parts = explode($delim, $path);
-
-        if ($popHead === true) {
-            array_pop($parts);
-        }
-
-        return implode($delim, $parts);
     }
 
     /**
@@ -1098,24 +1138,15 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
      */
     private function _extractPathInfo($path)
     {
-        if ($path == "") {
-            return array();
-        }
+        /**
+         * @see Conjoon_Text_Parser_Mail_MailboxFolderPathParser
+         */
+        require_once 'Conjoon/Text/Parser/Mail/MailboxFolderPathParser.php';
 
-        // should already be stripped
-        if (strpos($path, '/root') !== false) {
-            throw new RuntimeException("Unexpected \"/root\" part in path");
-        }
+        $parser = new Conjoon_Text_Parser_Mail_MailboxFolderPathParser();
 
-        $result = array();
+        return $parser->parse($path);
 
-        $parts = explode('/', $path);
-
-        $result['nodeId'] = $parts[count($parts)-1];
-        $result['rootId'] = array_shift($parts);
-        $result['path']   = '/' . implode($parts, '/');
-
-        return $result;
     }
 
     /**
