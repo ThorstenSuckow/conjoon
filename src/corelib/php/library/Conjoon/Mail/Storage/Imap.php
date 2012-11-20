@@ -153,7 +153,7 @@ class Conjoon_Mail_Storage_Imap extends Zend_Mail_Storage_Imap
     /**
      * @inheritdoc
      */
-    public function getHeaderAndBodyStructureForGlobalName($globalName)
+    public function getHeaderAndMetaInformationForGlobalName($globalName)
     {
         /**
          * @see Conjoon_Argument_Check
@@ -194,7 +194,7 @@ class Conjoon_Mail_Storage_Imap extends Zend_Mail_Storage_Imap
 
             try {
                 $tmp = $this->_protocol->fetch(
-                    array('RFC822.HEADER', 'BODYSTRUCTURE'), $i
+                    array('RFC822.HEADER', 'BODYSTRUCTURE', 'FLAGS'), $i
                 );
 
             } catch (Zend_Mail_Protocol_Exception $e) {
@@ -211,7 +211,8 @@ class Conjoon_Mail_Storage_Imap extends Zend_Mail_Storage_Imap
 
             $headers[] = array(
                 'header'        => $tmp['RFC822.HEADER'],
-                'bodystructure' => $tmp['BODYSTRUCTURE']
+                'bodystructure' => $tmp['BODYSTRUCTURE'],
+                'flags'         => $tmp['FLAGS']
             );
 
         }
