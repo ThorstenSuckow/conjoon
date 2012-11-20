@@ -346,15 +346,15 @@ class Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade {
                 usort($responseItems, array($this, 'memorySortSender'));
                 break;
 
-            case 'isSpam':
+            case 'is_spam':
                 usort($responseItems, array($this, 'memorySortIsSpam'));
                 break;
 
-            case 'isRead':
+            case 'is_read':
                 usort($responseItems, array($this, 'memorySortIsRead'));
                 break;
 
-            case 'isAttachment':
+            case 'is_attachment':
                 usort($responseItems, array($this, 'memorySortisAttachment'));
                 break;
         }
@@ -380,6 +380,10 @@ class Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade {
         $date = date_create($b['date']);
         $b    = date_timestamp_get($date);
 
+        if ((int)$a == (int)$b) {
+            return 0;
+        }
+
         return ((int)$a < (int)$b) ? -1 : 1;
     }
 
@@ -397,21 +401,34 @@ class Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade {
         if (!isset($b['recipients'][0])) {
             return 0;
         }
+
         return strcmp($a['recipients'][0], $b['recipients'][0]);
     }
 
     public function memorySortIsSpam($a, $b)
     {
+        if ((int)$a['isSpam'] == (int)$b['isSpam']) {
+            return 0;
+        }
+
         return ((int)$a['isSpam'] < (int)$b['isSpam']) ? -1 : 1;
     }
 
     public function memorySortIsRead($a, $b)
     {
+        if ((int)$a['isRead'] == (int)$b['isRead']) {
+            return 0;
+        }
+
         return ((int)$a['isRead'] < (int)$b['isRead']) ? -1 : 1;
     }
 
     public function memorySortIsAttachment($a, $b)
     {
+        if ((int)$a['isAttachment'] == (int)$b['isAttachment']) {
+            return 0;
+        }
+
         return ((int)$a['isAttachment'] < (int)$b['isAttachment']) ? -1 : 1;
     }
 
