@@ -33,7 +33,7 @@ class Conjoon_Text_Parser_Mail_MailboxFolderPathParserTest extends PHPUnit_Frame
     protected $_input = array();
 
     /**
-     * Creates a new Conjoon_Text_Parser_Mail_EmailAddressIdentityParser object for each test
+     * Creates a new Conjoon_Text_Parser_Mail_MailboxFolderPathParser object for each test
      *
      * @return void
      */
