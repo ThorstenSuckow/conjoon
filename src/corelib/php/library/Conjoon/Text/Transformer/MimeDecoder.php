@@ -75,12 +75,16 @@ class Conjoon_Text_Transformer_MimeDecoder extends Conjoon_Text_Transformer {
 
         Conjoon_Argument_Check::check(array(
             'input' => array(
-                'allowEmpty' => false,
+                'allowEmpty' => true,
                 'type'       => 'string'
             )
         ), $data);
 
         $value = $data['input'];
+
+        if ($value === "") {
+            return "";
+        }
 
         $bid = '?q?';
         $q = stripos($value, '?q?');

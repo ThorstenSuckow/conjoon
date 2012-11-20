@@ -58,7 +58,9 @@ class Conjoon_Text_Transformer_MimeDecoderTest extends PHPUnit_Framework_TestCas
             . "=?windows-1252?Q?=29?="
             => "Fwd: Aktualisierte Einladung: Employment Options at conjoon @ Di 8. Sep. 17:00 – 18:00 (Thorsten Suckow-Homberg)",
             "=?ISO-8859-15?Q?=DC=DCPIJM=D6N=DF=DF=DF?="
-            => "ÜÜPIJMÖNßßß"
+            => "ÜÜPIJMÖNßßß",
+            ""
+            => ""
 
         );
 
