@@ -95,7 +95,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
     {
         this.contextMenu = com.conjoon.groupware.email.NodeContextMenu;
 
-        this.root = new Ext.tree.AsyncTreeNode({
+        this.root = new com.conjoon.cudgets.tree.AsyncTreeNode({
             id            : 'root',
             idForPath     : 'root',
             iconCls       : 'com-conjoon-groupware-email-EmailTree-rootIcon',
@@ -380,7 +380,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
                     parentId : nodeConfig.parent,
                     id       : nodeConfig.child.id,
                     name     : nodeConfig.child.value,
-                    path     : node.getPath('idForPath')
+                    path     : node.getPathAsJson('idForPath')
                 };
                 successFn = this.onNodeEditSuccess;
             break;
@@ -393,7 +393,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
                     // restore a previously state, so do not remove it!
                     id       : nodeConfig.child.id,
                     name     : nodeConfig.child.value,
-                    path     : node.getPath('idForPath')
+                    path     : node.getPathAsJson('idForPath')
                 };
                 successFn = this.onNodeAddSuccess;
             break;
@@ -467,7 +467,10 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
             title   : com.conjoon.Gettext.gettext("Confirm - Delete folder"),
             msg     : com.conjoon.Gettext.gettext("The selected folder and all its contents will be moved into the trash bin. Are you sure you want to continue?"),
             buttons : msg.YESNO,
-            fn      : function(btn){if (btn == 'yes') {this.proxyAppend(tree, node, oldParent, parentNode);}},
+            fn      : function(btn){if (btn == 'yes') {
+                          this.proxyAppend(tree, node, oldParent, parentNode);
+                      }
+            },
             scope   : this,
             icon    : msg.QUESTION,
             scope   : this,
@@ -551,7 +554,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
 
         // temp store the path
         var node = dropEvent.data.node;
-        node.attributes.tmpPath = node.getPath('idForPath');
+        node.attributes.tmpPath = node.getPathAsJson('idForPath');
 
         return true;
     },
@@ -578,10 +581,10 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
             return source.isDropValid === true;
         }
 
-        var sourcePath = dragOverEvent.data.node.getPath('idForPath');
-        var targetPath = dragOverEvent.target.getPath('idForPath');
+        var sourcePath = dragOverEvent.data.node.getPathAsArray('idForPath');
+        var targetPath = dragOverEvent.target.getPathAsArray('idForPath');
 
-        if (sourcePath.split('/')[2] != targetPath.split('/')[2]) {
+        if (sourcePath[1] != targetPath[1]) {
             return false;
         }
 
@@ -656,7 +659,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
             mode          : 'move',
             parent        : oldParent.id,
             newParent     : newParent.id,
-            newParentPath : newParent.getPath('idForPath'),
+            newParentPath : newParent.getPathAsJson('idForPath'),
             child     : {
                 id         : node.id,
                 value      : node.text,
@@ -670,8 +673,9 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
             // this is done in the beforedrop event, but if the node gets
             // manually moved when moving a node to the trash,
             // this might be needed.
-            node.attributes.tmpPath  = oldParent.getPath('idForPath')
-                                       + '/' + node.id;
+            var p = oldParent.getPathAsArray('idForPath');
+            p.push(node.id);
+            node.attributes.tmpPath = Ext.util.JSON.encode(p);
         }
 
         this.saveNode(nodeConfig);
@@ -966,7 +970,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
             }
         }
 
-        var node = parent.appendChild(new Ext.tree.TreeNode({
+        var node = parent.appendChild(new com.conjoon.cudgets.tree.TreeNode({
             text          : this.anonymousNodeText +
                             ((occurence > 0) ? ' ('+occurence+')' : ''),
             pendingCount  : 0,

@@ -77,7 +77,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Filter_Folder extends Conjoon_Filte
             'StringTrim'
         ),
         'path' => array(
-            'SanitizeExtFolderPath'
+            'StringTrim'
         ),
         'parentPath' => array(
             'SanitizeExtFolderPath'

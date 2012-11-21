@@ -67,7 +67,8 @@ class Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade {
      * Returns the list of email items for the specified folder path for the
      * specified sort info.
      *
-     * @param string $path
+     * @param array $pathInfo Path informations as returned by using the
+     * Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser
      * @param integer $userId
      * @param array $sortInfo An array with the following key/value pairs:
      *  - sort  => name of the header to sort after
@@ -79,18 +80,22 @@ class Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade {
      *
      * @throws Conjoon_Argument_Exception
      */
-    public function getEmailItemList($path, $userId, Array $sortInfo = array())
+    public function getEmailItemList(
+        Array $pathInfo, $userId, Array $sortInfo = array())
     {
         /**
          * @see Conjoon_Argument_Check
          */
         require_once 'Conjoon/Argument/Check.php';
 
-        $data = array('path' => $path, 'userId' => $userId);
+        $data = array(
+            'pathInfo' => $pathInfo,
+            'userId'   => $userId
+        );
 
         Conjoon_Argument_Check::check(array(
-            'path' => array(
-                'type'       => 'string',
+            'pathInfo' => array(
+                'type'       => 'array',
                 'allowEmpty' => false
             ),
             'userId' => array(
@@ -99,18 +104,8 @@ class Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade {
             )
         ), $data);
 
-        $path   = $data['path'];
-        $userId = $data['userId'];
-
-        /**
-         * @see Conjoon_Text_Parser_Mail_MailboxFolderPathParser
-         */
-        require_once 'Conjoon/Text/Parser/Mail/MailboxFolderPathParser.php';
-
-        $parser = new Conjoon_Text_Parser_Mail_MailboxFolderPathParser();
-
-        $pathInfo = $parser->parse($data['path']);
-
+        $pathInfo = $data['pathInfo'];
+        $userId   = $data['userId'];
 
         if ($this->_getFolderFacade()->isRemoteFolder($pathInfo['rootId'])) {
 
@@ -132,7 +127,8 @@ class Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade {
     /**
      *
      * @param Conjoon_Modules_Groupware_Email_Account_Dto $accountDto
-     * @param $path
+     * @param array $path the path parts for the remote folder, which have to
+     * be assembled again using the remote storage's delimiter
      * @param array $sortInfo
      *
      * @return array
@@ -140,13 +136,12 @@ class Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade {
      * @throws Conjoon_Argument_Exception
      */
     protected function _getEmailItemListForAccountAndRemoteFolder(
-            Conjoon_Modules_Groupware_Email_Account_Dto $accountDto, $path,
+            Conjoon_Modules_Groupware_Email_Account_Dto $accountDto, Array $path,
             Array $sortInfo = array(), $userId/*REMOVE THIS ARGUMENT*/)
     {
 
-        $globalName = $this->_getFolderFacade()->getImapGlobalNameForAccountAndPath(
-            $accountDto, $path
-        );
+        $globalName = $this->_getFolderFacade()
+            ->getAssembledGlobalNameForAccountAndPath($accountDto, $path);
 
         /**
          * @see Conjoon_Date_Format

@@ -23,11 +23,17 @@ require_once 'Zend/Filter/Interface.php';
  * by the Ext framework. The remaining fragment should only contain
  * database-ids and/or global names defined by an IMAP server, separated
  * by a "slash".
+ * Note:
+ * This filter should not be used anymore. Instead, the client should submit
+ * paths as json encoded arrays to the backend, so no path separator pollution
+ * occurs.
  *
  * @category   Filter
  * @package    Conjoon_Filter
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ *
+ * @deprecated use Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser
  */
 class Conjoon_Filter_SanitizeExtFolderPath implements Zend_Filter_Interface
 {

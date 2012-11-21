@@ -459,11 +459,11 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
 
         // check if folder is remote folder
         /**
-         * @see Conjoon_Text_Parser_Mail_MailboxFolderPathParser
+         * @see Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser
          */
-        require_once 'Conjoon/Text/Parser/Mail/MailboxFolderPathParser.php';
+        require_once 'Conjoon/Text/Parser/Mail/MailboxFolderPathJsonParser.php';
 
-        $parser = new Conjoon_Text_Parser_Mail_MailboxFolderPathParser();
+        $parser = new Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser();
 
         $pathInfo = $parser->parse($filteredData['path']);
 
@@ -483,7 +483,7 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
 
             $listFacade = Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade::getInstance();
 
-            $items = $listFacade->getEmailItemList($filteredData['path'], $userId, $sortInfo);
+            $items = $listFacade->getEmailItemList($pathInfo, $userId, $sortInfo);
 
             $this->view->success      = true;
             $this->view->error        = null;

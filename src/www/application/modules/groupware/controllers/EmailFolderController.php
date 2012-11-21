@@ -84,16 +84,38 @@ class Groupware_EmailFolderController extends Zend_Controller_Action {
     public function getFolderAction()
     {
         /**
+         * @see Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser
+         */
+        require_once 'Conjoon/Text/Parser/Mail/MailboxFolderPathJsonParser.php';
+
+        $parser = new Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser();
+
+        try {
+            $pathParts = $parser->parse($this->_request->getParam('path'));
+        } catch (Conjoon_Text_Parser_Exception $e) {
+            /**
+             * @see Conjoon_Error
+             */
+            require_once 'Conjoon/Error.php';
+
+            $error = Conjoon_Error::fromException($e);
+            $this->view->success = false;
+            $this->view->error   = $error->getDto();
+            return;
+        }
+
+        /**
          * @see Conjoon_Modules_Groupware_Email_Folder_Facade
          */
         require_once 'Conjoon/Modules/Groupware/Email/Folder/Facade.php';
 
         $facade = Conjoon_Modules_Groupware_Email_Folder_Facade::getInstance();
 
-        $path   = $this->_request->getParam('path');
         $userId = $this->_helper->registryAccess->getUserId();
 
-        $folders = $facade->getFoldersForPathAndUserId($path, $userId);
+        $folders = $facade->getFoldersForPathAndUserId(
+            $pathParts, $userId
+        );
 
         $this->view->success = true;
         $this->view->error   = null;
@@ -173,12 +195,38 @@ class Groupware_EmailFolderController extends Zend_Controller_Action {
 
         $facade = Conjoon_Modules_Groupware_Email_Folder_Facade::getInstance();
 
-        $path       = $this->_request->getParam('path');
-        $parentPath = $this->_request->getParam('parentPath');
-        $userId     = $this->_helper->registryAccess->getUserId();
+        /**
+         * @see Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser
+         */
+        require_once 'Conjoon/Text/Parser/Mail/MailboxFolderPathJsonParser.php';
+
+        $parser = new Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser();
 
         try {
-            $folder = $facade->moveFolderFromPathToPathForUserId($path, $parentPath, $userId);
+            $pathParts = $parser->parse(
+                $this->_request->getParam('path')
+            );
+            $parentPathParts = $parser->parse(
+                $this->_request->getParam('parentPath')
+            );
+        } catch (Conjoon_Text_Parser_Exception $e) {
+            /**
+             * @see Conjoon_Error
+             */
+            require_once 'Conjoon/Error.php';
+
+            $error = Conjoon_Error::fromException($e);
+            $this->view->success = false;
+            $this->view->error   = $error->getDto();
+            return;
+        }
+
+
+        $userId = $this->_helper->registryAccess->getUserId();
+
+        try {
+            $folder = $facade->moveFolderFromPathToPathForUserId(
+                $pathParts, $parentPathParts, $userId);
 
             if ($folder === false) {
                 /**
@@ -233,12 +281,34 @@ class Groupware_EmailFolderController extends Zend_Controller_Action {
 
         $facade = Conjoon_Modules_Groupware_Email_Folder_Facade::getInstance();
 
-        $path   = $this->_request->getParam('path');
+        /**
+         * @see Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser
+         */
+        require_once 'Conjoon/Text/Parser/Mail/MailboxFolderPathJsonParser.php';
+
+        $parser = new Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser();
+
+        try {
+            $pathParts = $parser->parse($this->_request->getParam('path'));
+        } catch (Conjoon_Text_Parser_Exception $e) {
+            /**
+             * @see Conjoon_Error
+             */
+            require_once 'Conjoon/Error.php';
+
+            $error = Conjoon_Error::fromException($e);
+            $this->view->success = false;
+            $this->view->error   = $error->getDto();
+            return;
+        }
+
         $name   = $this->_request->getParam('name');
         $userId = $this->_helper->registryAccess->getUserId();
 
         try {
-            $folder = $facade->addFolderToPathForUserId($name, $path, $userId);
+            $folder = $facade->addFolderToPathForUserId(
+                $name, $pathParts, $userId
+            );
 
             if ($folder === false) {
                 /**
@@ -291,12 +361,34 @@ class Groupware_EmailFolderController extends Zend_Controller_Action {
 
         $facade = Conjoon_Modules_Groupware_Email_Folder_Facade::getInstance();
 
-        $path   = $this->_request->getParam('path');
+        /**
+         * @see Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser
+         */
+        require_once 'Conjoon/Text/Parser/Mail/MailboxFolderPathJsonParser.php';
+
+        $parser = new Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser();
+
+        try {
+            $pathParts = $parser->parse($this->_request->getParam('path'));
+        } catch (Conjoon_Text_Parser_Exception $e) {
+            /**
+             * @see Conjoon_Error
+             */
+            require_once 'Conjoon/Error.php';
+
+            $error = Conjoon_Error::fromException($e);
+            $this->view->success = false;
+            $this->view->error   = $error->getDto();
+            return;
+        }
+
         $name   = $this->_request->getParam('name');
         $userId = $this->_helper->registryAccess->getUserId();
 
         try {
-            $folder = $facade->renameFolderForPathAndUserId($name, $path, $userId);
+            $folder = $facade->renameFolderForPathAndUserId(
+                $name, $pathParts, $userId
+            );
 
             if ($folder === false) {
                 /**
