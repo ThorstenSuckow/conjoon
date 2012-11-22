@@ -580,7 +580,10 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
                 url: './groupware/email.item/set.email.flag/format/json',
                 params: {
                     type : 'read',
-                    json : Ext.encode(requestArray)
+                    json : Ext.encode(requestArray),
+                    path : this.treePanel.getNodeById(currFolderId)
+                           .getPathAsJson('idForPath')
+
                 }
             });
         }

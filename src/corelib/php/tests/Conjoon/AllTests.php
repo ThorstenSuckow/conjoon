@@ -19,11 +19,13 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
 
 require_once 'Conjoon/MailTest.php';
 require_once 'Conjoon/Mail/AllTests.php';
+require_once 'Conjoon/Controller/AllTests.php';
 require_once 'Conjoon/ExceptionTest.php';
 require_once 'Conjoon/Filter/AllTests.php';
 require_once 'Conjoon/Text/AllTests.php';
 require_once 'Conjoon/Date/AllTests.php';
 require_once 'Conjoon/Argument/AllTests.php';
+require_once 'Conjoon/User/AllTests.php';
 
 /**
  * @category   Conjoon
@@ -52,11 +54,13 @@ class Conjoon_AllTests
         $suite->addTestSuite('Conjoon_MailTest');
         $suite->addTestSuite('Conjoon_ExceptionTest');
 
+        $suite->addTest(Conjoon_Controller_AllTests::suite());
         $suite->addTest(Conjoon_Mail_AllTests::suite());
         $suite->addTest(Conjoon_Filter_AllTests::suite());
         $suite->addTest(Conjoon_Text_AllTests::suite());
         $suite->addTest(Conjoon_Argument_AllTests::suite());
         $suite->addTest(Conjoon_Date_AllTests::suite());
+        $suite->addTest(Conjoon_User_AllTests::suite());
 
         return $suite;
     }
