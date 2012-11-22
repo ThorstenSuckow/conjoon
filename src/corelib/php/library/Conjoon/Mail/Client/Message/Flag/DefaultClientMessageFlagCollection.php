@@ -80,7 +80,7 @@ class Conjoon_Mail_Client_Message_Flag_DefaultClientMessageFlagCollection
             );
         }
 
-        $this->_createCollection($flags);
+        $this->_flags = $this->_createCollection($flags);
     }
 
     /**

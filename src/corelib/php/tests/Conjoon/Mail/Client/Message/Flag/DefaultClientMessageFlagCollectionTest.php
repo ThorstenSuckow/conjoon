@@ -88,10 +88,12 @@ class Conjoon_Mail_Client_Message_Flag_DefaultClientMessageFlagCollectionTest
 
             $flags = $collection->getClientMessageFlags();
 
+            $this->assertSame(count($flags), 2);
+
             for ($i = 0, $len = count($flags); $i < $len; $i++) {
                 $this->assertTrue($flags[$i] instanceof Conjoon_Mail_Client_Message_Flag_ClientSeenFlag);
-                $this->assertSame($output[0][0], $flags[$i]->getMessageId());
-                $this->assertSame($output[0][1], $flags[$i]->isClear());
+                $this->assertSame($output[$i][0], $flags[$i]->getMessageId());
+                $this->assertSame($output[$i][1], $flags[$i]->isClear());
             }
         }
     }
