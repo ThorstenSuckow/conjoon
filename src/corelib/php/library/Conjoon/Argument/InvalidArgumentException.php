@@ -13,11 +13,12 @@
  * $URL$
  */
 
+namespace Conjoon\Argument;
 
 /**
- * @see Conjoon_Exception
+ * @see Conjoon\Argument\Exception
  */
-require_once 'Conjoon/Exception.php';
+require_once 'Conjoon/Argument/Exception.php';
 
 /**
  * Exception for Conjoon namespace.
@@ -26,10 +27,8 @@ require_once 'Conjoon/Exception.php';
  * @package Conjoon
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
- *
- * @deprecated use \Conjoon\Argument\InvalidArgumentException
  */
-class Conjoon_Argument_Exception extends Conjoon_Exception {
+class InvalidArgumentException extends \Conjoon_Argument_Exception {
 
 
 }

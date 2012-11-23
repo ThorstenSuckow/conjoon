@@ -13,23 +13,24 @@
  * $URL$
  */
 
+namespace Conjoon\Data\Entity;
 
 /**
- * @see Conjoon_Exception
+ * @see Conjoon\Data\Entity\DataEntity
  */
-require_once 'Conjoon/Exception.php';
+require_once 'Conjoon/Data/Entity/DataEntity.php';
 
 /**
- * Exception for Conjoon namespace.
- *
- * @uses Exception
- * @package Conjoon
+ * @package    Conjoon/Tests
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
- *
- * @deprecated use \Conjoon\Argument\InvalidArgumentException
  */
-class Conjoon_Argument_Exception extends Conjoon_Exception {
+class DataEntityTest extends \PHPUnit_Framework_TestCase {
 
+
+    public function testDummy()
+    {
+
+    }
 
 }

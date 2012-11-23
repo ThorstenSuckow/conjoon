@@ -13,20 +13,20 @@
  * $URL$
  */
 
+namespace Conjoon\Argument;
+
 /**
- * @see Conjoon_Argument_Exception
+ * @see Conjoon\Argument\InvalidArgumentException
  */
-require_once 'Conjoon/Argument/Exception.php';
+require_once 'Conjoon/Argument/InvalidArgumentException.php';
 
 /**
  *
  *
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
- *
- * @deprecated use Conjoon\Argument\ArgumentCheck
  */
-class Conjoon_Argument_Check {
+class ArgumentCheck {
 
     private function __construct(){}
 
@@ -43,7 +43,7 @@ class Conjoon_Argument_Check {
         foreach ($config as $argumentName => $entityConfig) {
 
             if (!array_key_exists($argumentName, $data)) {
-                throw new Conjoon_Argument_Exception(
+                throw new InvalidArgumentException(
                     "\"$argumentName\" does not exist in data"
                 );
             }
@@ -61,7 +61,7 @@ class Conjoon_Argument_Check {
                 case 'instanceof':
 
                     if (!$allowEmpty && !isset($data[$argumentName])) {
-                        throw new Conjoon_Argument_Exception(
+                        throw new InvalidArgumentException(
                             "\"$argumentName\" not set"
                         );
                     }
@@ -69,7 +69,7 @@ class Conjoon_Argument_Check {
                     $className = $entityConfig['class'];
 
                     if (!($data[$argumentName] instanceof $className)) {
-                        throw new Conjoon_Argument_Exception(
+                        throw new InvalidArgumentException(
                             "\"$argumentName\" not instanceof " .
                             $entityConfig['class']
                         );
@@ -82,13 +82,13 @@ class Conjoon_Argument_Check {
                     $values = &$entityConfig['values'];
 
                     if (!isset($data[$argumentName])) {
-                        throw new Conjoon_Argument_Exception(
+                        throw new InvalidArgumentException(
                             "\"$argumentName\" not set"
                         );
                     }
 
                     if (!in_array($data[$argumentName], $values)) {
-                        throw new Conjoon_Argument_Exception(
+                        throw new InvalidArgumentException(
                             "\"".$data[$argumentName]."\" not in list of [".
                                 implode(', ', $values)."]"
                         );
@@ -98,7 +98,7 @@ class Conjoon_Argument_Check {
 
                 case 'isset':
                     if (!isset($data[$argumentName])) {
-                        throw new Conjoon_Argument_Exception(
+                        throw new InvalidArgumentException(
                             "\"$argumentName\" not set"
                         );
                     }
@@ -109,7 +109,7 @@ class Conjoon_Argument_Check {
                     if (isset($data[$argumentName])) {
                         $data[$argumentName] = (bool)$data[$argumentName];
                     } else if ($allowEmpty === false) {
-                        throw new Conjoon_Argument_Exception(
+                        throw new InvalidArgumentException(
                             "no argument provided for $argumentName"
                         );
                     }
@@ -119,7 +119,7 @@ class Conjoon_Argument_Check {
 
                     if (is_array($data[$argumentName])
                         || is_object($data[$argumentName])) {
-                        throw new Conjoon_Argument_Exception(
+                        throw new InvalidArgumentException(
                             "Array or object passed for $argumentName - "
                             . (is_array($data[$argumentName])
                             ? 'array'
@@ -131,7 +131,7 @@ class Conjoon_Argument_Check {
                     $org = $data[$argumentName];
 
                     if ($allowEmpty === false && $val === "") {
-                        throw new Conjoon_Argument_Exception(
+                        throw new InvalidArgumentException(
                             "empty value provided for $argumentName"
                         );
                     }
@@ -144,7 +144,7 @@ class Conjoon_Argument_Check {
 
                     if (is_array($data[$argumentName])
                         || is_object($data[$argumentName])) {
-                        throw new Conjoon_Argument_Exception(
+                        throw new InvalidArgumentException(
                             "Array or object passed for $argumentName - "
                                 . (is_array($data[$argumentName])
                                 ? 'array'
@@ -157,13 +157,13 @@ class Conjoon_Argument_Check {
 
                     if ($allowEmpty === false
                         && ($org === null || $org === "")) {
-                        throw new Conjoon_Argument_Exception(
+                        throw new InvalidArgumentException(
                             "empty value provided for $argumentName"
                         );
                     }
 
                     if ($greaterThan !== false && $val <= $greaterThan) {
-                        throw new Conjoon_Argument_Exception(
+                        throw new InvalidArgumentException(
                             "value \"$argumentName\" must be > "
                             . $greaterThan .", was $val"
                         );

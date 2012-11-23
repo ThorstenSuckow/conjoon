@@ -54,6 +54,11 @@ require_once 'Conjoon/Mail/Client/Service/ClientMessageServiceFacade.php';
  * This service facade is adjusted to accept parameters prepared by a client
  * communicating over the http protocol.
  *
+ * Note:
+ * Default implementations of the Service Facades in the Conjoon_Mail_Client
+ * rely heavily on parameter formats dictated by the client.
+ *
+ *
  * @category   Conjoon_Mail
  * @package    Conjoon_Mail_Client
  *
@@ -69,7 +74,11 @@ class Conjoon_Mail_Client_Service_DefaultClientMessageServiceFacade
      * @param string $flagString A jsonified array in the form of
      *                           '[{"id":"56","isRead":true}]'
      * @param string $pathString A path string in the form of
-     *                           '["root","1","2"]'
+     *                           '["root","1","2"]', whereas the first index
+     *                           would be the type of the root folder, the second
+     *                           index the database id of the root folder,
+     *                           and beginning with the third index the path
+     *                           parts of the folder requested by the client.
      * @param Conjoon_User_AppUser $user The user object representing the user
      *                                   who triggered this operation
      *
@@ -105,22 +114,25 @@ class Conjoon_Mail_Client_Service_DefaultClientMessageServiceFacade
         $pathString = $data['pathString'];
 
         try {
-            $folder =
-                new Conjoon_Mail_Client_Folder_ClientMailboxFolder(
-                    new Conjoon_Mail_Client_Folder_DefaultClientMailboxFolderPath(
-                        $pathString
-                    )
+
+            $folderPath =
+                new Conjoon_Mail_Client_Folder_DefaultClientMailboxFolderPath(
+                    $pathString
                 );
+
+            $folder =
+                new Conjoon_Mail_Client_Folder_ClientMailboxFolder($folderPath);
 
             $flagCollection =
                 new Conjoon_Mail_Client_Message_Flag_DefaultClientMessageFlagCollection(
                     $flagString
                 );
 
-            $folderFlagCollection
-                = new Conjoon_Mail_Client_Message_Flag_FolderMessageFlagCollection(
-                $flagCollection, $folder
-            );
+            $folderFlagCollection =
+                new Conjoon_Mail_Client_Message_Flag_FolderMessageFlagCollection(
+                    $flagCollection, $folder
+                );
+
         } catch (Conjoon_Argument_Exception $e) {
             throw new Conjoon_Mail_Client_Service_ClientMessageServiceException(
                 "Exception thrown by previous exception: " . $e->getMessage(),
