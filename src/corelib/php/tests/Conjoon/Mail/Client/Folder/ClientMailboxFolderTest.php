@@ -41,6 +41,10 @@ class Conjoon_Mail_Client_Folder_ClientMailboxFolderTest extends PHPUnit_Framewo
         $this->assertEquals(
             array("INBOXtttt", "rfwe2", "New folder (7)"), $folder->getPath()
         );
+
+        $this->assertEquals(
+            "79", $folder->getRootId()
+        );
     }
 
 }

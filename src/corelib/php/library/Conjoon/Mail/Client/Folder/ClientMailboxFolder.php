@@ -29,6 +29,11 @@ class Conjoon_Mail_Client_Folder_ClientMailboxFolder {
     protected $_path;
 
     /**
+     * @var string
+     */
+    protected $_rootId;
+
+    /**
      * Constructs a new instance
      *
      * @param Conjoon_Mail_Client_Folder_ClientMailboxFolderPath $path The
@@ -38,8 +43,19 @@ class Conjoon_Mail_Client_Folder_ClientMailboxFolder {
     public function __construct(
         Conjoon_Mail_Client_Folder_ClientMailboxFolderPath $path)
     {
-        $this->_path = $path->getPath();
+        $this->_path   = $path->getPath();
+        $this->_rootId = $path->getRootId();
 
+    }
+
+    /**
+     * Returns the root id for this folder
+     *
+     * @return string
+     */
+    public function getRootId()
+    {
+        return $this->_rootId;
     }
 
     /**
@@ -49,8 +65,6 @@ class Conjoon_Mail_Client_Folder_ClientMailboxFolder {
      * The array may be empty.
      *
      * @return array
-     *
-     * @abstract
      */
     public function getPath()
     {
