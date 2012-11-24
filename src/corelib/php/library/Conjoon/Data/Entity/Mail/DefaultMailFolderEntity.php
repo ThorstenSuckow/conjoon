@@ -97,7 +97,8 @@ class DefaultMailFolderEntity implements MailFolderEntity {
     /**
      * @return bool
      */
-    public function getIsLocked(){
+    public function getIsLocked()
+    {
         return $this->_isLocked;
     }
 

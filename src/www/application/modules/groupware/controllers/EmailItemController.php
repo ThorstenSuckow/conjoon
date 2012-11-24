@@ -603,19 +603,116 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
      */
     public function setEmailFlagAction()
     {
-        if ($this->_helper->conjoonContext()->getCurrentContext() == self::CONTEXT_JSON) {
-            require_once 'Zend/Json.php';
-            $toUpdate = Zend_Json::decode($_POST['json'], Zend_Json::TYPE_ARRAY);
+        if ($this->_helper->conjoonContext()->getCurrentContext() !=
+            self::CONTEXT_JSON) {
+            /**
+             * see Conjoon_Controller_Action_InvalidContextException
+             */
+            require_once 'Conjoon/Controller/Action/InvalidContextException.php';
+
+            throw new Conjoon_Controller_Action_InvalidContextException(
+                "Invalid context for action, expected \""
+                . self::CONTEXT_JSON
+                . "\", got \""
+                . $this->_helper->conjoonContext()->getCurrentContext()
+                ."\""
+            );
         }
 
+        /**
+         * @see Zend_Registry
+         */
+        require_once 'Zend/Registry.php';
+
+        /**
+         *@see Conjoon_Keys
+         */
         require_once 'Conjoon/Keys.php';
+
+        $auth = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
+
+        /**
+         * @see Conjoon_User_AppUser
+         */
+        require_once 'Conjoon/User/AppUser.php';
+
+        $appUser = new Conjoon_User_AppUser($auth->getIdentity());
+
+        /**
+         * @see Conjoon_Mail_Client_Service_DefaultClientMessageServiceFacade
+         */
+        require_once 'Conjoon/Mail/Client/Service/DefaultClientMessageServiceFacade.php';
+
+        $serviceFacade = new Conjoon_Mail_Client_Service_DefaultClientMessageServiceFacade();
+
+        try {
+            $serviceFacade->setFlagsForMessagesInFolder(
+                $this->_request->getParam('json'),
+                $this->_request->getParam('path'),
+                $appUser
+            );
+        } catch (Conjoon_Mail_Client_ClientMessageServiceException $e) {
+            var_dump($e);
+        }
+        return;
+
+
+
+/**
+ * @see Conjoon_Mail_Client_DefaultMailboxFolderPath
+ */
+        require_once 'Conjoon/Mail/Client/DefaultMailboxFolderPath.php';
+
+        $path = new Conjoon_Mail_Client_DefaultMailboxFolderPath(
+            $this->_request->getParam('path')
+        );
+
+
+        /**
+         * @see Zend_Json
+         */
+        require_once 'Zend/Json.php';
+
+        $toUpdate = Zend_Json::decode(
+            $this->_request->getParam('json'),
+            Zend_Json::TYPE_ARRAY
+        );
+
+
+        /**
+         * @see Conjoon_Mail_Facade_MailMessageFacade
+         */
+        require_once 'Conjoon/Mail/Facade/MailMessageFacade.php';
+
+        $mailMessageFacade = new Conjoon_Mail_Facade_DefaultMailMessageFacade();
+
+        try {
+            $mailMessageFacade->flagMessagesInFolderForUser(
+                $toUpdate, $pathParts, $userId
+            );
+        } catch (Conjoon_Mail_Facade_MailMessageFacadeException $e) {
+            /**
+             * @see Conjoon_Error
+             */
+            require_once 'Conjoon/Error.php';
+
+            $error = Conjoon_Error::fromException($e);
+            $this->view->success = false;
+            $this->view->error   = $error->getDto();
+            return;
+        }
+        /**
+         *@see Conjoon_Keys
+         */
         require_once 'Conjoon/Modules/Groupware/Email/Item/Filter/Flag.php';
+
+        /**
+         *@see Conjoon_Keys
+         */
         require_once 'Conjoon/Modules/Groupware/Email/Item/Model/Flag.php';
 
-        $auth   = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
-        $userId = $auth->getIdentity()->getId();
 
-        // set the filter context based on the passed type-parameter
+       /* // set the filter context based on the passed type-parameter
         $type = isset($_POST['type']) ? trim(strtolower($_POST['type'])) : 'null';
         $CONTEXT_READ = Conjoon_Modules_Groupware_Email_Item_Filter_Flag::CONTEXT_READ;
         $CONTEXT_SPAM = Conjoon_Modules_Groupware_Email_Item_Filter_Flag::CONTEXT_SPAM;
@@ -642,7 +739,7 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
             } else if ($context == $CONTEXT_SPAM) {
                 $model->flagItemAsSpam($data['id'], $userId, $data['isSpam']);
             }
-        }
+        }*/
 
         $this->view->success = true;
         $this->view->error   = null;

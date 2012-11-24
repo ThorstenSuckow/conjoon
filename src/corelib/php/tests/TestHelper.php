@@ -52,3 +52,5 @@ set_include_path(implode(PATH_SEPARATOR, $path));
  * Unset global variables that are no longer needed.
  */
 unset($cnRoot, $cnCoreLibrary, $zdLib, $path);
+
+include_once 'setup.db.php';
