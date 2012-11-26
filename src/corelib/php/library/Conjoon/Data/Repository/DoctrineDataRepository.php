@@ -36,14 +36,22 @@ require_once 'Conjoon/Argument/InvalidArgumentException.php';
 require_once 'Conjoon/Argument/ArgumentCheck.php';
 
 /**
- * Interface all DataRepositories have to implement.
+ * @see Doctrine\ORM\EntityRepository
+ */
+require_once 'Doctrine/ORM/EntityRepository.php';
+
+
+/**
+ * A data repository based upon a doctrine repository.
  *
  * @category   Conjoon_Data
  * @package    Repository
  *
  * @author Thorsten-Suckow-Homberg <tsuckow@conjoon.org>
  */
-abstract class DefaultDataRepository implements DataRepository{
+abstract class DoctrineDataRepository
+    extends \Doctrine\ORM\EntityRepository
+    implements DataRepository{
 
     /**
      * @inheritdoc
@@ -58,7 +66,8 @@ abstract class DefaultDataRepository implements DataRepository{
             );
         }
 
-        return $this->_remove($entity);
+        $this->_em->remove($entity);
+        return true;
     }
 
     /**
@@ -66,7 +75,7 @@ abstract class DefaultDataRepository implements DataRepository{
      */
     public function persist(\Conjoon\Data\Entity\DataEntity $entity)
     {
-        $className = self::getEntityClassName();
+        $className = static::getEntityClassName();
 
         if (!($entity instanceof $className)) {
             throw new InvalidArgumentException(
@@ -74,7 +83,9 @@ abstract class DefaultDataRepository implements DataRepository{
             );
         }
 
-        return $this->_persist($entity);
+        $this->_em->persist($entity);
+
+        return $entity;
     }
 
     /**
@@ -92,7 +103,7 @@ abstract class DefaultDataRepository implements DataRepository{
             )
         ), $data);
 
-        $entity = $this->_findById($id);
+        $entity = $this->find($id);
 
         if ($entity === null) {
             return null;
@@ -107,6 +118,14 @@ abstract class DefaultDataRepository implements DataRepository{
         }
 
         return $entity;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function flush()
+    {
+        $this->_em->transactional(function(){});
     }
 
 }

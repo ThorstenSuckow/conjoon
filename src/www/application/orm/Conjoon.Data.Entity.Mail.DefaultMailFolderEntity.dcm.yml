@@ -1,0 +1,51 @@
+Conjoon\Data\Entity\Mail\DefaultMailFolderEntity:
+    repositoryClass: Conjoon\Data\Repository\Mail\DoctrineMailFolderRepository
+    type: entity
+    table: groupware_email_folders
+    fields:
+        id:
+            id: true
+            type: integer
+            unsigned: true
+            nullable: false
+            generator:
+                strategy: IDENTITY
+        name:
+            type: string
+            length: 255
+            fixed: false
+            nullable: false
+        isChildAllowed:
+            type: boolean
+            nullable: false
+            column: is_child_allowed
+        isLocked:
+            type: boolean
+            nullable: false
+            column: is_locked
+        type:
+            type: string
+            length: null
+            fixed: false
+            nullable: false
+        metaInfo:
+            type: string
+            length: null
+            fixed: false
+            nullable: false
+            column: meta_info
+        isDeleted:
+            type: boolean
+            nullable: false
+            column: is_deleted
+    manyToOne:
+        parent:
+            targetEntity: Conjoon\Data\Entity\Mail\DefaultMailFolderEntity
+            cascade: {}
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                parent_id:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

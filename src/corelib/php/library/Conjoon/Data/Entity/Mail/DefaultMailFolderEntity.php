@@ -33,49 +33,49 @@ class DefaultMailFolderEntity implements MailFolderEntity {
     /**
      * @var string
      */
-    protected $_id;
+    protected $id;
 
     /**
      * @var string
      */
-    protected $_name;
+    protected $name;
 
     /**
      * @var bool
      */
-    protected $_isChildAllowed;
+    protected $isChildAllowed;
 
     /**
      * @var bool
      */
-    protected $_isLocked;
+    protected $isLocked;
 
     /**
      * @var string
      */
-    protected $_type;
+    protected $type;
 
     /**
      * @var string
      */
-    protected $_metaInfo;
+    protected $metaInfo;
 
     /**
      * @var bool
      */
-    protected $_isDeleted;
+    protected $isDeleted;
 
     /**
      * @var \Conjoon\Data\Entity\Mail\MailFolderEntity|null
      */
-    protected $_parent;
+    protected $parent;
 
     /**
      * @return string
      */
     public function getId()
     {
-        return $this->_id;
+        return $this->id;
     }
 
     /**
@@ -83,7 +83,7 @@ class DefaultMailFolderEntity implements MailFolderEntity {
      */
     public function getName()
     {
-        return $this->_name;
+        return $this->name;
     }
 
     /**
@@ -91,7 +91,7 @@ class DefaultMailFolderEntity implements MailFolderEntity {
      */
     public function getIsChildAllowed()
     {
-        return $this->_isChildAllowed;
+        return $this->isChildAllowed;
     }
 
     /**
@@ -99,7 +99,7 @@ class DefaultMailFolderEntity implements MailFolderEntity {
      */
     public function getIsLocked()
     {
-        return $this->_isLocked;
+        return $this->isLocked;
     }
 
     /**
@@ -107,7 +107,7 @@ class DefaultMailFolderEntity implements MailFolderEntity {
      */
     public function getType()
     {
-        return $this->_type;
+        return $this->type;
     }
 
     /**
@@ -115,7 +115,7 @@ class DefaultMailFolderEntity implements MailFolderEntity {
      */
     public function getMetaInfo()
     {
-        return $this->_metaInfo;
+        return $this->metaInfo;
     }
 
     /**
@@ -123,7 +123,7 @@ class DefaultMailFolderEntity implements MailFolderEntity {
      */
     public function getIsDeleted()
     {
-        return $this->_isDeleted;
+        return $this->isDeleted;
     }
 
     /**
@@ -131,7 +131,7 @@ class DefaultMailFolderEntity implements MailFolderEntity {
      */
     public function getParent()
     {
-        return $this->_parent;
+        return $this->parent;
     }
 
     /**
@@ -139,7 +139,9 @@ class DefaultMailFolderEntity implements MailFolderEntity {
      */
     public function setId($id)
     {
-        $this->_id = $id;
+        $this->id = $id;
+
+        return $this;
     }
 
     /**
@@ -147,7 +149,9 @@ class DefaultMailFolderEntity implements MailFolderEntity {
      */
     public function setName($name)
     {
-        $this->_name = $name;
+        $this->name = $name;
+
+        return $this;
     }
 
     /**
@@ -155,7 +159,9 @@ class DefaultMailFolderEntity implements MailFolderEntity {
      */
     public function setIsChildAllowed($isChildAllowed)
     {
-        $this->_isChildAllowed = $isChildAllowed;
+        $this->isChildAllowed = $isChildAllowed;
+
+        return $this;
     }
 
     /**
@@ -163,7 +169,9 @@ class DefaultMailFolderEntity implements MailFolderEntity {
      */
     public function setIsLocked($isLocked)
     {
-        $this->_isLocked = $isLocked;
+        $this->isLocked = $isLocked;
+
+        return $this;
     }
 
     /**
@@ -171,7 +179,9 @@ class DefaultMailFolderEntity implements MailFolderEntity {
      */
     public function setType($type)
     {
-        $this->_type = $type;
+        $this->type = $type;
+
+        return $this;
     }
 
     /**
@@ -179,7 +189,9 @@ class DefaultMailFolderEntity implements MailFolderEntity {
      */
     public function setMetaInfo($metaInfo)
     {
-        $this->_metaInfo = $metaInfo;
+        $this->metaInfo = $metaInfo;
+
+        return $this;
     }
 
     /**
@@ -187,7 +199,9 @@ class DefaultMailFolderEntity implements MailFolderEntity {
      */
     public function setIsDeleted($isDeleted)
     {
-        $this->_isDeleted = $isDeleted;
+        $this->isDeleted = $isDeleted;
+
+        return $this;
     }
 
     /**
@@ -195,7 +209,9 @@ class DefaultMailFolderEntity implements MailFolderEntity {
      */
     public function setParent(MailFolderEntity $parent = null)
     {
-        $this->_parent = $parent;
+        $this->parent = $parent;
+
+        return $this;
     }
 
 }

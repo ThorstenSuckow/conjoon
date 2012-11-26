@@ -16,16 +16,16 @@
 namespace Conjoon\Data\Repository;
 
 /**
- * @see Conjoon\Data\Repository\DefaultDataRepository
+ * @see Conjoon\Data\Repository\DoctrineDataRepository
  */
-require_once 'Conjoon/Data/Repository/DefaultDataRepository.php';
+require_once 'Conjoon/Data/Repository/DoctrineDataRepository.php';
 
 /**
  * @package    Conjoon/Tests
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class DefaultDataRepositoryTest extends \PHPUnit_Framework_TestCase {
+class DoctrineDataRepositoryTest extends \PHPUnit_Framework_TestCase {
 
 
     public function testDummy()

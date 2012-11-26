@@ -11,7 +11,7 @@
         <column>is_deleted</column>
         <row>
             <value>1</value>
-            <value>folder 1</value>
+            <value>testchange</value>
             <value>1</value>
             <value>0</value>
             <value>root</value>

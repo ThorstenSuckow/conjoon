@@ -33,6 +33,7 @@ $cnRoot        = realpath(dirname(dirname(__FILE__)));
 $cnCoreLibrary = "$cnRoot/library";
 $cnCoreTests   = "$cnRoot/tests";
 $zdLib         = "$cnRoot/../../../vendor/zendframework/library";
+$doctrine      = "$cnRoot/../../../vendor/doctrine";
 
 /*
  * Prepend the conjoon library/ and tests/ directories to the
@@ -44,13 +45,36 @@ $path = array(
     $cnCoreLibrary,
     $cnCoreTests,
     $zdLib,
+    $doctrine,
     get_include_path()
     );
 set_include_path(implode(PATH_SEPARATOR, $path));
 
+/**
+ * @see Doctrine\ORM\Tools\Setup
+ */
+require_once 'Doctrine/ORM/Tools/Setup.php';
+
+Doctrine\ORM\Tools\Setup::registerAutoloadDirectory($doctrine);
+
+/**
+ * @see Doctrine\Common\ClassLoader
+ */
+require_once 'Doctrine/Common/ClassLoader.php';
+
+$classLoader = new \Doctrine\Common\ClassLoader(
+    'Conjoon', dirname(__FILE__) . '/../library'
+);
+$classLoader->register();
+
+
 /*
  * Unset global variables that are no longer needed.
  */
-unset($cnRoot, $cnCoreLibrary, $zdLib, $path);
+unset(
+    $cnRoot, $cnCoreLibrary,
+    $zdLib, $path,
+    $doctrine
+);
 
 include_once 'setup.db.php';

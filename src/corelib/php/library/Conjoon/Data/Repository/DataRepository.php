@@ -28,6 +28,9 @@ interface DataRepository {
 
 
     /**
+     * The method is bound to immediately send the changes to the connected
+     * backend.
+     *
      * @param  \Conjoon\Data\Entity\DataEntity
      *
      * @return boolean
@@ -37,6 +40,9 @@ interface DataRepository {
     public function remove(\Conjoon\Data\Entity\DataEntity $entity);
 
     /**
+     * The method is bound to immediately send the changes to the connected
+     * backend.
+     *
      * @param  \Conjoon\Data\Entity\DataEntity
      *
      * @return \Conjoon\Data\Entity\DataEntity|null
@@ -53,6 +59,15 @@ interface DataRepository {
      * @throws \Conjoon\Argument\InvalidArgumentException
      */
     public function findById($id);
+
+    /**
+     * Synchronizes the entity with the underlying data storage.
+     * Implementations should take care of rolling entities back to a previous
+     * state if anything fails.
+     *
+     */
+    public function flush();
+
 
     /**
      * @return string
