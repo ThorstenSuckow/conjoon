@@ -596,3 +596,9 @@ CHARACTER SET utf8 COLLATE utf8_bin NOT NULL;
 ALTER TABLE `{DATABASE.TABLE.PREFIX}users` CHANGE `email_address` `email_address` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
 ALTER TABLE `{DATABASE.TABLE.PREFIX}users` CHANGE `user_name` `user_name` VARCHAR( 64 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
 ALTER TABLE `{DATABASE.TABLE.PREFIX}users` DROP INDEX `username`, ADD UNIQUE `username` ( `user_name` );
+
+-- CN-655
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_folders` CHANGE `parent_id` `parent_id` INT( 10 ) UNSIGNED NULL DEFAULT NULL ;
+UPDATE `{DATABASE.TABLE.PREFIX}groupware_email_folders` SET `parent_id` = NULL WHERE `parent_id`=0;
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_folders` ADD FOREIGN KEY ( `parent_id` )
+REFERENCES `{DATABASE.TABLE.PREFIX}groupware_email_folders` (`id`) ON DELETE CASCADE ON UPDATE CASCADE ;
