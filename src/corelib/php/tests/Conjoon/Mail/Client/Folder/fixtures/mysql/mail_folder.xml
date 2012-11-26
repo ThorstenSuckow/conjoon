@@ -1,0 +1,33 @@
+<?xml version="1.0" ?>
+<dataset>
+    <table name="groupware_email_folders">
+        <column>id</column>
+        <column>name</column>
+        <column>is_child_allowed</column>
+        <column>is_locked</column>
+        <column>type</column>
+        <column>meta_info</column>
+        <column>parent_id</column>
+        <column>is_deleted</column>
+        <row>
+            <value>1</value>
+            <value>folder 1</value>
+            <value>1</value>
+            <value>0</value>
+            <value>root_remote</value>
+            <value>inbox</value>
+            <null />
+            <value>0</value>
+        </row>
+        <row>
+            <value>2</value>
+            <value>folder 2</value>
+            <value>1</value>
+            <value>0</value>
+            <value>root</value>
+            <value>inbox</value>
+            <value>1</value>
+            <value>0</value>
+        </row>
+    </table>
+</dataset>
