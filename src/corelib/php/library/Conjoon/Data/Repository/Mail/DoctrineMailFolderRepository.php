@@ -17,9 +17,9 @@
 namespace Conjoon\Data\Repository\Mail;
 
 /**
- * @see \Conjoon\Data\Repository\DefaultDataRepository
+ * @see \Conjoon\Data\Repository\DoctrineDataRepository
  */
-require_once 'Conjoon/Data/Repository/DefaultDataRepository.php';
+require_once 'Conjoon/Data/Repository/DoctrineDataRepository.php';
 
 /**
  * @see \Conjoon\Data\Repository\Mail\MailFolderRepository
