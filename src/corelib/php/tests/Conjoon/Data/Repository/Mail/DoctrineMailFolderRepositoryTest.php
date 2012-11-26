@@ -42,6 +42,30 @@ class DoctrineMailFolderRepositoryTest extends \Conjoon\DatabaseTestCaseDefault 
     /**
      * Ensure everything works as expected
      */
+    public function testFindNone()
+    {
+
+        $repository = $this->_entityManager->getRepository(
+            '\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
+
+        $this->assertTrue($repository
+            instanceof \Conjoon\Data\Repository\Mail\DoctrineMailFolderRepository);
+
+
+        $this->assertEquals(
+            3,
+            $this->getConnection()->getRowCount('groupware_email_folders'),
+            "Pre-Condition"
+        );
+
+        $entity = $repository->findById(97809732);
+
+        $this->assertSame(null, $entity);
+    }
+
+    /**
+     * Ensure everything works as expected
+     */
     public function testFindById()
     {
 
