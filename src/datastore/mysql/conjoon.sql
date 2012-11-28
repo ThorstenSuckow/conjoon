@@ -602,3 +602,18 @@ ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_folders` CHANGE `parent_id` 
 UPDATE `{DATABASE.TABLE.PREFIX}groupware_email_folders` SET `parent_id` = NULL WHERE `parent_id`=0;
 ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_folders` ADD FOREIGN KEY ( `parent_id` )
 REFERENCES `{DATABASE.TABLE.PREFIX}groupware_email_folders` (`id`) ON DELETE CASCADE ON UPDATE CASCADE ;
+
+-- CN-661
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items` ADD FOREIGN KEY ( `groupware_email_folders_id` )
+REFERENCES `{DATABASE.TABLE.PREFIX}groupware_email_folders` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_flags` DROP PRIMARY KEY;
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_flags` CHANGE `groupware_email_items_id` `groupware_email_items_id`
+INT( 10 ) UNSIGNED NOT NULL;
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_flags` CHANGE `user_id` `user_id`
+INT( 10 ) UNSIGNED NOT NULL;
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_flags` ADD PRIMARY KEY
+( `groupware_email_items_id` , `user_id` );
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_flags` ADD FOREIGN KEY ( `groupware_email_items_id` )
+REFERENCES `{DATABASE.TABLE.PREFIX}groupware_email_items` (`id`) ON DELETE CASCADE ON UPDATE CASCADE ;
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_flags` ADD FOREIGN KEY ( `user_id` )
+REFERENCES `{DATABASE.TABLE.PREFIX}users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE ;
