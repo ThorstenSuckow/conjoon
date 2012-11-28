@@ -1,0 +1,77 @@
+Conjoon\Data\Entity\Mail\DefaultMessageEntity:
+    type: entity
+    repositoryClass: Conjoon\Data\Repository\Mail\DoctrineMessageRepository
+    table: groupware_email_items
+    fields:
+        id:
+            id: true
+            type: integer
+            unsigned: true
+            nullable: false
+            generator:
+                strategy: IDENTITY
+        date:
+            type: datetime
+            nullable: false
+            column: `date`
+        subject:
+            type: text
+            nullable: true
+        from:
+            type: text
+            nullable: false
+            column: `from`
+        replyTo:
+            type: text
+            nullable: true
+            column: reply_to
+        to:
+            type: text
+            nullable: false
+            column: `to`
+        cc:
+            type: text
+            nullable: true
+        bcc:
+            type: text
+            nullable: true
+        inReplyTo:
+            type: text
+            nullable: true
+            column: in_reply_to
+        references:
+            type: text
+            nullable: true
+            column: `references`
+        contentTextPlain:
+            type: text
+            nullable: true
+            column: content_text_plain
+        contentTextHtml:
+            type: text
+            nullable: true
+            column: content_text_html
+        recipients:
+            type: text
+            nullable: false
+        sender:
+            type: text
+            nullable: false
+
+    oneToMany:
+        groupwareEmailItemsFlags:
+          targetEntity: Conjoon\Data\Entity\Mail\DefaultMessageFlagEntity
+          mappedBy: groupwareEmailItems
+          indexBy: groupwareEmailItemsFlags
+          orphanRemoval: true
+    manyToOne:
+        groupwareEmailFolders:
+            targetEntity: Conjoon\Data\Entity\Mail\DefaultMailFolderEntity
+            cascade: {}
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                groupware_email_folders_id:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

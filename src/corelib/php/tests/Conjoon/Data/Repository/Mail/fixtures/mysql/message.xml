@@ -1,0 +1,111 @@
+<?xml version="1.0" ?>
+<dataset>
+    <table name="groupware_email_folders">
+        <column>id</column>
+        <column>name</column>
+        <column>is_child_allowed</column>
+        <column>is_locked</column>
+        <column>type</column>
+        <column>meta_info</column>
+        <column>parent_id</column>
+        <column>is_deleted</column>
+        <row>
+            <value>1</value>
+            <value>folder 1</value>
+            <value>1</value>
+            <value>0</value>
+            <value>root</value>
+            <value>inbox</value>
+            <null />
+            <value>0</value>
+        </row>
+    </table>
+    <table name="groupware_email_items">
+        <column>id</column>
+        <column>groupware_email_folders_id</column>
+        <column>date</column>
+        <column>subject</column>
+        <column>from</column>
+        <column>reply_to</column>
+        <column>to</column>
+        <column>cc</column>
+        <column>bcc</column>
+        <column>in_reply_to</column>
+        <column>references</column>
+        <column>content_text_plain</column>
+        <column>content_text_html</column>
+        <column>recipients</column>
+        <column>sender</column>
+        <row>
+            <value>1</value>
+            <value>1</value>
+            <value>2007-01-01 00:00:01</value>
+            <value>Subject</value>
+            <value>From</value>
+            <value>Reply_to</value>
+            <value>To</value>
+            <value>Cc</value>
+            <value>Bcc</value>
+            <value>In_reply_to</value>
+            <value>References</value>
+            <value>Content_text_plain</value>
+            <value>Content_text_html</value>
+            <value>Recipients</value>
+            <value>Sender</value>
+        </row>
+    </table>
+    <table name="users">
+        <column>id</column>
+        <column>firstname</column>
+        <column>lastname</column>
+        <column>email_address</column>
+        <column>user_name</column>
+        <column>password</column>
+        <column>is_root</column>
+        <column>auth_token</column>
+        <column>last_login</column>
+        <row>
+            <value>1</value>
+            <value>Firstname</value>
+            <value>Lastname</value>
+            <value>EmailAddress</value>
+            <value>UserName1</value>
+            <value>Password</value>
+            <value>1</value>
+            <value>AuthToken</value>
+            <value>2</value>
+        </row>
+        <row>
+            <value>2</value>
+            <value>Firstname</value>
+            <value>Lastname</value>
+            <value>EmailAddress</value>
+            <value>UserName2</value>
+            <value>Password</value>
+            <value>0</value>
+            <value>AuthToken</value>
+            <value>3</value>
+        </row>
+    </table>
+    <table name="groupware_email_items_flags">
+        <column>groupware_email_items_id</column>
+        <column>user_id</column>
+        <column>is_read</column>
+        <column>is_spam</column>
+        <column>is_deleted</column>
+        <row>
+            <value>1</value>
+            <value>1</value>
+            <value>0</value>
+            <value>0</value>
+            <value>0</value>
+        </row>
+        <row>
+            <value>1</value>
+            <value>2</value>
+            <value>1</value>
+            <value>1</value>
+            <value>1</value>
+        </row>
+    </table>
+</dataset>

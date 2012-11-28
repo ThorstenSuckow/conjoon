@@ -14,7 +14,7 @@
  */
 
 
-namespace Conjoon\Data\Repository\Mail;
+namespace Conjoon\Data\Repository\User;
 
 /**
  * @see \Conjoon\Data\Repository\DoctrineDataRepository
@@ -22,28 +22,28 @@ namespace Conjoon\Data\Repository\Mail;
 require_once 'Conjoon/Data/Repository/DoctrineDataRepository.php';
 
 /**
- * @see \Conjoon\Data\Repository\Mail\MailFolderRepository
+ * @see \Conjoon\Data\Repository\User\UserRepository
  */
-require_once 'Conjoon/Data/Repository/Mail/MailFolderRepository.php';
+require_once 'Conjoon/Data/Repository/User/UserRepository.php';
 
 /**
- * The default implementation for the Doctrine MailfolderRepository.
+ * The default implementation for the Doctrine User Repository.
  *
  * @category   Conjoon_Data
  * @package    Repository
  *
  * @author Thorsten-Suckow-Homberg <tsuckow@conjoon.org>
  */
-class DoctrineMailFolderRepository
+class DoctrineUserRepository
     extends \Conjoon\Data\Repository\DoctrineDataRepository
-    implements MailFolderRepository {
+    implements UserRepository {
 
     /**
      * @inheritdoc
      */
     public static function getEntityClassName()
     {
-        return '\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity';
+        return '\Conjoon\Data\Entity\User\DefaultUserEntity';
     }
 
 }

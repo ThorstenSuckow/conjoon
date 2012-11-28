@@ -22,28 +22,28 @@ namespace Conjoon\Data\Repository\Mail;
 require_once 'Conjoon/Data/Repository/DoctrineDataRepository.php';
 
 /**
- * @see \Conjoon\Data\Repository\Mail\MailFolderRepository
+ * @see \Conjoon\Data\Repository\Mail\MessageRepository
  */
-require_once 'Conjoon/Data/Repository/Mail/MailFolderRepository.php';
+require_once 'Conjoon/Data/Repository/Mail/MessageRepository.php';
 
 /**
- * The default implementation for the Doctrine MailfolderRepository.
+ * The default implementation for the Doctrine Nessage Repository.
  *
  * @category   Conjoon_Data
  * @package    Repository
  *
  * @author Thorsten-Suckow-Homberg <tsuckow@conjoon.org>
  */
-class DoctrineMailFolderRepository
+class DoctrineMessageRepository
     extends \Conjoon\Data\Repository\DoctrineDataRepository
-    implements MailFolderRepository {
+    implements MessageRepository {
 
     /**
      * @inheritdoc
      */
     public static function getEntityClassName()
     {
-        return '\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity';
+        return '\Conjoon\Data\Entity\Mail\DefaultMessageEntity';
     }
 
 }
