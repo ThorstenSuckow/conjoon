@@ -22,6 +22,12 @@ namespace Conjoon\Data\Entity\User;
 require_once 'Conjoon/Data/Entity/User/UserEntity.php';
 
 /**
+ * @see \Conjoon\User\User
+ */
+require_once 'Conjoon/User/User.php';
+
+
+/**
  * Default user entity.
  *
  * @category   Conjoon_Data
@@ -29,7 +35,7 @@ require_once 'Conjoon/Data/Entity/User/UserEntity.php';
  *
  * @author Thorsten-Suckow-Homberg <tsuckow@conjoon.org>
  */
-class DefaultUserEntity implements UserEntity {
+class DefaultUserEntity extends UserEntity {
 
     /**
      * @var integer $id

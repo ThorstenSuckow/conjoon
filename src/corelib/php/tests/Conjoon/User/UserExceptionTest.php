@@ -14,6 +14,8 @@
  */
 
 
+namespace Conjoon\User;
+
 /**
  * @see Conjoon_User_UserException
  */
@@ -28,19 +30,19 @@ require_once 'Conjoon/User/UserException.php';
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class Conjoon_User_UserExceptionTest extends PHPUnit_Framework_TestCase {
+class UserExceptionTest extends \PHPUnit_Framework_TestCase {
 
 
     /**
      * Ensures everything works as expected
      *
-     * @expectedException Conjoon_User_UserException
+     * @expectedException \Conjoon\User\UserException
      *
      * @return void
      */
     public function testException()
     {
-        throw new Conjoon_User_UserException();
+        throw new UserException();
     }
 
 }

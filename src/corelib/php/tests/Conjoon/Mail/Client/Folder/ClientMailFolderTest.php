@@ -14,17 +14,19 @@
  */
 
 
+namespace Conjoon\Mail\Client\Folder;
+
 /**
- * @see Conjoon_Mail_Client_Folder_ClientMailboxFolder
+ * @see \Conjoon\Mail\Client\Folder\ClientMailFolder
  */
-require_once 'Conjoon/Mail/Client/Folder/ClientMailboxFolder.php';
+require_once 'Conjoon/Mail/Client/Folder/ClientMailFolder.php';
 
 /**
  * @package    Conjoon/Tests
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class Conjoon_Mail_Client_Folder_ClientMailboxFolderTest extends PHPUnit_Framework_TestCase {
+class ClientMailFolderTest extends \PHPUnit_Framework_TestCase {
 
 
     /**
@@ -32,8 +34,8 @@ class Conjoon_Mail_Client_Folder_ClientMailboxFolderTest extends PHPUnit_Framewo
      */
     public function testOk()
     {
-        $folder = new Conjoon_Mail_Client_Folder_ClientMailboxFolder(
-            new Conjoon_Mail_Client_Folder_DefaultClientMailboxFolderPath(
+        $folder = new ClientMailFolder(
+            new DefaultClientMailFolderPath(
                 '["root", "79", "INBOXtttt", "rfwe2", "New folder (7)"]'
             )
         );

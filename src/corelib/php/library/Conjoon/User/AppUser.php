@@ -13,10 +13,14 @@
  * $URL$
  */
 
+namespace Conjoon\User;
+
+use Conjoon\Argument\ArgumentCheck;
+
 /**
  * @see Conjoon_User_User
  */
-require_once 'Conjoon/User/User.php';
+require_once 'Conjoon/User/DefaultUser.php';
 
 /**
  * An implementation of Conjoon_User_User.
@@ -28,7 +32,7 @@ require_once 'Conjoon/User/User.php';
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 
-class Conjoon_User_AppUser extends Conjoon_User_User {
+class AppUser extends DefaultUser {
 
     /**
      * @inheritdoc
@@ -36,13 +40,13 @@ class Conjoon_User_AppUser extends Conjoon_User_User {
     public function __construct($options)
     {
         /**
-         * @see Conjoon_Argument_Check
+         * @see \Conjoon\Argument\Check
          */
-        require_once 'Conjoon/Argument/Check.php';
+        require_once 'Conjoon/Argument/ArgumentCheck.php';
 
         $data = array('user' => $options);
 
-        Conjoon_Argument_Check::check(array(
+        ArgumentCheck::check(array(
             'user' => array(
                 'type'  => 'instanceof',
                 'class' => 'Conjoon_Modules_Default_User'
@@ -57,11 +61,11 @@ class Conjoon_User_AppUser extends Conjoon_User_User {
             || $options->getUsername() == ""
             || $options->getEmailAddress() == "") {
             /**
-             * @see Conjoon_User_UserException
+             * @see Conjoon\User\UserException
              */
             require_once 'Conjoon/User/UserException.php';
 
-            throw new Conjoon_User_UserException(
+            throw new UserException(
                 "Cannot use instance of Conjoon_Modules_Default_User - "
                 . "object data is not valid"
             );
@@ -70,7 +74,7 @@ class Conjoon_User_AppUser extends Conjoon_User_User {
         $this->_id           = (string) $options->getId();
         $this->_firstName    = (string) $options->getFirstName();
         $this->_lastName     = (string) $options->getLastName();
-        $this->_username     = (string) $options->getUsername();
+        $this->_userName     = (string) $options->getUsername();
         $this->_emailAddress = (string) $options->getEmailAddress();
     }
 }

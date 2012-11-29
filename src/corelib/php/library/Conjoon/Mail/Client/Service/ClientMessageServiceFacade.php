@@ -41,4 +41,8 @@ interface Conjoon_Mail_Client_Service_ClientMessageServiceFacade {
         Conjoon_User_AppUser $user);
 
 
+    /**
+     *
+     */
+
 }

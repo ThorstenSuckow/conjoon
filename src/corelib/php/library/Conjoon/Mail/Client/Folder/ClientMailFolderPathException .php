@@ -14,6 +14,8 @@
  */
 
 
+namespace Conjoon\Mail\Client\Folder;
+
 /**
  * @see Conjoon_Mail_Client_Exception
  */
@@ -26,8 +28,8 @@ require_once 'Conjoon/Mail/Client/Exception.php';
  *
  * @uses Conjoon_Mail_Exception
  */
-class Conjoon_Mail_Client_Folder_ClientMailboxFolderPathException
-    extends Conjoon_Mail_Client_Exception {
+class ClientMailFolderPathException
+    extends \Conjoon_Mail_Client_Exception {
 
 }
 

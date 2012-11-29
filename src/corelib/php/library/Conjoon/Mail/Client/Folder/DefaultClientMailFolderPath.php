@@ -13,10 +13,14 @@
  * $URL$
  */
 
+namespace Conjoon\Mail\Client\Folder;
+
+use \Conjoon\Argument\ArgumentCheck;
+
 /**
- * @see Conjoon_Mail_Client_Folder_ClientMailboxFolderPath
+ * @see \Conjoon\Mail\Client\Folder\ClientMailFolderPath
  */
-require_once 'Conjoon/Mail/Client/Folder/ClientMailboxFolderPath.php';
+require_once 'Conjoon/Mail/Client/Folder/ClientMailFolderPath.php';
 
 /**
  * Provides a default implementation of
@@ -27,8 +31,7 @@ require_once 'Conjoon/Mail/Client/Folder/ClientMailboxFolderPath.php';
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class Conjoon_Mail_Client_Folder_DefaultClientMailboxFolderPath
-    implements Conjoon_Mail_Client_Folder_ClientMailboxFolderPath{
+class DefaultClientMailFolderPath implements ClientMailFolderPath{
 
     protected $_path = array();
 
@@ -42,13 +45,13 @@ class Conjoon_Mail_Client_Folder_DefaultClientMailboxFolderPath
     public function __construct($options)
     {
         /**
-         * @see Conjoon_Argument_Check
+         * @see \Conjoon\Argument\ArgumentCheck
          */
-        require_once 'Conjoon/Argument/Check.php';
+        require_once 'Conjoon/Argument/ArgumentCheck.php';
 
         $data = array('path' => $options);
 
-        Conjoon_Argument_Check::check(array(
+        ArgumentCheck::check(array(
             'path' => array(
                 'type'       => 'string',
                 'allowEmpty' => false
@@ -62,18 +65,18 @@ class Conjoon_Mail_Client_Folder_DefaultClientMailboxFolderPath
          */
         require_once 'Conjoon/Text/Parser/Mail/MailboxFolderPathJsonParser.php';
 
-        $parser = new Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser();
+        $parser = new \Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser();
 
         try {
             $parts = $parser->parse($options);
         } catch (Conjoon_Text_Parserexception $e) {
 
             /**
-             * @see Conjoon_Mail_Client_Folder_ClientMailboxFolderPathException
+             * @see \Conjoon\Mail\Client\Folder\ClientMailFolderPathException
              */
-            require_once 'Conjoon/Mail/Client/Folder/ClientMailboxFolderPathException.php';
+            require_once 'Conjoon/Mail/Client/Folder/ClientMailFolderPathException.php';
 
-            throw new Conjoon_Mail_Client_Folder_ClientMailboxFolderPathException(
+            throw new ClientMailFolderPathException(
                 "Could not extract path info from \"$options\" - exception "
                 . "triggered by previous exception", 0, $e
             );

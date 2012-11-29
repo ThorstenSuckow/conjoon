@@ -13,6 +13,9 @@
  * $URL$
  */
 
+
+namespace Conjoon\Mail\Client\Folder;
+
 /**
  * Represents a client site folder.
  *
@@ -21,7 +24,7 @@
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class Conjoon_Mail_Client_Folder_ClientMailboxFolder {
+class ClientMailFolder {
 
     /**
      * @var array
@@ -36,12 +39,11 @@ class Conjoon_Mail_Client_Folder_ClientMailboxFolder {
     /**
      * Constructs a new instance
      *
-     * @param Conjoon_Mail_Client_Folder_ClientMailboxFolderPath $path The
+     * @param MailFolderPath $path The
      * client generated path this folder represents
      *
      */
-    public function __construct(
-        Conjoon_Mail_Client_Folder_ClientMailboxFolderPath $path)
+    public function __construct(ClientMailFolderPath $path)
     {
         $this->_path   = $path->getPath();
         $this->_rootId = $path->getRootId();

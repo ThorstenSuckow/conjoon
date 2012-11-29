@@ -13,20 +13,22 @@
  * $URL$
  */
 
+namespace Conjoon\Mail\Client\Service;
+
 /**
  * @see Conjoon_Argument_Check
  */
 require_once 'Conjoon/Argument/Check.php';
 
 /**
- * @see Conjoon_Mail_Client_Folder_ClientMailboxFolder
+ * @see Conjoon_Mail_Client_Folder_ClientMailFolder
  */
-require_once 'Conjoon/Mail/Client/Folder/ClientMailboxFolder.php';
+require_once 'Conjoon/Mail/Client/Folder/ClientMailFolder.php';
 
 /**
- * @see Conjoon_Mail_Client_Folder_DefaultClientMailboxFolderPath
+ * @see Conjoon_Mail_Client_Folder_DefaultClientMailFolderPath
  */
-require_once 'Conjoon/Mail/Client/Folder/DefaultClientMailboxFolderPath.php';
+require_once 'Conjoon/Mail/Client/Folder/DefaultClientMailFolderPath.php';
 
 /**
  * @see Conjoon_Mail_Client_Message_Flag_DefaultClientMessageFlagCollection
@@ -48,6 +50,7 @@ require_once 'Conjoon/Mail/Client/Service/ClientMessageServiceException.php';
  */
 require_once 'Conjoon/Mail/Client/Service/ClientMessageServiceFacade.php';
 
+
 /**
  * Service facade for operations related to messages. A default implementation
  * for Conjoon_Mail_Client_ClientMessageServiceFacade
@@ -65,7 +68,24 @@ require_once 'Conjoon/Mail/Client/Service/ClientMessageServiceFacade.php';
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 class Conjoon_Mail_Client_Service_DefaultClientMessageServiceFacade
-    implements Conjoon_Mail_Client_Service_ClientMessageServiceFacade {
+    implements \Conjoon_Mail_Client_Service_ClientMessageServiceFacade {
+
+    /**
+     * @var \Conjoon\Mail\Client\Folder\ClientFolderService
+     */
+    protected $clientFolderService;
+
+    /**
+     * Creates a new instance of this service facade.
+     *
+     * @param \Conjoon\Mail\Client\Folder\ClientFolderService
+     *
+     *
+     */
+    public function __construct(\Conjoon\Mail\Client\Folder\ClientMailFolderService $clientFolderService)
+    {
+        $this->clientFolderService = $clientFolderService;
+    }
 
     /**
      * Updates the messages in the specified folder with the specified flag
@@ -79,13 +99,13 @@ class Conjoon_Mail_Client_Service_DefaultClientMessageServiceFacade
      *                           index the database id of the root folder,
      *                           and beginning with the third index the path
      *                           parts of the folder requested by the client.
-     * @param Conjoon_User_AppUser $user The user object representing the user
+     * @param \Conjoon_User_AppUser $user The user object representing the user
      *                                   who triggered this operation
      *
      * @throws Conjoon_Mail_Client_Service_ClientMessageServiceException
      */
     public function setFlagsForMessagesInFolder(
-        $flagString, $pathString, Conjoon_User_AppUser $user)
+        $flagString, $pathString, \Conjoon_User_AppUser $user)
     {
         $data = array(
             'flagString' => $flagString,
@@ -93,7 +113,7 @@ class Conjoon_Mail_Client_Service_DefaultClientMessageServiceFacade
         );
 
         try {
-            Conjoon_Argument_Check::check(array(
+            \Conjoon_Argument_Check::check(array(
                 'flagString' => array(
                     'type'       => 'string',
                     'allowEmpty' => false
@@ -103,8 +123,8 @@ class Conjoon_Mail_Client_Service_DefaultClientMessageServiceFacade
                     'allowEmpty' => false
                 )
             ), $data);
-        } catch (Conjoon_Argument_Exception $e) {
-            throw new Conjoon_Mail_Client_Service_ClientMessageServiceException(
+        } catch (\Conjoon_Argument_Exception $e) {
+            throw new \Conjoon_Mail_Client_Service_ClientMessageServiceException(
                 "Exception thrown by previous exception: " . $e->getMessage(),
                 0, $e
             );
@@ -116,36 +136,52 @@ class Conjoon_Mail_Client_Service_DefaultClientMessageServiceFacade
         try {
 
             $folderPath =
-                new Conjoon_Mail_Client_Folder_DefaultClientMailboxFolderPath(
+                new \Conjoon_Mail_Client_Folder_DefaultClientMailboxFolderPath(
                     $pathString
                 );
 
             $folder =
-                new Conjoon_Mail_Client_Folder_ClientMailboxFolder($folderPath);
+                new \Conjoon_Mail_Client_Folder_ClientMailboxFolder($folderPath);
 
             $flagCollection =
-                new Conjoon_Mail_Client_Message_Flag_DefaultClientMessageFlagCollection(
+                new \Conjoon_Mail_Client_Message_Flag_DefaultClientMessageFlagCollection(
                     $flagString
                 );
 
             $folderFlagCollection =
-                new Conjoon_Mail_Client_Message_Flag_FolderMessageFlagCollection(
+                new \Conjoon_Mail_Client_Message_Flag_FolderMessageFlagCollection(
                     $flagCollection, $folder
                 );
 
-        } catch (Conjoon_Argument_Exception $e) {
-            throw new Conjoon_Mail_Client_Service_ClientMessageServiceException(
+            // check if the client folder submitted represents a remote folder
+            if ($this->clientFolderService->isClientMailboxFolderRepresentingRemoteMailbox(
+                $folder)) {
+                //new RemoteService($DoctrineMessageRepository)->updateMessageFlagInFolder())
+            } else {
+                $this->clientMessageService->updateMessageFlagsInFolders();
+            }
+
+
+        } catch (\Conjoon_Argument_Exception $e) {
+            throw new \Conjoon_Mail_Client_Service_ClientMessageServiceException(
                 "Exception thrown by previous exception: " . $e->getMessage(),
                 0, $e
             );
-        } catch (Conjoon_Mail_Client_MailClientException $e) {
-            throw new Conjoon_Mail_Client_Service_ClientMessageServiceException(
+        } catch (\Conjoon_Mail_Client_MailClientException $e) {
+            throw new \Conjoon_Mail_Client_Service_ClientMessageServiceException(
+                "Exception thrown by previous exception: " . $e->getMessage(),
+                0, $e
+            );
+        } catch (\Conjoon\Mail\Client\Folder\ClientFolderServiceException $e) {
+            throw new \Conjoon_Mail_Client_Service_ClientMessageServiceException(
                 "Exception thrown by previous exception: " . $e->getMessage(),
                 0, $e
             );
         }
 
     }
+
+
 
 
 }

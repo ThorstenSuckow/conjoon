@@ -13,6 +13,8 @@
  * $URL$
  */
 
+namespace Conjoon\Mail\Client\Folder;
+
 /**
  * Provides an oo representation of a client generated path for a mailbox.
  *
@@ -27,15 +29,15 @@
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-interface Conjoon_Mail_Client_Folder_ClientMailboxFolderPath {
+interface ClientMailFolderPath {
 
     /**
      * Constructs a new instance
      *
      * @param string $options The client generated path this object represents
      *
-     * @throws Conjoon_Argument_Exception if the argument was invalid
-     * @throws Conjoon_Mail_Client_Folder_ClientMailboxFolderPathException if
+     * @throws \Conjoon_Argument_Exception if the argument was invalid
+     * @throws MailFolderPathException if
      * an error during extracting the path infos occurs.
      */
     public function __construct($options);

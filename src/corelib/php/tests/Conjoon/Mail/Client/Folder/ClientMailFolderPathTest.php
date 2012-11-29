@@ -13,24 +13,20 @@
  * $URL$
  */
 
+
 namespace Conjoon\Mail\Client\Folder;
 
 /**
- * @see Conjoon\Mail\Client\Service\ClientFolderService
+ * @see Conjoon_Mail_Client_Folder/ClientMailFolderPath
  */
-require_once 'Conjoon/Mail/Client/Folder/ClientFolderService.php';
-
+require_once 'Conjoon/Mail/Client/Folder/ClientMailFolderPath.php';
 
 /**
- * @category   Conjoon
- * @package    Conjoon_Mail
- * @subpackage UnitTests
- * @group      Conjoon_Mail
+ * @package    Conjoon/Tests
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class ClientFolderServiceTest
-    extends \PHPUnit_Framework_TestCase {
+class ClientMailFolderPathTest extends \PHPUnit_Framework_TestCase {
 
 
     public function testDummy()

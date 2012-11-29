@@ -15,12 +15,13 @@
 
 namespace Conjoon\Mail\Client\Folder;
 
-use Conjoon\Data\Repository\Mail\DoctrineMailFolderRepository;
+use Conjoon\Data\Repository\Mail\MailFolderRepository,
+    Conjoon\User\User;
 
 /**
- * @see Conjoon\Mail\Client\Folder\ClientFolderService
+ * @see Conjoon\Mail\Client\Folder\ClientMailFolderService
  */
-require_once 'Conjoon/Mail/Client/Folder/ClientFolderService.php';
+require_once 'Conjoon/Mail/Client/Folder/ClientMailFolderService.php';
 
 /**
  * @see Conjoon\Data\Repository\Mail\DoctrineMailFolderRepository
@@ -38,7 +39,7 @@ require_once 'Conjoon/Data/Repository/Mail/DoctrineMailFolderRepository.php';
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class DefaultClientFolderService implements ClientFolderService {
+class DefaultClientMailFolderService implements ClientMailFolderService {
 
     /**
      * @const ROOT_REMOTE
@@ -51,23 +52,30 @@ class DefaultClientFolderService implements ClientFolderService {
     protected $folderRepository;
 
     /**
-     * Creates a new instance of this service.
-     *
-     * @param DoctrineMailFolderRepository $folderRepository the mail folder repository for
-     *                                                       querying the underlying datastorage
-     *
+     * @var Conjoon\User\User
      */
-    public function __construct(DoctrineMailFolderRepository $folderRepository)
-    {
-        $this->folderRepository = $folderRepository;
-    }
-
+    protected $user;
 
     /**
      * @inheritdoc
      */
-    public function isClientMailboxFolderRepresentingRemoteMailbox(
-        \Conjoon_Mail_Client_Folder_ClientMailboxFolder $folder)
+    public function __construct(MailFolderRepository $folderRepository, User $user)
+    {
+        $this->folderRepository = $folderRepository;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isClientMailFolderAccessible(ClientMailFolder $folder)
+    {
+        return false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isClientMailFolderRepresentingRemoteMailbox(ClientMailFolder $folder)
     {
         try {
             $entity = $this->folderRepository->findById(
@@ -76,11 +84,11 @@ class DefaultClientFolderService implements ClientFolderService {
         } catch (\Exception $e) {
 
             /**
-             * @see Conjoon\Mail\Client\Folder\ClientFolderServiceException
+             * @see Conjoon\Mail\Client\Folder\ClientMailFolderServiceException
              */
-            require_once 'Conjoon/Mail/Client/Folder/ClientFolderServiceException.php';
+            require_once 'Conjoon/Mail/Client/Folder/ClientMailFolderServiceException.php';
 
-            throw new \Conjoon\Mail\Client\Folder\ClientFolderServiceException(
+            throw new \Conjoon\Mail\Client\Folder\ClientMailFolderServiceException(
                 "Exception thrown by previous exception: "
                  . $e->getMessage(), 0, $e
             );
@@ -88,11 +96,11 @@ class DefaultClientFolderService implements ClientFolderService {
 
         if ($entity === null) {
             /**
-             * @see Conjoon\Mail\Client\Folder\ClientFolderServiceException
+             * @see Conjoon\Mail\Client\Folder\ClientMailFolderServiceException
              */
-            require_once 'Conjoon/Mail/Client/Folder/ClientFolderServiceException.php';
+            require_once 'Conjoon/Mail/Client/Folder/ClientMailFolderServiceException.php';
 
-            throw new \Conjoon\Mail\Client\Folder\ClientFolderServiceException(
+            throw new \Conjoon\Mail\Client\Folder\ClientMailFolderServiceException(
                 "Client folder with id " . $folder->getRootId() . " was not found"
             );
         }

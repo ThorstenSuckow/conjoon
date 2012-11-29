@@ -37,14 +37,14 @@ class Conjoon_Mail_Client_Message_Flag_FolderMessageFlagCollectionTest
 
     protected function setUp()
     {
-        $this->_folder = new Conjoon_Mail_Client_Folder_ClientMailboxFolder(
-            new Conjoon_Mail_Client_Folder_DefaultClientMailboxFolderPath(
+        $this->_folder = new \Conjoon\Mail\Client\Folder\ClientMailFolder(
+            new \Conjoon\Mail\Client\Folder\DefaultClientMailFolderPath(
                 '["root", "79", "INBOXtttt", "rfwe2", "New folder (7)"]'
             )
         );
 
         $this->_flags =
-            new Conjoon_mail_Client_Message_Flag_DefaultClientMessageFlagCollection(
+            new Conjoon_Mail_Client_Message_Flag_DefaultClientMessageFlagCollection(
                 '[{"id":"173","isRead":false},{"id":"172","isRead":true}]'
             );
     }

@@ -13,6 +13,7 @@
  * $URL$
  */
 
+namespace Conjoon\User;
 
 /**
  * @see Conjoon_Exception
@@ -31,7 +32,7 @@ require_once 'Conjoon/Exception.php';
  *
  * @uses Conjoon_Exception
  */
-class Conjoon_User_UserException extends Conjoon_Exception {
+class UserException extends \Conjoon_Exception {
 
 }
 

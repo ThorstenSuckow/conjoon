@@ -14,17 +14,19 @@
  */
 
 
+namespace Conjoon\Mail\Client\Folder;
+
 /**
- * @see Conjoon_Mail_Client_Folder_DefaultClientMailboxFolderPath
+ * @see Conjoon\Mail\Client\Folder\DefaultClientMailFolderPath
  */
-require_once 'Conjoon/Mail/Client/Folder/DefaultClientMailboxFolderPath.php';
+require_once 'Conjoon/Mail/Client/Folder/DefaultClientMailFolderPath.php';
 
 /**
  * @package    Conjoon/Tests
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class Conjoon_Mail_Client_Folder_DefaultClientMailboxFolderPathTest extends PHPUnit_Framework_TestCase {
+class DefaultClientMailFolderPathTest extends \PHPUnit_Framework_TestCase {
 
 
 
@@ -60,7 +62,7 @@ class Conjoon_Mail_Client_Folder_DefaultClientMailboxFolderPathTest extends PHPU
     {
         foreach ($this->_input as $input => $output) {
 
-            $path = new Conjoon_Mail_Client_Folder_DefaultClientMailboxFolderPath(
+            $path = new DefaultClientMailFolderPath(
                 $input
             );
 

@@ -29,7 +29,7 @@ require_once 'Conjoon/Mail/Client/MailClientException.php';
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class ClientFolderServiceException
+class ClientMailFolderServiceException
     extends \Conjoon_Mail_Client_MailClientException {
 
 }

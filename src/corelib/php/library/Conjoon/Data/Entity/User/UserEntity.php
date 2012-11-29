@@ -22,6 +22,11 @@ namespace Conjoon\Data\Entity\User;
 require_once 'Conjoon/Data/Entity/DataEntity.php';
 
 /**
+ * @see \Conjoon\User\User
+ */
+require_once 'Conjoon/User/User.php';
+
+/**
  * Interface all User entities have to implement.
  *
  * @category   Conjoon_Data
@@ -29,14 +34,8 @@ require_once 'Conjoon/Data/Entity/DataEntity.php';
  *
  * @author Thorsten-Suckow-Homberg <tsuckow@conjoon.org>
  */
-interface UserEntity extends \Conjoon\Data\Entity\DataEntity {
-
-    /**
-     * Get id
-     *
-     * @return integer
-     */
-    public function getId();
+abstract class UserEntity implements \Conjoon\Data\Entity\DataEntity,
+    \Conjoon\User\User {
 
     /**
      * Set firstname
@@ -44,28 +43,15 @@ interface UserEntity extends \Conjoon\Data\Entity\DataEntity {
      * @param string $firstname
      * @return Users
      */
-    public function setFirstname($firstname);
+    abstract public function setFirstname($firstname);
 
-    /**
-     * Get firstname
-     *
-     * @return string
-     */
-    public function getFirstname();
     /**
      * Set lastname
      *
      * @param string $lastname
      * @return Users
      */
-    public function setLastname($lastname);
-
-    /**
-     * Get lastname
-     *
-     * @return string
-     */
-    public function getLastname();
+    abstract public function setLastname($lastname);
 
     /**
      * Set emailAddress
@@ -73,14 +59,7 @@ interface UserEntity extends \Conjoon\Data\Entity\DataEntity {
      * @param string $emailAddress
      * @return Users
      */
-    public function setEmailAddress($emailAddress);
-
-    /**
-     * Get emailAddress
-     *
-     * @return string
-     */
-    public function getEmailAddress();
+    abstract public function setEmailAddress($emailAddress);
 
     /**
      * Set userName
@@ -88,14 +67,7 @@ interface UserEntity extends \Conjoon\Data\Entity\DataEntity {
      * @param string $userName
      * @return Users
      */
-    public function setUserName($userName);
-
-    /**
-     * Get userName
-     *
-     * @return string
-     */
-    public function getUserName();
+    abstract public function setUserName($userName);
 
     /**
      * Set password
@@ -103,14 +75,14 @@ interface UserEntity extends \Conjoon\Data\Entity\DataEntity {
      * @param string $password
      * @return Users
      */
-    public function setPassword($password);
+    abstract public function setPassword($password);
 
     /**
      * Get password
      *
      * @return string
      */
-    public function getPassword();
+    abstract public function getPassword();
 
     /**
      * Set isRoot
@@ -118,14 +90,14 @@ interface UserEntity extends \Conjoon\Data\Entity\DataEntity {
      * @param boolean $isRoot
      * @return Users
      */
-    public function setIsRoot($isRoot);
+    abstract public function setIsRoot($isRoot);
 
     /**
      * Get isRoot
      *
      * @return boolean
      */
-    public function getIsRoot();
+    abstract public function getIsRoot();
 
     /**
      * Set authToken
@@ -133,14 +105,14 @@ interface UserEntity extends \Conjoon\Data\Entity\DataEntity {
      * @param string $authToken
      * @return Users
      */
-    public function setAuthToken($authToken);
+    abstract public function setAuthToken($authToken);
 
     /**
      * Get authToken
      *
      * @return string
      */
-    public function getAuthToken();
+    abstract public function getAuthToken();
 
     /**
      * Set lastLogin
@@ -148,13 +120,13 @@ interface UserEntity extends \Conjoon\Data\Entity\DataEntity {
      * @param integer $lastLogin
      * @return Users
      */
-    public function setLastLogin($lastLogin);
+    abstract public function setLastLogin($lastLogin);
 
     /**
      * Get lastLogin
      *
      * @return integer
      */
-    public function getLastLogin();
+    abstract public function getLastLogin();
 
 }

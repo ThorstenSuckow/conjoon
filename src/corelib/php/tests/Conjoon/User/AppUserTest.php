@@ -13,6 +13,7 @@
  * $URL$
  */
 
+namespace Conjoon\User;
 
 /**
  * @see Conjoon_User_AppUser
@@ -24,7 +25,7 @@ require_once 'Conjoon/User/AppUser.php';
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class Conjoon_User_AppUserTest extends PHPUnit_Framework_TestCase {
+class AppUserTest extends \PHPUnit_Framework_TestCase {
 
     protected $_userData;
 
@@ -44,7 +45,7 @@ class Conjoon_User_AppUserTest extends PHPUnit_Framework_TestCase {
 
         require_once 'Conjoon/Modules/Default/User.php';
 
-        $this->_defaultUser = new Conjoon_Modules_Default_User();
+        $this->_defaultUser = new \Conjoon_Modules_Default_User();
 
         $this->_defaultUser->setId($this->_userData['id']);
         $this->_defaultUser->setFirstName($this->_userData['firstName']);
@@ -52,24 +53,24 @@ class Conjoon_User_AppUserTest extends PHPUnit_Framework_TestCase {
         $this->_defaultUser->setEmailAddress($this->_userData['emailAddress']);
         $this->_defaultUser->setUserName($this->_userData['username']);
 
-        $this->_failUser = new Conjoon_Modules_Default_User();
+        $this->_failUser = new \Conjoon_Modules_Default_User();
 
     }
 
     /**
-     * @expectedException Conjoon_Argument_Exception
+     * @expectedException \Conjoon_Argument_Exception
      */
     public function testConstructErrorArgument()
     {
-        new Conjoon_User_AppUser("Bla");
+        new AppUser("Bla");
     }
 
     /**
-     * @expectedException Conjoon_User_UserException
+     * @expectedException \Conjoon\User\UserException
      */
     public function testConstructErrorUserData()
     {
-        new Conjoon_User_AppUser($this->_failUser);
+        new AppUser($this->_failUser);
     }
 
     /**
@@ -77,7 +78,7 @@ class Conjoon_User_AppUserTest extends PHPUnit_Framework_TestCase {
      */
     public function testConstructOk()
     {
-        $appUser = new Conjoon_User_AppUser($this->_defaultUser);
+        $appUser = new AppUser($this->_defaultUser);
 
         $this->assertTrue(is_int($this->_userData['id']));
         $this->assertSame((string)$this->_userData['id'], $appUser->getId());
