@@ -104,11 +104,16 @@ class Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser extends Conjoon_Text_
             );
         }
 
-        $result = array();
+        $result = array(
+            'rootId' => array_shift($parts),
+            'nodeId' => null,
+            'path'   => array()
+        );
 
-        $result['nodeId'] = $parts[count($parts)-1];
-        $result['rootId'] = array_shift($parts);
-        $result['path']   = $parts;
+        if (count($parts) > 0) {
+            $result['nodeId'] = $parts[count($parts)-1];
+            $result['path']   = $parts;
+        }
 
         return $result;
     }

@@ -55,6 +55,15 @@ class Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParserTest
                 'path'    => array(),
                 'nodeId'  => null,
                 'rootId'  => null
+            ),
+            '["root", "79"]'
+            /**
+             * @ticket CN-665
+             */
+            => array(
+                'path'    => array(),
+                'nodeId'  => null,
+                'rootId'  => "79"
             )
         );
 
