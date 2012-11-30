@@ -42,7 +42,7 @@ require_once 'Conjoon/Argument/InvalidArgumentException.php';
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class DefaultMailFolderCommons implements MailFolderCommons {
+class DefaultFolderCommons implements MailFolderCommons {
 
     /**
      * @var DoctrineMailFolderRepository

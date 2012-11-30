@@ -16,9 +16,9 @@
 namespace Conjoon\Mail\Client\Folder;
 
 /**
- * @see Conjoon\Mail\Client\Service\DefaultMailFolderCommons
+ * @see Conjoon\Mail\Client\Service\DefaultFolderCommons
  */
-require_once 'Conjoon/Mail/Client/Folder/DefaultMailFolderCommons.php';
+require_once 'Conjoon/Mail/Client/Folder/DefaultFolderCommons.php';
 
 
 /**
@@ -59,7 +59,7 @@ class DefaultMailFolderCommonsTest extends \Conjoon\DatabaseTestCaseDefault {
      */
     public function testConstructWithException()
     {
-        new DefaultMailFolderCommons(array('bla' => 'test'));
+        new DefaultFolderCommons(array('bla' => 'test'));
     }
 
     /**
@@ -71,7 +71,7 @@ class DefaultMailFolderCommonsTest extends \Conjoon\DatabaseTestCaseDefault {
             '\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
 
 
-        $commons = new DefaultMailFolderCommons(array(
+        $commons = new DefaultFolderCommons(array(
             'mailFolderRepository' => $repository,
             'user'                 => $this->user
         ));

@@ -116,7 +116,7 @@ class DefaultClientMailFolderServiceTest extends \Conjoon\DatabaseTestCaseDefaul
             'mailFolderRepository' => $repository,
             'user'                 => $this->user,
             'mailFolderCommons'    =>
-                new \Conjoon\Mail\Client\Folder\DefaultMailFolderCommons(
+                new \Conjoon\Mail\Client\Folder\DefaultFolderCommons(
                     array(
                         'mailFolderRepository' => $repository,
                         'user'                 => $this->user

@@ -86,7 +86,7 @@ class DefaultMailFolderSecurityServiceTest
             'mailFolderRepository' => $repository,
             'user'                 => $user,
             'mailFolderCommons'    =>
-                new \Conjoon\Mail\Client\Folder\DefaultMailFolderCommons(
+                new \Conjoon\Mail\Client\Folder\DefaultFolderCommons(
                     array(
                         'mailFolderRepository' => $repository,
                         'user'                 => $user
