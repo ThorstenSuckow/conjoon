@@ -21,7 +21,7 @@ use Conjoon\Argument\ArgumentCheck,
 /**
  * @see MailFolderSecurityService
  */
-require_once 'Conjoon/Mail/Client/Security/MailFolderSecurityService.php';
+require_once 'Conjoon/Mail/Client/Security/FolderSecurityService.php';
 
 /**
  * @see Conjoon\Argument\ArgumentCheck
@@ -49,7 +49,7 @@ require_once 'Conjoon/Modules/Groupware/Email/Folder/Model/FoldersUsers.php';
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class DefaultMailFolderSecurityService implements MailFolderSecurityService {
+class DefaultFolderSecurityService implements FolderSecurityService {
 
     /**
      * @var DoctrineMailFolderRepository

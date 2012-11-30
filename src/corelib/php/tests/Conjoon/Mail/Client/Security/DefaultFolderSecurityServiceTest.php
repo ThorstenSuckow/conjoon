@@ -22,7 +22,7 @@ use Conjoon\Mail\Client\Folder\Folder,
 /**
  * @see DefaultMailFolderSecurityService
  */
-require_once 'Conjoon/Mail/Client/Security/DefaultMailFolderSecurityService.php';
+require_once 'Conjoon/Mail/Client/Security/DefaultFolderSecurityService.php';
 
 
 /**
@@ -33,7 +33,7 @@ require_once 'Conjoon/Mail/Client/Security/DefaultMailFolderSecurityService.php'
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class DefaultMailFolderSecurityServiceTest
+class DefaultFolderSecurityServiceTest
     extends \Conjoon\DatabaseTestCaseDefault {
 
 
@@ -82,7 +82,7 @@ class DefaultMailFolderSecurityServiceTest
                 )
             );
 
-        $this->securityService = new DefaultMailFolderSecurityService(array(
+        $this->securityService = new DefaultFolderSecurityService(array(
             'mailFolderRepository' => $repository,
             'user'                 => $user,
             'mailFolderCommons'    =>

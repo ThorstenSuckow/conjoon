@@ -20,7 +20,7 @@ namespace Conjoon\Mail\Client\Security;
 /**
  * @see MailFolderSecurityService
  */
-require_once 'Conjoon/Mail/Client/Security/MailFolderSecurityService.php';
+require_once 'Conjoon/Mail/Client/Security/FolderSecurityService.php';
 
 
 /**
@@ -31,7 +31,7 @@ require_once 'Conjoon/Mail/Client/Security/MailFolderSecurityService.php';
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class MailFolderSecurityServiceTest extends \PHPUnit_Framework_TestCase {
+class FolderSecurityServiceTest extends \PHPUnit_Framework_TestCase {
 
 
     public function testDummy()

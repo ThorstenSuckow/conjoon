@@ -23,7 +23,7 @@ namespace Conjoon\Mail\Client\Security;
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-interface MailFolderSecurityService {
+interface FolderSecurityService {
 
     /**
      * Creates a new instance of a folder security service.

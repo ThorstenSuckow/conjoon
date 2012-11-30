@@ -27,6 +27,6 @@ require_once 'Conjoon/Mail/Client/Security/SecurityException.php';
  *
  * @uses Conjoon_Mail_Client_MailClientException
  */
-class MailFolderAccessException extends SecurityException {
+class FolderAccessException extends SecurityException {
 
 }

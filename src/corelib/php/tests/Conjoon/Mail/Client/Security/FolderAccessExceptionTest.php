@@ -19,7 +19,7 @@ namespace Conjoon\Mail\Client\Security;
 /**
  * @see MailFolderSecurityException
  */
-require_once 'Conjoon/Mail/Client/Security/MailFolderAccessException.php';
+require_once 'Conjoon/Mail/Client/Security/FolderAccessException.php';
 
 
 /**
@@ -30,20 +30,19 @@ require_once 'Conjoon/Mail/Client/Security/MailFolderAccessException.php';
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class MailFolderAccessExceptionTest
-    extends \PHPUnit_Framework_TestCase {
+class FolderAccessExceptionTest  extends \PHPUnit_Framework_TestCase {
 
 
     /**
      * Ensures everything works as expected
      *
-     * @expectedException \Conjoon\Mail\Client\Security\MailFolderAccessException
+     * @expectedException \Conjoon\Mail\Client\Security\FolderAccessException
      *
      * @return void
      */
     public function testException()
     {
-        throw new MailFolderAccessException();
+        throw new FolderAccessException();
     }
 
 }
