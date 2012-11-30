@@ -16,7 +16,9 @@
 namespace Conjoon\Mail\Client\Folder;
 
 use Conjoon\Data\Repository\Mail\MailFolderRepository,
-    Conjoon\User\User;
+    Conjoon\User\User,
+    Conjoon\Argument\ArgumentCheck,
+    Conjoon\Argument\InvalidArgumentException;
 
 /**
  * @see Conjoon\Mail\Client\Folder\ClientMailFolderService
@@ -27,6 +29,16 @@ require_once 'Conjoon/Mail/Client/Folder/ClientMailFolderService.php';
  * @see Conjoon\Data\Repository\Mail\DoctrineMailFolderRepository
  */
 require_once 'Conjoon/Data/Repository/Mail/DoctrineMailFolderRepository.php';
+
+/**
+ * @see Conjoon\Argument\ArgumentCheck
+ */
+require_once 'Conjoon/Argument/ArgumentCheck.php';
+
+/**
+ * @see Conjoon\Argument\InvalidArgumentException
+ */
+require_once 'Conjoon/Argument/InvalidArgumentException.php';
 
 
 /**
@@ -57,19 +69,42 @@ class DefaultClientMailFolderService implements ClientMailFolderService {
     protected $user;
 
     /**
-     * @inheritdoc
+     * @var Conjoon\Mail\Client\Folder\MailFolderCommons
      */
-    public function __construct(MailFolderRepository $folderRepository, User $user)
-    {
-        $this->folderRepository = $folderRepository;
-    }
+    protected $mailFolderCommons;
 
     /**
      * @inheritdoc
      */
-    public function isClientMailFolderAccessible(ClientMailFolder $folder)
+    public function __construct(Array $options)
     {
-        return false;
+        $data = array('options' => $options);
+
+        ArgumentCheck::check(array(
+            'options' => array(
+                'type'       => 'array',
+                'allowEmpty' => false
+            )
+        ), $data);
+
+        ArgumentCheck::check(array(
+            'mailFolderRepository' => array(
+                'type'  => 'instanceof',
+                'class' => 'Conjoon\Data\Repository\Mail\MailFolderRepository'
+            ),
+            'user' => array(
+                'type'  => 'instanceof',
+                'class' => 'Conjoon\User\User'
+            ),
+            'mailFolderCommons' => array(
+                'type'  => 'instanceof',
+                'class' => 'Conjoon\Mail\Client\Folder\MailFolderCommons'
+            )
+        ), $options);
+
+        $this->folderRepository  = $options['mailFolderRepository'];
+        $this->user              = $options['user'];
+        $this->mailFolderCommons = $options['mailFolderCommons'];
     }
 
     /**
@@ -106,7 +141,6 @@ class DefaultClientMailFolderService implements ClientMailFolderService {
         }
 
         return $entity->getType() === self::ROOT_REMOTE;
-
     }
 
 

@@ -49,4 +49,30 @@ class ClientMailFolderTest extends \PHPUnit_Framework_TestCase {
         );
     }
 
+    /**
+     * Ensures everything works as expected
+     */
+    public function testNodeId()
+    {
+        $folder = new ClientMailFolder(
+            new DefaultClientMailFolderPath(
+                '["root", "79"]'
+            )
+        );
+
+        $this->assertSame(
+            array(), $folder->getPath()
+        );
+
+        $this->assertEquals(
+            "79", $folder->getRootId()
+        );
+
+       // $this->assertSame(
+       //     null, $folder->getNodeId()
+       // );
+    }
+
+
+
 }

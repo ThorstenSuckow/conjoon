@@ -15,41 +15,38 @@
 
 namespace Conjoon\Mail\Client\Folder;
 
-use Conjoon\Data\Repository\Mail\MailFolderRepository,
-    Conjoon\User\User;
-
 /**
- * @see \Conjoon\Mail\Client\Folder\ClientMailFolder
- */
-require_once 'Conjoon/Mail/Client/Folder/ClientMailFolder.php';
-
-
-/**
+ * A class to mediate between meail fodler services. It's purpose is to
+ * represent a collection of methods that are needed by different Client
+ * MailFolder services at the same time, to avoid cross references.
+ *
  * @category   Conjoon_Mail
  * @package    Folder
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-interface ClientMailFolderService {
+interface MailFolderCommons {
 
     /**
-     * Creates a new instance of a folder service.
-     * A folder service is bound to a user.
+     * Creates a new instance of a folder security service.
+     * A folder security service is bound to a user.
      *
      * @param array $options An array with instances of MailFolderRepository,
      *                       and a User to use.
      *                       - user: and instance of \Conjoon\User\User
      *                       - mailFolderRepository: an instance of
      *                       Conjoon\Data\Repository\Mail\MailFolderRepository
-     *                       - mailFolderCommons: an instance of
-     *                       Conjoon\Mail\Client\Folder\MailFolderCommons
      *
+     * @throws Conjoon\Argument\InvalidArgumentExcpetion
      */
     public function __construct(Array $options);
 
     /**
-     * Returns true if the specified folder represents a remote folder,
-     * otherwise false.
+     * Returns true if the specified folder exists on client side, otherwise
+     * false.
+     * This method should return false whenever a client node is not found
+     * in the underlying data storage, regardless if the folder exists in a
+     * remote repository.
      *
      * @param ClientMailFolder $folder
      *
@@ -57,6 +54,6 @@ interface ClientMailFolderService {
      *
      * @throws ClientMailFolderServiceException
      */
-    public function isClientMailFolderRepresentingRemoteMailbox(ClientMailFolder $folder);
+    public function doesMailFolderExist(ClientMailFolder $folder);
 
 }

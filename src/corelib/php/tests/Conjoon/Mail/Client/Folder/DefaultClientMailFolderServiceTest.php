@@ -49,8 +49,7 @@ require_once 'Conjoon/Modules/Default/User.php';
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class DefaultClientMailFolderServiceTest
-    extends \Conjoon\DatabaseTestCaseDefault {
+class DefaultClientMailFolderServiceTest extends \Conjoon\DatabaseTestCaseDefault {
 
     protected $clientMailFolderFail;
 
@@ -61,6 +60,8 @@ class DefaultClientMailFolderServiceTest
     protected $user;
 
     protected $userAccessibleFail;
+
+    protected $service;
 
     public function getDataSet()
     {
@@ -106,6 +107,27 @@ class DefaultClientMailFolderServiceTest
                     '["root", "ettwe2e", "INBOXtttt", "rfwe2", "New folder (7)"]'
                 )
             );
+
+        $repository = $this->_entityManager->getRepository(
+            '\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
+
+
+        $this->service = new DefaultClientMailFolderService(array(
+            'mailFolderRepository' => $repository,
+            'user'                 => $this->user,
+            'mailFolderCommons'    =>
+                new \Conjoon\Mail\Client\Folder\DefaultMailFolderCommons(
+                    array(
+                        'mailFolderRepository' => $repository,
+                        'user'                 => $this->user
+                    ))
+            ));
+
+        $this->assertEquals(
+            2,
+            $this->getConnection()->getRowCount('groupware_email_folders'),
+            "Pre-Condition"
+        );
     }
 
     /**
@@ -115,20 +137,7 @@ class DefaultClientMailFolderServiceTest
      */
     public function testFindNone()
     {
-
-        $repository = $this->_entityManager->getRepository(
-            '\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
-
-
-        $this->assertEquals(
-            2,
-            $this->getConnection()->getRowCount('groupware_email_folders'),
-            "Pre-Condition"
-        );
-
-        $service = new DefaultClientMailFolderService($repository, $this->user);
-
-        $service->isClientMailFolderRepresentingRemoteMailbox(
+        $this->service->isClientMailFolderRepresentingRemoteMailbox(
             $this->clientMailFolderFail
         );
     }
@@ -139,22 +148,9 @@ class DefaultClientMailFolderServiceTest
      */
     public function testFindNoRemote()
     {
-
-        $repository = $this->_entityManager->getRepository(
-            '\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
-
-
-        $this->assertEquals(
-            2,
-            $this->getConnection()->getRowCount('groupware_email_folders'),
-            "Pre-Condition"
-        );
-
-        $service = new DefaultClientMailFolderService($repository, $this->user);
-
         $this->assertSame(
             false,
-            $service->isClientMailFolderRepresentingRemoteMailbox(
+            $this->service->isClientMailFolderRepresentingRemoteMailbox(
                 $this->clientMailFolderNoRemote
             )
         );
@@ -166,52 +162,12 @@ class DefaultClientMailFolderServiceTest
      */
     public function testFind()
     {
-
-        $repository = $this->_entityManager->getRepository(
-            '\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
-
-
-        $this->assertEquals(
-            2,
-            $this->getConnection()->getRowCount('groupware_email_folders'),
-            "Pre-Condition"
-        );
-
-        $service = new DefaultClientMailFolderService($repository, $this->user);
-
         $this->assertSame(
             true,
-            $service->isClientMailFolderRepresentingRemoteMailbox(
+            $this->service->isClientMailFolderRepresentingRemoteMailbox(
                 $this->clientMailFolder
             )
         );
     }
-
-    /**
-     * Ensures everything works as expected
-     */
-    public function testIsMailFolderAccessible()
-    {
-        $repository = $this->_entityManager->getRepository(
-            '\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
-
-        $service = new DefaultClientMailFolderService(
-            $repository, $this->user
-        );
-
-        $serviceFail = new DefaultClientMailFolderService(
-            $repository, $this->userAccessibleFail
-        );
-
-        $this->assertFalse($serviceFail->isClientMailFolderAccessible(
-            $this->clientMailFolder
-        ));
-
-        $this->assertTrue($service->isClientMailFolderAccessible(
-            $this->clientMailFolder
-        ));
-
-    }
-
 
 }

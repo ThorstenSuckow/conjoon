@@ -37,6 +37,11 @@ class ClientMailFolder {
     protected $_rootId;
 
     /**
+     * @var string
+     */
+    protected $_nodeId;
+
+    /**
      * Constructs a new instance
      *
      * @param MailFolderPath $path The
@@ -47,6 +52,7 @@ class ClientMailFolder {
     {
         $this->_path   = $path->getPath();
         $this->_rootId = $path->getRootId();
+        $this->_nodeId = $path->getNodeId();
 
     }
 
@@ -61,6 +67,16 @@ class ClientMailFolder {
     }
 
     /**
+     * Returns the node id for this folder
+     *
+     * @return string
+     */
+    public function getNodeId()
+    {
+        return $this->_nodeId;
+    }
+
+    /**
      * Returns an array with the path parts. Path parts are the path to the
      * folder this object represents
      *
@@ -71,6 +87,21 @@ class ClientMailFolder {
     public function getPath()
     {
         return $this->_path;
+    }
+
+    /**
+     * Returns a textual representation for this instance.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return get_class($this)
+               . ':'
+               . '[rootId: ' . $this->getRootId() . '; '
+               . 'path: ' . implode(',', $this->getPath()) . '; '
+               . 'nodeId: ' . $this->getNodeId()
+               . ']';
     }
 }
 

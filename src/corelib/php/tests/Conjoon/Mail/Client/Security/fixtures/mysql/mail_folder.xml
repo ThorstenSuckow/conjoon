@@ -1,0 +1,111 @@
+<?xml version="1.0" ?>
+<dataset>
+    <table name="groupware_email_folders">
+        <column>id</column>
+        <column>name</column>
+        <column>is_child_allowed</column>
+        <column>is_locked</column>
+        <column>type</column>
+        <column>meta_info</column>
+        <column>parent_id</column>
+        <column>is_deleted</column>
+        <row>
+            <value>1</value>
+            <value>folder 1</value>
+            <value>1</value>
+            <value>0</value>
+            <value>root</value>
+            <value>inbox</value>
+            <null />
+            <value>0</value>
+        </row>
+        <row>
+            <value>2</value>
+            <value>folder 2</value>
+            <value>1</value>
+            <value>0</value>
+            <value>root</value>
+            <value>inbox</value>
+            <value>1</value>
+            <value>0</value>
+        </row>
+        <row>
+            <value>3</value>
+            <value>folder 3</value>
+            <value>1</value>
+            <value>0</value>
+            <value>root</value>
+            <value>inbox</value>
+            <value>2</value>
+            <value>0</value>
+        </row>
+        <row>
+            <value>4</value>
+            <value>folder 4</value>
+            <value>1</value>
+            <value>0</value>
+            <value>root</value>
+            <value>inbox</value>
+            <null />
+            <value>0</value>
+        </row>
+    </table>
+    <table name="groupware_email_folders_users">
+        <column>groupware_email_folders_id</column>
+        <column>users_id</column>
+        <column>relationship</column>
+        <row>
+            <value>1</value>
+            <value>1</value>
+            <value>owner</value>
+        </row>
+        <row>
+            <value>2</value>
+            <value>1</value>
+            <value>owner</value>
+        </row>
+        <row>
+            <value>3</value>
+            <value>1</value>
+            <value>owner</value>
+        </row>
+        <row>
+            <value>4</value>
+            <value>2</value>
+            <value>owner</value>
+        </row>
+    </table>
+    <table name="users">
+        <column>id</column>
+        <column>firstname</column>
+        <column>lastname</column>
+        <column>email_address</column>
+        <column>user_name</column>
+        <column>password</column>
+        <column>is_root</column>
+        <column>auth_token</column>
+        <column>last_login</column>
+        <row>
+            <value>1</value>
+            <value>Firstname</value>
+            <value>Lastname</value>
+            <value>EmailAddress</value>
+            <value>UserName1</value>
+            <value>Password</value>
+            <value>1</value>
+            <value>AuthToken</value>
+            <value>2</value>
+        </row>
+        <row>
+            <value>2</value>
+            <value>Firstname</value>
+            <value>Lastname</value>
+            <value>EmailAddress</value>
+            <value>UserName2</value>
+            <value>Password</value>
+            <value>0</value>
+            <value>AuthToken</value>
+            <value>3</value>
+        </row>
+    </table>
+</dataset>
