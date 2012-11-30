@@ -21,9 +21,9 @@ use Conjoon\Data\Repository\Mail\MailFolderRepository,
     Conjoon\Argument\InvalidArgumentException;
 
 /**
- * @see Conjoon\Mail\Client\Folder\ClientMailFolderService
+ * @see Conjoon\Mail\Client\Folder\FolderService
  */
-require_once 'Conjoon/Mail/Client/Folder/ClientMailFolderService.php';
+require_once 'Conjoon/Mail/Client/Folder/FolderService.php';
 
 /**
  * @see Conjoon\Data\Repository\Mail\DoctrineMailFolderRepository
@@ -51,7 +51,7 @@ require_once 'Conjoon/Argument/InvalidArgumentException.php';
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class DefaultClientMailFolderService implements ClientMailFolderService {
+class DefaultFolderService implements FolderService {
 
     /**
      * @const ROOT_REMOTE
@@ -98,7 +98,7 @@ class DefaultClientMailFolderService implements ClientMailFolderService {
             ),
             'mailFolderCommons' => array(
                 'type'  => 'instanceof',
-                'class' => 'Conjoon\Mail\Client\Folder\MailFolderCommons'
+                'class' => 'Conjoon\Mail\Client\Folder\FolderCommons'
             )
         ), $options);
 
@@ -110,7 +110,7 @@ class DefaultClientMailFolderService implements ClientMailFolderService {
     /**
      * @inheritdoc
      */
-    public function isClientMailFolderRepresentingRemoteMailbox(MailFolder $folder)
+    public function isClientMailFolderRepresentingRemoteMailbox(Folder $folder)
     {
         try {
             $entity = $this->folderRepository->findById(
@@ -119,11 +119,11 @@ class DefaultClientMailFolderService implements ClientMailFolderService {
         } catch (\Exception $e) {
 
             /**
-             * @see Conjoon\Mail\Client\Folder\ClientMailFolderServiceException
+             * @see Conjoon\Mail\Client\Folder\FolderServiceException
              */
-            require_once 'Conjoon/Mail/Client/Folder/ClientMailFolderServiceException.php';
+            require_once 'Conjoon/Mail/Client/Folder/FolderServiceException.php';
 
-            throw new \Conjoon\Mail\Client\Folder\ClientMailFolderServiceException(
+            throw new \Conjoon\Mail\Client\Folder\FolderServiceException(
                 "Exception thrown by previous exception: "
                  . $e->getMessage(), 0, $e
             );
@@ -131,11 +131,11 @@ class DefaultClientMailFolderService implements ClientMailFolderService {
 
         if ($entity === null) {
             /**
-             * @see Conjoon\Mail\Client\Folder\ClientMailFolderServiceException
+             * @see Conjoon\Mail\Client\Folder\FolderServiceException
              */
-            require_once 'Conjoon/Mail/Client/Folder/ClientMailFolderServiceException.php';
+            require_once 'Conjoon/Mail/Client/Folder/FolderServiceException.php';
 
-            throw new \Conjoon\Mail\Client\Folder\ClientMailFolderServiceException(
+            throw new \Conjoon\Mail\Client\Folder\FolderServiceException(
                 "Client folder with id " . $folder->getRootId() . " was not found"
             );
         }

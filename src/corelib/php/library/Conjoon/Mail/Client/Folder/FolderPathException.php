@@ -13,10 +13,11 @@
  * $URL$
  */
 
+
 namespace Conjoon\Mail\Client\Folder;
 
 /**
- * @see Conjoon_Mail_Client_MailClientException
+ * @see Conjoon_Mail_Client_Exception
  */
 require_once 'Conjoon/Mail/Client/MailClientException.php';
 
@@ -25,12 +26,9 @@ require_once 'Conjoon/Mail/Client/MailClientException.php';
  * @category   Conjoon
  * @package    Exception
  *
- * @uses \Conjoon_Mail_Client_MailClientException
- *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @uses Conjoon_Mail_Exception
  */
-class ClientMailFolderServiceException
-    extends \Conjoon_Mail_Client_MailClientException {
+class FolderPathException extends \Conjoon_Mail_Client_MailClientException {
 
 }
 

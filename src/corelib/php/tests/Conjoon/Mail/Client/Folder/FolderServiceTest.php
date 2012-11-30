@@ -18,10 +18,10 @@ namespace Conjoon\Mail\Client\Folder;
 /**
  * @see Conjoon\Mail\Client\Service\ClientFolderService
  */
-require_once 'Conjoon/Mail/Client/Folder/ClientMailFolderService.php';
-
+require_once 'Conjoon/Mail/Client/Folder/FolderService.php';
 
 /**
+ *
  * @category   Conjoon
  * @package    Conjoon_Mail
  * @subpackage UnitTests
@@ -29,8 +29,7 @@ require_once 'Conjoon/Mail/Client/Folder/ClientMailFolderService.php';
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class ClientMailFolderServiceTest
-    extends \PHPUnit_Framework_TestCase {
+class FolderServiceTest extends \PHPUnit_Framework_TestCase {
 
 
     public function testDummy()

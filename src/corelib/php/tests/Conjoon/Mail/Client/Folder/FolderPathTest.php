@@ -17,16 +17,16 @@
 namespace Conjoon\Mail\Client\Folder;
 
 /**
- * @see Conjoon_Mail_Client_Folder/ClientMailFolderPath
+ * @see Conjoon_Mail_Client_Folder/FolderPath
  */
-require_once 'Conjoon/Mail/Client/Folder/ClientMailFolderPath.php';
+require_once 'Conjoon/Mail/Client/Folder/FolderPath.php';
 
 /**
- * @package    Conjoon/Tests
+ *   @package    Conjoon/Tests
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class ClientMailFolderPathTest extends \PHPUnit_Framework_TestCase {
+class FolderPathTest extends \PHPUnit_Framework_TestCase {
 
 
     public function testDummy()

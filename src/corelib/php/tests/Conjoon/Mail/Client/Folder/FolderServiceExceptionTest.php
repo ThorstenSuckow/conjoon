@@ -16,32 +16,30 @@
 namespace Conjoon\Mail\Client\Folder;
 
 /**
- * @see Conjoon\Mail\Client\Folder\ClientMailFolderServiceException
+ * @see Conjoon\Mail\Client\Folder\FolderServiceException
  */
-require_once 'Conjoon/Mail/Client/Folder/ClientMailFolderServiceException.php';
+require_once 'Conjoon/Mail/Client/Folder/FolderServiceException.php';
 
-
-/**
- * @category   Conjoon
+/** @category   Conjoon
  * @package    Conjoon_Mail
  * @subpackage UnitTests
  * @group      Conjoon_Mail
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class ClientMailFolderServiceExceptionTest extends \PHPUnit_Framework_TestCase {
+class FolderServiceExceptionTest extends \PHPUnit_Framework_TestCase {
 
 
     /**
      * Ensures everything works as expected
      *
-     * @expectedException \Conjoon\Mail\Client\Folder\ClientMailFolderServiceException
+     * @expectedException \Conjoon\Mail\Client\Folder\FolderServiceException
      *
      * @return void
      */
     public function testException()
     {
-        throw new ClientMailFolderServiceException();
+        throw new FolderServiceException();
     }
 
 }

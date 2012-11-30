@@ -30,12 +30,12 @@ interface MailFolderSecurityService {
      * A folder security service is bound to a user.
      *
      * @param array $options An array with instances of MailFolderRepository,
-     *                       a User and the ClientMailFolderService to use.
+     *                       a User and the FolderService to use.
      *                       - user: and instance of \Conjoon\User\User
      *                       - mailFolderRepository: an instance of
      *                       Conjoon\Data\Repository\Mail\MailFolderRepository
      *                       - mailFolderCommons an instance of
-     *                       Conjoon\Mail\Client\Folder\MailFolderCommons
+     *                       Conjoon\Mail\Client\Folder\FolderCommons
      *
      * @throws Conjoon\Argument\InvalidArgumentExcpetion
      */
@@ -64,7 +64,7 @@ interface MailFolderSecurityService {
      * @throws SecurityServiceException
      */
     public function isMailFolderAccessible(
-        \Conjoon\Mail\Client\Folder\MailFolder $folder);
+        \Conjoon\Mail\Client\Folder\Folder $folder);
 
 
 }

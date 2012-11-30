@@ -16,8 +16,8 @@
 
 namespace Conjoon\Mail\Client\Security;
 
-use Conjoon\Mail\Client\Folder\MailFolder,
-    Conjoon\Mail\Client\Folder\DefaultClientMailFolderPath;
+use Conjoon\Mail\Client\Folder\Folder,
+    Conjoon\Mail\Client\Folder\DefaultFolderPath;
 
 /**
  * @see DefaultMailFolderSecurityService
@@ -69,15 +69,15 @@ class DefaultMailFolderSecurityServiceTest
 
 
         $this->mailFolderOk =
-            new MailFolder(
-                new DefaultClientMailFolderPath(
+            new Folder(
+                new DefaultFolderPath(
                     '["root", "1", "2", "3"]'
                 )
             );
 
         $this->mailFolderFail =
-            new MailFolder(
-                new DefaultClientMailFolderPath(
+            new Folder(
+                new DefaultFolderPath(
                     '["root", "4"]'
                 )
             );

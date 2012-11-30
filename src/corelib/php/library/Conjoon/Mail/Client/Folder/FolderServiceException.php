@@ -17,19 +17,21 @@
 namespace Conjoon\Mail\Client\Folder;
 
 /**
- * @see Conjoon_Mail_Client_Exception
+ * @see Conjoon_Mail_Client_MailClientException
  */
-require_once 'Conjoon/Mail/Client/Exception.php';
+require_once 'Conjoon/Mail/Client/MailClientException.php';
 
 
 /**
  * @category   Conjoon
  * @package    Exception
  *
- * @uses Conjoon_Mail_Exception
+ * @uses \Conjoon_Mail_Client_MailClientException
+ *
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class ClientMailFolderPathException
-    extends \Conjoon_Mail_Client_Exception {
+class FolderServiceException
+    extends \Conjoon_Mail_Client_MailClientException {
 
 }
 

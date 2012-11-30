@@ -10,7 +10,7 @@
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL: http://svn.conjoon.org/trunk/src/corelib/php/library/Conjoon/Mail/Client/Folder/MailFolder
+ * $URL: http://svn.conjoon.org/trunk/src/corelib/php/library/Conjoon/Mail/Client/Folder/Folder
  */
 
 
@@ -24,7 +24,7 @@ namespace Conjoon\Mail\Client\Folder;
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class MailFolder {
+class Folder {
 
     /**
      * @var array
@@ -48,7 +48,7 @@ class MailFolder {
      * client generated path this folder represents
      *
      */
-    public function __construct(ClientMailFolderPath $path)
+    public function __construct(FolderPath $path)
     {
         $this->_path   = $path->getPath();
         $this->_rootId = $path->getRootId();

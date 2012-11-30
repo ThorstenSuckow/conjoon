@@ -22,7 +22,7 @@ use Conjoon\Argument\ArgumentCheck,
 /**
  * @see MailFolderCommons
  */
-require_once 'Conjoon/Mail/Client/Folder/MailFolderCommons.php';
+require_once 'Conjoon/Mail/Client/Folder/FolderCommons.php';
 
 /**
  * @see Conjoon\Argument\ArgumentCheck
@@ -35,14 +35,14 @@ require_once 'Conjoon/Argument/ArgumentCheck.php';
 require_once 'Conjoon/Argument/InvalidArgumentException.php';
 
 /**
- * A default implementation for MailFolderCommons.
+ * A default implementation for FolderCommons.
  *
  * @category   Conjoon_Mail
  * @package    Folder
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class DefaultFolderCommons implements MailFolderCommons {
+class DefaultFolderCommons implements FolderCommons {
 
     /**
      * @var DoctrineMailFolderRepository
@@ -86,7 +86,7 @@ class DefaultFolderCommons implements MailFolderCommons {
     /**
      * @inheritdoc
      */
-    public function doesMailFolderExist(MailFolder $folder)
+    public function doesMailFolderExist(Folder $folder)
     {
         $path = $folder->getPath();
 

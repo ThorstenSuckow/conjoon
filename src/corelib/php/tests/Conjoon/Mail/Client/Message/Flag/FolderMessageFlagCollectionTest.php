@@ -37,8 +37,8 @@ class Conjoon_Mail_Client_Message_Flag_FolderMessageFlagCollectionTest
 
     protected function setUp()
     {
-        $this->_folder = new \Conjoon\Mail\Client\Folder\MailFolder(
-            new \Conjoon\Mail\Client\Folder\DefaultClientMailFolderPath(
+        $this->_folder = new \Conjoon\Mail\Client\Folder\Folder(
+            new \Conjoon\Mail\Client\Folder\DefaultFolderPath(
                 '["root", "79", "INBOXtttt", "rfwe2", "New folder (7)"]'
             )
         );

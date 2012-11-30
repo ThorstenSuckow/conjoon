@@ -23,12 +23,12 @@ require_once 'Conjoon/Argument/Check.php';
 /**
  * @see Conjoon_Mail_Client_Folder_ClientMailFolder
  */
-require_once 'Conjoon/Mail/Client/Folder/MailFolder.php';
+require_once 'Conjoon/Mail/Client/Folder/Folder.php';
 
 /**
  * @see Conjoon_Mail_Client_Folder_DefaultClientMailFolderPath
  */
-require_once 'Conjoon/Mail/Client/Folder/DefaultClientMailFolderPath.php';
+require_once 'Conjoon/Mail/Client/Folder/DefaultFolderPath.php';
 
 /**
  * @see Conjoon_Mail_Client_Message_Flag_DefaultClientMessageFlagCollection
@@ -82,7 +82,7 @@ class DefaultMessageServiceFacade implements MessageServiceFacade {
      *
      */
     public function __construct(
-        \Conjoon\Mail\Client\Folder\ClientMailFolderService $clientFolderService)
+        \Conjoon\Mail\Client\Folder\FolderService $clientFolderService)
     {
         $this->clientFolderService = $clientFolderService;
     }

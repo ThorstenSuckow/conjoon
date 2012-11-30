@@ -18,14 +18,14 @@ namespace Conjoon\Mail\Client\Folder;
 /**
  * A class to mediate between meail fodler services. It's purpose is to
  * represent a collection of methods that are needed by different Client
- * MailFolder services at the same time, to avoid cross references.
+ * Folder services at the same time, to avoid cross references.
  *
  * @category   Conjoon_Mail
  * @package    Folder
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-interface MailFolderCommons {
+interface FolderCommons {
 
     /**
      * Creates a new instance of a folder security service.
@@ -52,8 +52,8 @@ interface MailFolderCommons {
      *
      * @return boolean
      *
-     * @throws ClientMailFolderServiceException
+     * @throws FolderServiceException
      */
-    public function doesMailFolderExist(MailFolder $folder);
+    public function doesMailFolderExist(Folder $folder);
 
 }

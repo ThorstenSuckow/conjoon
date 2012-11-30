@@ -13,14 +13,15 @@
  * $URL$
  */
 
+
 namespace Conjoon\Mail\Client\Folder;
 
 use \Conjoon\Argument\ArgumentCheck;
 
 /**
- * @see \Conjoon\Mail\Client\Folder\ClientMailFolderPath
+ * @see \Conjoon\Mail\Client\Folder\FolderPath
  */
-require_once 'Conjoon/Mail/Client/Folder/ClientMailFolderPath.php';
+require_once 'Conjoon/Mail/Client/Folder/FolderPath.php';
 
 /**
  * Provides a default implementation of
@@ -31,7 +32,7 @@ require_once 'Conjoon/Mail/Client/Folder/ClientMailFolderPath.php';
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class DefaultClientMailFolderPath implements ClientMailFolderPath{
+class DefaultFolderPath implements FolderPath {
 
     protected $_path = array();
 
@@ -72,11 +73,11 @@ class DefaultClientMailFolderPath implements ClientMailFolderPath{
         } catch (Conjoon_Text_Parserexception $e) {
 
             /**
-             * @see \Conjoon\Mail\Client\Folder\ClientMailFolderPathException
+             * @see \Conjoon\Mail\Client\Folder\FolderPathException
              */
-            require_once 'Conjoon/Mail/Client/Folder/ClientMailFolderPathException.php';
+            require_once 'Conjoon/Mail/Client/Folder/FolderPathException.php';
 
-            throw new ClientMailFolderPathException(
+            throw new FolderPathException(
                 "Could not extract path info from \"$options\" - exception "
                 . "triggered by previous exception", 0, $e
             );

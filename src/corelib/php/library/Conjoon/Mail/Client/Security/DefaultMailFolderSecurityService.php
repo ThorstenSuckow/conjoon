@@ -92,7 +92,7 @@ class DefaultMailFolderSecurityService implements MailFolderSecurityService {
             ),
             'mailFolderCommons' => array(
                 'type'  => 'instanceof',
-                'class' => 'Conjoon\Mail\Client\Folder\MailFolderCommons'
+                'class' => 'Conjoon\Mail\Client\Folder\FolderCommons'
             ),
         ), $options);
 
@@ -105,7 +105,7 @@ class DefaultMailFolderSecurityService implements MailFolderSecurityService {
      * @inheritdoc
      */
     public function isMailFolderAccessible(
-        \Conjoon\Mail\Client\Folder\MailFolder $folder)
+        \Conjoon\Mail\Client\Folder\Folder $folder)
     {
         /**
          * @refactor uses old implementation
@@ -132,7 +132,7 @@ class DefaultMailFolderSecurityService implements MailFolderSecurityService {
                 try {
                     $doesMailFolderExist =
                         $this->folderCommons->doesMailFolderExist($folder);
-                } catch (\Conjoon\Mail\Client\Folder\ClientMailFolderServiceException $e) {
+                } catch (\Conjoon\Mail\Client\Folder\FolderServiceException $e) {
                     throw new SecurityServiceException(
                         "Exception thrown by previous exception: "
                         . $e->getMessage, 0, $e

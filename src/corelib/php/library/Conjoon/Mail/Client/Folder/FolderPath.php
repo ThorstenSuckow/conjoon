@@ -13,6 +13,7 @@
  * $URL$
  */
 
+
 namespace Conjoon\Mail\Client\Folder;
 
 /**
@@ -29,7 +30,7 @@ namespace Conjoon\Mail\Client\Folder;
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-interface ClientMailFolderPath {
+interface FolderPath {
 
     /**
      * Constructs a new instance

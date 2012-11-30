@@ -13,15 +13,16 @@
  * $URL$
  */
 
+
 namespace Conjoon\Mail\Client\Folder;
 
 use Conjoon\Data\Repository\Mail\MailFolderRepository,
     Conjoon\User\User;
 
 /**
- * @see \Conjoon\Mail\Client\Folder\MailFolder
+ * @see \Conjoon\Mail\Client\Folder\Folder
  */
-require_once 'Conjoon/Mail/Client/Folder/MailFolder.php';
+require_once 'Conjoon/Mail/Client/Folder/Folder.php';
 
 
 /**
@@ -30,7 +31,7 @@ require_once 'Conjoon/Mail/Client/Folder/MailFolder.php';
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-interface ClientMailFolderService {
+interface FolderService {
 
     /**
      * Creates a new instance of a folder service.
@@ -42,7 +43,7 @@ interface ClientMailFolderService {
      *                       - mailFolderRepository: an instance of
      *                       Conjoon\Data\Repository\Mail\MailFolderRepository
      *                       - mailFolderCommons: an instance of
-     *                       Conjoon\Mail\Client\Folder\MailFolderCommons
+     *                       Conjoon\Mail\Client\Folder\FolderCommons
      *
      */
     public function __construct(Array $options);
@@ -51,12 +52,12 @@ interface ClientMailFolderService {
      * Returns true if the specified folder represents a remote folder,
      * otherwise false.
      *
-     * @param MailFolder $folder
+     * @param Folder $folder
      *
      * @return boolean
      *
-     * @throws ClientMailFolderServiceException
+     * @throws FolderServiceException
      */
-    public function isClientMailFolderRepresentingRemoteMailbox(MailFolder $folder);
+    public function isClientMailFolderRepresentingRemoteMailbox(Folder $folder);
 
 }

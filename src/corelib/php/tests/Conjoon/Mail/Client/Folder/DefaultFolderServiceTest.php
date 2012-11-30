@@ -17,9 +17,9 @@
 namespace Conjoon\Mail\Client\Folder;
 
 /**
- * @see Conjoon\Mail\Client\Service\DefaultClientMailFolderService
+ * @see Conjoon\Mail\Client\Service\DefaultFolderService
  */
-require_once 'Conjoon/Mail/Client/Folder/DefaultClientMailFolderService.php';
+require_once 'Conjoon/Mail/Client/Folder/DefaultFolderService.php';
 
 /**
  * @see Conjoon\DatabaseTestCaseDefault
@@ -27,14 +27,14 @@ require_once 'Conjoon/Mail/Client/Folder/DefaultClientMailFolderService.php';
 require_once 'Conjoon/DatabaseTestCaseDefault.php';
 
 /**
- * @see Conjoon\Mail\Client\Folder\DefaultClientMailFolderPath
+ * @see Conjoon\Mail\Client\Folder\DefaultFolderPath
  */
-require_once 'Conjoon/Mail/Client/Folder/DefaultClientMailFolderPath.php';
+require_once 'Conjoon/Mail/Client/Folder/DefaultFolderPath.php';
 
 /**
- * @see Conjoon\Mail\Client\Folder\MailFolder
+ * @see Conjoon\Mail\Client\Folder\Folder
  */
-require_once 'Conjoon/Mail/Client/Folder/MailFolder.php';
+require_once 'Conjoon/Mail/Client/Folder/Folder.php';
 
 /**
  * @see Conjoon_Modules_Default_User
@@ -88,22 +88,22 @@ class DefaultClientMailFolderServiceTest extends \Conjoon\DatabaseTestCaseDefaul
 
 
         $this->clientMailFolderNoRemote =
-            new MailFolder(
-                new DefaultClientMailFolderPath(
+            new Folder(
+                new DefaultFolderPath(
                     '["root", "2", "INBOXtttt", "rfwe2", "New folder (7)"]'
                 )
             );
 
         $this->clientMailFolder =
-            new MailFolder(
-                new DefaultClientMailFolderPath(
+            new Folder(
+                new DefaultFolderPath(
                     '["root", "1", "INBOXtttt", "rfwe2", "New folder (7)"]'
                 )
             );
 
         $this->clientMailFolderFail =
-            new MailFolder(
-                new DefaultClientMailFolderPath(
+            new Folder(
+                new DefaultFolderPath(
                     '["root", "ettwe2e", "INBOXtttt", "rfwe2", "New folder (7)"]'
                 )
             );
@@ -112,7 +112,7 @@ class DefaultClientMailFolderServiceTest extends \Conjoon\DatabaseTestCaseDefaul
             '\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
 
 
-        $this->service = new DefaultClientMailFolderService(array(
+        $this->service = new DefaultFolderService(array(
             'mailFolderRepository' => $repository,
             'user'                 => $this->user,
             'mailFolderCommons'    =>
@@ -133,7 +133,7 @@ class DefaultClientMailFolderServiceTest extends \Conjoon\DatabaseTestCaseDefaul
     /**
      * Ensure everything works as expected
      *
-     * @expectedException \Conjoon\Mail\Client\Folder\ClientMailFolderServiceException
+     * @expectedException \Conjoon\Mail\Client\Folder\FolderServiceException
      */
     public function testFindNone()
     {

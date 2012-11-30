@@ -16,9 +16,9 @@
 namespace Conjoon\Mail\Client\Folder;
 
 /**
- * @see Conjoon\Mail\Client\Service\MailFolderCommons
+ * @see Conjoon\Mail\Client\Service\FolderCommons
  */
-require_once 'Conjoon/Mail/Client/Folder/MailFolderCommons.php';
+require_once 'Conjoon/Mail/Client/Folder/FolderCommons.php';
 
 
 /**
