@@ -110,7 +110,7 @@ class DefaultClientMailFolderService implements ClientMailFolderService {
     /**
      * @inheritdoc
      */
-    public function isClientMailFolderRepresentingRemoteMailbox(ClientMailFolder $folder)
+    public function isClientMailFolderRepresentingRemoteMailbox(MailFolder $folder)
     {
         try {
             $entity = $this->folderRepository->findById(

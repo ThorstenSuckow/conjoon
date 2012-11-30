@@ -32,9 +32,9 @@ require_once 'Conjoon/DatabaseTestCaseDefault.php';
 require_once 'Conjoon/Mail/Client/Folder/DefaultClientMailFolderPath.php';
 
 /**
- * @see Conjoon\Mail\Client\Folder\ClientMailFolder
+ * @see Conjoon\Mail\Client\Folder\MailFolder
  */
-require_once 'Conjoon/Mail/Client/Folder/ClientMailFolder.php';
+require_once 'Conjoon/Mail/Client/Folder/MailFolder.php';
 
 /**
  * @see Conjoon_Modules_Default_User
@@ -88,21 +88,21 @@ class DefaultClientMailFolderServiceTest extends \Conjoon\DatabaseTestCaseDefaul
 
 
         $this->clientMailFolderNoRemote =
-            new ClientMailFolder(
+            new MailFolder(
                 new DefaultClientMailFolderPath(
                     '["root", "2", "INBOXtttt", "rfwe2", "New folder (7)"]'
                 )
             );
 
         $this->clientMailFolder =
-            new ClientMailFolder(
+            new MailFolder(
                 new DefaultClientMailFolderPath(
                     '["root", "1", "INBOXtttt", "rfwe2", "New folder (7)"]'
                 )
             );
 
         $this->clientMailFolderFail =
-            new ClientMailFolder(
+            new MailFolder(
                 new DefaultClientMailFolderPath(
                     '["root", "ettwe2e", "INBOXtttt", "rfwe2", "New folder (7)"]'
                 )

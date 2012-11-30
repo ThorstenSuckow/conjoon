@@ -14,10 +14,12 @@
  */
 
 
+namespace Conjoon\Mail\Client\Service;
+
 /**
- * @see Conjoon_Mail_Client_Service_DefaultClientMessageServiceFacade
+ * @see DefaultMessageServiceFacade
  */
-require_once 'Conjoon/Mail/Client/Service/DefaultClientMessageServiceFacade.php';
+require_once 'Conjoon/Mail/Client/Service/DefaultMessageServiceFacade.php';
 
 
 /**
@@ -28,8 +30,8 @@ require_once 'Conjoon/Mail/Client/Service/DefaultClientMessageServiceFacade.php'
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class Conjoon_Mail_Client_Service_DefaultClientMessageServiceFacadeTest
-    extends PHPUnit_Framework_TestCase {
+class DefaultMessageServiceFacadeTest
+    extends \PHPUnit_Framework_TestCase {
 
 
     public function testDummy()

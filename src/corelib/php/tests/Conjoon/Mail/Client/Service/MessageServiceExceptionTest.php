@@ -14,10 +14,12 @@
  */
 
 
+namespace Conjoon\Mail\Client\Service;
+
 /**
  * @see Conjoon_Mail_Client_Service_ClientMessageServiceException
  */
-require_once 'Conjoon/Mail/Client/Service/ClientMessageServiceException.php';
+require_once 'Conjoon/Mail/Client/Service/MessageServiceException.php';
 
 
 /**
@@ -28,20 +30,20 @@ require_once 'Conjoon/Mail/Client/Service/ClientMessageServiceException.php';
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class Conjoon_Mail_Client_Service_ClientMessageServiceExceptionTest
-    extends PHPUnit_Framework_TestCase {
+class MessageServiceExceptionTest
+    extends \PHPUnit_Framework_TestCase {
 
 
     /**
      * Ensures everything works as expected
      *
-     * @expectedException Conjoon_Mail_Client_Service_ClientMessageServiceException
+     * @expectedException \Conjoon\Mail\Client\Service\MessageServiceException
      *
      * @return void
      */
     public function testException()
     {
-        throw new Conjoon_Mail_Client_Service_ClientMessageServiceException();
+        throw new MessageServiceException();
     }
 
 }

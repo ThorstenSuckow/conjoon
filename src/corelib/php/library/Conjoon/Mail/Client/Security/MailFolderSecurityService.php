@@ -57,14 +57,14 @@ interface MailFolderSecurityService {
      * If a path is available, and this path exists on client side, only the
      * last path part of this path should be checked for accessibility.
      *
-     * @param \Conjoon\Mail\Client\Folder\ClientMailFolder $folder The folder to check
+     * @param \Conjoon\Mail\Client\Folder\MailFolder $folder The folder to check
      *
      * @return boolean true on success, false if access is forbidden
      *
      * @throws SecurityServiceException
      */
     public function isMailFolderAccessible(
-        \Conjoon\Mail\Client\Folder\ClientMailFolder $folder);
+        \Conjoon\Mail\Client\Folder\MailFolder $folder);
 
 
 }

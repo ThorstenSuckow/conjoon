@@ -86,7 +86,7 @@ class DefaultMailFolderCommons implements MailFolderCommons {
     /**
      * @inheritdoc
      */
-    public function doesMailFolderExist(ClientMailFolder $folder)
+    public function doesMailFolderExist(MailFolder $folder)
     {
         $path = $folder->getPath();
 

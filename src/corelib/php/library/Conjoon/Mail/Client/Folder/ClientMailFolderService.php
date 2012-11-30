@@ -19,9 +19,9 @@ use Conjoon\Data\Repository\Mail\MailFolderRepository,
     Conjoon\User\User;
 
 /**
- * @see \Conjoon\Mail\Client\Folder\ClientMailFolder
+ * @see \Conjoon\Mail\Client\Folder\MailFolder
  */
-require_once 'Conjoon/Mail/Client/Folder/ClientMailFolder.php';
+require_once 'Conjoon/Mail/Client/Folder/MailFolder.php';
 
 
 /**
@@ -51,12 +51,12 @@ interface ClientMailFolderService {
      * Returns true if the specified folder represents a remote folder,
      * otherwise false.
      *
-     * @param ClientMailFolder $folder
+     * @param MailFolder $folder
      *
      * @return boolean
      *
      * @throws ClientMailFolderServiceException
      */
-    public function isClientMailFolderRepresentingRemoteMailbox(ClientMailFolder $folder);
+    public function isClientMailFolderRepresentingRemoteMailbox(MailFolder $folder);
 
 }

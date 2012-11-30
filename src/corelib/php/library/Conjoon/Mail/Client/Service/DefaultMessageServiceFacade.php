@@ -23,7 +23,7 @@ require_once 'Conjoon/Argument/Check.php';
 /**
  * @see Conjoon_Mail_Client_Folder_ClientMailFolder
  */
-require_once 'Conjoon/Mail/Client/Folder/ClientMailFolder.php';
+require_once 'Conjoon/Mail/Client/Folder/MailFolder.php';
 
 /**
  * @see Conjoon_Mail_Client_Folder_DefaultClientMailFolderPath
@@ -41,14 +41,14 @@ require_once 'Conjoon/Mail/Client/Message/Flag/DefaultClientMessageFlagCollectio
 require_once 'Conjoon/Mail/Client/Message/Flag/FolderMessageFlagCollection.php';
 
 /**
- * @see Conjoon_Mail_Client_Service_ClientMessageServiceException
+ * @see MessageServiceException
  */
-require_once 'Conjoon/Mail/Client/Service/ClientMessageServiceException.php';
+require_once 'Conjoon/Mail/Client/Service/MessageServiceException.php';
 
 /**
- * @see Conjoon_Mail_Client_Service_ClientMessageServiceFacade
+ * @see MessageServiceFacade
  */
-require_once 'Conjoon/Mail/Client/Service/ClientMessageServiceFacade.php';
+require_once 'Conjoon/Mail/Client/Service/MessageServiceFacade.php';
 
 
 /**
@@ -67,8 +67,7 @@ require_once 'Conjoon/Mail/Client/Service/ClientMessageServiceFacade.php';
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class Conjoon_Mail_Client_Service_DefaultClientMessageServiceFacade
-    implements \Conjoon_Mail_Client_Service_ClientMessageServiceFacade {
+class DefaultMessageServiceFacade implements MessageServiceFacade {
 
     /**
      * @var \Conjoon\Mail\Client\Folder\ClientFolderService
@@ -82,7 +81,8 @@ class Conjoon_Mail_Client_Service_DefaultClientMessageServiceFacade
      *
      *
      */
-    public function __construct(\Conjoon\Mail\Client\Folder\ClientMailFolderService $clientFolderService)
+    public function __construct(
+        \Conjoon\Mail\Client\Folder\ClientMailFolderService $clientFolderService)
     {
         $this->clientFolderService = $clientFolderService;
     }
@@ -91,9 +91,9 @@ class Conjoon_Mail_Client_Service_DefaultClientMessageServiceFacade
      * Updates the messages in the specified folder with the specified flag
      * settings.
      *
-     * @param string $flagString A jsonified array in the form of
+     * @param string $flag A jsonified array in the form of
      *                           '[{"id":"56","isRead":true}]'
-     * @param string $pathString A path string in the form of
+     * @param string $path A path string in the form of
      *                           '["root","1","2"]', whereas the first index
      *                           would be the type of the root folder, the second
      *                           index the database id of the root folder,
@@ -104,12 +104,11 @@ class Conjoon_Mail_Client_Service_DefaultClientMessageServiceFacade
      *
      * @throws Conjoon_Mail_Client_Service_ClientMessageServiceException
      */
-    public function setFlagsForMessagesInFolder(
-        $flagString, $pathString, \Conjoon_User_AppUser $user)
+    public function setFlagsForMessagesInFolder($flag, $path, \Conjoon\User\User $user)
     {
         $data = array(
-            'flagString' => $flagString,
-            'pathString' => $pathString
+            'flag' => $flag,
+            'path' => $path
         );
 
         try {
@@ -130,8 +129,8 @@ class Conjoon_Mail_Client_Service_DefaultClientMessageServiceFacade
             );
         }
 
-        $flagString = $data['flagString'];
-        $pathString = $data['pathString'];
+        $flagString = $data['flag'];
+        $pathString = $data['path'];
 
         try {
 

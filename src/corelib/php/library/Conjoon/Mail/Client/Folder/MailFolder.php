@@ -10,7 +10,7 @@
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$
+ * $URL: http://svn.conjoon.org/trunk/src/corelib/php/library/Conjoon/Mail/Client/Folder/MailFolder
  */
 
 
@@ -24,7 +24,7 @@ namespace Conjoon\Mail\Client\Folder;
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class ClientMailFolder {
+class MailFolder {
 
     /**
      * @var array

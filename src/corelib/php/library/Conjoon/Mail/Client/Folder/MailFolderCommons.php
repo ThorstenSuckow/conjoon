@@ -48,12 +48,12 @@ interface MailFolderCommons {
      * in the underlying data storage, regardless if the folder exists in a
      * remote repository.
      *
-     * @param ClientMailFolder $folder
+     * @param MailFolder $folder
      *
      * @return boolean
      *
      * @throws ClientMailFolderServiceException
      */
-    public function doesMailFolderExist(ClientMailFolder $folder);
+    public function doesMailFolderExist(MailFolder $folder);
 
 }

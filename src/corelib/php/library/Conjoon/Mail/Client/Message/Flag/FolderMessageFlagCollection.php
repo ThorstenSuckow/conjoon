@@ -54,7 +54,7 @@ class Conjoon_Mail_Client_Message_Flag_FolderMessageFlagCollection {
      */
     public function __construct(
         Conjoon_Mail_Client_Message_Flag_ClientMessageFlagCollection $collection,
-        \Conjoon\Mail\Client\Folder\ClientMailFolder $folder)
+        \Conjoon\Mail\Client\Folder\MailFolder $folder)
     {
         $this->_collection = $collection;
         $this->_folder    = $folder;

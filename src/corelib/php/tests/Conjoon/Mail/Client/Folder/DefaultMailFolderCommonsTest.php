@@ -77,7 +77,7 @@ class DefaultMailFolderCommonsTest extends \Conjoon\DatabaseTestCaseDefault {
         ));
 
         $this->assertTrue($commons->doesMailFolderExist(
-            new ClientMailFolder(
+            new MailFolder(
                 new DefaultClientMailFolderPath(
                     '["root", "1", "2"]'
                 )
@@ -85,7 +85,7 @@ class DefaultMailFolderCommonsTest extends \Conjoon\DatabaseTestCaseDefault {
         ));
 
         $this->assertFalse($commons->doesMailFolderExist(
-            new ClientMailFolder(
+            new MailFolder(
                 new DefaultClientMailFolderPath(
                     '["root", "3", "2"]'
                 )
@@ -93,7 +93,7 @@ class DefaultMailFolderCommonsTest extends \Conjoon\DatabaseTestCaseDefault {
         ));
 
         $this->assertTrue($commons->doesMailFolderExist(
-            new ClientMailFolder(
+            new MailFolder(
                 new DefaultClientMailFolderPath(
                     '["root", "1"]'
                 )

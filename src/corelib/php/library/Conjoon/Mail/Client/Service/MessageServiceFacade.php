@@ -14,6 +14,8 @@
  */
 
 
+namespace Conjoon\Mail\Client\Service;
+
 /**
  * Service facade for operations related to messages.
  *
@@ -22,7 +24,7 @@
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-interface Conjoon_Mail_Client_Service_ClientMessageServiceFacade {
+interface MessageServiceFacade {
 
     /**
      * Updates the messages in the specified folder with the specified flag
@@ -31,18 +33,14 @@ interface Conjoon_Mail_Client_Service_ClientMessageServiceFacade {
      * @param mixed $flag Information about the flags which should be set/unset
      * @param mixed $path A path to the folder where the messages which should
      *                    be flagged can be found.
-     * @param Conjoon_User_AppUser $user The user object representing the user
+     * @param \Conjoon\User\User $user The user object representing the user
      *                                   who triggered this operation
      *
      * @throws Conjoon_Mail_Client_Service_ClientMessageServiceException
      *
      */
     public function setFlagsForMessagesInFolder($flag, $path,
-        Conjoon_User_AppUser $user);
+        \Conjoon\User\User $user);
 
-
-    /**
-     *
-     */
 
 }

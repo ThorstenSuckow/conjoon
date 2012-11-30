@@ -17,9 +17,9 @@
 namespace Conjoon\Mail\Client\Folder;
 
 /**
- * @see \Conjoon\Mail\Client\Folder\ClientMailFolder
+ * @see \Conjoon\Mail\Client\Folder\MailFolder
  */
-require_once 'Conjoon/Mail/Client/Folder/ClientMailFolder.php';
+require_once 'Conjoon/Mail/Client/Folder/MailFolder.php';
 
 /**
  * @package    Conjoon/Tests
@@ -34,7 +34,7 @@ class ClientMailFolderTest extends \PHPUnit_Framework_TestCase {
      */
     public function testOk()
     {
-        $folder = new ClientMailFolder(
+        $folder = new MailFolder(
             new DefaultClientMailFolderPath(
                 '["root", "79", "INBOXtttt", "rfwe2", "New folder (7)"]'
             )
@@ -54,7 +54,7 @@ class ClientMailFolderTest extends \PHPUnit_Framework_TestCase {
      */
     public function testNodeId()
     {
-        $folder = new ClientMailFolder(
+        $folder = new MailFolder(
             new DefaultClientMailFolderPath(
                 '["root", "79"]'
             )
