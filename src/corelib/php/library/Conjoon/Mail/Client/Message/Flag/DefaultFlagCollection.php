@@ -14,10 +14,12 @@
  */
 
 
+namespace Conjoon\Mail\Client\Message\Flag;
+
 /**
  * @see Conjoon_Mail_Client_Message_Flag_ClientMessageFlagCollection
  */
-require_once 'Conjoon/Mail/Client/Message/Flag/ClientMessageFlagCollection.php';
+require_once 'Conjoon/Mail/Client/Message/Flag/FlagCollection.php';
 
 
 /**
@@ -28,8 +30,7 @@ require_once 'Conjoon/Mail/Client/Message/Flag/ClientMessageFlagCollection.php';
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class Conjoon_Mail_Client_Message_Flag_DefaultClientMessageFlagCollection
-    implements Conjoon_Mail_Client_Message_Flag_ClientMessageFlagCollection {
+class DefaultFlagCollection implements FlagCollection {
 
 
     /**
@@ -49,7 +50,7 @@ class Conjoon_Mail_Client_Message_Flag_DefaultClientMessageFlagCollection
 
         $data = array('messageFlagText' => $options);
 
-        Conjoon_Argument_Check::check(array(
+        \Conjoon_Argument_Check::check(array(
             'messageFlagText' => array(
                 'type'       => 'string',
                 'allowEmpty' => false
@@ -63,17 +64,17 @@ class Conjoon_Mail_Client_Message_Flag_DefaultClientMessageFlagCollection
          */
         require_once 'Conjoon/Text/Parser/Mail/ClientMessageFlagListParser.php';
 
-        $parser = new Conjoon_Text_Parser_Mail_ClientMessageFlagListParser();
+        $parser = new \Conjoon_Text_Parser_Mail_ClientMessageFlagListParser();
 
         try {
             $flags = $parser->parse($options);
-        } catch (Conjoon_Text_Parser_Exception $e) {
+        } catch (\Conjoon_Text_Parser_Exception $e) {
             /**
              * @see Conjoon_Mail_Client_Message_Flag_ClientMessageFlagException
              */
-            require_once 'Conjoon/Mail/Client/Message/Flag/ClientMessageFlagException.php';
+            require_once 'Conjoon/Mail/Client/Message/Flag/FlagException.php';
 
-            throw new Conjoon_Mail_Client_Message_Flag_ClientMessageFlagException(
+            throw new FlagException(
                 "flag-string for setting message flags seems to be invalid."
                 . "Exception thrown by previous exception: " . $e->getMessage(),
                 0, $e
@@ -86,7 +87,7 @@ class Conjoon_Mail_Client_Message_Flag_DefaultClientMessageFlagCollection
     /**
      * @inheritdoc
      */
-    public function getClientMessageFlags()
+    public function getFlags()
     {
         return $this->_flags;
     }
@@ -104,9 +105,9 @@ class Conjoon_Mail_Client_Message_Flag_DefaultClientMessageFlagCollection
         $flags = array();
 
         /**
-         * @see Conjoon_Mail_Client_Message_Flag_ClientSeenFlag
+         * @see Conjoon_Mail_Client_Message_Flag_SeenFlag
          */
-        require_once 'Conjoon/Mail/Client/Message/Flag/ClientSeenFlag.php';
+        require_once 'Conjoon/Mail/Client/Message/Flag/SeenFlag.php';
 
         for ($i = 0, $len = count($clientFlags); $i < $len; $i++) {
             $clientFlag =& $clientFlags[$i];
@@ -118,16 +119,16 @@ class Conjoon_Mail_Client_Message_Flag_DefaultClientMessageFlagCollection
                     $clear = (bool)$clientFlag['isRead'];
 
                     try {
-                        $flags[] = new Conjoon_Mail_Client_Message_Flag_ClientSeenFlag(
+                        $flags[] = new SeenFlag(
                             $id, $clear
                         );
-                    } catch (Conjoon_Argument_Exception $e) {
+                    } catch (\Conjoon_Argument_Exception $e) {
                         /**
-                         * @see Conjoon_Mail_Client_Message_Flag_ClientMessageFlagException
+                         * @see Conjoon_Mail_Client_Message_Flag_FlagException
                          */
-                        require_once 'Conjoon/Mail/Client/Message/Flag/ClientMessageFlagException.php';
+                        require_once 'Conjoon/Mail/Client/Message/Flag/FlagException.php';
 
-                        throw new Conjoon_Mail_Client_Message_Flag_ClientMessageFlagException(
+                        throw new FlagException(
                             "Could not create client flag. Exception thrown by "
                             . "previous exception: ". $e->getMessage(), 0, $e
                         );
@@ -139,9 +140,9 @@ class Conjoon_Mail_Client_Message_Flag_DefaultClientMessageFlagCollection
                     /**
                      * @see Conjoon_Mail_Client_Message_Flag_ClientMessageFlagException
                      */
-                    require_once 'Conjoon/Mail/Client/Message/Flag/ClientMessageFlagException.php';
+                    require_once 'Conjoon/Mail/Client/Message/Flag/FlagException.php';
 
-                    throw new Conjoon_Mail_Client_Message_Flag_ClientMessageFlagException(
+                    throw new FlagException(
                         "Unknown flag in client flag: \""
                         . implode(', ', array_keys($clientFlag))
                         . "\""

@@ -14,17 +14,19 @@
  */
 
 
+namespace Conjoon\Mail\Client\Message\Flag;
+
 /**
  * @see Conjoon_Mail_Client_Message_Flag_ClientSeenFlag
  */
-require_once 'Conjoon/Mail/Client/Message/Flag/ClientSeenFlag.php';
+require_once 'Conjoon/Mail/Client/Message/Flag/SeenFlag.php';
 
 /**
  * @package    Conjoon/Tests
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class Conjoon_Mail_Client_Message_Flag_ClientSeenFlagTest extends PHPUnit_Framework_TestCase {
+class SeenFlagTest extends \PHPUnit_Framework_TestCase {
 
     protected $_input;
 
@@ -37,11 +39,11 @@ class Conjoon_Mail_Client_Message_Flag_ClientSeenFlagTest extends PHPUnit_Framew
     }
 
     /**
-     * @expectedException Conjoon_Argument_Exception
+     * @expectedException \Conjoon_Argument_Exception
      */
     public function testConstructFailFirst()
     {
-        new Conjoon_Mail_Client_Message_Flag_ClientSeenFlag("", true);
+        new SeenFlag("", true);
     }
 
     /**
@@ -49,7 +51,7 @@ class Conjoon_Mail_Client_Message_Flag_ClientSeenFlagTest extends PHPUnit_Framew
      */
     public function testConstructOk()
     {
-        $flag = new Conjoon_Mail_Client_Message_Flag_ClientSeenFlag(
+        $flag = new SeenFlag(
             $this->_input['messageId'],
             $this->_input['clear']
         );

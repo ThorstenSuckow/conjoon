@@ -14,10 +14,12 @@
  */
 
 
+namespace Conjoon\Mail\Client\Message\Flag;
+
 /**
  * @see Conjoon_Mail_Client_Message_Flag_ClientMessageFlagException
  */
-require_once 'Conjoon/Mail/Client/Message/Flag/ClientMessageFlagException.php';
+require_once 'Conjoon/Mail/Client/Message/Flag/FlagException.php';
 
 
 /**
@@ -28,20 +30,19 @@ require_once 'Conjoon/Mail/Client/Message/Flag/ClientMessageFlagException.php';
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class Conjoon_Mail_Client_Message_Flag_ClientMessageFlagExceptionTest
-    extends PHPUnit_Framework_TestCase {
+class FlagExceptionTest extends \PHPUnit_Framework_TestCase {
 
 
     /**
      * Ensures everything works as expected
      *
-     * @expectedException Conjoon_Mail_Client_Message_Flag_ClientMessageFlagException
+     * @expectedException \Conjoon\Mail\Client\Message\Flag\FlagException
      *
      * @return void
      */
     public function testException()
     {
-        throw new Conjoon_Mail_Client_Message_Flag_ClientMessageFlagException();
+        throw new FlagException();
     }
 
 }

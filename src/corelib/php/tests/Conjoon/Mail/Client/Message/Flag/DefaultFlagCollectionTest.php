@@ -14,10 +14,12 @@
  */
 
 
+namespace Conjoon\Mail\Client\Message\Flag;
+
 /**
  * @see Conjoon_Mail_Client_Message_Flag_DefaultClientMessageFlagCollection
  */
-require_once 'Conjoon/Mail/Client/Message/Flag/DefaultClientMessageFlagCollection.php';
+require_once 'Conjoon/Mail/Client/Message/Flag/DefaultFlagCollection.php';
 
 
 /**
@@ -28,8 +30,7 @@ require_once 'Conjoon/Mail/Client/Message/Flag/DefaultClientMessageFlagCollectio
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class Conjoon_Mail_Client_Message_Flag_DefaultClientMessageFlagCollectionTest
-    extends PHPUnit_Framework_TestCase {
+class DefaultFlagCollectionTest extends \PHPUnit_Framework_TestCase {
 
     protected $_input;
 
@@ -49,29 +50,29 @@ class Conjoon_Mail_Client_Message_Flag_DefaultClientMessageFlagCollectionTest
     }
 
     /**
-     * @expectedException Conjoon_Argument_Exception
+     * @expectedException \Conjoon_Argument_Exception
      */
     public function testConstructorException_A()
     {
-        new Conjoon_Mail_Client_Message_Flag_DefaultClientMessageFlagCollection("");
+        new DefaultFlagCollection("");
     }
 
     /**
-     * @expectedException Conjoon_Mail_Client_Message_Flag_ClientMessageFlagException
+     * @expectedException \Conjoon\Mail\Client\Message\Flag\FlagException
      */
     public function testConstructorException_B()
     {
-        new Conjoon_Mail_Client_Message_Flag_DefaultClientMessageFlagCollection(
+        new DefaultFlagCollection(
             "sasfaasfsfa"
         );
     }
 
     /**
-     * @expectedException Conjoon_Mail_Client_Message_Flag_ClientMessageFlagException
+     * @expectedException \Conjoon\Mail\Client\Message\Flag\FlagException
      */
     public function testConstructorException_C()
     {
-        new Conjoon_Mail_Client_Message_Flag_DefaultClientMessageFlagCollection(
+        new DefaultFlagCollection(
             $this->_validJsonUnknownFlag
         );
     }
@@ -82,16 +83,16 @@ class Conjoon_Mail_Client_Message_Flag_DefaultClientMessageFlagCollectionTest
     public function testOk()
     {
         foreach ($this->_input as $input => $output) {
-            $collection = new Conjoon_Mail_Client_Message_Flag_DefaultClientMessageFlagCollection(
+            $collection = new DefaultFlagCollection(
                 $input
             );
 
-            $flags = $collection->getClientMessageFlags();
+            $flags = $collection->getFlags();
 
             $this->assertSame(count($flags), 2);
 
             for ($i = 0, $len = count($flags); $i < $len; $i++) {
-                $this->assertTrue($flags[$i] instanceof Conjoon_Mail_Client_Message_Flag_ClientSeenFlag);
+                $this->assertTrue($flags[$i] instanceof SeenFlag);
                 $this->assertSame($output[$i][0], $flags[$i]->getMessageId());
                 $this->assertSame($output[$i][1], $flags[$i]->isClear());
             }

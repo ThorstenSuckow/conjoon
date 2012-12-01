@@ -13,11 +13,12 @@
  * $URL$
  */
 
+namespace Conjoon\Mail\Client\Message\Flag;
 
 /**
- * @see Conjoon_Mail_Client_Message_Flag_FolderMessageFlagCollection
+ * @see Conjoon_Mail_Client_Message_Flag_FolderFlagCollection
  */
-require_once 'Conjoon/Mail/Client/Message/Flag/FolderMessageFlagCollection.php';
+require_once 'Conjoon/Mail/Client/Message/Flag/FolderFlagCollection.php';
 
 
 /**
@@ -28,8 +29,7 @@ require_once 'Conjoon/Mail/Client/Message/Flag/FolderMessageFlagCollection.php';
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class Conjoon_Mail_Client_Message_Flag_FolderMessageFlagCollectionTest
-    extends PHPUnit_Framework_TestCase {
+class FolderFlagCollectionTest extends \PHPUnit_Framework_TestCase {
 
     protected $_folder;
 
@@ -44,7 +44,7 @@ class Conjoon_Mail_Client_Message_Flag_FolderMessageFlagCollectionTest
         );
 
         $this->_flags =
-            new Conjoon_Mail_Client_Message_Flag_DefaultClientMessageFlagCollection(
+            new DefaultFlagCollection(
                 '[{"id":"173","isRead":false},{"id":"172","isRead":true}]'
             );
     }
@@ -57,12 +57,12 @@ class Conjoon_Mail_Client_Message_Flag_FolderMessageFlagCollectionTest
      */
     public function testOk()
     {
-        $collection = new Conjoon_Mail_Client_Message_Flag_FolderMessageFlagCollection(
+        $collection = new FolderFlagCollection(
             $this->_flags, $this->_folder
         );
 
-        $this->assertSame($this->_folder, $collection->getClientMailboxFolder());
-        $this->assertSame($this->_flags, $collection->getClientMessageFlagCollection());
+        $this->assertSame($this->_folder, $collection->getFolder());
+        $this->assertSame($this->_flags, $collection->getFlagCollection());
     }
 
 }

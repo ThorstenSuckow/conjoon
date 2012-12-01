@@ -14,17 +14,19 @@
  */
 
 
+namespace Conjoon\Mail\Client\Message\Flag;
+
 /**
  * @see Conjoon_Mail_Client_Message_Flag_ClientMessageFlag
  */
-require_once 'Conjoon/Mail/Client/Message/Flag/ClientMessageFlag.php';
+require_once 'Conjoon/Mail/Client/Message/Flag/Flag.php';
 
 /**
  * @package    Conjoon/Tests
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class Conjoon_Mail_Client_Message_Flag_ClientMessageFlagTest extends PHPUnit_Framework_TestCase {
+class FlagTest extends \PHPUnit_Framework_TestCase {
 
 
     public function testDummy()

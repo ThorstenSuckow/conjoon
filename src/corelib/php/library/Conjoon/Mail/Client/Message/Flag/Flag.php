@@ -13,6 +13,9 @@
  * $URL$
  */
 
+
+namespace Conjoon\Mail\Client\Message\Flag;
+
 /**
  * A client message flag is a oo representation of a message flag. A message
  * flag exists of an id for the message, and a boolean value clear which
@@ -23,7 +26,7 @@
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-abstract class Conjoon_Mail_Client_Message_Flag_ClientMessageFlag {
+abstract class Flag {
 
     /**
      * @var string
@@ -54,7 +57,7 @@ abstract class Conjoon_Mail_Client_Message_Flag_ClientMessageFlag {
          */
         require_once 'Conjoon/Argument/Check.php';
 
-        Conjoon_Argument_Check::check(array(
+        \Conjoon_Argument_Check::check(array(
             'messageId' => array(
                 'type'       => 'string',
                 'allowEmpty' => false

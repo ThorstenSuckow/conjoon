@@ -13,10 +13,13 @@
  * $URL$
  */
 
+
+namespace Conjoon\Mail\Client\Message\Flag;
+
 /**
  * @see Conjoon_Mail_Client_Message_Flag_ClientMessageFlag
  */
-require_once 'Conjoon/Mail/Client/Message/Flag/ClientMessageFlag.php';
+require_once 'Conjoon/Mail/Client/Message/Flag/Flag.php';
 
 /**
  * @see Conjoon_Mail_Message_Flag_SeenFlag
@@ -34,9 +37,9 @@ require_once 'Conjoon/Mail/Message/Flag/SeenFlag.php';
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class Conjoon_Mail_Client_Message_Flag_ClientSeenFlag
-    extends Conjoon_Mail_Client_Message_Flag_ClientMessageFlag
-    implements Conjoon_Mail_Message_Flag_SeenFlag{
+class SeenFlag
+    extends Flag
+    implements \Conjoon_Mail_Message_Flag_SeenFlag{
 
 
     /**

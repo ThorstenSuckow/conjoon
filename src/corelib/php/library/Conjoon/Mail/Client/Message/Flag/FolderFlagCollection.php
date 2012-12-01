@@ -14,6 +14,8 @@
  */
 
 
+namespace Conjoon\Mail\Client\Message\Flag;
+
 /**
  * @see Conjoon_Mail_Exception
  */
@@ -31,7 +33,7 @@ require_once 'Conjoon/Mail/Exception.php';
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class Conjoon_Mail_Client_Message_Flag_FolderMessageFlagCollection {
+class FolderFlagCollection {
 
     /**
      * @var Conjoon_Mail_Client_Folder_ClientMailboxFolder
@@ -53,8 +55,7 @@ class Conjoon_Mail_Client_Message_Flag_FolderMessageFlagCollection {
      * @throws Conjoon_Mail_Client_Message_Flag_ClientMessageFlagException
      */
     public function __construct(
-        Conjoon_Mail_Client_Message_Flag_ClientMessageFlagCollection $collection,
-        \Conjoon\Mail\Client\Folder\Folder $folder)
+        FlagCollection $collection, \Conjoon\Mail\Client\Folder\Folder $folder)
     {
         $this->_collection = $collection;
         $this->_folder    = $folder;
@@ -65,7 +66,7 @@ class Conjoon_Mail_Client_Message_Flag_FolderMessageFlagCollection {
      *
      * @return Conjoon_Mail_Client_Folder_ClientMailboxFolder
      */
-    public function getClientMailboxFolder()
+    public function getFolder()
     {
         return $this->_folder;
     }
@@ -75,7 +76,7 @@ class Conjoon_Mail_Client_Message_Flag_FolderMessageFlagCollection {
      *
      * @return Conjoon_Mail_Client_Message_Flag_ClientMessageFlagCollection
      */
-    public function getClientMessageFlagCollection()
+    public function getFlagCollection()
     {
         return $this->_collection;
     }

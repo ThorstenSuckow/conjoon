@@ -13,6 +13,9 @@
  * $URL$
  */
 
+
+namespace Conjoon\Mail\Client\Message\Flag;
+
 /**
  * A collection of message flags sent from the client.
  *
@@ -21,7 +24,7 @@
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-interface Conjoon_Mail_Client_Message_Flag_ClientMessageFlagCollection {
+interface FlagCollection {
 
     /**
      * Creates a new instance.
@@ -40,6 +43,6 @@ interface Conjoon_Mail_Client_Message_Flag_ClientMessageFlagCollection {
      *
      * @return array An array of ClientMessageFlags
      */
-    public function getClientMessageFlags();
+    public function getFlags();
 }
 

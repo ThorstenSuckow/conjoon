@@ -14,6 +14,9 @@
  */
 
 
+namespace Conjoon\Mail\Client\Message\Flag;
+
+
 /**
  * @see Conjoon_Mail_Client_Message_MailClientMessageException
  */
@@ -28,7 +31,7 @@ require_once 'Conjoon/Mail/Client/Message/MailClientMessageException.php';
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class Conjoon_Mail_Client_Message_Flag_ClientMessageFlagException
-    extends Conjoon_Mail_Client_Message_MailClientMessageException {
+class FlagException
+    extends \Conjoon_Mail_Client_Message_MailClientMessageException {
 
 }
