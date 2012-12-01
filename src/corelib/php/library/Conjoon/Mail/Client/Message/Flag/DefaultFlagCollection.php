@@ -116,7 +116,7 @@ class DefaultFlagCollection implements FlagCollection {
 
             switch (true) {
                 case (array_key_exists('isRead', $clientFlag)):
-                    $clear = (bool)$clientFlag['isRead'];
+                    $clear = ! (bool)$clientFlag['isRead'];
 
                     try {
                         $flags[] = new SeenFlag(

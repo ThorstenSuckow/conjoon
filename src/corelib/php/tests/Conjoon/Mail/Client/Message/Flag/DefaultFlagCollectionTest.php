@@ -41,8 +41,8 @@ class DefaultFlagCollectionTest extends \PHPUnit_Framework_TestCase {
         $this->_input = array(
             '[{"id":"173","isRead":false},{"id":"172","isRead":true}]'
             => array(
-                array("173", false),
-                array("172", true)
+                array("173", true),
+                array("172", false)
             )
         );
 
