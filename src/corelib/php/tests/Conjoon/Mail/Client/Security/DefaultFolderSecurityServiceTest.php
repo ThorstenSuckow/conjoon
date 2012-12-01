@@ -112,7 +112,23 @@ class DefaultFolderSecurityServiceTest
                 $this->mailFolderFail
             )
         );
-
     }
+
+    /**
+     * Ensures everythign works as expected
+     */
+    public function testIsMailFolderAccessibleForRemote()
+    {
+        $this->assertTrue(
+            $this->securityService->isMailFolderAccessible(
+                new Folder(
+                    new DefaultFolderPath(
+                        '["root", "1", "2432432", "3253532253"]'
+                    )
+                )
+            )
+        );
+    }
+
 
 }

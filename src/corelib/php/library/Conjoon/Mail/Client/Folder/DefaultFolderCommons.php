@@ -92,26 +92,17 @@ class DefaultFolderCommons implements FolderCommons {
 
         if (!empty($path)) {
             $id = array_pop($path);
-
-            $entity = $this->folderRepository->find($id);
-
-            while (!empty($path)) {
-
-                $id = array_pop($path);
-
-                $entity = $entity->getParent();
-
-                if ($entity === null || $entity->getId() != $id) {
-                    return false;
-                }
-            }
-
-            $entity = $entity->getParent();
         } else {
-            $entity = $this->folderRepository->find($folder->getRootId());
+            $id = $folder->getRootId();
         }
 
-        return $entity !== null && $folder->getRootId() == $entity->getId();
+        $entity = $this->folderRepository->find($id);
+
+        while ($entity && $entity->getParent()) {
+            $entity = $entity->getParent();
+        }
+
+        return $entity !== null && ($folder->getRootId() == $entity->getId());
     }
 
 }
