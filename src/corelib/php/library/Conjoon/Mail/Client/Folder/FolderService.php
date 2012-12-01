@@ -58,6 +58,6 @@ interface FolderService {
      *
      * @throws FolderServiceException
      */
-    public function isClientMailFolderRepresentingRemoteMailbox(Folder $folder);
+    public function isFolderRepresentingRemoteMailbox(Folder $folder);
 
 }

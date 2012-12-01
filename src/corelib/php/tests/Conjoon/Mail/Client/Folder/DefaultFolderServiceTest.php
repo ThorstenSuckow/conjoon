@@ -137,7 +137,7 @@ class DefaultClientMailFolderServiceTest extends \Conjoon\DatabaseTestCaseDefaul
      */
     public function testFindNone()
     {
-        $this->service->isClientMailFolderRepresentingRemoteMailbox(
+        $this->service->isFolderRepresentingRemoteMailbox(
             $this->clientMailFolderFail
         );
     }
@@ -150,7 +150,7 @@ class DefaultClientMailFolderServiceTest extends \Conjoon\DatabaseTestCaseDefaul
     {
         $this->assertSame(
             false,
-            $this->service->isClientMailFolderRepresentingRemoteMailbox(
+            $this->service->isFolderRepresentingRemoteMailbox(
                 $this->clientMailFolderNoRemote
             )
         );
@@ -164,7 +164,7 @@ class DefaultClientMailFolderServiceTest extends \Conjoon\DatabaseTestCaseDefaul
     {
         $this->assertSame(
             true,
-            $this->service->isClientMailFolderRepresentingRemoteMailbox(
+            $this->service->isFolderRepresentingRemoteMailbox(
                 $this->clientMailFolder
             )
         );
