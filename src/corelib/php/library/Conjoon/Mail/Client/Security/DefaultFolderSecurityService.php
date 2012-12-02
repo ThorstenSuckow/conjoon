@@ -104,7 +104,7 @@ class DefaultFolderSecurityService implements FolderSecurityService {
     /**
      * @inheritdoc
      */
-    public function isMailFolderAccessible(
+    public function isFolderAccessible(
         \Conjoon\Mail\Client\Folder\Folder $folder)
     {
         /**

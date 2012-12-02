@@ -102,13 +102,13 @@ class DefaultFolderSecurityServiceTest
     public function testIsMailFolderAccessible()
     {
         $this->assertTrue(
-            $this->securityService->isMailFolderAccessible(
+            $this->securityService->isFolderAccessible(
                 $this->mailFolderOk
             )
         );
 
         $this->assertFalse(
-            $this->securityService->isMailFolderAccessible(
+            $this->securityService->isFolderAccessible(
                 $this->mailFolderFail
             )
         );
@@ -120,7 +120,7 @@ class DefaultFolderSecurityServiceTest
     public function testIsMailFolderAccessibleForRemote()
     {
         $this->assertTrue(
-            $this->securityService->isMailFolderAccessible(
+            $this->securityService->isFolderAccessible(
                 new Folder(
                     new DefaultFolderPath(
                         '["root", "1", "2432432", "3253532253"]'

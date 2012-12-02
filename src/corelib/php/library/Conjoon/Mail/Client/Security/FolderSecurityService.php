@@ -63,7 +63,7 @@ interface FolderSecurityService {
      *
      * @throws SecurityServiceException
      */
-    public function isMailFolderAccessible(
+    public function isFolderAccessible(
         \Conjoon\Mail\Client\Folder\Folder $folder);
 
 

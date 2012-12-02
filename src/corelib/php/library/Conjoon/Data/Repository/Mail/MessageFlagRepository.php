@@ -31,4 +31,18 @@ require_once 'Conjoon/Data/Repository/DataRepository.php';
  */
 interface MessageFlagRepository extends \Conjoon\Data\Repository\DataRepository {
 
+
+    /**
+     * Applies the message flag to the messages for the specified user.
+     *
+     * @param \Conjoon\Mail\Client\Message\Flag\FolderFlagCollection $folderFlagCollection
+     * @param \Conjoon\User\User $user
+     *
+     * @throws \Conjoon\Data\Repository\Mail\MailRepositoryException
+     */
+    public function setFlagsForUser(
+            \Conjoon\Mail\Client\Message\Flag\FolderFlagCollection $folderFlagCollection,
+            \Conjoon\User\User $user);
+
+
 }

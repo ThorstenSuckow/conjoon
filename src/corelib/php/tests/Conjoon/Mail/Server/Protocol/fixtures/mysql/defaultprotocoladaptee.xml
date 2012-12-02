@@ -20,6 +20,16 @@
             <value>0</value>
         </row>
     </table>
+    <table name="groupware_email_folders_users">
+        <column>groupware_email_folders_id</column>
+        <column>users_id</column>
+        <column>relationship</column>
+        <row>
+            <value>1</value>
+            <value>1</value>
+            <value>owner</value>
+        </row>
+    </table>
     <table name="groupware_email_items">
         <column>id</column>
         <column>groupware_email_folders_id</column>

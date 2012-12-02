@@ -16,9 +16,11 @@
 
 namespace Conjoon\Data\Repository\Mail;
 
-use Conjoon\Argument\ArgumentCheck;
+use Conjoon\Argument\ArgumentCheck,
+    Conjoon\Argument\InvalidArgumentException,
+    Conjoon\Data\Repository\Mail\MailRepositoryException;
 
-use Conjoon\Argument\InvalidArgumentException;
+
 
 /**
  * @see \Conjoon\Data\Repository\DoctrineDataRepository
@@ -29,6 +31,11 @@ require_once 'Conjoon/Data/Repository/DoctrineDataRepository.php';
  * @see \Conjoon\Data\Repository\Mail\MessageFlagRepository
  */
 require_once 'Conjoon/Data/Repository/Mail/MessageFlagRepository.php';
+
+/**
+ * @see \Conjoon\Data\Repository\Mail\MailRepositoryException
+ */
+require_once 'Conjoon/Data/Repository/Mail/MailRepositoryException.php';
 
 /**
  * @see Conjoon\Argument\InvalidArgumentException
@@ -118,6 +125,57 @@ class DoctrineMessageFlagRepository
     public static function getEntityClassName()
     {
         return '\Conjoon\Data\Entity\Mail\DefaultMessageFlagEntity';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setFlagsForUser(
+        \Conjoon\Mail\Client\Message\Flag\FolderFlagCollection $folderFlagCollection,
+        \Conjoon\User\User $user) {
+
+        /**
+         * @refactor
+         */
+
+        /**
+         * @see Conjoon_Modules_Groupware_Email_Item_Model_Flag
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/Item/Model/Flag.php';
+
+        $flagModel = new \Conjoon_Modules_Groupware_Email_Item_Model_Flag();
+
+        $userId = $user->getId();
+
+        $flags = $folderFlagCollection->getFlagCollection()->getFlags();
+
+        for ($i = 0, $len = count($flags); $i < $len; $i++) {
+            $messageId  = $flags[$i]->getMessageId();
+            $clear      = $flags[$i]->isClear();
+
+            switch (true) {
+                case ($flags[$i]->__toString() === '\Seen'):
+                        try {
+                            $isRead = !$clear;
+                            $flagModel->flagItemAsRead($messageId, $userId, $isRead);
+                        } catch (\Exception $e) {
+                            throw new MailRepositoryException(
+                                "Exception thrown by previous exception: "
+                                . $e->getMessage(), 0, $e
+                            );
+                        }
+                    break;
+
+                default:
+                    throw new MailRepositoryException(
+                        "Unknown flag \"" . $flags[$i]->__toString() . "\""
+                    );
+                    break;
+
+
+            }
+        }
+
     }
 
 }

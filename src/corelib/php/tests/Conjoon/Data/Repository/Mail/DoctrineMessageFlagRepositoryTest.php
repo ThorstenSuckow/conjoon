@@ -38,6 +38,10 @@ class DoctrineMessageFlagRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
 
     protected $messageRepository;
 
+    protected $folderFlagCollection;
+
+    protected $messageFlagRepository;
+
     public function getDataSet()
     {
         return $this->createXMLDataSet(
@@ -45,9 +49,51 @@ class DoctrineMessageFlagRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
         );
     }
 
-    public function setUp()
+    protected function checkforSameDataSet($fileName)
+    {
+        $queryTable = $this->getConnection()->createQueryTable(
+            'groupware_email_items_flags',
+            'SELECT * FROM groupware_email_items_flags ORDER BY user_id, groupware_email_items_id'
+        );
+        $expectedTable = $this->createXmlDataSet(
+            dirname(__FILE__) . '/fixtures/mysql/' . $fileName
+        )->getTable("groupware_email_items_flags");
+        $this->assertTablesEqual($expectedTable, $queryTable);
+    }
+
+    protected function buildFolderFlagCollection()
+    {
+        $folder = new \Conjoon\Mail\Client\Folder\Folder(
+            new \Conjoon\Mail\Client\Folder\DefaultFolderPath(
+                '["root", "79", "INBOXtttt", "rfwe2", "New folder (7)"]'
+            )
+        );
+
+        $flags = new \Conjoon\Mail\Client\Message\Flag\DefaultFlagCollection(
+                    '[' .
+                    '{"id":"1","isRead":true},{"id":"2","isRead":true}' .
+                    ',' .
+                    '{"id":"3","isRead":true}' .
+                    ']'
+                );
+
+        $this->folderFlagCollection =
+            new \Conjoon\Mail\Client\Message\Flag\FolderFlagCollection(
+                $flags, $folder
+            );
+
+    }
+
+    protected function setUp()
     {
         parent::setUp();
+
+        $this->messageFlagRepository = $this->_entityManager->getRepository(
+            '\Conjoon\Data\Entity\Mail\DefaultMessageFlagEntity');
+
+        $this->assertTrue($this->messageFlagRepository
+            instanceof \Conjoon\Data\Repository\Mail\DoctrineMessageFlagRepository);
+
 
         $this->repository = $this->_entityManager->getRepository(
             '\Conjoon\Data\Entity\Mail\DefaultMessageFlagEntity');
@@ -59,8 +105,19 @@ class DoctrineMessageFlagRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
             '\Conjoon\Data\Entity\Mail\DefaultMessageEntity');
 
 
+        $this->buildFolderFlagCollection();
+
+
         $this->assertTrue($this->repository
             instanceof \Conjoon\Data\Repository\Mail\DoctrineMessageFlagRepository);
+
+
+        $this->assertEquals(
+            2,
+            $this->getConnection()->getRowCount('groupware_email_items_flags'),
+            "Pre-Condition"
+        );
+
     }
 
     /**
@@ -76,20 +133,8 @@ class DoctrineMessageFlagRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
      */
     public function testFindNone()
     {
-        $repository = $this->_entityManager->getRepository(
-            '\Conjoon\Data\Entity\Mail\DefaultMessageFlagEntity');
 
-        $this->assertTrue($repository
-            instanceof \Conjoon\Data\Repository\Mail\DoctrineMessageFlagRepository);
-
-
-        $this->assertEquals(
-            2,
-            $this->getConnection()->getRowCount('groupware_email_items_flags'),
-            "Pre-Condition"
-        );
-
-        $entity = $repository->findById(array('messageId' => 231, 'userId' => 1));
+        $entity = $this->messageFlagRepository->findById(array('messageId' => 231, 'userId' => 1));
 
         $this->assertSame(null, $entity);
     }
@@ -99,21 +144,7 @@ class DoctrineMessageFlagRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
      */
     public function testFindById()
     {
-        $repository = $this->_entityManager->getRepository(
-            '\Conjoon\Data\Entity\Mail\DefaultMessageFlagEntity');
-
-        $this->assertTrue($repository
-            instanceof \Conjoon\Data\Repository\Mail\DoctrineMessageFlagRepository);
-
-
-        $this->assertEquals(
-            2,
-            $this->getConnection()->getRowCount('groupware_email_items_flags'),
-            "Pre-Condition"
-        );
-
-        $entity = $repository->findById(array('messageId' => 1, 'userId' => 1));
-
+        $entity = $this->messageFlagRepository->findById(array('messageId' => 1, 'userId' => 1));
 
         $this->assertSame(1, $entity->getGroupwareEmailItems()->getId());
         $this->assertSame(1, $entity->getUsers()->getId());
@@ -158,14 +189,7 @@ class DoctrineMessageFlagRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
             "Post-Condition"
         );
 
-        $queryTable = $this->getConnection()->createQueryTable(
-            'groupware_email_items_flags',
-            'SELECT * FROM groupware_email_items_flags ORDER BY user_id'
-        );
-        $expectedTable = $this->createXmlDataSet(
-            dirname(__FILE__) . '/fixtures/mysql/messageflag.add.result.xml'
-        )->getTable("groupware_email_items_flags");
-        $this->assertTablesEqual($expectedTable, $queryTable);
+        $this->checkForSameDataSet('messageflag.add.result.xml');
     }
 
     /**
@@ -204,14 +228,7 @@ class DoctrineMessageFlagRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
             "Post-Condition"
         );
 
-        $queryTable = $this->getConnection()->createQueryTable(
-            'groupware_email_items_flags',
-            'SELECT * FROM groupware_email_items_flags ORDER BY user_id'
-        );
-        $expectedTable = $this->createXmlDataSet(
-            dirname(__FILE__) . '/fixtures/mysql/messageflag.add.result.xml'
-        )->getTable("groupware_email_items_flags");
-        $this->assertTablesEqual($expectedTable, $queryTable);
+        $this->checkForSameDataSet('messageflag.add.result.xml');
     }
 
     /**
@@ -249,14 +266,7 @@ class DoctrineMessageFlagRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
             "Post-Condition"
         );
 
-        $queryTable = $this->getConnection()->createQueryTable(
-            'groupware_email_items_flags',
-            'SELECT * FROM groupware_email_items_flags ORDER BY user_id'
-        );
-        $expectedTable = $this->createXmlDataSet(
-            dirname(__FILE__) . '/fixtures/mysql/messageflag.add.result.xml'
-        )->getTable("groupware_email_items_flags");
-        $this->assertTablesEqual($expectedTable, $queryTable);
+        $this->checkForSameDataSet('messageflag.add.result.xml');
     }
 
     /**
@@ -279,14 +289,7 @@ class DoctrineMessageFlagRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
 
         $this->repository->persist($flag);
 
-        $queryTable = $this->getConnection()->createQueryTable(
-            'groupware_email_items_flags',
-            'SELECT * FROM groupware_email_items_flags ORDER BY user_id'
-        );
-        $expectedTable = $this->createXmlDataSet(
-            dirname(__FILE__) . '/fixtures/mysql/messageflag.xml'
-        )->getTable("groupware_email_items_flags");
-        $this->assertTablesEqual($expectedTable, $queryTable);
+        $this->checkForSameDataSet('messageflag.xml');
 
         $this->repository->flush();
 
@@ -296,14 +299,7 @@ class DoctrineMessageFlagRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
             "Post-Condition"
         );
 
-        $queryTable = $this->getConnection()->createQueryTable(
-            'groupware_email_items_flags',
-            'SELECT * FROM groupware_email_items_flags ORDER BY user_id'
-        );
-        $expectedTable = $this->createXmlDataSet(
-            dirname(__FILE__) . '/fixtures/mysql/messageflag.update.result.xml'
-        )->getTable("groupware_email_items_flags");
-        $this->assertTablesEqual($expectedTable, $queryTable);
+        $this->checkForSameDataSet('messageflag.update.result.xml');
     }
 
     /**
@@ -334,14 +330,7 @@ class DoctrineMessageFlagRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
         $this->messageRepository->persist($message);
         $this->messageRepository->flush();
 
-        $queryTable = $this->getConnection()->createQueryTable(
-            'groupware_email_items_flags',
-            'SELECT * FROM groupware_email_items_flags ORDER BY user_id'
-        );
-        $expectedTable = $this->createXmlDataSet(
-            dirname(__FILE__) . '/fixtures/mysql/messageflag.update.result.xml'
-        )->getTable("groupware_email_items_flags");
-        $this->assertTablesEqual($expectedTable, $queryTable);
+        $this->checkForSameDataSet('messageflag.update.result.xml');
     }
 
     /**
@@ -361,14 +350,7 @@ class DoctrineMessageFlagRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
 
         $this->repository->remove($flag);
 
-        $queryTable = $this->getConnection()->createQueryTable(
-            'groupware_email_items_flags',
-            'SELECT * FROM groupware_email_items_flags ORDER BY user_id'
-        );
-        $expectedTable = $this->createXmlDataSet(
-            dirname(__FILE__) . '/fixtures/mysql/messageflag.xml'
-        )->getTable("groupware_email_items_flags");
-        $this->assertTablesEqual($expectedTable, $queryTable);
+        $this->checkForSameDataSet('messageflag.xml');
 
         $this->repository->flush();
 
@@ -378,14 +360,7 @@ class DoctrineMessageFlagRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
             "Post-Condition"
         );
 
-        $queryTable = $this->getConnection()->createQueryTable(
-            'groupware_email_items_flags',
-            'SELECT * FROM groupware_email_items_flags ORDER BY user_id'
-        );
-        $expectedTable = $this->createXmlDataSet(
-            dirname(__FILE__) . '/fixtures/mysql/messageflag.remove.result.xml'
-        )->getTable("groupware_email_items_flags");
-        $this->assertTablesEqual($expectedTable, $queryTable);
+        $this->checkForSameDataSet('messageflag.remove.result.xml');
     }
 
     /**
@@ -422,14 +397,19 @@ class DoctrineMessageFlagRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
             count($message->getGroupwareEmailItemsFlags())
         );
 
-        $queryTable = $this->getConnection()->createQueryTable(
-            'groupware_email_items_flags',
-            'SELECT * FROM groupware_email_items_flags ORDER BY user_id'
-        );
-        $expectedTable = $this->createXmlDataSet(
-            dirname(__FILE__) . '/fixtures/mysql/messageflag.remove.result.xml'
-        )->getTable("groupware_email_items_flags");
-        $this->assertTablesEqual($expectedTable, $queryTable);
+        $this->checkForSameDataSet('messageflag.remove.result.xml');
+    }
+
+    /**
+     * Ensure everything works as expected
+     */
+    public function testSetFlagsForUser()
+    {
+        $user = $this->userRepository->findById(1);
+
+        $this->messageFlagRepository->setFlagsForUser($this->folderFlagCollection, $user);
+
+        $this->checkForSameDataSet('messageflag.setFlagsForUser.result.xml');
     }
 
 
