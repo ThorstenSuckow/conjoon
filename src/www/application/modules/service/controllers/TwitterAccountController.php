@@ -516,6 +516,14 @@ class Service_TwitterAccountController extends Zend_Controller_Action {
             return;
         }
 
+        /**
+         * @ticket CN-675
+         */
+        if ($dto->twitterId != $userId) {
+            throw new RuntimeException(
+                "userId does not equal to user id from Twitter API Service");
+        }
+
         unset($sessionOauth->oauthToken);
         unset($sessionOauth->oauthTokenSecret);
 

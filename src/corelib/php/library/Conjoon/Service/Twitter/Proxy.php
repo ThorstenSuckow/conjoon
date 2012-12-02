@@ -38,6 +38,7 @@ class Conjoon_Service_Twitter_Proxy  {
      */
     private $_twitter;
 
+
     /**
      * Creates a new instance of Conjoon_Service_Twitter_Proxy
      *
@@ -123,7 +124,14 @@ class Conjoon_Service_Twitter_Proxy  {
     public function accountVerifyCredentials()
     {
         try {
-            $response = $this->_twitter->accountVerifyCredentials();
+            /**
+             * @ticket CN-675
+             */
+            $response = $this->_twitter->userShow(
+                $this->_twitter->getUsername()
+            );
+
+            //$response = $this->_twitter->accountVerifyCredentials();
         } catch (Zend_Service_Twitter_Exception $e) {
             /**
              * @see Conjoon_Error_Factory
