@@ -1,4 +1,26 @@
-﻿2012-11-18 0.1.5
+﻿2012-12-03 0.1.5.1
+==================
+Release Notes - conjoon - Version 0.1.5.1
+
+** Bug
+    * [CN-666] - Https protocol not properly submitted as part of the callback
+                 url when importing a new Twitter account
+    * [CN-667] - Importing Twitter Account fails on installations with base urls
+                 other than '/'
+    * [CN-675] - Twitter Service responds with "Bad Authentication Data" when
+                 trying to import account
+    * [CN-677] - Email View seems to re-install LinkInterceptor
+
+** Improvement
+    * [CN-668] - Add workaround so that Apache Config AllowEncodedSlashes can be
+                 omitted
+
+** Task
+    * [CN-669] - Check if the Youtube API provides detailed error information if
+                 anything odd happens
+
+
+2012-11-18 0.1.5
 ================
 Release Notes - conjoon - Version 0.1.5
 
