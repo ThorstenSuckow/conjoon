@@ -23,8 +23,6 @@ require_once 'Conjoon/Argument/Exception.php';
  *
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
- *
- * @deprecated use Conjoon\Argument\ArgumentCheck
  */
 class Conjoon_Argument_Check {
 
@@ -35,26 +33,16 @@ class Conjoon_Argument_Check {
     /**
      *
      *
-     * @throws Conjoon_Argument_Exception
+     * @throws Exception
      */
     public static function check(Array $config, Array &$data)
     {
 
         foreach ($config as $argumentName => $entityConfig) {
 
-            if (!array_key_exists($argumentName, $data)) {
-                throw new Conjoon_Argument_Exception(
-                    "\"$argumentName\" does not exist in data"
-                );
-            }
-
             $allowEmpty = isset($entityConfig['allowEmpty'])
                           ? $entityConfig['allowEmpty']
                           : false;
-
-            $greaterThan = isset($entityConfig['greaterThan'])
-                           ? (int)(string)$entityConfig['greaterThan']
-                           : false;
 
             switch ($entityConfig['type']) {
 
@@ -116,61 +104,44 @@ class Conjoon_Argument_Check {
                 break;
 
                 case 'string':
-
-                    if (is_array($data[$argumentName])
-                        || is_object($data[$argumentName])) {
+                    $val = "";
+                    if (isset($data[$argumentName])) {
+                        $data[$argumentName] = trim((string)$data[$argumentName]);
+                        $val = $data[$argumentName];
+                    } else if ($allowEmpty === false) {
                         throw new Conjoon_Argument_Exception(
-                            "Array or object passed for $argumentName - "
-                            . (is_array($data[$argumentName])
-                            ? 'array'
-                            :'object')
+                            "no argument provided for $argumentName"
                         );
                     }
 
-                    $val = trim((string)$data[$argumentName]);
-                    $org = $data[$argumentName];
-
-                    if ($allowEmpty === false && $val === "") {
+                    if ($val == "" && !$allowEmpty) {
                         throw new Conjoon_Argument_Exception(
-                            "empty value provided for $argumentName"
+                            "Invalid argument supplied for $argumentName - "
+                            .$data[$argumentName]
                         );
                     }
-
-                    $data[$argumentName] = $val;
-
                 break;
 
+                /**
+                 * @todo check for usage and add greaterThan rule for
+                 * checking integer. Shouldnt be by default, since int may
+                 * be negative
+                 */
                 case 'int':
-
-                    if (is_array($data[$argumentName])
-                        || is_object($data[$argumentName])) {
+                    if (isset($data[$argumentName])) {
+                        $data[$argumentName] = (int)$data[$argumentName];
+                    } else if ($allowEmpty === false) {
                         throw new Conjoon_Argument_Exception(
-                            "Array or object passed for $argumentName - "
-                                . (is_array($data[$argumentName])
-                                ? 'array'
-                                :'object')
+                            "no argument provided for $argumentName"
                         );
                     }
 
-                    $val = (int)trim((string)$data[$argumentName]);
-                    $org = $data[$argumentName];
-
-                    if ($allowEmpty === false
-                        && ($org === null || $org === "")) {
+                    if ($data[$argumentName] <= 0) {
                         throw new Conjoon_Argument_Exception(
-                            "empty value provided for $argumentName"
+                            "Invalid argument supplied for $argumentName - "
+                            .$data[$argumentName]
                         );
                     }
-
-                    if ($greaterThan !== false && $val <= $greaterThan) {
-                        throw new Conjoon_Argument_Exception(
-                            "value \"$argumentName\" must be > "
-                            . $greaterThan .", was $val"
-                        );
-                    }
-
-                    $data[$argumentName] = $val;
-
                 break;
             }
         }

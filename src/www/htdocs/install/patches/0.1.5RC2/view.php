@@ -14,19 +14,10 @@
  */
 
 /**
- * @see Conjoon_Exception
- */
-require_once 'Conjoon/Exception.php';
-
-/**
- * Exception for Conjoon namespace.
- *
- * @uses Exception
- * @package Conjoon
+ * Patch notes view
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class Conjoon_Argument_Exception extends Conjoon_Exception {
-
-
-}
+?>
+<div id="0_1_5RC2_container">
+</div>

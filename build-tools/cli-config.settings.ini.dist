@@ -1,6 +1,0 @@
-; provide db connection options and save as cli-config.setings.ini
-driver =
-user =
-dbname =
-host =
-password =

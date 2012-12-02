@@ -361,15 +361,21 @@ class Conjoon_Modules_Default_Registry_Facade {
             );
             $entries[$ind]['values'][] = array(
                 'name'        => 'port',
-                'value'       => $_SERVER['SERVER_PORT'],
+                'value'       => isset($_SERVER['SERVER_PORT'])
+                                 ? $_SERVER['SERVER_PORT']
+                                 : 80,
                 'type'        => 'INTEGER',
                 'is_editable' => 0
             );
             $entries[$ind]['values'][] = array(
                 'name'        => 'protocol',
-                'value'       => ((stripos($_SERVER['SERVER_PROTOCOL'], 'https') === false)
-                                  ? 'http'
-                                  : 'https'),
+                'value'       =>  ((isset($_SERVER['HTTPS'])
+                                  && (strtolower($_SERVER['HTTPS']) == "on"
+                                     || $_SERVER['HTTPS'] == 1))
+                                  || (isset($_SERVER['SERVER_PORT'])
+                                      && $_SERVER['SERVER_PORT'] == 443)
+                                  ? 'https'
+                                  : 'http'),
                 'type'        => 'STRING',
                 'is_editable' => 0
             );

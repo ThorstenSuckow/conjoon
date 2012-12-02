@@ -40,8 +40,6 @@ src/corelib/js/source/cudgets/direct/BatchedResponseHelper.js
 src/corelib/js/source/cudgets/grid/FilePanelContextMenu.js
 src/corelib/js/source/cudgets/grid/ui/DefaultFilePanelContextMenuUi.js
 src/corelib/js/source/cudgets/grid/listener/DefaultFilePanelContextMenuListener.js
-src/corelib/js/source/cudgets/tree/TreeNode.js
-src/corelib/js/source/cudgets/tree/AsyncTreeNode.js
 src/corelib/js/source/cudgets/ListView.js
 src/corelib/js/source/cudgets/settings/Container.js
 src/corelib/js/source/cudgets/settings/Dialog.js

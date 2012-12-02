@@ -87,7 +87,6 @@ Ext.extend(com.conjoon.groupware.email.EmailTreeLoader, Ext.tree.TreeLoader, {
 
         switch (attr.type) {
             case 'root':
-            case 'root_remote':
             case 'accounts_root':
                 attr.iconCls       = 'com-conjoon-groupware-email-EmailTree-rootIcon',
                 attr.draggable     = false;
@@ -145,8 +144,8 @@ Ext.extend(com.conjoon.groupware.email.EmailTreeLoader, Ext.tree.TreeLoader, {
         }
 
 
-        return(attr.childCount > 0 ? new com.conjoon.cudgets.tree.AsyncTreeNode(attr) :
-                                 new com.conjoon.cudgets.tree.TreeNode(attr));
+        return(attr.childCount > 0 ? new Ext.tree.AsyncTreeNode(attr) :
+                                 new Ext.tree.TreeNode(attr));
     },
 
     /**
@@ -204,7 +203,7 @@ Ext.extend(com.conjoon.groupware.email.EmailTreeLoader, Ext.tree.TreeLoader, {
             o = com.conjoon.groupware.email.EmailTreeLoader.superclass.getParams.call(this, node);
             o.id   = o.node;
             delete o.node;
-            o.path = node.getPathAsJson('idForPath');
+            o.path = node.getPath('idForPath');
             return o;
         }
     },

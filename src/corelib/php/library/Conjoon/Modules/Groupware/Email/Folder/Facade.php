@@ -14,12 +14,6 @@
  */
 
 /**
- * @see Conjoon_Argument_Check
- */
-require_once 'Conjoon/Argument/Check.php';
-
-
-/**
  * This facade eases the access to often neededoperations on local folders/
  * mailboxes. It provides an interface to automatically establish connections
  * to either the local database or other servers for manipulation folder/
@@ -110,6 +104,11 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
      */
     public function deleteLocalFolderForUser($folderId, $userId)
     {
+        /**
+         * @see Conjoon_Argument_Check
+         */
+        require_once 'Conjoon/Argument/Check.php';
+
         $data = array('folderId' => $folderId, 'userId' => $userId);
 
         Conjoon_Argument_Check::check(array(
@@ -201,6 +200,11 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
      */
     public function isRemoteFolder($folderId)
     {
+        /**
+         * @see Conjoon_Argument_Check
+         */
+        require_once 'Conjoon/Argument/Check.php';
+
         $data = array('folderId' => $folderId);
 
         Conjoon_Argument_Check::check(array(
@@ -232,38 +236,26 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
      * the specified user.
      *
      * @param string $name
-     * @param array $pathParts paths parts as parsed by
-     * Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser
+     * @param string $path The path to the parent folder of the new folder
      * @param integer $userId
      *
      * @return mixed Conjoon_Modules_Groupware_Email_Folder_Dto or false
      *
      */
-    public function addFolderToPathForUserId($name, Array $pathParts, $userId)
+    public function addFolderToPathForUserId($name, $path, $userId)
     {
-        Conjoon_Argument_Check::check(array(
-            'path' => array(
-                'type'       => 'array',
-                'allowEmpty' => false
-            ),
-            'nodeId' => array(
-                'type'       => 'string',
-                'allowEmpty' => false
-            ),
-            'rootId' => array(
-                'type'       => 'string',
-                'allowEmpty' => false
-            )
-        ), $pathParts);
-
-
         $userId = $this->_checkParam($userId, 'userId');
+        $path   = $this->_checkParam($path,   'path');
         $name   = $this->_checkParam($name, 'name');
 
-        if (!$this->isRemoteFolder($pathParts['rootId'])) {
+        $pathInfo = $this->_extractPathInfo($path);
+
+        $this->_checkParam($pathInfo, 'pathInfo');
+
+        if (!$this->isRemoteFolder($pathInfo['rootId'])) {
 
             $result = $this->_getFolderModel()->addFolder(
-                $pathParts['nodeId'], $name, $userId
+                $pathInfo['nodeId'], $name, $userId
             );
 
             if (!$result || $result < 0) {
@@ -281,7 +273,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
         } else {
 
             $account = $this->getImapAccountForFolderIdAndUserId(
-                $pathParts['rootId'], $userId
+                $pathInfo['rootId'], $userId
             );
 
             if ($account === false) {
@@ -289,7 +281,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
             }
 
             $result = $this->addImapFolderToPath(
-                $name, $pathParts['path'], $account
+                $name, $pathInfo['path'], $account, $userId
             );
 
             if ($result === false) {
@@ -309,10 +301,9 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
              */
             require_once 'Zend/Mail/Storage/Imap.php';
 
-            $protocol = Conjoon_Modules_Groupware_Email_ImapHelper
-                        ::reuseImapProtocolForAccount(
-                            $account
-                        );
+            $protocol = Conjoon_Modules_Groupware_Email_ImapHelper::reuseImapProtocolForAccount(
+                $account
+            );
 
             $imap = new Zend_Mail_Storage_Imap($protocol);
             $iFolders = $imap->getFolders($result);
@@ -329,65 +320,26 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
     }
 
     /**
-     * Returns the path assembled as a global imap name for the specified
-     * account. This considers the delimiter as read out from the specified
-     * IMAP account.
-     *
-     * @param Conjoon_Modules_Groupware_Email_Account_Dto $accountDto
-     * @param array $pathParts
-     *
-     * @return string
-     */
-    public function getAssembledGlobalNameForAccountAndPath(
-        Conjoon_Modules_Groupware_Email_Account_Dto $accountDto,
-        Array $pathParts)
-    {
-
-        /**
-         * @see Conjoon_Modules_Groupware_Email_ImapHelper
-         */
-        require_once 'Conjoon/Modules/Groupware/Email/ImapHelper.php';
-
-        $delim = Conjoon_Modules_Groupware_Email_ImapHelper
-        ::getFolderDelimiterForImapAccount($accountDto);
-
-        return implode($delim, $pathParts);
-    }
-
-    /**
      * Creates a new folder/mailbox for the specified account at the specified
      * path.
      *
      * @param string $name
-     * @param string Array $pathParts the path parts which have to be assembled
-     * again using the remote storage's delimiter
+     * @param string $path
      * @param Conjoon_Modules_Groupware_Email_Account_Dto $account
+     * @param integer $userId
      *
      * @return mixed The path to the newly created folder, or false
      */
     public function addImapFolderToPath(
-        $name, Array $pathParts,
-        Conjoon_Modules_Groupware_Email_Account_Dto $account
+        $name, $path,
+        Conjoon_Modules_Groupware_Email_Account_Dto $account, $userId
     )
     {
-        $data = array('pathParts' => $pathParts);
-
-        Conjoon_Argument_Check::check(array(
-            'pathParts' => array(
-                'type'       => 'array',
-                'allowEmpty' => false
-            )
-        ), $data);
-
-        $pathParts = $data['pathParts'];
-
-        $name = $this->_checkParam($name, 'name');
+        $name   = $this->_checkParam($name,   'name');
+        $path   = $this->_checkParam($path,   'path');
+        $userId = $this->_checkParam($userId, 'userId');
 
         $this->_checkParam($account, 'checkForImap');
-
-        $path = $this->getAssembledGlobalNameForAccountAndPath(
-            $account, $pathParts
-        );
 
         /**
          * @see Conjoon_Modules_Groupware_Email_ImapHelper
@@ -406,12 +358,16 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
             );
         }
 
-        if ($path === null) {
+        $path = $this->_sanitizeImapPath($path, $delim);
+
+        if ($path === false) {
             return false;
         }
 
         $protocol = Conjoon_Modules_Groupware_Email_ImapHelper
-                    ::reuseImapProtocolForAccount($account);
+                    ::reuseImapProtocolForAccount(
+            $account
+        );
 
         $newFolder = $path . $delim .$name;
 
@@ -430,63 +386,37 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
      * This method does autmatically determine whether the path belongs to
      * an IMAP or POP account.
      *
-     * @param string Array $pathParts the path parts which have to be assembled
-     * again using the remote storage's delimiter
-     * @param string Array $parentPathParts the path parts which have to be
-     * assembled again using the remote storage's delimiter
+     * @param string $path
+     * @param string $parentPath
      * @param integer $userId
      *
      * @return Conjoon_Modules_Groupware_Email_Folder_Dto
      *
      * @throws InvalidArgumentException
      */
-    public function moveFolderFromPathToPathForUserId(
-        Array $pathParts, Array $parentPathParts, $userId)
+    public function moveFolderFromPathToPathForUserId($path, $parentPath, $userId)
     {
-        $userId = $this->_checkParam($userId, 'userId');
+        $path       = $this->_checkParam($path,       'path');
+        $parentPath = $this->_checkParam($parentPath, 'parentPath');
+        $userId     = $this->_checkParam($userId,     'userId');
 
-        Conjoon_Argument_Check::check(array(
-            'path' => array(
-                'type'       => 'array',
-                'allowEmpty' => false
-            ),
-            'nodeId' => array(
-                'type'       => 'string',
-                'allowEmpty' => false
-            ),
-            'rootId' => array(
-                'type'       => 'string',
-                'allowEmpty' => false
-            )
-        ), $parentPathParts);
+        $parentPathInfo = $this->_extractPathInfo($parentPath);
+        $pathInfo       = $this->_extractPathInfo($path);
 
-        Conjoon_Argument_Check::check(array(
-            'path' => array(
-                'type'       => 'array',
-                'allowEmpty' => false
-            ),
-            'nodeId' => array(
-                'type'       => 'string',
-                'allowEmpty' => false
-            ),
-            'rootId' => array(
-                'type'       => 'string',
-                'allowEmpty' => false
-            )
-        ), $pathParts);
+        $this->_checkParam($parentPathInfo, 'parentPathInfo');
+        $this->_checkParam($pathInfo,       'pathInfo');
 
-
-        if (!$this->isRemoteFolder($pathParts['rootId'])) {
+        if (!$this->isRemoteFolder($pathInfo['rootId'])) {
             // pop account mapped to folder
             $result = $this->_getFolderModel()->moveFolder(
-                $pathParts['nodeId'], $parentPathParts['nodeId']
+                $pathInfo['nodeId'], $parentPathInfo['nodeId']
             );
 
             if ($result == 0) {
                 return false;
             }
 
-            $folderDto = $this->getLocalFolderForIdAndUserId($pathParts['nodeId'], $userId);
+            $folderDto = $this->getLocalFolderForIdAndUserId($pathInfo['nodeId'], $userId);
 
             if ($folderDto == null) {
                 return false;
@@ -497,7 +427,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
         } else {
 
             $account = $this->getImapAccountForFolderIdAndUserId(
-                $pathParts['rootId'], $userId
+                $pathInfo['rootId'], $userId
             );
 
             if ($account === false) {
@@ -505,8 +435,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
             }
 
             $result = $this->moveImapFolderFromPathToPath(
-                $pathParts['path'], $parentPathParts['path'],
-                $account, $userId
+                $pathInfo['path'], $parentPathInfo['path'], $account, $userId
             );
 
             if ($result === false) {
@@ -547,41 +476,21 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
      * Moves the IMAP folder specified in $path as a new child to the
      * path found in $parentPath.
      *
-     * @param array $pathParts The path parts representing the source
-     * global name, they need to be assembled using the storage's delimiter
-     * @param array $parentPathParts The path parts representing the target
-     * global name, they need to be assembled using the storage's delimiter
-
+     * @param string $path
+     * @param string $parentPath
      * @praram Conjoon_Modules_Groupware_Email_Account_Dto $account
      * @param integer $userId
      *
      * @return mixed the new path for the moved folder, or false on failure
      */
-    public function moveImapFolderFromPathToPath(
-        Array $pathParts, Array $parentPathParts,
+    public function moveImapFolderFromPathToPath($path, $parentPath,
         Conjoon_Modules_Groupware_Email_Account_Dto $account, $userId
     )
     {
-        $data = array(
-            'pathParts'       => $pathParts,
-            'parentPathParts' => $parentPathParts
-        );
 
-        Conjoon_Argument_Check::check(array(
-            'pathParts' => array(
-                'type'       => 'array',
-                'allowEmpty' => false
-            ),
-            'parentPathParts' => array(
-                'type'       => 'array',
-                'allowEmpty' => false
-            )
-        ), $data);
-
-        $pathParts       = $data['pathParts'];
-        $parentPathParts = $data['parentPathParts'];
-
-        $userId = $this->_checkParam($userId, 'userId');
+        $userId     = $this->_checkParam($userId,     'userId');
+        $parentPath = $this->_checkParam($parentPath, 'parentPath');
+        $path       = $this->_checkParam($path,       'path');
 
         $this->_checkParam($account, 'checkForImap');
 
@@ -595,24 +504,21 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
             $account
         );
 
-        $path = $this->getAssembledGlobalNameForAccountAndPath(
-            $account, $pathParts);
-        $parentPath = $this->getAssembledGlobalNameForAccountAndPath(
-            $account, $parentPathParts
-        );
+        $path       = $this->_sanitizeImapPath($path, $delim);
+        $parentPath = $this->_sanitizeImapPath($parentPath, $delim);
 
-        if ($path === null || $parentPath === null) {
+        if ($path === false || $parentPath === false) {
             return false;
         }
 
-        $name  = $pathParts[count($pathParts) - 1];
+        $parts = explode($delim, $path);
+        $name  = array_pop($parts);
 
         $newPath = $parentPath ? $parentPath . $delim . $name : $name;
 
-        $protocol = Conjoon_Modules_Groupware_Email_ImapHelper
-                    ::reuseImapProtocolForAccount(
-                        $account
-                    );
+        $protocol = Conjoon_Modules_Groupware_Email_ImapHelper::reuseImapProtocolForAccount(
+            $account
+        );
 
         if ($protocol->rename($path, $newPath) !== true) {
             return false;
@@ -627,8 +533,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
      * is an IMAP account and invokes server communications accordingly.
      *
      * @param string $name The new name for the folder
-     * @param array $pathParts paths parts as parsed by
-     * Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser
+     * @param string $path The path to the folder that should get renamed.
      * @param integer $userId The id of the user the renamed folder should
      * belong to
      *
@@ -637,60 +542,43 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
      *
      * @throws Exception
      */
-    public function renameFolderForPathAndUserId(
-        $name, Array $pathParts, $userId)
+    public function renameFolderForPathAndUserId($name, $path, $userId)
     {
-        Conjoon_Argument_Check::check(array(
-            'path' => array(
-                'type'       => 'array',
-                'allowEmpty' => false
-            ),
-            'nodeId' => array(
-                'type'       => 'string',
-                'allowEmpty' => false
-            ),
-            'rootId' => array(
-                'type'       => 'string',
-                'allowEmpty' => false
-            )
-        ), $pathParts);
-
-
         $name   = $this->_checkParam($name,   'name');
+        $path   = $this->_checkParam($path,   'path');
         $userId = $this->_checkParam($userId, 'userId');
 
+        $pathInfo = $this->_extractPathInfo($path);
 
-        if (!$this->isRemoteFolder($pathParts['rootId'])) {
+        $this->_checkParam($pathInfo, 'pathInfo');
+
+        if (!$this->isRemoteFolder($pathInfo['rootId'])) {
 
             // pop account mapped to folder
             $result = $this->_getFolderModel()->renameFolder(
-                $pathParts['nodeId'], $name
+                $pathInfo['nodeId'], $name
             );
 
             if ($result == 0) {
                 return false;
             }
 
-            $folderDto = $this->getLocalFolderForIdAndUserId(
-                $pathParts['nodeId'], $userId
-            );
+            $folderDto = $this->getLocalFolderForIdAndUserId($pathInfo['nodeId'], $userId);
 
             if ($folderDto == null) {
                 return false;
             }
 
             return $folderDto;
-
         } else {
-            $account = $this->getImapAccountForFolderIdAndUserId(
-                $pathParts['rootId'], $userId);
+            $account = $this->getImapAccountForFolderIdAndUserId($pathInfo['rootId'], $userId);
 
             if ($account === false) {
                 return false;
             }
 
             $result = $this->renameImapFolderForPath(
-                $name, $pathParts['path'], $account, $userId
+                $name, $pathInfo['path'], $account, $userId
             );
 
             if ($result === false) {
@@ -710,18 +598,15 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
              */
             require_once 'Zend/Mail/Storage/Imap.php';
 
-            $protocol = Conjoon_Modules_Groupware_Email_ImapHelper
-                        ::reuseImapProtocolForAccount(
-                            $account
-                        );
+            $protocol = Conjoon_Modules_Groupware_Email_ImapHelper::reuseImapProtocolForAccount(
+                $account
+            );
 
             $imap = new Zend_Mail_Storage_Imap($protocol);
             $iFolders = $imap->getFolders($result);
 
             foreach  ($iFolders as $localName => $iFold) {
-                return $this->_transformImapFolder(
-                    $iFold, $account, $protocol, false
-                );
+                return $this->_transformImapFolder($iFold, $account, $protocol, false);
             }
         }
 
@@ -827,53 +712,38 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
      * is an IMAP account, and if thatis the case, queries the specified
      * IMAP server for the folders.
      *
-     * @param array $pathParts paths parts as parsed by
-     * Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser
-     *
+     * @param mixed  $path The path to the folder that should be opened, delimited
+     * by a slash. The last token is the id of the folder that should be expanded, i.e.
+     * which child folders should be loaded. The very first token should equal to "root".
+     * If the first token equals to "root", all root folders for the user will be loaded.
      * @param integer $userId The id of the user
      *
      * @return Conjoon_Modules_Groupware_Email_Folder_Dto
-     *
-     * @throws Conjoon_ArgumentException
      */
-    public function getFoldersForPathAndUserId(Array $pathParts, $userId)
+    public function getFoldersForPathAndUserId($path, $userId)
     {
-        Conjoon_Argument_Check::check(array(
-            'path' => array(
-                'type'       => 'array',
-                'allowEmpty' => false
-            ),
-            'nodeId' => array(
-                'type'       => 'string',
-                'allowEmpty' => true
-            ),
-            'rootId' => array(
-                'type'       => 'string',
-                'allowEmpty' => true
-            )
-        ), $pathParts);
-
         $userId = $this->_checkParam($userId, 'userId');
-        $path   = $pathParts['path'];
+        $path   = trim((string)$path);
 
-        if (empty($pathParts['rootId'])) {
+        $pathInfo = $this->_extractPathInfo($path);
+
+        if (empty($pathInfo)) {
             // load root folders
             return $this->_getFolderDecorator()->getFoldersAsDto(0, $userId);
         }
 
-        if (!$this->isRemoteFolder($pathParts['rootId'])) {
+        if (!$this->isRemoteFolder($pathInfo['rootId'])) {
             return $this->_getFolderDecorator()->getFoldersAsDto(
-                $pathParts['nodeId'], $userId
+                $pathInfo['nodeId'], $userId
             );
         }
+        return;
 
-        $account = $this->getImapAccountForFolderIdAndUserId(
-            $pathParts['rootId'], $userId
-        );
+        $account = $this->getImapAccountForFolderIdAndUserId($pathInfo['rootId'], $userId);
 
         if ($account) {
             // we have an IMAP account. Query IMAP server for folders
-            return $this->getImapFoldersForPath($account, $path);
+            return $this->getImapFoldersForPath($account, $pathInfo['path']);
         }
 
         return array();
@@ -928,8 +798,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
      * of the path.
      *
      * @param string $name
-     * @param array $path The parts of the path which has to be assembled using
-     * the delimiter of the target storage
+     * @param string $path
      * @param Conjoon_Modules_Groupware_Email_Account_Dto $account
      * @param integer $userId
      *
@@ -939,24 +808,12 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
      * @throws Exception
      */
     public function renameImapFolderForPath(
-        $name, Array $pathParts,
-        Conjoon_Modules_Groupware_Email_Account_Dto $account, $userId
+        $name, $path, Conjoon_Modules_Groupware_Email_Account_Dto $account, $userId
     )
     {
-        $data = array('pathParts' => $pathParts);
-
-        Conjoon_Argument_Check::check(array(
-            'pathParts' => array(
-                'type'       => 'array',
-                'allowEmpty' => false
-            )
-        ), $data);
-
-        $pathParts = $data['pathParts'];
-
-        $userId = $this->_checkParam($userId, 'userId');
-        $name   = $this->_checkParam($name,   'name');
-
+        $userId   = $this->_checkParam($userId, 'userId');
+        $name     = $this->_checkParam($name,   'name');
+        $path     = $this->_checkParam($path,   'path');
 
         $this->_checkParam($account, 'checkForImap');
 
@@ -977,15 +834,10 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
             );
         }
 
+        $path    = $this->_sanitizeImapPath($path, $delim);
+        $newPath = $this->_sanitizeImapPath($path, $delim, true);
 
-        $path = $this->getAssembledGlobalNameForAccountAndPath(
-            $account, $pathParts
-        );
-
-        array_pop($pathParts);
-        $newPath = implode($delim, $pathParts);
-
-        if ($path === null || $newPath === null) {
+        if ($path === false || $newPath === false) {
             return false;
         }
 
@@ -1008,13 +860,12 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
      * for the specified path.
      *
      * @param Conjoon_Groupware_Email_Account_Dto $account
-     * @param array $pathParts The path parts of the folder to query. Must be
-     * assembled using the delimiter of the remote storage
+     * @param string $path
      *
      * @return Conjoon_Modules_Groupware_Email_Folder_Dto
      */
     public function getImapFoldersForPath(
-        Conjoon_Modules_Groupware_Email_Account_Dto $account, Array $pathParts
+        Conjoon_Modules_Groupware_Email_Account_Dto $account, $path = ""
     )
     {
         $this->_checkParam($account, 'checkForImap');
@@ -1028,10 +879,10 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
             $account
         );
 
-        if (empty($pathParts)) {
+        if ($path == "/" || $path == $delim) {
             $path = null;
         } else {
-            $path = implode($delim, $pathParts);
+            $path = ltrim(str_replace('/', $delim, $path), $delim);
         }
 
         $protocol = Conjoon_Modules_Groupware_Email_ImapHelper
@@ -1052,12 +903,6 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
             $iFolders    = $imap->getFolders();
             $isRootLevel = true;
         } else {
-            /**
-             * @ticket CN-595
-             */
-            if ($path === "INBOX") {
-                $path = null;
-            }
             $iFolders = $imap->getFolders($path)->getChildren();
         }
 
@@ -1146,6 +991,36 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
         return $value;
     }
 
+
+    /**
+     * Sanitizes a path from an IMAP mailboxes and removes/replaces
+     * hierarchy delimiter.
+     *
+     * @param string $path
+     * @param string $delim
+     * @param boolean $popHead whether or not to remove the head of the
+     * path
+     *
+     * @return mixed The sanitized path or false if the string could not
+     * be sanitized
+     */
+    private function _sanitizeImapPath($path, $delim, $popHead = false)
+    {
+        if ($path == "/" || $path == $delim) {
+            return false;
+        } else {
+            $path = rtrim(ltrim(str_replace('/', $delim, $path), $delim), $delim);
+        }
+
+        $parts = explode($delim, $path);
+
+        if ($popHead === true) {
+            array_pop($parts);
+        }
+
+        return implode($delim, $parts);
+    }
+
     /**
      * Gathers all needed information to tranform an imap folder to a
      * Conjoon_Modules_Groupware_Email_Folder_Dto obejct.
@@ -1196,6 +1071,46 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
                 'idForPath'    => $path,
                 'pendingCount' => $pendingCount
             ));
+    }
+
+    /**
+     * Function extracts information from a given path.
+     *
+     * @param string $path
+     *
+     * @return array An array with the following key value pairs:
+     *
+     * If the array is empty, no further path information is available.
+     * This indicates that a possible operation on all root folders
+     * is requested. Otherwise, if existing, the following information
+     * will be returned:
+     *    'nodeId' => The id of the node, i.e. the last id found in the path
+     *    'rootId' => The id of the root node of the path
+     *    'path'   => The sanitized path, without "/root" and the numeric id
+     *                of the root folder
+     *
+     * @throws RuntimeException
+     */
+    private function _extractPathInfo($path)
+    {
+        if ($path == "") {
+            return array();
+        }
+
+        // should already be stripped
+        if (strpos($path, '/root') !== false) {
+            throw new RuntimeException("Unexpected \"/root\" part in path");
+        }
+
+        $result = array();
+
+        $parts = explode('/', $path);
+
+        $result['nodeId'] = $parts[count($parts)-1];
+        $result['rootId'] = array_shift($parts);
+        $result['path']   = '/' . implode($parts, '/');
+
+        return $result;
     }
 
     /**

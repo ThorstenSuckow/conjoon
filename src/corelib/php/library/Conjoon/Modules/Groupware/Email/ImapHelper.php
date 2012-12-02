@@ -87,11 +87,11 @@ class Conjoon_Modules_Groupware_Email_ImapHelper {
         }
 
         /**
-         * @see Conjoon_Mail_Protocol_Imap
+         * @see Zend_Mail_Protocol_Imap
          */
-        require_once 'Conjoon/Mail/Protocol/Imap.php';
+        require_once 'Zend/Mail/Protocol/Imap.php';
 
-        $protocol = new Conjoon_Mail_Protocol_Imap();
+        $protocol = new Zend_Mail_Protocol_Imap();
         $protocol->connect($config['host'], $config['port'], $config['ssl']);
         if (!$protocol->login($config['user'], $config['password'])) {
 

@@ -140,21 +140,8 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Flag extends Conjoon_Db_Table {
         }
 
         $data = array('is_read' => (int)((bool)$isRead));
-
-        if (!$this->fetchRow($this->select()
-                ->where('groupware_email_items_id = ?', $groupwareEmailItemsId)
-                ->where('user_id = ?',                  $userId))) {
-            $this->insert(array(
-                'groupware_email_items_id' => $groupwareEmailItemsId,
-                'user_id'                  => $userId,
-                'is_read'                  => (int)((bool)$isRead)
-            ));
-
-            return 1;
-        }
-
         $adapter = $this->getAdapter();
-        $this->update($data, array(
+        return $this->update($data, array(
             $adapter->quoteInto('groupware_email_items_id = ?', $groupwareEmailItemsId, 'INTEGER'),
             $adapter->quoteInto('user_id = ?', $userId, 'INTEGER')
         ));
