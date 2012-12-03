@@ -44,21 +44,20 @@ abstract class Response {
      */
     protected $responseBody;
 
-    /**
-     * @const
-     */
     const STATUS_CODE_100 = 100;
+    const STATUS_CODE_101 = 101;
 
-    /**
-     * @const
-     */
     const STATUS_CODE_200 = 200;
 
     /**
      * @var array
      */
     protected $statusCodeToText = array(
+        // error codes
         100 => 'unknown error',
+        101 => 'command unknown',
+
+        //success
         200 => 'ok'
     );
 
@@ -134,5 +133,13 @@ abstract class Response {
         return $this->responseBody;
     }
 
-
+    /**
+     * Returns the status code this instance was configured with.
+     *
+     * @return mixed
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
 }

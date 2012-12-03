@@ -62,6 +62,7 @@ class DefaultResponseTest extends \PHPUnit_Framework_TestCase {
             array('status' => 200)
         );
 
+        $this->assertSame(200, $response->getStatus());
         $this->assertTrue($response->isSuccess());
         $this->assertFalse($response->isError());
     }
@@ -77,6 +78,7 @@ class DefaultResponseTest extends \PHPUnit_Framework_TestCase {
             array('status' => 100)
         );
 
+        $this->assertSame(100, $response->getStatus());
         $this->assertFalse($response->isSuccess());
         $this->assertTrue($response->isError());
     }
