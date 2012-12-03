@@ -39,36 +39,24 @@ require_once 'Conjoon/Argument/ArgumentCheck.php';
 abstract class DefaultResponseBody implements ResponseBody {
 
     /**
-     * @var string
+     * @var array
      */
-    protected $text;
+    protected $data;
 
     /**
      * @inheritdoc
      */
-    public function __construct($text = "")
+    public function __construct(Array $data = array())
     {
-        $data = array('text' => $text);
-
-        ArgumentCheck::check(array(
-            'text' => array(
-                'type'       => 'string',
-                'allowEmpty' => true
-            )
-        ), $data);
-
-        $text = $data['text'];
-
-        $this->text = $text;
-
+        $this->data = $data;
     }
 
     /**
      * @inheritdoc
      */
-    public function getText()
+    public function getData()
     {
-        return $this->text;
+        return $this->data;
     }
 
 }

@@ -31,17 +31,15 @@ interface ResponseBody {
     /**
      * Creates a new response body instance.
      *
-     * @param string $text
-     *
-     * @throws \Conjoon\Argument\InvalidArgumentException
+     * @param array $data
      */
-    public function __construct($text = "");
+    public function __construct(Array $data = array());
 
     /**
-     * Returns the response body's text.
+     * Returns the response body's data.
      *
-     * @return string
+     * @return array
      */
-    public function getText();
+    public function getData();
 
 }

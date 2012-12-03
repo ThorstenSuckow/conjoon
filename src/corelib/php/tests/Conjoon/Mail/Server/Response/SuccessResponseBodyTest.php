@@ -34,27 +34,21 @@ class SuccessResponseBodyTest extends \PHPUnit_Framework_TestCase {
 
 
     /**
-     * @expectedException \Conjoon\Argument\InvalidArgumentException
-     */
-    public function testConstructException()
-    {
-        new SuccessResponseBody(array());
-    }
-
-    /**
      * Ensures everything works as expected
      */
     public function testOk()
     {
         new SuccessResponseBody();
 
-        new SuccessResponseBody("");
+        new SuccessResponseBody(array());
 
-        $responseBody = new SuccessResponseBody("response");
+        $arr = array("response");
+
+        $responseBody = new SuccessResponseBody($arr);
 
         $this->assertSame(
-            "response",
-            $responseBody->getText()
+            $arr,
+            $responseBody->getData()
         );
 
     }
