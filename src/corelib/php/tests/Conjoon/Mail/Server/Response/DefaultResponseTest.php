@@ -45,7 +45,8 @@ class DefaultResponseTest extends \PHPUnit_Framework_TestCase {
     {
         new DefaultResponse(
             new \Conjoon\Mail\Server\Request\SimpleRequest(array()),
-            new SimpleResponseBody
+            new DefaultResponseBody,
+            array()
         );
     }
 
@@ -57,7 +58,8 @@ class DefaultResponseTest extends \PHPUnit_Framework_TestCase {
     {
         $response = new DefaultResponse(
             new \Conjoon\Mail\Server\Request\SimpleRequest(array()),
-            new SuccessResponseBody
+            new DefaultResponseBody,
+            array('status' => 200)
         );
 
         $this->assertTrue($response->isSuccess());
@@ -71,7 +73,8 @@ class DefaultResponseTest extends \PHPUnit_Framework_TestCase {
     {
         $response = new DefaultResponse(
             new \Conjoon\Mail\Server\Request\SimpleRequest(array()),
-            new ErrorResponseBody
+            new DefaultResponseBody,
+            array('status' => 100)
         );
 
         $this->assertFalse($response->isSuccess());
@@ -85,7 +88,7 @@ class DefaultResponseTest extends \PHPUnit_Framework_TestCase {
     {
         $simpleRequest = new \Conjoon\Mail\Server\Request\SimpleRequest(array());
         $response = new DefaultResponse(
-            $simpleRequest, new ErrorResponseBody
+            $simpleRequest, new DefaultResponseBody, array('status' => 200)
         );
 
         $this->assertSame($simpleRequest, $response->getRequest());
@@ -97,9 +100,9 @@ class DefaultResponseTest extends \PHPUnit_Framework_TestCase {
     public function testGetResponseBody()
     {
         $simpleRequest = new \Conjoon\Mail\Server\Request\SimpleRequest(array());
-        $responseBody = new ErrorResponseBody();
+        $responseBody = new DefaultResponseBody();
         $response = new DefaultResponse(
-            $simpleRequest, $responseBody
+            $simpleRequest, $responseBody, array('status' => 200)
         );
 
         $this->assertSame($responseBody, $response->getResponseBody());

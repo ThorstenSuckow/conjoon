@@ -33,9 +33,20 @@ require_once 'Conjoon/Mail/Server/Response/DefaultResponseBody.php';
 class DefaultResponseBodyTest extends \PHPUnit_Framework_TestCase {
 
 
-    public function testDummy()
+    public function testOk()
     {
+        new DefaultResponseBody();
 
+        new DefaultResponseBody(array());
+
+        $arr = array("data");
+
+        $body = new DefaultResponseBody($arr);
+
+        $this->assertSame(
+            $arr,
+            $body->getData()
+        );
     }
 
 }

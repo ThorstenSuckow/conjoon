@@ -36,7 +36,7 @@ require_once 'Conjoon/Argument/ArgumentCheck.php';
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-abstract class DefaultResponseBody implements ResponseBody {
+class DefaultResponseBody implements ResponseBody {
 
     /**
      * @var array
