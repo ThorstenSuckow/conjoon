@@ -120,7 +120,7 @@ class Conjoon_Mail_Storage_Pop3 extends Zend_Mail_Storage_Pop3
         /**
          * @see Conjoon_Argument_Check
          */
-        require_once 'Conjoonn/Argument/Check.php';
+        require_once 'Conjoon/Argument/Check.php';
 
         $data = array('id' => $id);
 
