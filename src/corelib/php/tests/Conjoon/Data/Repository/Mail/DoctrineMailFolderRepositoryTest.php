@@ -84,6 +84,13 @@ class DoctrineMailFolderRepositoryTest extends \Conjoon\DatabaseTestCaseDefault 
 
         $entity = $repository->findById(3);
 
+        $this->assertSame(
+            2, count($entity->getMailAccounts())
+        );
+
+        $accounts = $entity->getMailAccounts();
+        $this->assertSame(1, $accounts[0]->getId());
+
         $this->assertSame(3, $entity->getId());
         $this->assertSame('folder 3', $entity->getName());
         $this->assertSame(true, $entity->getIsChildAllowed());
@@ -120,6 +127,7 @@ class DoctrineMailFolderRepositoryTest extends \Conjoon\DatabaseTestCaseDefault 
         $this->assertSame('inbox', $entity->getMetaInfo());
         $this->assertSame(false, $entity->getIsDeleted());
         $this->assertSame(null, $entity->getParent());
+
     }
 
     /**

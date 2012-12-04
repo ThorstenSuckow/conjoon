@@ -71,6 +71,25 @@ class DefaultMailFolderEntity implements MailFolderEntity {
     protected $parent;
 
     /**
+     * @var \Doctrine\Common\Collections\ArrayCollection
+     */
+    protected $mailAccounts;
+
+    /**
+     * Creates a new instance of this class.
+     *
+     */
+    public function __construct()
+    {
+        /**
+         * @see \Doctrine\Common\Collections\ArrayCollection
+         */
+        require_once 'Doctrine/Common/Collections/ArrayCollection.php';
+
+        $this->mailAccounts = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
      * @return string
      */
     public function getId()
@@ -212,6 +231,16 @@ class DefaultMailFolderEntity implements MailFolderEntity {
         $this->parent = $parent;
 
         return $this;
+    }
+
+    /**
+     * Get Accounts
+     *
+     * @return Doctrine\Common\Collections\Collection
+     */
+    public function getMailAccounts()
+    {
+        return $this->mailAccounts;
     }
 
 }

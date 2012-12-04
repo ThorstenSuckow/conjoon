@@ -73,6 +73,8 @@ class DefaultMailFolderEntityTest extends \PHPUnit_Framework_TestCase {
         $folder->setIsDeleted($this->_input['isDeleted']);
         $this->assertSame($this->_input['isDeleted'], $folder->getIsDeleted());
 
+        $this->assertSame(0, count($folder->getMailAccounts()));
+
         $folder->setParent(null);
         $this->assertSame(null, $folder->getParent());
         $fl2 = new DefaultMailFolderEntity();

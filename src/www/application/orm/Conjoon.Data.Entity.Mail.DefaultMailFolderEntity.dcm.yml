@@ -48,4 +48,18 @@ Conjoon\Data\Entity\Mail\DefaultMailFolderEntity:
                 parent_id:
                     referencedColumnName: id
             orphanRemoval: false
+    manyToMany:
+        mailAccounts:
+            targetEntity: Conjoon\Data\Entity\Mail\DefaultMailAccountEntity
+            inversedBy: DefaultMailFolderEntity
+            joinTable:
+                name: groupware_email_folders_accounts
+                joinColumns:
+                    groupware_email_folders_id:
+                        referencedColumnName: id
+                        nullable: false
+                inverseJoinColumns:
+                    groupware_email_accounts_id:
+                        referencedColumnName: id
+                        nullable: false
     lifecycleCallbacks: {  }

@@ -1,0 +1,131 @@
+Conjoon\Data\Entity\Mail\DefaultMailAccountEntity:
+    repositoryClass: Conjoon\Data\Repository\Mail\DoctrineMailAccountRepository
+    type: entity
+    table: groupware_email_accounts
+    fields:
+        id:
+            id: true
+            type: integer
+            unsigned: true
+            nullable: false
+            generator:
+                strategy: IDENTITY
+        name:
+            type: string
+            length: 64
+            fixed: false
+            nullable: false
+        address:
+            type: string
+            length: 255
+            fixed: false
+            nullable: false
+        replyAddress:
+            type: string
+            length: 255
+            fixed: false
+            nullable: true
+            column: reply_address
+        isStandard:
+            type: boolean
+            nullable: false
+            column: is_standard
+        protocol:
+            type: string
+            length: null
+            fixed: false
+            nullable: false
+        serverInbox:
+            type: string
+            length: 255
+            fixed: false
+            nullable: false
+            column: server_inbox
+        serverOutbox:
+            type: string
+            length: 255
+            fixed: false
+            nullable: false
+            column: server_outbox
+        usernameInbox:
+            type: string
+            length: 64
+            fixed: false
+            nullable: false
+            column: username_inbox
+        usernameOutbox:
+            type: string
+            length: 64
+            fixed: false
+            nullable: true
+            column: username_outbox
+        userName:
+            type: string
+            length: 255
+            fixed: false
+            nullable: false
+            column: user_name
+        isOutboxAuth:
+            type: boolean
+            nullable: false
+            column: is_outbox_auth
+        passwordInbox:
+            type: string
+            length: 32
+            fixed: false
+            nullable: false
+            column: password_inbox
+        passwordOutbox:
+            type: string
+            length: 32
+            fixed: false
+            nullable: true
+            column: password_outbox
+        signature:
+            type: string
+            length: 255
+            fixed: false
+            nullable: true
+        isSignatureUsed:
+            type: boolean
+            nullable: false
+            column: is_signature_used
+        portInbox:
+            type: smallint
+            nullable: false
+            column: port_inbox
+        portOutbox:
+            type: smallint
+            nullable: false
+            column: port_outbox
+        inboxConnectionType:
+            type: string
+            length: null
+            fixed: false
+            nullable: true
+            column: inbox_connection_type
+        outboxConnectionType:
+            type: string
+            length: null
+            fixed: false
+            nullable: true
+            column: outbox_connection_type
+        isCopyLeftOnServer:
+            type: boolean
+            nullable: false
+            column: is_copy_left_on_server
+        isDeleted:
+            type: boolean
+            nullable: false
+            column: is_deleted
+    manyToOne:
+        user:
+            targetEntity: Conjoon\Data\Entity\User\DefaultUserEntity
+            cascade: {}
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                user_id:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

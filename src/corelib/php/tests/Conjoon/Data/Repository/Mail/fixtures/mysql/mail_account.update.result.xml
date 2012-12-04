@@ -1,5 +1,40 @@
 <?xml version="1.0" ?>
 <dataset>
+
+    <table name="users">
+        <column>id</column>
+        <column>firstname</column>
+        <column>lastname</column>
+        <column>email_address</column>
+        <column>user_name</column>
+        <column>password</column>
+        <column>is_root</column>
+        <column>auth_token</column>
+        <column>last_login</column>
+        <row>
+            <value>1</value>
+            <value>Firstname</value>
+            <value>Lastname</value>
+            <value>EmailAddress</value>
+            <value>UserName1</value>
+            <value>Password</value>
+            <value>1</value>
+            <value>AuthToken</value>
+            <value>2</value>
+        </row>
+        <row>
+            <value>2</value>
+            <value>Firstname</value>
+            <value>Lastname</value>
+            <value>EmailAddress</value>
+            <value>UserName2</value>
+            <value>Password</value>
+            <value>1</value>
+            <value>AuthToken</value>
+            <value>2</value>
+        </row>
+    </table>
+
     <table name="groupware_email_accounts">
         <column>id</column>
         <column>user_id</column>
@@ -27,7 +62,7 @@
         <row>
             <value>1</value>
             <value>1</value>
-            <value>name</value>
+            <value>testchange</value>
             <value>address</value>
             <value>reply_address</value>
             <value>1</value>
@@ -83,11 +118,7 @@
             <value>1</value>
         </row>
         <row>
-            <value>1</value>
             <value>2</value>
-        </row>
-        <row>
-            <value>3</value>
             <value>1</value>
         </row>
         <row>

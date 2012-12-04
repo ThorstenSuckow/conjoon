@@ -63,4 +63,11 @@ interface MailFolderEntity extends \Conjoon\Data\Entity\DataEntity {
      */
     public function setParent(MailFolderEntity $parent = null);
 
+    /**
+     * Get mailccount
+     *
+     * @return Doctrine\Common\Collections\Collection
+     */
+    public function getMailAccounts();
+
 }
