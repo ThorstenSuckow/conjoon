@@ -70,9 +70,9 @@ class Conjoon_Filter_EmailRecipientsToString implements Zend_Filter_Interface
         /**
          * @see Conjoon_Text_Transformer_EmailAddressNameQuoteTransformer
          */
-        require_once 'Conjoon/Text/Transformer/EmailAddressNameQuoteTransformer.php';
+        require_once 'Conjoon/Text/Transformer/Mail/EmailAddressNameQuoteTransformer.php';
 
-        $transformer = new Conjoon_Text_Transformer_EmailAddressNameQuoteTransformer();
+        $transformer = new Conjoon_Text_Transformer_Mail_EmailAddressNameQuoteTransformer();
 
         foreach ($value as $address) {
             if (isset($address[1])) {

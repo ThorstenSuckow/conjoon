@@ -78,7 +78,7 @@ class Conjoon_Filter_EmailRecipients implements Zend_Filter_Interface
 
         $data = array();
         for ($i = 0, $len = count($value); $i < $len; $i++) {
-            $data[] = $parser->parse($value[$i]);
+            $data = array_merge($data, $parser->parse($value[$i]));
         }
 
         return $data;
