@@ -863,7 +863,8 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
 
         if (!$this->isRemoteFolder($pathParts['rootId'])) {
             return $this->_getFolderDecorator()->getFoldersAsDto(
-                $pathParts['nodeId'], $userId
+                (empty($path) ? $pathParts['rootId'] : $pathParts['nodeId']),
+                $userId
             );
         }
 
