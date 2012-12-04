@@ -27,19 +27,6 @@ namespace Conjoon\Mail\Server;
 interface Server {
 
     /**
-     * Creates a new instance of this server.
-     *
-     * - protocol: Protocol
-     *
-     * @param Array $options An array of options this server should be
-     *                       configured with
-     *
-     * @throws \Conjoon\Argument\InvalidArgumentException
-     */
-    public function __construct(Array $options);
-
-
-    /**
      * Handles the request sent to this server.
      * Implementing classes should take care of proper exception handling
      * and decide whether they capture any exception and encapsulate it into
