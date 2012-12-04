@@ -38,6 +38,12 @@ class SimpleRequest implements Request {
 
     }
 
+    public function getParameters()
+    {
+        return array();
+    }
+
+
     public function getProtocolCommand()
     {
         return "test";

@@ -54,19 +54,34 @@ class DefaultProtocolTest extends ProtocolTestCase {
     public function testOk()
     {
         $this->assertTrue(
-            $this->protocol->setFlags(
-                $this->folderFlagCollection,
-                $this->user
-            )
+            $this->protocol->setFlags(array(
+                'user'       => $this->user,
+                'parameters' => array(
+                    'folderFlagCollection' => $this->folderFlagCollection,
+                )
+            ))
                 instanceof
                 \Conjoon\Mail\Server\Protocol\DefaultResult\SetFlagsResult
         );
 
         $this->assertTrue(
-            $this->failProtocol->setFlags(
-                $this->folderFlagCollection,
-                $this->user
-            )
+            $this->protocol->setFlags(array(
+                'user'       => $this->user,
+                'parameters' => array(
+                    'folderFlagCollection' => array(),
+                )
+            ))
+                instanceof
+                \Conjoon\Mail\Server\Protocol\DefaultResult\ErrorResult
+        );
+
+        $this->assertTrue(
+            $this->failProtocol->setFlags(array(
+                'user'       => $this->user,
+                'parameters' => array(
+                    'folderFlagCollection' => $this->folderFlagCollection,
+                )
+            ))
                 instanceof
                 \Conjoon\Mail\Server\Protocol\DefaultResult\ErrorResult
         );

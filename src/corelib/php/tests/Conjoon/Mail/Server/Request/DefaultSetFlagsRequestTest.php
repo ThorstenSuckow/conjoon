@@ -83,9 +83,10 @@ class DefaultSetFlagsRequestTest extends \PHPUnit_Framework_TestCase {
     protected function getRequest()
     {
         return new DefaultSetFlagsRequest(array(
-            'user'                 => $this->user,
-            'folderFlagCollection' => $this->folderFlagCollection
-
+            'user'       => $this->user,
+            'parameters' => array(
+                'folderFlagCollection' => $this->folderFlagCollection
+            )
         ));
     }
 
@@ -103,7 +104,10 @@ class DefaultSetFlagsRequestTest extends \PHPUnit_Framework_TestCase {
      */
     public function testConstructWithException()
     {
-        new DefaultSetFlagsRequest(array());
+        new DefaultSetFlagsRequest(array(
+            'user'       => $this->user,
+            'parameters' => array()
+        ));
     }
 
     /**
@@ -147,4 +151,16 @@ class DefaultSetFlagsRequestTest extends \PHPUnit_Framework_TestCase {
         );
     }
 
+    /**
+     * Ensures everything works as expected
+     */
+    public function testGetParameters()
+    {
+        $params = $this->getRequest()->getParameters();
+
+        $this->assertSame(
+            $this->folderFlagCollection,
+            $params['folderFlagCollection']
+        );
+    }
 }

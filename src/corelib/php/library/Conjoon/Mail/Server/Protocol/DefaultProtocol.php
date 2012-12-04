@@ -16,6 +16,13 @@
 
 namespace Conjoon\Mail\Server\Protocol;
 
+use Conjoon\Argument\ArgumentCheck,
+    Conjoon\Argument\InvalidArgumentException;
+
+/**
+ * @see \Conjoon\Argument\ArgumentCheck
+ */
+require_once 'Conjoon/Argument/ArgumentCheck.php';
 
 /**
  * @see \Conjoon\Mail\Server\Protocol\Protocol
@@ -57,14 +64,39 @@ class DefaultProtocol implements Protocol{
     /**
      * @inheritdoc
      */
-    public function setFlags(
-        \Conjoon\Mail\Client\Message\Flag\FolderFlagCollection $flagCollection,
-        \Conjoon\User\User $user)
+    public function setFlags(array $options)
     {
         $result = null;
 
         try {
-            $result = $this->adaptee->setFlags($flagCollection, $user);
+
+            ArgumentCheck::check(array(
+                'user' => array(
+                    'type'  => 'instanceof',
+                    'class' => '\Conjoon\User\User'
+                ),
+                'parameters' => array(
+                    'type'       => 'array',
+                    'allowEmpty' => false
+                )
+            ), $options);
+
+            ArgumentCheck::check(array(
+                'folderFlagCollection' => array(
+                    'type'  => 'instanceof',
+                    'class' => '\Conjoon\Mail\Client\Message\Flag\FolderFlagCollection'
+                )
+            ), $options['parameters']);
+
+        } catch (InvalidArgumentException $e) {
+            return $this->getResultForException($e);
+        }
+
+        try {
+            $result = $this->adaptee->setFlags(
+                $options['parameters']['folderFlagCollection'],
+                $options['user']
+            );
         } catch (ProtocolException $e) {
             $result = $this->getResultForException($e);
         }

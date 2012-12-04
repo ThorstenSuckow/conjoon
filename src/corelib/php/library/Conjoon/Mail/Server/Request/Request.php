@@ -29,15 +29,11 @@ interface Request {
 
 
     /**
-     * Creates a new instance
+     * Returns a list of parameters this request was configured with.
      *
-     * @param Array $options An array of options this Request should be configured
-     *                       with
-     *
-     * @throws Conjoon\Argument\InvalidArgumentException
+     * @return array
      */
-    public function __construct(Array $options);
-
+    public function getParameters();
 
     /**
      * Returns a textual representation of the command the request represents.

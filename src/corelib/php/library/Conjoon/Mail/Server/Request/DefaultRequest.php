@@ -16,7 +16,8 @@
 
 namespace Conjoon\Mail\Server\Request;
 
-use Conjoon\Argument\ArgumentCheck;
+use Conjoon\Argument\ArgumentCheck,
+    Conjoon\Argument\InvalidArgumentException;
 
 /**
  * @see Conjoon\Mail\Server\Request\Request
@@ -27,6 +28,11 @@ require_once 'Conjoon/Mail/Server/Request/Request.php';
  * @see Conjoon\Argument\ArgumentCheck
  */
 require_once 'Conjoon/Argument/ArgumentCheck.php';
+
+/**
+ * @see Conjoon\Argument\InvalidArgumentException
+ */
+require_once 'Conjoon/Argument/InvalidArgumentException.php';
 
 /**
  * A default request implementation.
@@ -43,6 +49,10 @@ abstract class DefaultRequest implements Request {
      */
     protected $user;
 
+    /**
+     * @var array
+     */
+    protected $parameters = array();
 
     /**
      * - user: Conjoon_User_User
@@ -71,9 +81,26 @@ abstract class DefaultRequest implements Request {
             )
         ), $options);
 
+        if (isset($options['parameters'])) {
+            if (!is_array($options['parameters'])) {
+                throw new InvalidArgumentException(
+                    "\"parameters\" must be of type array"
+                );
+            }
+
+            $this->parameters = $options['parameters'];
+        }
+
         $this->user = $options['user'];
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function getParameters()
+    {
+        return $this->parameters;
+    }
 
     /**
      * @inheritdoc

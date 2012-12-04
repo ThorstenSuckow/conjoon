@@ -56,8 +56,8 @@ class DefaultSetFlagsRequest extends DefaultRequest implements SetFlagsRequest {
      * Creates a new instance of this class.
      *
      * Additional to the parent's user config property, an instance of this
-     * class needs to be configured with a folderFlagCollection, providing
-     * detailed information about the flags which have to be set for which
+     * class needs to be configured with parameters holding a folderFlagCollection,
+     * providing detailed information about the flags which have to be set for which
      * messages.
      *
      * @param Array $options An array of options this request gets configured
@@ -77,9 +77,9 @@ class DefaultSetFlagsRequest extends DefaultRequest implements SetFlagsRequest {
                 'type'  => 'instanceof',
                 'class' => '\Conjoon\Mail\Client\Message\Flag\FolderFlagCollection'
             )
-        ), $options);
+        ), $this->parameters);
 
-        $this->folderFlagCollection = $options['folderFlagCollection'];
+        $this->folderFlagCollection = $this->parameters['folderFlagCollection'];
     }
 
     /**
