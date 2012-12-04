@@ -58,6 +58,12 @@ class DefaultServer implements Server {
     /**
      * @var string
      */
+    protected $errorResultClassName =
+        '\Conjoon\Mail\Server\Protocol\DefaultResult\ErrorResult';
+
+    /**
+     * @var string
+     */
     protected $expectedResponseType = "array";
 
     /**
@@ -87,14 +93,19 @@ class DefaultServer implements Server {
     {
         $responseBody  = $this->responseBodyClassName;
         $responseClass = $this->responseClassName;
+        $errorResult   = $this->errorResultClassName;
 
         if (!method_exists($this->protocol, $request->getProtocolCommand())) {
+
+            $error = new $errorResult(
+                new \Conjoon\Mail\Server\Protocol\ProtocolException(
+                    "The protocol does not understand the command "
+                    ."\"" . $request->getProtocolCommand() ."\""
+            ));
+
             return new $responseClass(
                 $request,
-                new $responseBody(array(
-                    'message' => "The protocol does not understand the command "
-                                 ."\"" . $request->getProtocolCommand() ."\""
-                )),
+                new $responseBody($error->toArray()),
                 array('status' =>
                       \Conjoon\Mail\Server\Response\Response::STATUS_CODE_101)
             );
