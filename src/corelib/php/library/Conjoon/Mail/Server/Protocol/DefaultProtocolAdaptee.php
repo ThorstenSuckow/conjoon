@@ -122,7 +122,7 @@ class DefaultProtocolAdaptee implements ProtocolAdaptee {
 
 
         if ($isRemoteMailbox) {
-            throw new RuntimeException("Not Yet Supported");
+            throw new \RuntimeException("Not Yet Supported");
         } else {
             try {
                 $this->applyFlagCollectionForUser($flagCollection, $user);
