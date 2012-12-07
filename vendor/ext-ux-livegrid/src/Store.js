@@ -141,7 +141,17 @@ Ext.ux.grid.livegrid.Store = function(config) {
           * @param {Array} ranges An array containing the ranges of indexes this
           * records may represent.
           */
-        'selectionsload'
+        'selectionsload',
+        /**
+         * @event insertindexfound
+         * Fires when the store's find insertInsertIndex method found an insert index
+         * This is for interested listeners to be able to adjust the insert index.
+         * @param {Ext.ux.grid.livegrid.Store} this
+         * @param {Object} an object containing information about the insert index found
+         *                 the insert index is available from the property "insertIndex"
+         *
+         */
+         'insertindexfound'
     );
 
     Ext.ux.grid.livegrid.Store.superclass.constructor.call(this, config);
@@ -177,6 +187,32 @@ Ext.extend(Ext.ux.grid.livegrid.Store, Ext.data.Store, {
     version : null,
 
     /**
+     * Tells whether the dataset loaded is the last dataset, and if the
+     * specified index represents the last record in the dataset
+     *
+     * @param {Number} index
+     *
+     * @return {Boolean}
+     */
+    isLastSet : function(index)
+    {
+        return index == this.bufferSize && this.isAllLoaded();
+    },
+
+    /**
+     * Returns true if the loaded dataset represents the last dataset
+     * which can be loaded, otherwise false.
+     *
+     * @return {Boolean}
+     */
+    isAllLoaded : function()
+    {
+        return (this.totalLength-1 == this.bufferRange[1]);
+    },
+
+
+
+    /**
      * Inserts a record at the position as specified in index.
      * If the index equals to Number.MIN_VALUE or Number.MAX_VALUE, the record will
      * not be added to the store, but still fire the add-event to indicate that
@@ -198,10 +234,15 @@ Ext.extend(Ext.ux.grid.livegrid.Store, Ext.data.Store, {
      */
     insert : function(index, records)
     {
+        var isLastSet   = this.isLastSet(index),
+            isAllLoaded = this.isAllLoaded();
+
         // hooray for haskell!
         records = [].concat(records);
 
-        index = index >= this.bufferSize ? Number.MAX_VALUE : index;
+        index = index >= this.bufferSize
+                ? (isLastSet ? index : Number.MAX_VALUE)
+                : index;
 
         if (index == Number.MIN_VALUE || index == Number.MAX_VALUE) {
             var l = records.length;
@@ -217,7 +258,9 @@ Ext.extend(Ext.ux.grid.livegrid.Store, Ext.data.Store, {
 
         var split = false;
         var insertRecords = records;
-        if (records.length + index >= this.bufferSize) {
+
+        if (!isAllLoaded && !isLastSet
+            && (records.length + index >= this.bufferSize)) {
             split = true;
             insertRecords = records.splice(0, this.bufferSize-index)
         }
@@ -229,7 +272,10 @@ Ext.extend(Ext.ux.grid.livegrid.Store, Ext.data.Store, {
             this.bufferRange[0] = 0;
         }
         if (this.bufferRange[1] < (this.bufferSize-1)) {
-            this.bufferRange[1] = Math.min(this.bufferRange[1] + insertRecords.length, this.bufferSize-1);
+            this.bufferRange[1] = Math.min(
+                this.bufferRange[1] +
+                insertRecords.length, this.bufferSize-1
+            );
         }
 
         for (var i = 0, len = insertRecords.length; i < len; i++) {
@@ -238,13 +284,21 @@ Ext.extend(Ext.ux.grid.livegrid.Store, Ext.data.Store, {
         }
 
         while (this.getCount() > this.bufferSize) {
-            this.data.remove(this.data.last());
+            this.data.remove(
+                (isLastSet ? this.data.first() : this.data.last())
+            );
         }
 
-        this.fireEvent("add", this, insertRecords, index);
+        // shift the ranges if we are in the last possible data set
+        if (isLastSet) {
+            this.bufferRange[0]  += insertRecords.length;
+            this.bufferRange[1]  += insertRecords.length;
+        }
+
+        this.fireEvent("add", this, insertRecords, index, isLastSet);
 
         if (split == true) {
-            this.fireEvent("add", this, records, Number.MAX_VALUE);
+            this.fireEvent("add", this, records, Number.MAX_VALUE, isLastSet);
         }
     },
 
@@ -390,6 +444,8 @@ Ext.extend(Ext.ux.grid.livegrid.Store, Ext.data.Store, {
     {
         var max_i = ranges.length;
 
+        var pn = this.paramNames;
+
         if(max_i > 0 && !this.selectionsProxy.activeRequest[Ext.data.Api.actions.read]
            && this.fireEvent("beforeselectionsload", this, ranges) !== false){
 
@@ -399,11 +455,11 @@ Ext.extend(Ext.ux.grid.livegrid.Store, Ext.data.Store, {
             params.ranges = Ext.encode(ranges);
 
             if (lParams) {
-                if (lParams.sort) {
-                    params.sort = lParams.sort;
+                if (lParams[pn.sort]) {
+                    params[pn.sort] = lParams[pn.sort];
                 }
-                if (lParams.dir) {
-                    params.dir = lParams.dir;
+                if (lParams[pn.dir]) {
+                    params[pn.dir] = lParams[pn.dir];
                 }
             }
 
@@ -491,14 +547,19 @@ Ext.extend(Ext.ux.grid.livegrid.Store, Ext.data.Store, {
         // special case... index is 0 and we are at the very first record
         // buffered
         if (this.bufferRange[0] <= 0 && index == 0) {
-            return index;
+            //return index;
         } else if (this.bufferRange[0] > 0 && index == 0) {
-            return Number.MIN_VALUE;
+            index = Number.MIN_VALUE;
         } else if (index >= this.bufferSize) {
-            return Number.MAX_VALUE;
+            index = Number.MAX_VALUE;
         }
 
-        return index;
+        var obj = {
+            insertIndex : index
+        };
+        this.fireEvent('insertindexfound', this, obj);
+
+        return obj.insertIndex;
     },
 
     /**
@@ -554,9 +615,15 @@ Ext.extend(Ext.ux.grid.livegrid.Store, Ext.data.Store, {
         if (!o) {
             this.bufferRange = [-1,-1];
         } else {
+
+            var pn = this.paramNames;
+
             this.bufferRange = [
                 options.params.start,
-                Math.max(0, Math.min((options.params.start+options.params.limit)-1, o.totalRecords-1))
+                Math.max(0, Math.min((
+                    options.params[pn.start]+options.params[pn.limit])-1,
+                    o.totalRecords-1
+                ))
             ];
         }
 

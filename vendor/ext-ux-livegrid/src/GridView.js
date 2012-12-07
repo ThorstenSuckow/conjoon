@@ -339,11 +339,14 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
             var params = Ext.apply({}, addParams),
                 sInfo  = this.ds.sortInfo;
 
+            var pn = this.ds.paramNames,
+                cp = {};
+
+                cp[pn.dir]  = sInfo.direction;
+                cp[pn.sort] = sInfo.field;
+
             if (sInfo) {
-                params = Ext.apply(params, {
-                    dir  : sInfo.direction,
-                    sort : sInfo.field
-                });
+                params = Ext.apply(params, cp);
             }
 
             this.fireEvent('reset', this, forceReload, params);
@@ -777,9 +780,14 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
      * @param {Number} index The index of the position in the underlying
      *                       {@link Ext.ux.grid.livegrid.Store} where the rows
      *                       were added.
+     * @param {Boolean} isLastSet tells whether the record was added at the very
+     *                            end of the store, and all of the store's data
+     *                            was loaded, i.e. behind the last fetched index
+     *                            are no more records
+     *
      */
     // private
-    onAdd : function(ds, records, index)
+    onAdd : function(ds, records, index, isLastSet)
     {
         if (this._checkEmptyBody) {
             if (this.mainBody.dom.innerHTML == '&nbsp;') {
@@ -787,6 +795,37 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
             }
             this._checkEmptyBody = false;
         }
+
+        // deal with lastSet first
+        if (isLastSet) {
+            var viewIndexFirst = firstRow + ds.bufferRange[0],
+                viewIndexLast = lastRow + ds.bufferRange[0],
+                html;
+
+            this.lastRowIndex = this.rowIndex;
+            this.rowIndex++;
+
+            firstRow = index-1;
+            lastRow  = index-1;
+
+            html = this.renderRows(firstRow, lastRow);
+            Ext.DomHelper.insertHtml('beforeEnd', this.mainBody.dom, html);
+            this.fireEvent(
+                "rowsinserted", this,
+                viewIndexFirst,
+                viewIndexLast,
+                (viewIndexLast-viewIndexFirst)+1
+            );
+            this.processRows(0, undefined, true);
+
+            this.adjustVisibleRows();
+            this.adjustBufferInset();
+
+            this.adjustScrollerPos(this.rowHeight);
+
+            return;
+        }
+
 
         var recordLen = records.length;
 
@@ -930,10 +969,13 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
             suspendLoadEvent : false
         });
 
-        apply(options.params, {
-            start    : 0,
-            limit    : this.ds.bufferSize
-        });
+        var pn = store.paramNames,
+            cp = {};
+
+            cp[pn.start] = 0;
+            cp[pn.limit] = this.ds.bufferSize;
+
+        apply(options.params, cp);
 
         return true;
     },
@@ -1501,12 +1543,14 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
             Ext.apply(params, this.ds.lastOptions.params);
         }
 
-        params.start = bufferOffset;
-        params.limit = this.ds.bufferSize;
+        var pn = this.ds.paramNames;
+
+        params[pn.start] = bufferOffset;
+        params[pn.limit] = this.ds.bufferSize;
 
         if (sInfo) {
-            params.dir  = sInfo.direction;
-            params.sort = sInfo.field;
+            params[pn.dir]  = sInfo.direction;
+            params[pn.sort] = sInfo.field;
         }
 
         var opts = {
