@@ -160,6 +160,7 @@ com.conjoon.groupware.email.EmailGrid = Ext.extend(Ext.ux.grid.livegrid.GridPane
 
         this.mon(this.store, 'beforeselectionsload', this.onBeforeSelectionsLoad, this);
         this.mon(this.store, 'selectionsload',       this.onSelectionsLoad,       this);
+        this.mon(this.store, 'insertindexfound',     this.onInsertIndexFound,     this);
 
         this.mon(this.store, 'exception', this._onException, this);
 
@@ -208,6 +209,27 @@ com.conjoon.groupware.email.EmailGrid = Ext.extend(Ext.ux.grid.livegrid.GridPane
                 scope : this
             }
         });
+    },
+
+    /**
+     * Listener for the livegrid store's insertindexfound event.
+     * Adjusts the index so records can be appended to the view if the last set
+     * of records is loaded.
+     *
+     * @param {Ext.ux.grid.livegrid.Store} store
+     * @param {Number} index
+     *
+     */
+    onInsertIndexFound : function(store, indexObj)
+    {
+        var view  = this.view,
+            index = indexObj.insertIndex;
+
+        if (index == Number.MAX_VALUE
+            && (view.visibleRows - 1) + view.rowIndex == store.getTotalCount()) {
+            indexObj.insertIndex = store.bufferSize;
+        }
+
     },
 
     onBeforeSelectionsLoad : function()
