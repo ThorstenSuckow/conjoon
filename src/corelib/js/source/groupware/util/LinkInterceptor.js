@@ -95,7 +95,8 @@ com.conjoon.groupware.util.LinkInterceptor = function(){
 
         getRedirectLink : function(link)
         {
-            return 'index/redirect/url/'+encodeURIComponent(link);
+            return 'index/redirect/url/' +
+                encodeURIComponent(encodeURIComponent(link));
         }
     };
 

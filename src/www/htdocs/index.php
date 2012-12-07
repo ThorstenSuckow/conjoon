@@ -36,6 +36,9 @@
 // +----------------------------------------------------------------------------
 // | Register autoload
 // +----------------------------------------------------------------------------
+/*@REMOVE@*/
+$LIBRARY_PATH_BOOTSTRAP = dirname(__FILE__) . '/../../../';
+/*@REMOVE@*/
 /*@BUILD_ACTIVE@
    function __autoload($className)
    {
@@ -125,6 +128,13 @@ require_once 'Conjoon/Modules/Default/User.php';
  */
 require_once 'Zend/Loader/PluginLoader.php';
 
+/*@REMOVE@*/
+/**
+ * @see Zend_Controller_Exception
+ */
+require_once 'Zend/Controller/Exception.php';
+/*@REMOVE@*/
+
 // +----------------------------------------------------------------------------
 // | Welcome! Start the session!
 // +----------------------------------------------------------------------------
@@ -192,6 +202,81 @@ require_once 'Zend/Loader/PluginLoader.php';
    // set tbl prefix
    Conjoon_Db_Table::setTablePrefix($config->database->table->prefix);
 
+    // +------------------------------------------------------------------------
+    // | DOCTRINE
+    // +------------------------------------------------------------------------
+    /**
+     * @see Doctrine\ORM\Tools\Setup
+     */
+    require_once 'Doctrine/ORM/Tools/Setup.php';
+
+    \Doctrine\ORM\Tools\Setup::registerAutoloadDirectory(
+        /*@REMOVE@*/
+            $LIBRARY_PATH_BOOTSTRAP . '/vendor/doctrine/'
+        /*@REMOVE@*/
+        /*@BUILD_ACTIVE@
+        $LIBRARY_PATH_BOOTSTRAP
+        @BUILD_ACTIVE@*/
+    );
+
+    /**
+     * @see Doctrine\Common\ClassLoader
+     */
+    require_once 'Doctrine/Common/ClassLoader.php';
+
+    $classLoader = new \Doctrine\Common\ClassLoader(
+        'Conjoon',
+        /*@REMOVE@*/
+        $LIBRARY_PATH_BOOTSTRAP . '/src/corelib/php/library/'
+        /*@REMOVE@*/
+        /*@BUILD_ACTIVE@
+        $LIBRARY_PATH_BOOTSTRAP
+        @BUILD_ACTIVE@*/
+    );
+    $classLoader->register();
+
+    $doctrineParams = array(
+        'driver'         => 'pdo_mysql',
+        'host'           => $config->database->params->host,
+        'user'           => $config->database->params->username,
+        'password'       => $config->database->params->password,
+        'dbname'         => $config->database->params->dbname,
+        'port'           => $config->database->params->port,
+        'driverOptions'  => array(
+            \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES UTF8'
+        )
+    );
+
+    $doctrineCache  = new \Doctrine\Common\Cache\ArrayCache;
+    $doctrineConfig = new \Doctrine\ORM\Configuration;
+    $doctrineConfig->setMetadataCacheImpl($doctrineCache);
+
+    $doctrineConfig->setMetadataDriverImpl(
+        new \Doctrine\ORM\Mapping\Driver\YamlDriver(
+             $config->environment->application_path
+             . '/orm'
+        )
+    );
+    $doctrineConfig->setQueryCacheImpl($doctrineCache);
+    $doctrineConfig->setProxyDir(
+        /*@REMOVE@*/
+        $LIBRARY_PATH_BOOTSTRAP . '/src/corelib/php/library/'
+        /*@REMOVE@*/
+        /*@BUILD_ACTIVE@
+        . $LIBRARY_PATH_BOOTSTRAP
+        @BUILD_ACTIVE@*/
+        . '/Conjoon/Data/Entity/Proxy'
+    );
+    $doctrineConfig->setProxyNamespace('\Conjoon\Data\Entity\Proxy');
+    $doctrineConfig->setAutoGenerateProxyClasses(false);
+    Zend_Registry::set(Conjoon_Keys::DOCTRINE_ENTITY_MANAGER,
+        \Doctrine\ORM\EntityManager::create($doctrineParams, $doctrineConfig)
+    );
+
+
+    // +------------------------------------------------------------------------
+    // | CACHING
+    // +------------------------------------------------------------------------
     /**
      * @see Conjoon_Cache_Factory
      */

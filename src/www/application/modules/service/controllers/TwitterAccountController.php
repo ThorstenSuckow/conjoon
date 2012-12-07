@@ -361,9 +361,20 @@ class Service_TwitterAccountController extends Zend_Controller_Action {
 
         $config = Zend_Registry::get(Conjoon_Keys::REGISTRY_CONFIG_OBJECT);
 
-        $callbackUrl = $protocol . '://' . $host . ':' . $port . '/'
-                       . $config->environment->base_url . '/'
-                       . $config->application->twitter->oauth->callbackUrl;
+        /**
+         * @see Conjoon_Service_Twitter_AccountService
+         */
+        require_once 'Conjoon/Service/Twitter/AccountService.php';
+
+        $accountService = new Conjoon_Service_Twitter_AccountService();
+
+        $callbackUrl = $accountService->getOauthCallbackUrl(array(
+            'port'             => $port,
+            'protocol'         => $protocol,
+            'host'             => $host,
+            'baseUrl'          => $config->environment->base_url,
+            'oauthCallbackUrl' => $config->application->twitter->oauth->callbackUrl
+        ));
 
         $siteUrl        = $config->application->twitter->oauth->siteUrl;
         $consumerKey    = $config->application->twitter->oauth->consumerKey;
@@ -438,14 +449,24 @@ class Service_TwitterAccountController extends Zend_Controller_Action {
         $protocol = $registry->getValueForKeyAndUserId('/server/environment/protocol', $userId);
         $host     = $registry->getValueForKeyAndUserId('/server/environment/host', $userId);
 
-        $callbackUrl = $protocol . '://' . $host . ':' . $port . '/'
-                       . $config->environment->base_url . '/'
-                       . $config->application->twitter->oauth->callbackUrl;
+        /**
+         * @see Conjoon_Service_Twitter_AccountService
+         */
+        require_once 'Conjoon/Service/Twitter/AccountService.php';
+
+        $accountService = new Conjoon_Service_Twitter_AccountService();
+
+        $callbackUrl = $accountService->getOauthCallbackUrl(array(
+            'port'             => $port,
+            'protocol'         => $protocol,
+            'host'             => $host,
+            'baseUrl'          => $config->environment->base_url,
+            'oauthCallbackUrl' => $config->application->twitter->oauth->callbackUrl
+        ));
 
         $siteUrl        = $config->application->twitter->oauth->siteUrl;
         $consumerKey    = $config->application->twitter->oauth->consumerKey;
         $consumerSecret = $config->application->twitter->oauth->consumerSecret;
-
 
         $options = array(
             'callbackUrl'    => $callbackUrl,
@@ -480,7 +501,6 @@ class Service_TwitterAccountController extends Zend_Controller_Action {
 
         require_once 'Conjoon/Service/Twitter/Proxy.php';
 
-
         $twitter = new Conjoon_Service_Twitter_Proxy(array(
             'screen_name'        => $screenName,
             'user_id'            => $userId,
@@ -494,6 +514,14 @@ class Service_TwitterAccountController extends Zend_Controller_Action {
             $this->view->error             = $dto->getDto();
             $this->view->connectionFailure = true;
             return;
+        }
+
+        /**
+         * @ticket CN-675
+         */
+        if ($dto->twitterId != $userId) {
+            throw new RuntimeException(
+                "userId does not equal to user id from Twitter API Service");
         }
 
         unset($sessionOauth->oauthToken);

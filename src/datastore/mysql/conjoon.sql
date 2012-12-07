@@ -597,6 +597,14 @@ ALTER TABLE `{DATABASE.TABLE.PREFIX}users` CHANGE `email_address` `email_address
 ALTER TABLE `{DATABASE.TABLE.PREFIX}users` CHANGE `user_name` `user_name` VARCHAR( 64 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
 ALTER TABLE `{DATABASE.TABLE.PREFIX}users` DROP INDEX `username`, ADD UNIQUE `username` ( `user_name` );
 
+-- CN-616
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments` CHANGE `content` `content` LONGBLOB NOT NULL;
+
+-- CN-618
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_feeds_items` CHANGE `guid` `guid` TEXT CHARACTER SET utf8 COLLATE utf8_bin NOT NULL;
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_feeds_items` CHANGE `link` `link` TEXT CHARACTER SET utf8 COLLATE utf8_bin NOT NULL;
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_feeds_items_flags` CHANGE `guid` `guid` VARCHAR( 32 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL;
+
 -- CN-655
 ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_folders` CHANGE `parent_id` `parent_id` INT( 10 ) UNSIGNED NULL DEFAULT NULL ;
 UPDATE `{DATABASE.TABLE.PREFIX}groupware_email_folders` SET `parent_id` = NULL WHERE `parent_id`=0;

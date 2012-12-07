@@ -276,6 +276,8 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
         var p = this.panel;
         p.body.dom.innerHTML = html;
 
+
+
         this.initElements();
     },
 
@@ -452,9 +454,6 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
         }
 
         var doc = this.doc;
-        Ext.fly(doc.body).swallowEvent("click", true);
-        com.conjoon.groupware.util.LinkInterceptor.removeListener(Ext.fly(doc.body));
-        com.conjoon.groupware.util.LinkInterceptor.addListener(Ext.fly(doc.body));
 
         if (isPlainText === false) {
             doc.open();
@@ -505,7 +504,6 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
             if (this.isPlainTextView) {
                 doc.body.innerHTML = "";
             } else {
-                com.conjoon.groupware.util.LinkInterceptor.removeListener(Ext.fly(doc.body));
                 doc.open();
                 doc.write(this.emptyMarkup)
                 doc.close();
@@ -577,6 +575,7 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
 
         this.doc = doc;
         this.iframe = new Ext.Element(iframe);
+        com.conjoon.groupware.util.LinkInterceptor.addListener(Ext.fly(this.doc.body));
     },
 
     // private

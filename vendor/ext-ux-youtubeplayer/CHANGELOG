@@ -1,3 +1,9 @@
+Version 0.6
+02-December-2012
+ - enhancement: adjusted error listener to consider all error codes the youtube
+chromeless offers
+
+
 Version 0.5
 28-October-2012
  - fixed: fixed an issue where the callbacks for the statechange and error

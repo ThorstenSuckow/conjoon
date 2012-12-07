@@ -99,12 +99,32 @@ com.conjoon.groupware.service.youtube.ViewBaton = function() {
             _onError : function(errorCode, playerPanel, player) {
                 playerPanel.stopVideo();
 
+                var message = "";
+
+                switch (errorCode) {
+                    case 'invalid_parameter':
+                        message = com.conjoon.Gettext.gettext("The url contained an invalid parameter. The video was not loaded.");
+                        break;
+
+                    case 'embedding_forbidden':
+                        message = com.conjoon.Gettext.gettext("The requested video is not allowed to be played in embedded players.");
+                        break;
+
+                    case 'video_not_found':
+                        message = com.conjoon.Gettext.gettext("The requested video could not be played. It was either removed or is not available for your country.");
+                        break;
+
+                    default:
+                        message = String.format(
+                            com.conjoon.Gettext.gettext("The video you requested could not be played due to an unknown error. Error code \"{0}\"."),
+                            errorCode
+                        );
+                        break;
+                }
+
                 com.conjoon.SystemMessageManager.error(new com.conjoon.SystemMessage({
                     title : com.conjoon.Gettext.gettext("Error"),
-                    text  : String.format(
-                        com.conjoon.Gettext.gettext("The video you requested could not be played. Error code \"{0}\"."),
-                        errorCode
-                    )
+                    text  : message
                 }));
             }
         });

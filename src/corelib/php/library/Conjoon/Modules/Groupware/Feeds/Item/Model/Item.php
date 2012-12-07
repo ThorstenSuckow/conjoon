@@ -342,7 +342,7 @@ class Conjoon_Modules_Groupware_Feeds_Item_Model_Item
         require_once 'Conjoon/Modules/Groupware/Feeds/Item/Model/Flag.php';
         $flagModel = new Conjoon_Modules_Groupware_Feeds_Item_Model_Flag();
 
-        if ($flagModel->isItemPresent($accountId, $item['guid'])) {
+        if ($flagModel->isItemPresent($accountId, md5($item['guid']))) {
             return 0;
         }
 
@@ -351,7 +351,7 @@ class Conjoon_Modules_Groupware_Feeds_Item_Model_Item
 
         if ($id > 0) {
 
-            $flagModel->addItem($accountId, $item['guid']);
+            $flagModel->addItem($accountId, md5($item['guid']));
 
             return $id;
         }

@@ -122,9 +122,10 @@ Ext.ux.YoutubePlayer = Ext.extend(Ext.FlashComponent, {
              /**
               * @event error
               * Fired when an error in the player occurs.
-              * @param {Number} errorCode Currently there is only one error code, which is 'video_not_found'.
-              * This occurs when a video has been removed (for any reason), or it has been marked as private or
-              * non-embeddable by the user.
+              * @param {String} errorCode The following errorCodes are sent by this event:
+              *   - invalid_parameter
+              *   - embedding_forbidden
+              *   - video_not_found
               * @param {Ext.ux.YoutubePlayer} panel The Ext.BoxComponent that holds the flash player
               * @param {HTMLElement} player The Dom node representing the flash player
               */
@@ -200,6 +201,7 @@ Ext.ux.YoutubePlayer = Ext.extend(Ext.FlashComponent, {
     /**
      * Due to the nature of passig a callback to the youtube player, another method has to
      * intercept the error events and translate them into ext-events.
+
      * @param {Number} errorCode The code as passed by the flash playerstate of the player,
      * which translates into it's string representation for easier identifying the events.
      * If the error number is not known yet by this api, the
@@ -211,8 +213,12 @@ Ext.ux.YoutubePlayer = Ext.extend(Ext.FlashComponent, {
     _delegateErrorEvent : function(errorCode)
     {
         switch (errorCode) {
-            case 100:  errorCode = 'video_not_found';  break;
-            default :  errorCode = 'unknown';          break;
+
+            case 2:   errorCode = 'invalid_parameter'; break;
+            case 101: errorCode = 'embedding_forbidden'; break;
+            case 150: errorCode = 'embedding_forbidden'; break;
+            case 100: errorCode = 'video_not_found';  break;
+            default : errorCode = 'unknown';          break;
         }
 
         this.fireEvent('error', errorCode, this, this.player);
