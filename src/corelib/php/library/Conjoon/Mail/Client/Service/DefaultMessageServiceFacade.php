@@ -18,8 +18,12 @@ namespace Conjoon\Mail\Client\Service;
 /**
  * @see MessageServiceFacade
  */
-
 require_once 'Conjoon/Mail/Client/Service/MessageServiceFacade.php';
+
+/**
+ * @see DefaultServiceResult
+ */
+require_once 'Conjoon/Mail/Client/Service/DefaultServiceResult.php';
 
 /**
  * Service facade for operations related to messages. A default implementation
@@ -71,9 +75,7 @@ class DefaultMessageServiceFacade implements MessageServiceFacade {
      * @param \Conjoon\User\User $user The user object representing the user
      *                                   who triggered this operation
      *
-     *
-     *
-     * @throws MessageServiceException
+     * @return ServiceResult
      */
     public function setFlagsForMessagesInFolder($flag, $path, \Conjoon\User\User $user)
     {
@@ -115,25 +117,23 @@ class DefaultMessageServiceFacade implements MessageServiceFacade {
                     $flagCollection, $folder
                 );
 
-            $this->server->handle(
-                new \Conjoon\Mail\Server\Request\DefaultSetFlagsRequest(
-                    $folderFlagCollection, $user
-                )
-            );
-
             $request = new \Conjoon\Mail\Server\Request\DefaultSetFlagsRequest(array(
                 'user'       => $user,
                 'parameters' => array(
                     'folderFlagCollection' => $folderFlagCollection
             )));
 
-            return $this->server->handle($request);
+            $response = $this->server->handle($request);
+
+            return new DefaultServiceResult($response);
 
         } catch (\Exception $e) {
-            throw new MessageServiceException(
+
+            return new DefaultServiceResult(new MessageServiceException(
                 "Exception thrown by previous exception: " . $e->getMessage(),
                 0, $e
-            );
+            ));
+
         }
 
     }

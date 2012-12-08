@@ -36,8 +36,8 @@ interface MessageServiceFacade {
      * @param \Conjoon\User\User $user The user object representing the user
      *                                   who triggered this operation
      *
-     * @throws Conjoon_Mail_Client_Service_ClientMessageServiceException
      *
+     * @return ServiceResult
      */
     public function setFlagsForMessagesInFolder($flag, $path,
         \Conjoon\User\User $user);

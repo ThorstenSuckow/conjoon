@@ -26,7 +26,7 @@ namespace Conjoon\Mail\Client\Message\Flag;
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-abstract class Flag {
+abstract class Flag implements \Conjoon\Mail\Message\Flag\MessageFlag{
 
     /**
      * @var string
@@ -73,9 +73,7 @@ abstract class Flag {
     }
 
     /**
-     * Returns the id for the message which flag has to be set.
-     *
-     * @return string
+     * @inheritdoc
      */
     public function getMessageId()
     {
@@ -83,9 +81,7 @@ abstract class Flag {
     }
 
     /**
-     * Returns whether the flag should be removed.
-     *
-     * @return bool
+     * @inheritdoc
      */
     public function isClear()
     {

@@ -58,6 +58,8 @@ class DefaultProtocolAdaptee implements ProtocolAdaptee {
         => '\Conjoon\Mail\Client\Folder\DefaultFolderService',
         'mailFolderCommons'
         => '\Conjoon\Mail\Client\Folder\DefaultFolderCommons',
+        'imapMessageFlagRepository'
+        => '\Conjoon\Data\Repository\Mail\ImapMessageFlagRepository'
 
     );
 
@@ -122,7 +124,30 @@ class DefaultProtocolAdaptee implements ProtocolAdaptee {
 
 
         if ($isRemoteMailbox) {
-            throw new \RuntimeException("Not Yet Supported");
+            $rootFolder = $this->doctrineMailFolderRepository->findById(
+                $folder->getRootId());
+
+            $accounts = $rootFolder->getMailAccounts();
+
+            if (count($accounts) > 1) {
+                throw new \Conjoon\Mail\Server\Protocol\ProtocolException(
+                    "Unexpected multiple accounts found for a remote folder"
+                );
+            }
+            $imapMessageFlagRepository =
+                $this->defaultClassNames['imapMessageFlagRepository'];
+            $imapRepository = new $imapMessageFlagRepository(
+                $accounts[0]
+            );
+
+            try {
+                $imapRepository->setFlagsForUser($flagCollection, $user);
+            } catch (\Exception $e) {
+                throw new \Conjoon\Mail\Server\Protocol\ProtocolException(
+                    "Exception thrown by previous exception: "
+                    . $e->getMessage(), 0, $e
+                );
+            }
         } else {
             try {
                 $this->applyFlagCollectionForUser($flagCollection, $user);

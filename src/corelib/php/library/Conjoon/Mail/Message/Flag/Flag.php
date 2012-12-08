@@ -17,27 +17,23 @@
 namespace Conjoon\Mail\Message\Flag;
 
 /**
- * An interface for message flags. Provides details about the flag and the
- * message id of the flag.
+ * A tagging interface for flags. Should not be used directly. Instead,
+ * sub classes should be used
+ * project.
  *
  * @category   Conjoon_Mail
  * @package    Conjoon_Mail_Message_Flag
  *
  */
-interface MessageFlag  {
+interface Flag  {
 
     /**
-     * Returns the id for the message which flag has to be set.
+     * Returns a textual representation of this flag.
      *
      * @return string
-     */
-    public function getMessageId();
-
-    /**
-     * Returns whether the flag should be removed.
      *
-     * @return bool
+     * @abstract
      */
-    public function isClear();
+    public function __toString();
 
 }

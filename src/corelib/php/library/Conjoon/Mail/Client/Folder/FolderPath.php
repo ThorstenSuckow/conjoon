@@ -17,6 +17,11 @@
 namespace Conjoon\Mail\Client\Folder;
 
 /**
+ * @see \Conjoon\Mail\Folder\FolderPath
+ */
+require_once 'Conjoon/Mail/Folder/FolderPath.php';
+
+/**
  * Provides an oo representation of a client generated path for a mailbox.
  *
  * A client generated path is for example a json encoded array in the form of
@@ -30,30 +35,7 @@ namespace Conjoon\Mail\Client\Folder;
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-interface FolderPath {
-
-    /**
-     * Constructs a new instance
-     *
-     * @param string $options The client generated path this object represents
-     *
-     * @throws \Conjoon_Argument_Exception if the argument was invalid
-     * @throws MailFolderPathException if
-     * an error during extracting the path infos occurs.
-     */
-    public function __construct($options);
-
-    /**
-     * Returns an array with the path parts. Path parts are the path to the
-     * folder this object represents, without the rootId.
-     * The array may be empty.
-     *
-     * @return array
-     *
-     * @abstract
-     */
-    public function getPath();
-
+interface FolderPath extends \Conjoon\Mail\Folder\FolderPath {
 
     /**
      * Returns the node id for the client generated path.

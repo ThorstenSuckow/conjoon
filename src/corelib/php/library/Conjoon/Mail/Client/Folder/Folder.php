@@ -17,6 +17,11 @@
 namespace Conjoon\Mail\Client\Folder;
 
 /**
+ * @see \Conjoon\Mail\Folder\FolderPath
+ */
+require_once 'Conjoon/Mail/Folder/FolderPath.php';
+
+/**
  * Represents a client site folder.
  *
  * @category   Conjoon_Mail
@@ -24,7 +29,7 @@ namespace Conjoon\Mail\Client\Folder;
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class Folder {
+class Folder implements \Conjoon\Mail\Folder\FolderPath {
 
     /**
      * @var array

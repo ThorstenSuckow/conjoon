@@ -14,7 +14,7 @@
  */
 
 
-namespace Conjoon\Mail\Client\Message\Flag;
+namespace Conjoon\Mail\Message\Flag;
 
 /**
  * @see \Conjoon\Mail\Message\Flag\FlagCollection
@@ -22,15 +22,16 @@ namespace Conjoon\Mail\Client\Message\Flag;
 require_once 'Conjoon/Mail/Message/Flag/FlagCollection.php';
 
 /**
- * A collection of message flags sent from the client.
- *
- * @category   Conjoon_Mail
- * @package    Conjoon_Mail_Client
+ * @package    Conjoon/Tests
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-interface FlagCollection extends \Conjoon\Mail\Message\Flag\FlagCollection {
+class FlagCollectionTest extends \PHPUnit_Framework_TestCase {
 
+
+    public function testDummy()
+    {
+
+    }
 
 }
-

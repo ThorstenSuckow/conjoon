@@ -26,6 +26,9 @@ interface Conjoon_Keys {
 // -------- ext request object
     const EXT_REQUEST_OBJECT = 'com.conjoon.registry.extRequestObject';
 
+// -------- ext request object
+    const DOCTRINE_ENTITY_MANAGER = 'com.conjoon.registry.doctrine.entityManager';
+
 // -------- app config in registry
     const REGISTRY_CONFIG_OBJECT = 'com.conjoon.registry.config';
 

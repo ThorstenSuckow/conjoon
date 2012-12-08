@@ -13,21 +13,19 @@
  * $URL$
  */
 
-
-namespace Conjoon\Mail\Message\Flag;
-
+namespace Conjoon\Data\Repository\Mail;
 
 /**
- * @see \Conjoon\Mail\Message\Flag\MessageFlag
+ * @see Conjoon\Data\Repository\Mail\MessageRepository
  */
-require_once 'Conjoon/Mail/Message/Flag/MessageFlag.php';
+require_once 'Conjoon/Data/Repository/Mail/MessageRepository.php';
 
 /**
  * @package    Conjoon/Tests
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class MessageFlagTest extends \PHPUnit_Framework_TestCase {
+class MessageRepositoryTest extends \PHPUnit_Framework_TestCase {
 
 
     public function testDummy()

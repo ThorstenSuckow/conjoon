@@ -14,23 +14,23 @@
  */
 
 
-namespace Conjoon\Mail\Client\Message\Flag;
+namespace Conjoon\Mail\Message\Flag;
 
 /**
- * @see \Conjoon\Mail\Message\Flag\FlagCollection
- */
-require_once 'Conjoon/Mail/Message/Flag/FlagCollection.php';
-
-/**
- * A collection of message flags sent from the client.
+ * A collection of message flags.
  *
  * @category   Conjoon_Mail
  * @package    Conjoon_Mail_Client
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-interface FlagCollection extends \Conjoon\Mail\Message\Flag\FlagCollection {
+interface FlagCollection {
 
-
+    /**
+     * Returns the message flags.
+     *
+     * @return array An array of MessageFlags
+     */
+    public function getFlags();
 }
 

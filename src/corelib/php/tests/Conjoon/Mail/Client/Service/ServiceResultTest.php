@@ -14,20 +14,23 @@
  */
 
 
-namespace Conjoon\Mail\Message\Flag;
-
+namespace Conjoon\Mail\Client\Service;
 
 /**
- * @see \Conjoon\Mail\Message\Flag\MessageFlag
+ * @see ServiceResult
  */
-require_once 'Conjoon/Mail/Message/Flag/MessageFlag.php';
+require_once 'Conjoon/Mail/Client/Service/ServiceResult.php';
+
 
 /**
- * @package    Conjoon/Tests
+ * @category   Conjoon
+ * @package    Conjoon_Mail
+ * @subpackage UnitTests
+ * @group      Conjoon_Mail
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class MessageFlagTest extends \PHPUnit_Framework_TestCase {
+class ServiceResultTest extends \PHPUnit_Framework_TestCase {
 
 
     public function testDummy()

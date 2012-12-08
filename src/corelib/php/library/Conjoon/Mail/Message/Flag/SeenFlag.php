@@ -13,10 +13,11 @@
  * $URL$
  */
 
+
 /**
- * @see Conjoon_Mail_Message_Flag_MessageFlag
+ * @see \Conjoon\Mail\Message\Flag\Flag
  */
-require_once 'Conjoon/Mail/Message/Flag/MessageFlag.php';
+require_once 'Conjoon/Mail/Message/Flag/Flag.php';
 
 /**
  * A tagging interface for the "seen" message flag.
@@ -27,6 +28,6 @@ require_once 'Conjoon/Mail/Message/Flag/MessageFlag.php';
  * @uses Conjoon_Mail_Message_Flag_MessageFlag
  */
 interface Conjoon_Mail_Message_Flag_SeenFlag
-    extends Conjoon_Mail_Message_Flag_MessageFlag  {
+    extends \Conjoon\Mail\Message\Flag\Flag  {
 
 }

@@ -21,6 +21,10 @@ namespace Conjoon\Mail\Client\Service;
  */
 require_once 'Conjoon/Mail/Client/Service/DefaultMessageServiceFacade.php';
 
+/**
+ * @see \Conjoon\Mail\Server\Protocol\ProtocolTestCase
+ */
+require_once dirname(__FILE__) . '/../../Server/Protocol/ProtocolTestCase.php';
 
 /**
  * @category   Conjoon
@@ -30,12 +34,27 @@ require_once 'Conjoon/Mail/Client/Service/DefaultMessageServiceFacade.php';
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class DefaultMessageServiceFacadeTest
-    extends \PHPUnit_Framework_TestCase {
+class DefaultMessageServiceFacadeTest extends
+    \Conjoon\Mail\Server\Protocol\ProtocolTestCase {
 
 
-    public function testDummy()
+    public function testOk()
     {
+        $protocol = new \Conjoon\Mail\Server\Protocol\DefaultProtocol(
+            $this->protocolAdaptee
+        );
+
+        $defaultServer = new \Conjoon\Mail\Server\DefaultServer($protocol);
+
+        $messageFacade = new DefaultMessageServiceFacade($defaultServer);
+
+        $result = $messageFacade->setFlagsForMessagesInFolder(
+            '[{"id":"56","isRead":true}]', '["root","1","2"]', $this->user
+
+        );
+
+        $this->assertTrue($result instanceof ServiceResult);
+        $this->assertTrue($result->isSuccess());
 
     }
 
