@@ -38,6 +38,8 @@ interface MessageFlagRepository extends \Conjoon\Data\Repository\DataRepository 
      * @param \Conjoon\Mail\Client\Message\Flag\FolderFlagCollection $folderFlagCollection
      * @param \Conjoon\User\User $user
      *
+     * @return boolean true if the operation succeeded, otherwise false
+     *
      * @throws \Conjoon\Data\Repository\Mail\MailRepositoryException
      */
     public function setFlagsForUser(

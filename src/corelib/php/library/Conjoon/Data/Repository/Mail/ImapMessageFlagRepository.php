@@ -16,6 +16,16 @@
 
 namespace Conjoon\Data\Repository\Mail;
 
+use Conjoon\Argument\InvalidArgumentException,
+    Conjoon\Argument\ArgumentCheck,
+    Conjoon\Data\Repository\Mail\MailRepositoryException;
+
+/**
+ * @see \ Conjoon\Data\Repository\Mail\MailRepositoryException
+ */
+require_once 'Conjoon/Data/Repository/Mail/MailRepositoryException.php';
+
+
 /**
  * @see \Conjoon\Data\Repository\Mail\MessageFlagRepository
  */
@@ -25,6 +35,16 @@ require_once 'Conjoon/Data/Repository/Mail/MessageFlagRepository.php';
  * @see \Conjoon\Data\Repository\Mail\ImapRepository
  */
 require_once 'Conjoon/Data/Repository/Mail/ImapRepository.php';
+
+/**
+ * @see \Conjoon\Argument\InvalidArgumentException
+ */
+require_once 'Conjoon/Argument/InvalidArgumentException.php';
+
+/**
+ * @see \Conjoon\Argument\ArgumentCheck
+ */
+require_once 'Conjoon/Argument/ArgumentCheck.php';
 
 /**
  * A data repository connected to an imap server.
@@ -43,6 +63,11 @@ class ImapMessageFlagRepository extends ImapRepository
     protected $account;
 
     /**
+     * @var \Conjoon\Lang\ClassLoader
+     */
+    protected $classLoader;
+
+    /**
      * @var string
      */
     protected $imapConnectionClassName =
@@ -54,6 +79,82 @@ class ImapMessageFlagRepository extends ImapRepository
     protected $imapAdapteeClassName =
         '\Conjoon\Data\Repository\Remote\DefaultImapAdaptee';
 
+    /**
+     * Creates a new instance of the ImapMessageFlagRepository.
+     *
+     * @param \Conjoon\Data\Entity\Mail\DefaultMailAccountEntity $account
+     * @param array $options An array of configuration options, optional,
+     *              with the following key/value pairs:
+     *              - classLoader: an instance of \Conjoon\Lang\ClassLoader. If
+     *                omitted, Conjoon\Lang\DefaultClassLoader will be used.
+     *              - imapConnectionClassName: the name of the class to use
+     *                for the imap repository connection, must inherit from
+     *                \Conjoon\Data\Repository\Remote\ImapConnection
+     *              - imapAdapteeClassName: the adaptee to use for the
+     *                imapConnection, must inherit from
+     *                \Conjoon\Data\Repository\Remote\ImapAdaptee
+     *
+     * @throws \Conjoon\Argument\InvalidArgumentException
+     * @throws \Conjoon\Data\Repository\Mail\MailRepositoryException
+     */
+    public function __construct(
+        \Conjoon\Data\Entity\Mail\DefaultMailAccountEntity $account,
+        array $options = array()
+    )
+    {
+        $this->account = $account;
+
+        if (!empty($options)) {
+
+            ArgumentCheck::check(array(
+                'classLoader' => array(
+                    'type'       => 'instanceof',
+                    'class'      => '\Conjoon\Lang\ClassLoader',
+                    'allowEmpty' => false,
+                    'mandatory'  => false
+                ),
+                'imapConnectionClassName' => array(
+                    'type'       => 'string',
+                    'allowEmpty' => false,
+                    'mandatory'  => false
+                ),
+                'imapAdapteeClassName' => array(
+                    'type'       => 'string',
+                    'allowEmpty' => false,
+                    'mandatory'  => false
+                )
+            ), $options);
+
+            if (isset($options['classLoader'])) {
+                $this->classLoader = $options['classLoader'];
+            } else {
+                /**
+                 * @see \Conjoon\Lang\DefaultClassLoader
+                 */
+                require_once 'Conjoon/Lang/DefaultClassLoader.php';
+
+                $this->classLoader = new \Conjoon\Lang\DefaultClassLoader();
+            }
+
+            try {
+                if (isset($options['imapConnectionClassName'])) {
+                    $this->imapConnectionClassName = $options['imapConnectionClassName'];
+                    $this->classLoader->loadClass($this->imapConnectionClassName);
+                }
+
+                if (isset($options['imapAdapteeClassName'])) {
+                    $this->imapAdapteeClassName = $options['imapAdapteeClassName'];
+                    $this->classLoader->loadClass($this->imapAdapteeClassName);
+                }
+            } catch (\Exception $e) {
+                throw new MailRepositoryException(
+                    "Exception thrown by previous exception: "
+                    . $e->getMessage(),0, $e
+                );
+            }
+        }
+
+    }
 
     /**
      * @inheritdoc
@@ -85,20 +186,6 @@ class ImapMessageFlagRepository extends ImapRepository
     }
 
     /**
-     * Creates a new instance of the ImapMessageFlagRepository.
-     *
-     * @param \Conjoon\Data\Entity\Mail\DefaultMailAccountEntity $account
-     *
-     */
-    public function __construct(
-        \Conjoon\Data\Entity\Mail\DefaultMailAccountEntity $account
-    )
-    {
-        $this->account = $account;
-    }
-
-
-    /**
      * @inheritdoc
      */
     public function setFlagsForUser(
@@ -111,7 +198,7 @@ class ImapMessageFlagRepository extends ImapRepository
 
         $flagCollection = $folderFlagCollection->getFlagCollection();
 
-        $connection->setFlags($flagCollection);
+        return $connection->setFlags($flagCollection);
     }
 
 

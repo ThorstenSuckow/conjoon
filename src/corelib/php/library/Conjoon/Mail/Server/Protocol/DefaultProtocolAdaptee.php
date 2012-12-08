@@ -59,7 +59,9 @@ class DefaultProtocolAdaptee implements ProtocolAdaptee {
         'mailFolderCommons'
         => '\Conjoon\Mail\Client\Folder\DefaultFolderCommons',
         'imapMessageFlagRepository'
-        => '\Conjoon\Data\Repository\Mail\ImapMessageFlagRepository'
+        => '\Conjoon\Data\Repository\Mail\ImapMessageFlagRepository',
+        'accountService'
+        => '\Conjoon\Mail\Client\Account\DefaultAccountService'
 
     );
 
@@ -124,24 +126,16 @@ class DefaultProtocolAdaptee implements ProtocolAdaptee {
 
 
         if ($isRemoteMailbox) {
-            $rootFolder = $this->doctrineMailFolderRepository->findById(
-                $folder->getRootId());
 
-            $accounts = $rootFolder->getMailAccounts();
+            try{
+                $account = $this->getAccountServiceForUser($user)
+                                ->getMailAccountToAccessRemoteFolder($folder);
 
-            if (count($accounts) > 1) {
-                throw new \Conjoon\Mail\Server\Protocol\ProtocolException(
-                    "Unexpected multiple accounts found for a remote folder"
-                );
-            }
-            $imapMessageFlagRepository =
-                $this->defaultClassNames['imapMessageFlagRepository'];
-            $imapRepository = new $imapMessageFlagRepository(
-                $accounts[0]
-            );
-
-            try {
+                $imapMessageFlagRepository =
+                    $this->defaultClassNames['imapMessageFlagRepository'];
+                $imapRepository = new $imapMessageFlagRepository($account);
                 $imapRepository->setFlagsForUser($flagCollection, $user);
+
             } catch (\Exception $e) {
                 throw new \Conjoon\Mail\Server\Protocol\ProtocolException(
                     "Exception thrown by previous exception: "
@@ -184,6 +178,18 @@ class DefaultProtocolAdaptee implements ProtocolAdaptee {
     protected function getDoctrineMessageFlagRepository()
     {
         return $this->doctrineMessageFlagRepository;
+    }
+
+    /**
+     * Returns the accountservice for the specified user.
+     *
+     * @param \Conjoon\User\User $user
+     *
+     * @return \Conjoon\Mail\Client\Account\AccountService
+     */
+    protected function getAccountServiceForUser(\Conjoon\User\User $user)
+    {
+        return $this->getServiceForUser('accountService', $user);
     }
 
     /**
@@ -244,6 +250,16 @@ class DefaultProtocolAdaptee implements ProtocolAdaptee {
                         'user'                 => $user,
                         'mailFolderCommons'    => $this->getServiceForUser(
                                                       'mailFolderCommons', $user
+                                                  )
+                    ));
+                    break;
+
+                case 'accountService':
+                    $instance = new $className(array(
+                        'mailFolderRepository' => $this->getDoctrineMailFolderRepository(),
+                        'user'                 => $user,
+                        'folderService'        => $this->getServiceForUser(
+                                                      'folderService', $user
                                                   )
                     ));
                     break;

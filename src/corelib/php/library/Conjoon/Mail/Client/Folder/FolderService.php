@@ -60,4 +60,6 @@ interface FolderService {
      */
     public function isFolderRepresentingRemoteMailbox(Folder $folder);
 
+
+
 }
