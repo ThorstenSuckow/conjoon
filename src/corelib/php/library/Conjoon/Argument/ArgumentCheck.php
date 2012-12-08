@@ -42,10 +42,18 @@ class ArgumentCheck {
 
         foreach ($config as $argumentName => $entityConfig) {
 
-            if (!array_key_exists($argumentName, $data)) {
+            $isMandatory = isset($entityConfig['mandatory'])
+                ? (bool) $entityConfig['mandatory']
+                : true;
+
+            $isSettingAvailable = array_key_exists($argumentName, $data);
+
+            if (!$isSettingAvailable && $isMandatory) {
                 throw new InvalidArgumentException(
                     "\"$argumentName\" does not exist in data"
                 );
+            } else if (!$isSettingAvailable && !$isMandatory) {
+                return;
             }
 
             $allowEmpty = isset($entityConfig['allowEmpty'])

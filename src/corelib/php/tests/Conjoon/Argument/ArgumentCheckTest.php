@@ -147,6 +147,42 @@ class ArgumentCheckTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @expectedException \Conjoon\Argument\InvalidArgumentException
+     *
+     * @ticket CN-694
+     */
+    public function testMandatory_True()
+    {
+        $data = array('somekey' => 'somevalue');
+
+        ArgumentCheck::check(array(
+            'test' => array(
+                'type'       => 'string',
+                'allowEmpty' => false,
+                'mandatory'  => true
+            )
+        ), $data);
+    }
+
+    /**
+     * Ensures everything works as expected.
+     *
+     * @ticket CN-694
+     */
+    public function testMandatory_False()
+    {
+        $data = array('somekey' => 'somevalue');
+
+        ArgumentCheck::check(array(
+            'test' => array(
+                'type'       => 'string',
+                'allowEmpty' => false,
+                'mandatory'  => false
+            )
+        ), $data);
+    }
+
+    /**
      * Ensures everything works as expected
      *
      */
