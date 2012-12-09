@@ -241,6 +241,9 @@ com.conjoon.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
      * @param {Number} id The id of the email to load. If not provided,
      * the id of the emailItem that was passed to the constriuctor will be used
      * instead
+     * @param {Array} path The path to the folder from which the message was
+     * loaded
+     *
      */
     load : function(id)
     {
@@ -268,11 +271,11 @@ com.conjoon.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
 
         this.emailRecord = null;
 
-
         this.requestId = Ext.Ajax.request({
             url            : './groupware/email.item/get.email/format/json',
             params         : {
-                id  : id
+                id   : id,
+                path : Ext.util.JSON.encode(this.emailItem.get('path'))
             },
             success        : this.onEmailLoadSuccess,
             failure        : this.onEmailLoadFailure,

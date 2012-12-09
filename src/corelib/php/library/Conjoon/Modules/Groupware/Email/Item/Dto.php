@@ -32,5 +32,6 @@ class Conjoon_Modules_Groupware_Email_Item_Dto extends Conjoon_Dto {
     public $isOutboxPending;
     public $referencedAsTypes;
     public $groupwareEmailFoldersId;
+    public $path;
 
 }

@@ -63,6 +63,7 @@ class Conjoon_Modules_Groupware_Email_Item implements Conjoon_BeanContext, Seria
     private $isDraft;
     private $isOutboxPending;
     private $groupwareEmailFoldersId;
+    private $path;
     private $referencedAsTypes;
 
     /**
@@ -71,11 +72,13 @@ class Conjoon_Modules_Groupware_Email_Item implements Conjoon_BeanContext, Seria
     public function __construct()
     {
         $this->referencedAsTypes = array();
+        $this->path              = array();
     }
 
 // -------- accessors
 
     public function getId(){return $this->id;}
+    public function getPath(){return $this->path;}
     public function getRecipients(){return $this->recipients;}
     public function getSender(){return $this->sender;}
     public function getSubject(){return $this->subject;}
@@ -93,6 +96,7 @@ class Conjoon_Modules_Groupware_Email_Item implements Conjoon_BeanContext, Seria
     public function setSender($sender){$this->sender = $sender;}
     public function setSubject($subject){$this->subject = $subject;}
     public function setReferencedAsTypes(Array $referencedAsTypes){$this->referencedAsTypes = $referencedAsTypes;}
+    public function setPath(Array $path){$this->path = $path;}
     public function setDate($date){$this->date = $date;}
     public function setRead($isRead){$this->isRead = $isRead;}
     public function setAttachment($isAttachment){$this->isAttachment = $isAttachment;}
@@ -174,6 +178,7 @@ class Conjoon_Modules_Groupware_Email_Item implements Conjoon_BeanContext, Seria
             'isDraft'           => $this->isDraft,
             'isOutboxPending'   => $this->isOutboxPending,
             'referencedAsTypes' => $this->referencedAsTypes,
+            'path'              => $this->path,
             'groupwareEmailFoldersId' => $this->groupwareEmailFoldersId
         );
     }

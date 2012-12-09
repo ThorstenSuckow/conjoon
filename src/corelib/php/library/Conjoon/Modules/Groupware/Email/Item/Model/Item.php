@@ -111,6 +111,16 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
     protected $_primary = 'id';
 
     /**
+     * @var array
+     */
+    protected $cachedFolderPaths;
+
+    /**
+     * @var Conjoon_Modules_Groupware_Email_Folder_Model_Folder
+     */
+    protected $folderModel;
+
+    /**
      * Applies the correct table alias to the passed fieldname
      *
      */
@@ -415,11 +425,41 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
         $rows = $adapter->fetchAll($select);
 
         if ($rows != false) {
+            $rows = $this->applyPathToEmailItems($rows);
+
             return $rows;
         }
 
         return array();
     }
+
+    /**
+     * Applies the folder path to the email items
+     *
+     * @param array $rows
+     */
+    protected function applyPathToEmailItems(array $items)
+    {
+        $cachedFolderPaths =& $this->cachedFolderPaths;
+
+        if (!$this->folderModel) {
+            $this->folderModel = new Conjoon_Modules_Groupware_Email_Folder_Model_Folder();
+        }
+
+        for ($i = 0, $len = count($items); $i < $len; $i++) {
+            $id = $items[$i]['groupware_email_folders_id'];
+
+            if (!isset($cachedFolderPaths[$id]))  {
+                $path = $this->folderModel->getPathForFolderId($id);
+                $cachedFolderPaths[$id] = $path;
+            }
+
+            $items[$i]['path'] = $cachedFolderPaths[$id];
+        }
+
+        return $items;
+    }
+
 
     /**
      * Moves all items with the specified ids to the folder with the specified

@@ -687,10 +687,50 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
     /**
      * Returns an email for the specified id (POST).
      *
-     *
+     * @see getMessageFromRemoteServer
      */
     public function getEmailAction()
     {
+        if ($this->_helper->conjoonContext()->getCurrentContext() !=
+            self::CONTEXT_JSON) {
+            /**
+             * see Conjoon_Controller_Action_InvalidContextException
+             */
+            require_once 'Conjoon/Controller/Action/InvalidContextException.php';
+
+            throw new Conjoon_Controller_Action_InvalidContextException(
+                "Invalid context for action, expected \""
+                    . self::CONTEXT_JSON
+                    . "\", got \""
+                    . $this->_helper->conjoonContext()->getCurrentContext()
+                    ."\""
+            );
+        }
+
+        $path = $_POST['path'];
+
+        // check if folder is remote folder
+        /**
+         * @see Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser
+         */
+        require_once 'Conjoon/Text/Parser/Mail/MailboxFolderPathJsonParser.php';
+
+        $parser = new Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser();
+
+        $pathInfo = $parser->parse($path);
+
+        /**
+         * @see Conjoon_Modules_Groupware_Email_Folder_Facade
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/Folder/Facade.php';
+
+        $facade = Conjoon_Modules_Groupware_Email_Folder_Facade::getInstance();
+
+        if ($facade->isRemoteFolder($pathInfo['rootId'])) {
+            return $this->getMessageFromRemoteServer($_POST['id'], $path);
+        }
+
+
         /**
          * @see Conjoon_Modules_Groupware_Email_Message_Facade
          */
@@ -714,7 +754,21 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
         $this->view->item        = $message;
     }
 
-
+    /**
+     * Helper function for fetching a single email message from a remote
+     * server.
+     *
+     * @param string $messageId The id of the message
+     * @param string $path The json encoded path where the message can be found
+     *
+     * 
+     */
+    protected function getMessageFromRemoteServer($messageId, $path)
+    {
+        $this->view->success    = false;
+        $this->view->error      = null;
+        $this->view->item       = null;
+    }
 
 
 }

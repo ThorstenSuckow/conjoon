@@ -96,7 +96,7 @@ com.conjoon.groupware.email.EmailGrid = Ext.extend(Ext.ux.grid.livegrid.GridPane
                     });
                 }
             },
-            url         : './groupware/email.item/get.email.items/format/json'
+            url : './groupware/email.item/get.email.items/format/json'
         });
 
 

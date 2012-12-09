@@ -44,6 +44,12 @@ class Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParserTest
         $this->_parser = new Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser();
 
         $this->_input = array(
+            '["79", "INBOXtttt", "rfwe2", "New folder (7)"]'
+            => array(
+                'path'    => array('INBOXtttt', 'rfwe2', 'New folder (7)'),
+                'nodeId'  => 'New folder (7)',
+                'rootId'  => 79
+            ),
             '["root", "79", "INBOXtttt", "rfwe2", "New folder (7)"]'
             => array(
                 'path'    => array('INBOXtttt', 'rfwe2', 'New folder (7)'),

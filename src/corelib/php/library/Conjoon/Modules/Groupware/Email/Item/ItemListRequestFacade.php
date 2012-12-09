@@ -114,7 +114,7 @@ class Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade {
             );
 
             return $this->_getEmailItemListForAccountAndRemoteFolder(
-                $accountDto, $pathInfo['path'], $sortInfo, $userId
+                $accountDto, $pathInfo, $sortInfo, $userId
             );
         }
 
@@ -127,8 +127,8 @@ class Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade {
     /**
      *
      * @param Conjoon_Modules_Groupware_Email_Account_Dto $accountDto
-     * @param array $path the path parts for the remote folder, which have to
-     * be assembled again using the remote storage's delimiter
+     * @param array $pathInfo the pathInfo parts for the remote folder,
+     * which have to be assembled again using the remote storage's delimiter
      * @param array $sortInfo
      *
      * @return array
@@ -136,9 +136,12 @@ class Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade {
      * @throws Conjoon_Argument_Exception
      */
     protected function _getEmailItemListForAccountAndRemoteFolder(
-            Conjoon_Modules_Groupware_Email_Account_Dto $accountDto, Array $path,
+            Conjoon_Modules_Groupware_Email_Account_Dto $accountDto, Array $pathInfo,
             Array $sortInfo = array(), $userId/*REMOVE THIS ARGUMENT*/)
     {
+
+        $path   = $pathInfo['path'];
+        $rootId = $pathInfo['rootId'];
 
         $globalName = $this->_getFolderFacade()
             ->getAssembledGlobalNameForAccountAndPath($accountDto, $path);
@@ -321,7 +324,8 @@ class Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade {
                 'isDraft'                 => 0,
                 'isOutboxPending'         => 0,
                 'referencedAsTypes'       => $header['referencedAsType'],
-                'groupwareEmailFoldersId' => 1
+                'groupwareEmailFoldersId' => 1,
+                'path'                    => array_merge(array($rootId), $path)
              );
 
         }

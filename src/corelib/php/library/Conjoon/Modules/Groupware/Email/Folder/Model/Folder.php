@@ -102,6 +102,52 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
         return $this->getRootTypeForFolderId($row->parent_id);
     }
 
+    /**
+     * Returns the path beginning from the root folder to the specified folder,
+     * inluding the specified folder, as an array.
+     *
+     * @param integer $folderId
+     *
+     * @return array
+     *
+     * @throws Conjoon_Argument_Exception
+     */
+    public function getPathForFolderId($folderId)
+    {
+        /**
+         * @see Conjoon_Argument_Check
+         */
+        require_once 'Conjoon/Argument/Check.php';
+
+        $data = array('folderId' => $folderId);
+
+        Conjoon_Argument_Check::check(array(
+            'folderId' => array(
+                'type'       => 'int',
+                'allowEmpty' => false
+            )), $data);
+
+        $folderId = $data['folderId'];
+
+        $adapter = $this->getAdapter();
+
+        $where = $adapter->quoteInto('id = ?', $folderId, 'INTEGER');
+
+        $select = $this->select()
+            ->from($this, array('id', 'parent_id'))
+            ->where($where);
+
+        $row = $adapter->fetchRow($select);
+
+        if ($row['parent_id'] == null) {
+            return array($folderId);
+        }
+
+        return array_merge(
+            $this->getPathForFolderId($row['parent_id']),
+            array($folderId)
+        );
+    }
 
     /**
      * Returns all ids of all child folders as a flat array without

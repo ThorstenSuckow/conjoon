@@ -26,6 +26,7 @@ com.conjoon.groupware.email.EmailItemRecord = Ext.data.Record.create([
     {name : 'isSpam',                  type : 'bool'},
     {name : 'isDraft',                 type : 'bool'},
     {name : 'isOutboxPending',         type : 'bool'},
-    {name : 'groupwareEmailFoldersId', type : 'int'},
+    {name : 'groupwareEmailFoldersId', type : 'string'},
+    {name : 'path',                    type : 'array'},
     {name : 'referencedAsTypes'}
 ]);
