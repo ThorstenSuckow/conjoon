@@ -2080,8 +2080,26 @@ Ext.extend(Ext.ux.grid.livegrid.RowSelectionModel, Ext.grid.RowSelectionModel, {
     {
         Ext.ux.grid.livegrid.RowSelectionModel.superclass.initEvents.call(this);
 
-        this.grid.view.on('rowsinserted',    this.onAdd,            this);
-        this.grid.store.on('selectionsload', this.onSelectionsLoad, this);
+        var grid  = this.grid,
+            view  = grid.view,
+            store = grid.store;
+
+        view.on('rowsinserted',    this.onAdd,            this);
+        store.on('selectionsload', this.onSelectionsLoad, this);
+        store.on('load',           this.onStoreLoad,      this);
+    },
+
+    /**
+     * Listener for the store's load event.
+     *
+     * @param {Ext.data.Store} store
+     * @param {Array} records
+     * @param {Object} options
+     *
+     */
+    onStoreLoad : function(store, records, options)
+    {
+        this.replaceSelections(records);
     },
 
     /**

@@ -1,4 +1,9 @@
-﻿Version 0.7 (GPL)
+﻿Version 0.7.1 (GPL)
+09-December-2012
+ - fixed: fixed an issue where references to selected records would get lost
+after reloading or sorting the store
+
+Version 0.7 (GPL)
 07-December-2012
  - enhancement: added support for store's "paramNames" configuration options
  - enhancement: added event "insertindexfound" to store to notify interested
