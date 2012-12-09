@@ -21,6 +21,25 @@ namespace Conjoon\Mail\Client\Message\Flag;
  */
 require_once 'Conjoon/Mail/Client/Message/Flag/FlagCollection.php';
 
+/**
+ * @see Conjoon_Mail_Client_Message_Flag_FlagException
+ */
+require_once 'Conjoon/Mail/Client/Message/Flag/FlagException.php';
+
+/**
+ * @see Conjoon\Mail\Client\Message\Flag\SeenFlag
+ */
+require_once 'Conjoon/Mail/Client/Message/Flag/SeenFlag.php';
+
+/**
+ * @see Conjoon\Mail\Client\Message\Flag\JunkFlag
+ */
+require_once 'Conjoon/Mail/Client/Message/Flag/JunkFlag.php';
+
+/**
+ * @see Conjoon\Mail\Client\Message\Flag\NotJunkFlag
+ */
+require_once 'Conjoon/Mail/Client/Message/Flag/NotJunkFlag.php';
 
 /**
  * A default implementation for ClientMessageFlagCollection
@@ -104,29 +123,21 @@ class DefaultFlagCollection implements FlagCollection {
     {
         $flags = array();
 
-        /**
-         * @see Conjoon_Mail_Client_Message_Flag_SeenFlag
-         */
-        require_once 'Conjoon/Mail/Client/Message/Flag/SeenFlag.php';
-
         for ($i = 0, $len = count($clientFlags); $i < $len; $i++) {
             $clientFlag =& $clientFlags[$i];
 
             $id = (string)$clientFlag['id'];
 
             switch (true) {
+
                 case (array_key_exists('isRead', $clientFlag)):
-                    $clear = ! (bool)$clientFlag['isRead'];
+                    $clear = ! (bool) $clientFlag['isRead'];
 
                     try {
                         $flags[] = new SeenFlag(
                             $id, $clear
                         );
                     } catch (\Conjoon_Argument_Exception $e) {
-                        /**
-                         * @see Conjoon_Mail_Client_Message_Flag_FlagException
-                         */
-                        require_once 'Conjoon/Mail/Client/Message/Flag/FlagException.php';
 
                         throw new FlagException(
                             "Could not create client flag. Exception thrown by "
@@ -136,11 +147,28 @@ class DefaultFlagCollection implements FlagCollection {
 
                     break;
 
+                case (array_key_exists('isSpam', $clientFlag)):
+                    $clear = ! ((bool) $clientFlag['isSpam']);
+
+                    try {
+
+                        if ($clear) {
+                            $flags[] = new NotJunkFlag($id, false);
+                        } else {
+                            $flags[] = new JunkFlag($id, false);
+                        }
+
+                    } catch (\Conjoon_Argument_Exception $e) {
+
+                        throw new FlagException(
+                            "Could not create client flag. Exception thrown by "
+                                . "previous exception: ". $e->getMessage(), 0, $e
+                        );
+                    }
+
+                    break;
+
                 default:
-                    /**
-                     * @see Conjoon_Mail_Client_Message_Flag_ClientMessageFlagException
-                     */
-                    require_once 'Conjoon/Mail/Client/Message/Flag/FlagException.php';
 
                     throw new FlagException(
                         "Unknown flag in client flag: \""

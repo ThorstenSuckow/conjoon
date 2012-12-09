@@ -626,8 +626,9 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
      */
     setItemsAsSpam : function(records, spam)
     {
-        var requestArray = [];
-        var store = this.gridPanel.getStore();
+        var requestArray  = [],
+            store         = this.gridPanel.getStore(),
+            currFolderId  = this.clkNodeId;
 
         store.suspendEvents();
 
@@ -643,7 +644,9 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
             url: './groupware/email.item/set.email.flag/format/json',
             params: {
                 type : 'spam',
-                json : Ext.encode(requestArray)
+                json : Ext.encode(requestArray),
+                path : this.treePanel.getNodeById(currFolderId)
+                       .getPathAsJson('idForPath')
             }
         });
 

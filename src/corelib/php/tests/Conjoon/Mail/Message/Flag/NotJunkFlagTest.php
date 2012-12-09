@@ -17,16 +17,16 @@
 namespace Conjoon\Mail\Message\Flag;
 
 /**
- * @see Conjoon_Mail_Message_Flag_SeenFlag
+ * @see Conjoon\Mail\Message\Flag\NotJunkFlag
  */
-require_once 'Conjoon/Mail/Message/Flag/SeenFlag.php';
+require_once 'Conjoon/Mail/Message/Flag/NotJunkFlag.php';
 
 /**
  * @package    Conjoon/Tests
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class SeenFlagTest extends \PHPUnit_Framework_TestCase {
+class NotJunkFlagTest extends \PHPUnit_Framework_TestCase {
 
 
     public function testDummy()

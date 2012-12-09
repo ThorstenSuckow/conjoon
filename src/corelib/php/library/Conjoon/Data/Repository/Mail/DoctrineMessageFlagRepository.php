@@ -166,6 +166,29 @@ class DoctrineMessageFlagRepository
                         }
                     break;
 
+                case ($flags[$i]->__toString() === '$Junk'):
+                    try {
+                        $isSpam = !$clear;
+                        $flagModel->flagItemAsSpam($messageId, $userId, $isSpam);
+                    } catch (\Exception $e) {
+                        throw new MailRepositoryException(
+                            "Exception thrown by previous exception: "
+                                . $e->getMessage(), 0, $e
+                        );
+                    }
+                    break;
+
+                case ($flags[$i]->__toString() === '$NotJunk'):
+                    try {
+                        $flagModel->flagItemAsSpam($messageId, $userId, false);
+                    } catch (\Exception $e) {
+                        throw new MailRepositoryException(
+                            "Exception thrown by previous exception: "
+                                . $e->getMessage(), 0, $e
+                        );
+                    }
+                    break;
+
                 default:
                     throw new MailRepositoryException(
                         "Unknown flag \"" . $flags[$i]->__toString() . "\""

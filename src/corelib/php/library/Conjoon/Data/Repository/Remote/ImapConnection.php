@@ -40,6 +40,9 @@ interface ImapConnection extends RemoteConnection {
 
     /**
      * Sets the flags as specified in the FlagCollection
+     * $NoJunk and $Junk flags deserver special treatment, since they are both
+     * mutual exclusive. If the NotJunk flag is set, remove any existing Junk
+     * flag. If the Junk flag is set, remove any existing NotJunk flag.
      *
      * @param \Conjoon\Mail\Message\Flag\FlagCollection $flagCollection
      *

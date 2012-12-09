@@ -22,13 +22,13 @@ namespace Conjoon\Mail\Message\Flag;
 require_once 'Conjoon/Mail/Message/Flag/Flag.php';
 
 /**
- * A tagging interface for the "seen" message flag.
+ * A tagging interface for the "NotJunk" message flag.
  *
  * @category   Conjoon_Mail
  * @package    Conjoon_Mail_Message_Flag
  *
  * @uses Conjoon\Mail\Message\Flag\Flag
  */
-interface SeenFlag extends Flag  {
+interface NotJunkFlag extends Flag  {
 
 }

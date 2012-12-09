@@ -43,6 +43,11 @@ class DefaultFlagCollectionTest extends \PHPUnit_Framework_TestCase {
             => array(
                 array("173", true),
                 array("172", false)
+            ),
+            '[{"id":"175","isSpam":false},{"id":"174","isSpam":true}]'
+            => array(
+                array("175", true),
+                array("174", false)
             )
         );
 
@@ -82,6 +87,7 @@ class DefaultFlagCollectionTest extends \PHPUnit_Framework_TestCase {
      */
     public function testOk()
     {
+        $a = 0;
         foreach ($this->_input as $input => $output) {
             $collection = new DefaultFlagCollection(
                 $input
@@ -91,11 +97,27 @@ class DefaultFlagCollectionTest extends \PHPUnit_Framework_TestCase {
 
             $this->assertSame(count($flags), 2);
 
+            $decodeInput = json_decode($input);
+
             for ($i = 0, $len = count($flags); $i < $len; $i++) {
-                $this->assertTrue($flags[$i] instanceof SeenFlag);
+                if ($a == 0) {
+                    $this->assertTrue($flags[$i] instanceof SeenFlag);
+                } else {
+                    // JunkFlag oder NotJunk
+
+                    if (!$decodeInput[$i]->isSpam) {
+                        $this->assertTrue($flags[$i] instanceof NotJunkFlag);
+                        $this->assertTrue(!$flags[$i]->isClear());
+                    } else {
+                        $this->assertTrue($flags[$i] instanceof JunkFlag);
+                        $this->assertTrue(!$flags[$i]->isClear());
+                    }
+                }
+
                 $this->assertSame($output[$i][0], $flags[$i]->getMessageId());
-                $this->assertSame($output[$i][1], $flags[$i]->isClear());
             }
+
+            $a++;
         }
     }
 

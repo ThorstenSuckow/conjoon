@@ -17,27 +17,25 @@
 namespace Conjoon\Mail\Client\Message\Flag;
 
 /**
- * @see Conjoon_Mail_Client_Message_Flag_ClientMessageFlag
+ * @see Conjoon\Mail\Client\Message\Flag\Flag
  */
 require_once 'Conjoon/Mail/Client/Message/Flag/Flag.php';
 
 /**
- * @see Conjoon_Mail_Message_Flag_SeenFlag
+ * @see Conjoon\Mail\Message\Flag\JunkFlag
  */
-require_once 'Conjoon/Mail/Message/Flag/SeenFlag.php';
+require_once 'Conjoon/Mail/Message/Flag/JunkFlag.php';
 
 
 /**
- * A client message flag is a oo representation of a message flag. A message
- * flag exists of an id for the message, and a boolean value clear which
- * tells whether the flag is about to be set or unset.
+ * A flag implementation representing a "junk" message flag.
  *
  * @category   Conjoon_Mail
  * @package    Conjoon_Mail_Client
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class SeenFlag extends Flag implements \Conjoon\Mail\Message\Flag\SeenFlag {
+class JunkFlag extends Flag implements \Conjoon\Mail\Message\Flag\JunkFlag {
 
 
     /**
@@ -45,7 +43,7 @@ class SeenFlag extends Flag implements \Conjoon\Mail\Message\Flag\SeenFlag {
      */
     public function __toString()
     {
-        return '\Seen';
+        return '$Junk';
     }
 
 }

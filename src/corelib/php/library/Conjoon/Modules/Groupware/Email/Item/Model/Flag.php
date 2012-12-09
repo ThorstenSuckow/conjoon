@@ -132,32 +132,7 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Flag extends Conjoon_Db_Table {
      */
     public function flagItemAsRead($groupwareEmailItemsId, $userId, $isRead)
     {
-        $groupwareEmailItemsId = (int)$groupwareEmailItemsId;
-        $userId                = (int)$userId;
-
-        if ($groupwareEmailItemsId <= 0 || $userId <= 0) {
-            return 0;
-        }
-
-        $data = array('is_read' => (int)((bool)$isRead));
-
-        if (!$this->fetchRow($this->select()
-                ->where('groupware_email_items_id = ?', $groupwareEmailItemsId)
-                ->where('user_id = ?',                  $userId))) {
-            $this->insert(array(
-                'groupware_email_items_id' => $groupwareEmailItemsId,
-                'user_id'                  => $userId,
-                'is_read'                  => (int)((bool)$isRead)
-            ));
-
-            return 1;
-        }
-
-        $adapter = $this->getAdapter();
-        $this->update($data, array(
-            $adapter->quoteInto('groupware_email_items_id = ?', $groupwareEmailItemsId, 'INTEGER'),
-            $adapter->quoteInto('user_id = ?', $userId, 'INTEGER')
-        ));
+        $this->flagItemImpl($groupwareEmailItemsId, $userId, $isRead, 'is_read');
     }
 
     /**
@@ -167,6 +142,15 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Flag extends Conjoon_Db_Table {
      */
     public function flagItemAsSpam($groupwareEmailItemsId, $userId, $isSpam)
     {
+        $this->flagItemImpl($groupwareEmailItemsId, $userId, $isSpam, 'is_spam');
+    }
+
+    /**
+     * Flag processing implementation.
+     *
+     */
+    protected function flagItemImpl($groupwareEmailItemsId, $userId, $isSet, $type)
+    {
         $groupwareEmailItemsId = (int)$groupwareEmailItemsId;
         $userId                = (int)$userId;
 
@@ -174,9 +158,22 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Flag extends Conjoon_Db_Table {
             return 0;
         }
 
-        $data = array('is_spam' => (int)((bool)$isSpam));
+        $data = array($type => (int)((bool)$isSet));
+
+        if (!$this->fetchRow($this->select()
+            ->where('groupware_email_items_id = ?', $groupwareEmailItemsId)
+            ->where('user_id = ?',                  $userId))) {
+            $this->insert(array(
+                'groupware_email_items_id' => $groupwareEmailItemsId,
+                'user_id'                  => $userId,
+                $type                      => (int) ((bool)$isSet)
+            ));
+
+            return 1;
+        }
+
         $adapter = $this->getAdapter();
-        return $this->update($data, array(
+        $this->update($data, array(
             $adapter->quoteInto('groupware_email_items_id = ?', $groupwareEmailItemsId, 'INTEGER'),
             $adapter->quoteInto('user_id = ?', $userId, 'INTEGER')
         ));

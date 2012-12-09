@@ -40,6 +40,8 @@ class DoctrineMessageFlagRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
 
     protected $folderFlagCollection;
 
+    protected $spamFolderFlagCollection;
+
     protected $messageFlagRepository;
 
     public function getDataSet()
@@ -77,9 +79,22 @@ class DoctrineMessageFlagRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
                     ']'
                 );
 
+        $spamFlags = new \Conjoon\Mail\Client\Message\Flag\DefaultFlagCollection(
+            '[' .
+                '{"id":"1","isSpam":true},{"id":"2","isSpam":false}' .
+                ',' .
+                '{"id":"3","isSpam":true}' .
+                ']'
+        );
+
         $this->folderFlagCollection =
             new \Conjoon\Mail\Client\Message\Flag\FolderFlagCollection(
                 $flags, $folder
+            );
+
+        $this->spamFolderFlagCollection =
+            new \Conjoon\Mail\Client\Message\Flag\FolderFlagCollection(
+                $spamFlags, $folder
             );
 
     }
@@ -408,6 +423,8 @@ class DoctrineMessageFlagRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
         $user = $this->userRepository->findById(1);
 
         $this->messageFlagRepository->setFlagsForUser($this->folderFlagCollection, $user);
+
+        $this->messageFlagRepository->setFlagsForUser($this->spamFolderFlagCollection, $user);
 
         $this->checkForSameDataSet('messageflag.setFlagsForUser.result.xml');
     }

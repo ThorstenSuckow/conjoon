@@ -112,7 +112,7 @@ class DefaultImapAdaptee extends AbstractImapAdaptee  {
         } catch (\Exception $e) {
             throw new ImapConnectionException(
                 "Exception thrown by previous exception: "
-                . $e->getMessage, 0, $e
+                . $e->getMessage(), 0, $e
             );
         }
 
@@ -147,6 +147,8 @@ class DefaultImapAdaptee extends AbstractImapAdaptee  {
                 "No delimiter found."
             );
         }
+
+        return $delim;
 
     }
 
@@ -187,7 +189,7 @@ class DefaultImapAdaptee extends AbstractImapAdaptee  {
         } catch (\Exception $e) {
             throw new ImapConnectionException(
                 "Exception thrown by previous exception: "
-                . $e->getMessage, 0, $e
+                . $e->getMessage(), 0, $e
             );
         }
 

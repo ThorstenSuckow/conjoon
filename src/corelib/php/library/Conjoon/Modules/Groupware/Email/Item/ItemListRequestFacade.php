@@ -118,7 +118,7 @@ class Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade {
             );
         }
 
-        throw new RuntimeException("Anything but remote folder nto supported by this facade yet");
+        throw new RuntimeException("Anything but remote folder not supported by this facade yet");
 
     }
 
@@ -247,6 +247,7 @@ class Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade {
 
             $header['isAttachment']     = false;
             $header['isRead']           = false;
+            $header['isSpam']           = false;
             $header['referencedAsType'] = array();
 
             // flag processing
@@ -254,6 +255,8 @@ class Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade {
             for ($u = 0, $lenu = count($flags); $u < $lenu; $u++) {
                 if ($flags[$u] == '\Seen') {
                     $header['isRead'] = true;
+                } else if ($flags[$u] == '$Junk') {
+                    $header['isSpam'] = true;
                 } else if (stripos($flags[$u], 'forwarded') !== false) {
                     array_push($header['referencedAsType'], 'forwarded');
                 } else if ($flags[$u] == '\Answered') {
@@ -314,7 +317,7 @@ class Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade {
                                              ),
                 'isRead'                  => (int)$header['isRead'],
                 'isAttachment'            => (int)$header['isAttachment'],
-                'isSpam'                  => 0,
+                'isSpam'                  => (int)$header['isSpam'],
                 'isDraft'                 => 0,
                 'isOutboxPending'         => 0,
                 'referencedAsTypes'       => $header['referencedAsType'],

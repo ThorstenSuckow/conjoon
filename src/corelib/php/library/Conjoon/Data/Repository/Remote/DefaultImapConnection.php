@@ -41,6 +41,16 @@ require_once 'Conjoon/Data/Repository/Remote/ImapConnection.php';
 require_once 'Conjoon/Data/Repository/Remote/ImapConnectionException.php';
 
 /**
+ * @see \Conjoon\Mail\Client\Message\Flag\JunkFlag
+ */
+require_once 'Conjoon/Mail/Client/Message/Flag/JunkFlag.php';
+
+/**
+ * @see \Conjoon\Mail\Client\Message\Flag\NotJunkFlag
+ */
+require_once 'Conjoon/Mail/Client/Message/Flag/NotJunkFlag.php';
+
+/**
  * A default implementation of an Imap Connection.
  *
  * @category   Conjoon_Data
@@ -104,13 +114,39 @@ class DefaultImapConnection implements ImapConnection {
      */
     public function setFlags(\Conjoon\Mail\Message\Flag\FlagCollection $flagCollection)
     {
-        $flags = array();
-
         $collection = $flagCollection->getFlags();
 
         foreach ($collection as $messageFlag) {
 
             try {
+
+                $removeFlag = null;
+
+                // remove junk/notjunk since they re mutual exclusive
+                switch (true) {
+                    case ($messageFlag instanceof \Conjoon\Mail\Message\Flag\JunkFlag
+                          && !$messageFlag->isClear()):
+                        $removeFlag = new \Conjoon\Mail\Client\Message\Flag\NotJunkFlag(
+                            $messageFlag->getMessageId(), true
+                        );
+                    break;
+
+                    case ($messageFlag instanceof \Conjoon\Mail\Message\Flag\NotJunkFlag
+                          && !$messageFlag->isClear()):
+                        $removeFlag = new \Conjoon\Mail\Client\Message\Flag\JunkFlag(
+                            $messageFlag->getMessageId(), true
+                        );
+                        break;
+                }
+
+                if ($removeFlag) {
+                    $this->imapAdaptee->setFlag(
+                        $removeFlag->__toString(),
+                        $removeFlag->getMessageId(),
+                        '-'
+                    );
+                }
+
                 $this->imapAdaptee->setFlag(
                     $messageFlag->__toString(),
                     $messageFlag->getMessageId(),
