@@ -66,8 +66,6 @@ class DefaultAccountService implements AccountService {
      * @param array $options An array with instances of MailFolderRepository,
      *                       and a User to use.
      *                       - user: and instance of \Conjoon\User\User
-     *                       - mailFolderRepository: an instance of
-     *                         Conjoon\Data\Repository\Mail\MailFolderRepository
      *                       - folderService: an instance of
      *                         Conjoon\Mail\Client\Folder\FolderService
      *
@@ -75,10 +73,6 @@ class DefaultAccountService implements AccountService {
     public function __construct(Array $options)
     {
         ArgumentCheck::check(array(
-            'mailFolderRepository' => array(
-                'type'  => 'instanceof',
-                'class' => '\Conjoon\Data\Repository\Mail\MailFolderRepository'
-            ),
             'user' => array(
                 'type'  => 'instanceof',
                 'class' => '\Conjoon\User\User'
@@ -89,7 +83,6 @@ class DefaultAccountService implements AccountService {
             )
         ), $options);
 
-        $this->folderRepository  = $options['mailFolderRepository'];
         $this->user              = $options['user'];
         $this->folderService     = $options['folderService'];
     }
@@ -118,9 +111,13 @@ class DefaultAccountService implements AccountService {
             );
         }
 
-        try {
-            $entity = $this->folderRepository->findById(
-                $folder->getRootId()
+        try{
+            $entity = $this->folderService->getFolderEntity(
+                new \Conjoon\Mail\Client\Folder\Folder(
+                    new \Conjoon\Mail\Client\Folder\DefaultFolderPath(
+                        '["root", "' . $folder->getRootId() . '"]'
+                    )
+                )
             );
         } catch (\Exception $e) {
 

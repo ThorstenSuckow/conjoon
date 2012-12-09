@@ -131,17 +131,24 @@ class DefaultProtocolAdaptee implements ProtocolAdaptee {
                 $account = $this->getAccountServiceForUser($user)
                                 ->getMailAccountToAccessRemoteFolder($folder);
 
-                $imapMessageFlagRepository =
-                    $this->defaultClassNames['imapMessageFlagRepository'];
-                $imapRepository = new $imapMessageFlagRepository($account);
-                $imapRepository->setFlagsForUser($flagCollection, $user);
-
+                if ($account) {
+                    $imapMessageFlagRepository =
+                        $this->defaultClassNames['imapMessageFlagRepository'];
+                    $imapRepository = new $imapMessageFlagRepository($account);
+                    $imapRepository->setFlagsForUser($flagCollection, $user);
+                }
             } catch (\Exception $e) {
                 throw new \Conjoon\Mail\Server\Protocol\ProtocolException(
                     "Exception thrown by previous exception: "
                     . $e->getMessage(), 0, $e
                 );
             }
+            if (!$account) {
+                throw new \Conjoon\Mail\Server\Protocol\ProtocolException(
+                    "No mail account found for folder"
+                );
+            }
+
         } else {
             try {
                 $this->applyFlagCollectionForUser($flagCollection, $user);
@@ -256,7 +263,6 @@ class DefaultProtocolAdaptee implements ProtocolAdaptee {
 
                 case 'accountService':
                     $instance = new $className(array(
-                        'mailFolderRepository' => $this->getDoctrineMailFolderRepository(),
                         'user'                 => $user,
                         'folderService'        => $this->getServiceForUser(
                                                       'folderService', $user

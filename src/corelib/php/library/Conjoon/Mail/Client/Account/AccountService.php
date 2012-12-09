@@ -36,7 +36,7 @@ interface AccountService {
      *
      * @param \Conjoon\Mail\Client\Folder\Folder $folder
      *
-     * @return \Conjoon\Data\Entity\Mail\MailAccountEntity
+     * @return null|\Conjoon\Data\Entity\Mail\MailAccountEntity
      *
      * @throws AccountServiceException
      */

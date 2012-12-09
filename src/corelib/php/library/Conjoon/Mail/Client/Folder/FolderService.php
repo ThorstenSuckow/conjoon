@@ -60,6 +60,20 @@ interface FolderService {
      */
     public function isFolderRepresentingRemoteMailbox(Folder $folder);
 
-
+    /**
+     * Returns the folder entity for the secified folder. The repository used
+     * for retrieving the entity is the repository configured for an instance of
+     * this class.
+     * Note: If the specified folder represents a remote mailbox, the id passed
+     * int he folder might not exist in the local data storage. If this is the
+     * case, null will be returned.
+     *
+     * @param Folder $folder
+     *
+     * @return \Conjoon\Data\Entity\Mail\MailFodlerEntity|null
+     *
+     * @throws FolderServiceException
+     */
+    public function getFolderEntity(Folder $folder);
 
 }

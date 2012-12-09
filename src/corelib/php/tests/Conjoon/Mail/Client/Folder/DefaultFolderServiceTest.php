@@ -170,4 +170,47 @@ class DefaultClientMailFolderServiceTest extends \Conjoon\DatabaseTestCaseDefaul
         );
     }
 
+    /**
+     * Ensures everything works as expected.
+     */
+    public function testGetFolderEntity()
+    {
+        $this->assertNull(
+            $this->service->getFolderEntity(new Folder(
+                new DefaultFolderPath('["root", "4334", "22", "2422424", "2424224"]')
+            ))
+        );
+
+        $this->assertNull(
+            $this->service->getFolderEntity(new Folder(
+                new DefaultFolderPath('["root", "sfa", "sdg", "dsgsdg", "sdgsgd"]')
+            ))
+        );
+
+        $this->assertNull(
+            $this->service->getFolderEntity(new Folder(
+                new DefaultFolderPath('["root", "1", "22"]')
+            ))
+        );
+
+        $this->assertSame(1,
+            $this->service->getFolderEntity(new Folder(
+                new DefaultFolderPath('["root", "1"]')
+            ))->getId()
+        );
+
+        $this->assertSame(2,
+            $this->service->getFolderEntity(new Folder(
+                new DefaultFolderPath('["root", "1", "2"]')
+            ))->getId()
+        );
+
+        $this->assertNull(
+            $this->service->getFolderEntity(new Folder(
+                new DefaultFolderPath('["root", "3", "2"]')
+            ))
+        );
+
+    }
+
 }

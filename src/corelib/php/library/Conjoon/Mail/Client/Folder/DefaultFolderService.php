@@ -18,12 +18,18 @@ namespace Conjoon\Mail\Client\Folder;
 use Conjoon\Data\Repository\Mail\MailFolderRepository,
     Conjoon\User\User,
     Conjoon\Argument\ArgumentCheck,
-    Conjoon\Argument\InvalidArgumentException;
+    Conjoon\Argument\InvalidArgumentException,
+    Conjoon\Mail\Client\Folder\FolderServiceException;
 
 /**
  * @see Conjoon\Mail\Client\Folder\FolderService
  */
 require_once 'Conjoon/Mail/Client/Folder/FolderService.php';
+
+/**
+ * @see Conjoon\Mail\Client\Folder\FolderServiceException
+ */
+require_once 'Conjoon/Mail/Client/Folder/FolderServiceException.php';
 
 /**
  * @see Conjoon\Data\Repository\Mail\DoctrineMailFolderRepository
@@ -118,29 +124,60 @@ class DefaultFolderService implements FolderService {
             );
         } catch (\Exception $e) {
 
-            /**
-             * @see Conjoon\Mail\Client\Folder\FolderServiceException
-             */
-            require_once 'Conjoon/Mail/Client/Folder/FolderServiceException.php';
-
-            throw new \Conjoon\Mail\Client\Folder\FolderServiceException(
+            throw new FolderServiceException(
                 "Exception thrown by previous exception: "
                  . $e->getMessage(), 0, $e
             );
         }
 
         if ($entity === null) {
-            /**
-             * @see Conjoon\Mail\Client\Folder\FolderServiceException
-             */
-            require_once 'Conjoon/Mail/Client/Folder/FolderServiceException.php';
 
-            throw new \Conjoon\Mail\Client\Folder\FolderServiceException(
+            throw new FolderServiceException(
                 "Client folder with id " . $folder->getRootId() . " was not found"
             );
         }
 
         return $entity->getType() === self::ROOT_REMOTE;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getFolderEntity(Folder $folder)
+    {
+        $id       = $folder->getNodeId()
+                    ? $folder->getNodeId()
+                    : $folder->getRootId();
+        $rootId   = $folder->getRootId();
+
+        try {
+            $isRemote = $this->isFolderRepresentingRemoteMailbox($folder);
+        } catch (FolderServiceException $e) {
+            return null;
+        }
+
+        $entity = $this->folderRepository->findById($id);
+
+        if (!$entity || !$isRemote) {
+            return $entity;
+        }
+
+        $orgEntity = $entity;
+
+        // if the folder is remote, we have to check if the root id
+        // of the fodler matches the id of the root folder of the
+        // found $entity
+        while (true) {
+            if (!$entity->getParent()) {
+                if ($entity->getId() == $rootId) {
+                    return $orgEntity;
+                }
+                break;
+            }
+            $entity = $entity->getParent();
+        }
+
+        return null;
     }
 
 
