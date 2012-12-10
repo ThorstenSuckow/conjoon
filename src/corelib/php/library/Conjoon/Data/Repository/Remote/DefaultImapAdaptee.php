@@ -102,10 +102,12 @@ class DefaultImapAdaptee extends AbstractImapAdaptee  {
         return $this->setFlagForMessage($flag, $id, '-');
     }
 
+
+
     /**
      * @inheritdoc
      */
-    public function _selectFolder($path)
+    protected function _selectFolder($path)
     {
         try {
             $this->storage->selectFolder($path);
@@ -122,7 +124,7 @@ class DefaultImapAdaptee extends AbstractImapAdaptee  {
     /**
      * @inheritdoc
      */
-    public function _getFolderDelimiter()
+    protected function _getFolderDelimiter()
     {
         try {
             $mailboxes = $this->protocol->listMailbox('', 'INBOX');
@@ -150,6 +152,31 @@ class DefaultImapAdaptee extends AbstractImapAdaptee  {
 
         return $delim;
 
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function _getMessage($messageId)
+    {
+        try {
+            $num = $this->storage->getNumberByUniqueId($messageId);
+
+            $result = $this->protocol->fetch(
+                array('RFC822.HEADER', 'RFC822.TEXT'), $num
+            );
+
+            return array(
+                'header' => $result['RFC822.HEADER'],
+                'body'   => $result['RFC822.TEXT']
+            );
+
+        } catch (\Exception $e) {
+            throw new ImapConnectionException(
+                "Exception thrown by previous exception: "
+                    . $e->getMessage(), 0, $e
+            );
+        }
     }
 
     /**

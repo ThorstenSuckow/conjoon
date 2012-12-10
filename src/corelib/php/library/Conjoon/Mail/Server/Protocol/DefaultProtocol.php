@@ -42,7 +42,7 @@ require_once 'Conjoon/Mail/Server/Protocol/DefaultResult/ErrorResult.php';
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class DefaultProtocol implements Protocol{
+class DefaultProtocol implements Protocol {
 
     /**
      * @var \Conjoon\Mail\Server\Protocol\ProtocolAdaptee
@@ -95,6 +95,49 @@ class DefaultProtocol implements Protocol{
         try {
             $result = $this->adaptee->setFlags(
                 $options['parameters']['folderFlagCollection'],
+                $options['user']
+            );
+        } catch (ProtocolException $e) {
+            $result = $this->getResultForException($e);
+        }
+
+        return $result;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getMessage(array $options)
+    {
+        $result = null;
+
+        try {
+
+            ArgumentCheck::check(array(
+                'user' => array(
+                    'type'  => 'instanceof',
+                    'class' => '\Conjoon\User\User'
+                ),
+                'parameters' => array(
+                    'type'       => 'array',
+                    'allowEmpty' => false
+                )
+            ), $options);
+
+            ArgumentCheck::check(array(
+                'messageLocation' => array(
+                    'type'  => 'instanceof',
+                    'class' => '\Conjoon\Mail\Client\Message\MessageLocation'
+                )
+            ), $options['parameters']);
+
+        } catch (InvalidArgumentException $e) {
+            return $this->getResultForException($e);
+        }
+
+        try {
+            $result = $this->adaptee->getMessage(
+                $options['parameters']['messageLocation'],
                 $options['user']
             );
         } catch (ProtocolException $e) {

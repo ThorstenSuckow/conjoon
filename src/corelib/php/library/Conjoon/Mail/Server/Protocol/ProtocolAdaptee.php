@@ -42,6 +42,18 @@ interface ProtocolAdaptee {
         \Conjoon\Mail\Client\Message\Flag\FolderFlagCollection $flagCollection,
         \Conjoon\User\User $user);
 
+    /**
+     * @param \Conjoon\Mail\Client\Message\MessageLocation $messageLocation
+     * @param \Conjoon\User\User $user
+     *
+     *
+     * @return ProtocolResult
+     *
+     * @throws ProtocolException
+     */
+    public function getMessage(
+        \Conjoon\Mail\Client\Message\MessageLocation $messageLocation,
+        \Conjoon\User\User $user);
 
 
 }

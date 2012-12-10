@@ -43,4 +43,17 @@ interface MessageServiceFacade {
         \Conjoon\User\User $user);
 
 
+    /**
+     * Returns the message for reading based on the specified id from the
+     * specified path for the specified user.
+     *
+     * @param mixed $id The id of the message that was requested
+     * @param mixed $path A path to the folder where the message can be found
+     * @param \Conjoon\User\User $user The user object representing the user
+     *                                   who triggered this operation
+     *
+     *
+     * @return GetMessageServiceResult
+     */
+    public function getMessage($id, $path, \Conjoon\User\User $user);
 }

@@ -50,10 +50,16 @@ class DefaultServiceResult implements ServiceResult {
      * - \Exception any kind of exception
      *
      * @param mixed $from
+     * @param mixed $patron An instance of Conjoon\Mail\Client\ServicePatron
      */
-    public function __construct($from)
+    public function __construct(
+        $from, \Conjoon\Mail\Client\Service\ServicePatron\ServicePatron $patron = null)
     {
         $this->init($from);
+
+        if ($patron && $this->isSuccess()) {
+            $this->data = $patron->applyForData($this->data);
+        }
     }
 
     /**

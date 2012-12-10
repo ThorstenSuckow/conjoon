@@ -83,10 +83,24 @@ class DefaultServerTest extends \Conjoon\Mail\Server\Protocol\ProtocolTestCase {
         $response = $defaultServer->handle($request);
 
         $this->assertTrue($response instanceof Response\DefaultResponse);
-
         $this->assertTrue(is_array($response->getResponseBody()->getData()));
-
         $this->assertSame(Response\Response::STATUS_CODE_200, $response->getStatus());
+
+        $getMessageRequest  = new Request\DefaultGetMessageRequest(array(
+            'user'       => $this->user,
+            'parameters' => array(
+                'messageLocation' => new \Conjoon\Mail\Client\Message\DefaultMessageLocation(
+                    $this->folderFlagCollection->getFolder(), 1
+                )
+            )
+        ));
+
+        $response = $defaultServer->handle($getMessageRequest);
+
+        $this->assertTrue($response instanceof Response\DefaultResponse);
+        $this->assertTrue(is_array($response->getResponseBody()->getData()));
+        $this->assertSame(Response\Response::STATUS_CODE_101, $response->getStatus());
+
     }
 
     /**

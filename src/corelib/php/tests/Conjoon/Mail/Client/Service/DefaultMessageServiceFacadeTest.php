@@ -47,7 +47,6 @@ class DefaultMessageServiceFacadeTest extends
         $defaultServer = new \Conjoon\Mail\Server\DefaultServer($protocol);
 
         $messageFacade = new DefaultMessageServiceFacade($defaultServer);
-
         $result = $messageFacade->setFlagsForMessagesInFolder(
             '[{"id":"56","isRead":true}]', '["root","1","2"]', $this->user
 
@@ -55,7 +54,11 @@ class DefaultMessageServiceFacadeTest extends
 
         $this->assertTrue($result instanceof ServiceResult);
         $this->assertTrue($result->isSuccess());
+    }
 
+    public function testGetMessage()
+    {
+        $this->fail();
     }
 
 }

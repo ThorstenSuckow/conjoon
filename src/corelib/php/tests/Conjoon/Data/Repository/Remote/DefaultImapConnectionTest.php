@@ -131,6 +131,36 @@ class DefaultImapConnectionTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @expectedException \Conjoon\Data\Repository\Remote\ImapConnectionException
+     */
+    public function testGetMessage_NoConnection()
+    {
+        $connection = new DefaultImapConnection($this->config);
+        $connection->getMessage("1");
+    }
+
+    /**
+     * @expectedException \Conjoon\Data\Repository\Remote\ImapConnectionException
+     */
+    public function testGetMessage_ArgumentException()
+    {
+        try {
+            $connection = new DefaultImapConnection($this->config);
+            $connection->connect(array(
+                'user'     => 'user',
+                'password' => 'password',
+                'port'     => 23,
+                'host'     => 'imap.host',
+                'ssl'      => false
+            ));
+        } catch (\Exception $e) {
+            $this->fail();
+        }
+
+        $connection->getMessage("");
+    }
+
+    /**
      * Ensures everything works as expected
      */
     public function testOk()
@@ -152,6 +182,12 @@ class DefaultImapConnectionTest extends \PHPUnit_Framework_TestCase {
             ),
             $connection->selectFolder($this->folderPath)
         );
+
+        $this->assertEquals(
+            array('header' => "HEADER", 'body' => "BODY"),
+            $connection->getMessage(1)
+        );
+
         $this->assertTrue($connection->setFlags($this->flagCollection));
         $this->assertSame('/', $connection->getFolderDelimiter());
         $this->assertTrue($connection->disconnect());

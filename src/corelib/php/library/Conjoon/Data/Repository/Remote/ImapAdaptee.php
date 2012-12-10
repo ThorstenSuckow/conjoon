@@ -83,6 +83,17 @@ interface ImapAdaptee  {
     public function getFolderDelimiter();
 
     /**
+     * Returns an array with the raw header and the raw body of the message
+     * identified by the unique message id. Returns null if the message was
+     * not found.
+     *
+     * @return array|null
+     *
+     * @throws \Conjoon\Argument\InvalidArgumentException
+     */
+    public function getMessage($messageId);
+
+    /**
      * Logs the user out and disconnects from the server.
      *
      * @return boolean true if the connection was disconnected

@@ -29,9 +29,10 @@ require_once 'Conjoon/Data/Repository/RemoteRepository.php';
  */
 require_once 'Conjoon/Argument/ArgumentCheck.php';
 
-
 /**
  *
+ *
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 abstract class ImapRepository implements \Conjoon\Data\Repository\RemoteRepository {
 

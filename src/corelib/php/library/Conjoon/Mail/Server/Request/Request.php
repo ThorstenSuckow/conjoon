@@ -36,6 +36,14 @@ interface Request {
     public function getParameters();
 
     /**
+     * Returns the parameter for the specified key. Returns null if the parameter
+     * was not found.
+     *
+     * @return array
+     */
+    public function getParameter($key);
+
+    /**
      * Returns a textual representation of the command the request represents.
      *
      * @return string

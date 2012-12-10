@@ -761,13 +761,72 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
      * @param string $messageId The id of the message
      * @param string $path The json encoded path where the message can be found
      *
-     * 
+     *
      */
     protected function getMessageFromRemoteServer($messageId, $path)
     {
-        $this->view->success    = false;
+        /**
+         * @see Zend_Registry
+         */
+        require_once 'Zend/Registry.php';
+
+        /**
+         *@see Conjoon_Keys
+         */
+        require_once 'Conjoon/Keys.php';
+
+        $auth = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
+
+        /**
+         * @see Conjoon_User_AppUser
+         */
+        require_once 'Conjoon/User/AppUser.php';
+
+        $appUser = new \Conjoon\User\AppUser($auth->getIdentity());
+
+        $entityManager = Zend_Registry::get(Conjoon_Keys::DOCTRINE_ENTITY_MANAGER);
+
+        $mailFolderRepository =
+            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
+        $mesageFlagRepository =
+            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMessageFlagEntity');
+
+        $protocolAdaptee = new \Conjoon\Mail\Server\Protocol\DefaultProtocolAdaptee(
+            $mailFolderRepository, $mesageFlagRepository
+        );
+
+        /**
+         * @see \Conjoon\Mail\Server\Protocol\DefaultProtocol
+         */
+        $protocol = new \Conjoon\Mail\Server\Protocol\DefaultProtocol($protocolAdaptee);
+
+        /**
+         * @see \Conjoon\Mail\Server\DefaultServer
+         */
+        require_once 'Conjoon/Mail/Server/DefaultServer.php';
+
+        $server = new \Conjoon\Mail\Server\DefaultServer($protocol);
+
+
+        /**
+         * @see \Conjoon\Mail\Client\Service\DefaultMessageServiceFacade
+         */
+        require_once 'Conjoon/Mail/Client/Service/DefaultMessageServiceFacade.php';
+
+        $serviceFacade = new \Conjoon\Mail\Client\Service\DefaultMessageServiceFacade(
+            $server
+        );
+
+
+        $result =  $serviceFacade->getMessage(
+            $this->_request->getParam('id'),
+            $this->_request->getParam('path'),
+            $appUser
+        );
+
+        $this->view->success = $result->isSuccess();
+        $this->view->data    = $result->getData();
         $this->view->error      = null;
-        $this->view->item       = null;
     }
 
 

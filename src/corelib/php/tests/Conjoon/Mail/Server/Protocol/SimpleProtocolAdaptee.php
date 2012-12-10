@@ -55,4 +55,20 @@ class SimpleProtocolAdaptee implements ProtocolAdaptee {
         );
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function getMessage(
+        \Conjoon\Mail\Client\Message\MessageLocation $messageLocation,
+        \Conjoon\User\User $user)
+    {
+        if ($this->alwaysSucceed) {
+            return new \Conjoon\Mail\Server\Protocol\DefaultResult\GetMessageResult();
+        }
+
+        throw new \Conjoon\Mail\Server\Protocol\ProtocolException(
+            "Unexpected Protocol Exception"
+        );
+    }
+
 }

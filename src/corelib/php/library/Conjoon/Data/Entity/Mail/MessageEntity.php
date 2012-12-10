@@ -232,44 +232,4 @@ interface MessageEntity extends \Conjoon\Data\Entity\DataEntity {
      */
     public function getSender();
 
-    /**
-     * Add groupwareEmailItemsFlags
-     *
-     * @param \Conjoon\Data\Entity\Mail\MessageFlagEntity $groupwareEmailItemsFlags
-     * @return GroupwareEmailItems
-     */
-    public function addGroupwareEmailItemsFlag(
-        \Conjoon\Data\Entity\Mail\MessageFlagEntity $groupwareEmailItemsFlags);
-
-    /**
-     * Remove groupwareEmailItemsFlags
-     *
-     * @param Conjoon\Data\Entity\GroupwareEmailItemsFlags $groupwareEmailItemsFlags
-     */
-    public function removeGroupwareEmailItemsFlag(
-        \Conjoon\Data\Entity\Mail\MessageFlagEntity $groupwareEmailItemsFlags);
-
-    /**
-     * Get groupwareEmailItemsFlags
-     *
-     * @return Doctrine\Common\Collections\Collection
-     */
-    public function getGroupwareEmailItemsFlags();
-
-    /**
-     * Set groupwareEmailFolders
-     *
-     * @param \Conjoon\Data\Entity\Mail\MailFolderEntity $groupwareEmailFolders
-     * @return GroupwareEmailItems
-     */
-    public function setGroupwareEmailFolders(
-        \Conjoon\Data\Entity\Mail\MailFolderEntity $groupwareEmailFolders = null);
-
-    /**
-     * Get groupwareEmailFolders
-     *
-     * @return \Conjoon\Data\Entity\Mail\MailFolderEntity
-     */
-    public function getGroupwareEmailFolders();
-
 }

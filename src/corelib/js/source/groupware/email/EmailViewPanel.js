@@ -304,15 +304,18 @@ com.conjoon.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
     onEmailLoadSuccess : function(response, parameters)
     {
         var data = com.conjoon.groupware.ResponseInspector.isSuccess(response);
-        if (!data || (data && !data.item)) {
+        if (!data || (data && !data.item && !data.data)) {
             this.onEmailLoadFailure(response, parameters);
             return;
         }
 
+        if (data.data) {
+            data.item = data.data.message;
+        }
+
         var record = com.conjoon.util.Record.convertTo(
             com.conjoon.groupware.email.EmailRecord,
-            data.item,
-            data.item.id
+            data.item, data.item.id
         );
 
         this.emailRecord = record;

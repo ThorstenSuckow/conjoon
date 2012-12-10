@@ -109,6 +109,37 @@ class SimpleImapAdapteeTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @expectedException \Conjoon\Data\Repository\Remote\ImapConnectionException
+     */
+    public function testGetMessage_NoConnection()
+    {
+        $adaptee = new SimpleImapAdaptee();
+        $adaptee->getMessage(1);
+    }
+
+    /**
+     * @expectedException \Conjoon\Argument\InvalidArgumentException
+     */
+    public function testGetMessage_ExceptionArgument()
+    {
+        try {
+            $adaptee = new SimpleImapAdaptee();
+
+            $adaptee->connect(array(
+                'user'     => 'user',
+                'password' => 'password',
+                'port'     => 23,
+                'host'     => 'imap.host',
+                'ssl'      => false
+            ));
+        } catch (\Exception $e) {
+            $this->fail();
+        }
+
+        $adaptee->getMessage("");
+    }
+
+    /**
      * Ensures everything works as expected
      */
     public function testOk()
@@ -122,6 +153,11 @@ class SimpleImapAdapteeTest extends \PHPUnit_Framework_TestCase {
             'host'     => 'imap.host',
             'ssl'      => false
         )));
+
+        $this->assertEquals(array(
+            'header' => "HEADER", 'body' => "BODY"
+        ), $adaptee->getMessage(1)
+        );
 
         $this->assertSame('INBOX', $adaptee->selectFolder('INBOX'));
         $this->assertTrue($adaptee->setFlag('\Seen', 1, '-'));

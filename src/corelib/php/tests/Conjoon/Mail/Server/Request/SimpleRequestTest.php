@@ -42,6 +42,8 @@ class SimpleRequestTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertSame("test", $request->getProtocolCommand());
 
+        $this->assertSame("test", $request->getParameter("test"));
+
         $this->assertSame(array(), $request->getParameters());
     }
 

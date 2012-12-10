@@ -166,6 +166,21 @@ class DefaultImapConnection implements ImapConnection {
     /**
      * @inheritdoc
      */
+    public function getMessage($messageId)
+    {
+        try {
+            return $this->imapAdaptee->getMessage($messageId);
+        } catch (InvalidArgumentException $e) {
+            throw new ImapConnectionException(
+                "Exception thrown by previous exception: " . $e->getMessage(),
+                0, $e
+            );
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getFolderDelimiter()
     {
        return $this->imapAdaptee->getFolderDelimiter();

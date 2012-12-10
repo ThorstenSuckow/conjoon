@@ -92,6 +92,15 @@ class SimpleImapAdaptee extends AbstractImapAdaptee {
         return $this->isConnected;
     }
 
-
+    /**
+     * @inheritdoc
+     */
+    protected function _getMessage($messageId)
+    {
+        return array(
+            'header' => "HEADER",
+            'body'   => "BODY"
+        );
+    }
 
 }

@@ -105,6 +105,18 @@ abstract class DefaultRequest implements Request {
     /**
      * @inheritdoc
      */
+    public function getParameter($key)
+    {
+        if (!array_key_exists($key, $this->parameters)) {
+            return null;
+        }
+
+        return $this->parameters[$key];
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getUser()
     {
         return $this->user;

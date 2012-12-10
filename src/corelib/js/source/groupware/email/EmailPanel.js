@@ -1034,13 +1034,13 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
      */
     onEmailLoad : function(subject, message)
     {
-        var emailRecord = message.emailRecord;
-
-        var id = emailRecord.id;
-
-        var store = this.gridPanel.store;
-
-        var rec = store.getById(id);
+        var emailRecord = message.emailRecord,
+            id          = emailRecord.id,
+            store       = this.gridPanel.store,
+            rec         = store.getById(id),
+            rec         = rec
+                          ? rec
+                          : store.getById(emailRecord.get('messageId'));
 
         if (rec) {
             this.setItemsAsRead([rec], true);

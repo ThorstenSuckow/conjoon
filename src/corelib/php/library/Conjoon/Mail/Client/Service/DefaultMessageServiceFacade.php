@@ -25,6 +25,7 @@ require_once 'Conjoon/Mail/Client/Service/MessageServiceFacade.php';
  */
 require_once 'Conjoon/Mail/Client/Service/DefaultServiceResult.php';
 
+
 /**
  * Service facade for operations related to messages. A default implementation
  * for MessageServiceFacade
@@ -117,6 +118,11 @@ class DefaultMessageServiceFacade implements MessageServiceFacade {
                     $flagCollection, $folder
                 );
 
+            /**
+             * @see \Conjoon\Mail\Server\Request\DefaultSetFlagsRequest
+             */
+            require_once 'Conjoon/Mail/Server/Request/DefaultSetFlagsRequest.php';
+
             $request = new \Conjoon\Mail\Server\Request\DefaultSetFlagsRequest(array(
                 'user'       => $user,
                 'parameters' => array(
@@ -138,6 +144,70 @@ class DefaultMessageServiceFacade implements MessageServiceFacade {
 
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function getMessage($id, $path, \Conjoon\User\User $user)
+    {
+        try {
+
+            /**
+             * @see \Conjoon\Mail\Client\Folder\DefaultFolderPath
+             */
+            require_once 'Conjoon/Mail/Client/Folder/DefaultFolderPath.php';
+
+            $folderPath = new \Conjoon\Mail\Client\Folder\DefaultFolderPath(
+                $path
+            );
+
+            /**
+             * @see \Conjoon\Mail\Client\Folder\Folder
+             */
+            require_once 'Conjoon/Mail/Client/Folder/Folder.php';
+
+            $folder = new \Conjoon\Mail\Client\Folder\Folder($folderPath);
+
+            /**
+             * @see \Conjoon\Mail\Client\Message\DefaultMessageLocation
+             */
+            require_once 'Conjoon/Mail/Client/Message/DefaultMessageLocation.php';
+
+            $location = new \Conjoon\Mail\Client\Message\DefaultMessageLocation(
+                $folder, $id
+            );
+
+            $request = new \Conjoon\Mail\Server\Request\DefaultGetMessageRequest(array(
+                'user'       => $user,
+                'parameters' => array(
+                    'messageLocation' => $location
+                )));
+
+            $response = $this->server->handle($request);
+
+            if ($response->isSuccess()) {
+
+            }
+
+            /**
+             * @see \Conjoon\Mail\Client\Service\ServicePatron\ReadMessagePatron
+             */
+            require_once 'Conjoon/Mail/Client/Service/ServicePatron/ReadMessagePatron.php';
+
+            return new DefaultServiceResult(
+                $response,
+                new \Conjoon\Mail\Client\Service\ServicePatron\ReadMessagePatron()
+            );
+
+        } catch (\Exception $e) {
+
+            return new DefaultServiceResult(new MessageServiceException(
+                "Exception thrown by previous exception: " . $e->getMessage(),
+                0, $e
+            ));
+
+        }
+
+    }
 
 
 

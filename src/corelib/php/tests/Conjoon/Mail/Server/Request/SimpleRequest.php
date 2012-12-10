@@ -38,6 +38,12 @@ class SimpleRequest implements Request {
 
     }
 
+    public function getParameter($key)
+    {
+        return $key;
+    }
+
+
     public function getParameters()
     {
         return array();

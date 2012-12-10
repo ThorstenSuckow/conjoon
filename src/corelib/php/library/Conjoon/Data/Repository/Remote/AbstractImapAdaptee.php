@@ -62,6 +62,17 @@ abstract class AbstractImapAdaptee implements ImapAdaptee  {
         $host, $port, $user, $password, $ssl = false);
 
     /**
+     * Returns the message for the specified id.
+     *
+     * @param string $messageId
+     *
+     * @return array|null
+     *
+     * @throws \Conjoon\Data\Repository\Remote\ImapConnectionException
+     */
+    abstract protected function _getMessage($messageId);
+
+    /**
      * Sets the flag for the specified message.
      *
      * @param string $flag
@@ -83,7 +94,6 @@ abstract class AbstractImapAdaptee implements ImapAdaptee  {
      *
      * @throws \Conjoon\Data\Repository\Remote\ImapConnectionException
      */
-
     abstract protected function removeFlagFromMessage($flag, $id);
 
     /**
@@ -168,6 +178,28 @@ abstract class AbstractImapAdaptee implements ImapAdaptee  {
         if ($mode === '+') {
             return $this->addFlagToMessage($flag, $id);
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getMessage($messageId)
+    {
+        $this->throwExceptionIfNotConnected();
+
+        $data = array('messageId' => $messageId);
+
+        ArgumentCheck::check(array(
+            'messageId' => array(
+                'type'        => 'string',
+                'allowEmpty'  => false
+            )
+        ), $data);
+
+        $messageId = $data['messageId'];
+
+        return $this->_getMessage($messageId);
+
     }
 
     /**

@@ -61,4 +61,16 @@ interface ImapConnection extends RemoteConnection {
      */
     public function getFolderDelimiter();
 
+    /**
+     * Returns the message for the specified message id.
+     *
+     * @param string $messageId
+     *
+     * @return array An array with the following key/value pairs:
+     *               - header: the raw header of the message
+     *               - body: the raw body of the message
+     *
+     * @throws ImapConnectionException
+     */
+    public function getMessage($messageId);
 }

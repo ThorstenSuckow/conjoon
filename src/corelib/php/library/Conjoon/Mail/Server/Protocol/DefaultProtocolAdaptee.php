@@ -22,11 +22,6 @@ namespace Conjoon\Mail\Server\Protocol;
  */
 require_once 'Conjoon/Mail/Server/Protocol/ProtocolAdaptee.php';
 
-/**
- * @see \Conjoon\Mail\Server\Protocol\DefaultResult\SetFlagsResult
- */
-require_once 'Conjoon/Mail/Server/Protocol/DefaultResult/SetFlagsResult.php';
-
 
 /**
  * A default implementation for a ProtocolAdaptee
@@ -60,6 +55,8 @@ class DefaultProtocolAdaptee implements ProtocolAdaptee {
         => '\Conjoon\Mail\Client\Folder\DefaultFolderCommons',
         'imapMessageFlagRepository'
         => '\Conjoon\Data\Repository\Mail\ImapMessageFlagRepository',
+        'imapMessageRepository'
+        => '\Conjoon\Data\Repository\Mail\ImapMessageRepository',
         'accountService'
         => '\Conjoon\Mail\Client\Account\DefaultAccountService'
 
@@ -160,7 +157,86 @@ class DefaultProtocolAdaptee implements ProtocolAdaptee {
             }
         }
 
+        /**
+         * @see \Conjoon\Mail\Server\Protocol\DefaultResult\SetFlagsResult
+         */
+        require_once 'Conjoon/Mail/Server/Protocol/DefaultResult/SetFlagsResult.php';
+
         return new \Conjoon\Mail\Server\Protocol\DefaultResult\SetFlagsResult();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getMessage(
+            \Conjoon\Mail\Client\Message\MessageLocation $messageLocation,
+            \Conjoon\User\User $user)
+    {
+        $folder = $messageLocation->getFolder();
+
+        try {
+            $mayRead = $this->mayUserReadFolder($folder, $user);
+        } catch (\Conjoon\Mail\Client\Security\SecurityServiceException $e) {
+            throw new \Conjoon\Mail\Server\Protocol\ProtocolException(
+                "Exception thrown by previous exception: "
+                    . $e->getMessage(), 0, $e
+            );
+        }
+
+        try {
+            $isRemoteMailbox = $this->isFolderRepresentingRemoteMailbox(
+                $folder, $user);
+        } catch (\Conjoon\Mail\Client\Folder\FolderServiceException $e) {
+            throw new \Conjoon\Mail\Server\Protocol\ProtocolException(
+                "Exception thrown by previous exception: " . $e->getMessage(),
+                0, $e
+            );
+        }
+
+        if (!$isRemoteMailbox) {
+            throw new \Conjoon\Mail\Server\Protocol\ProtocolException(
+                "No support for folders representing POP3 mailboxes"
+            );
+        }
+
+        try{
+            $account = $this->getAccountServiceForUser($user)
+                ->getMailAccountToAccessRemoteFolder($folder);
+
+            if ($account) {
+                $imapMessageRepository =
+                    $this->defaultClassNames['imapMessageRepository'];
+                $imapRepository = new $imapMessageRepository($account);
+
+                $entity = $imapRepository->findById($messageLocation);
+
+                if ($entity == null) {
+                    throw new \Conjoon\Mail\Server\Protocol\ProtocolException(
+                        "Message not found"
+                    );
+                }
+
+            }
+        } catch (\Exception $e) {
+            throw new \Conjoon\Mail\Server\Protocol\ProtocolException(
+                "Exception thrown by previous exception: "
+                    . $e->getMessage(), 0, $e
+            );
+        }
+        if (!$account) {
+            throw new \Conjoon\Mail\Server\Protocol\ProtocolException(
+                "No mail account found for folder"
+            );
+        }
+        /**
+         * @see \Conjoon\Mail\Server\Protocol\DefaultResult\GetMessageResult
+         */
+        require_once 'Conjoon/Mail/Server/Protocol/DefaultResult/GetMessageResult.php';
+
+        return new \Conjoon\Mail\Server\Protocol\DefaultResult\GetMessageResult(
+            $entity,$messageLocation
+        );
+
     }
 
 
@@ -303,6 +379,22 @@ class DefaultProtocolAdaptee implements ProtocolAdaptee {
      * @throws \Conjoon\Mail\Client\Security\SecurityServiceException
      */
     protected function mayUserWriteFolder(
+        \Conjoon\Mail\Client\Folder\Folder $folder, \Conjoon\User\User $user)
+    {
+        $folderSecurityService = $this->getFolderSecurityServiceForUser($user);
+
+        return $folderSecurityService->isFolderAccessible($folder);
+    }
+
+    /**
+     *
+     * @param \Conjoon\Mail\Client\Folder\Folder $folder
+     * @param \Conjoon\User\User $user
+     *
+     *
+     * @throws \Conjoon\Mail\Client\Security\SecurityServiceException
+     */
+    protected function mayUserReadFolder(
         \Conjoon\Mail\Client\Folder\Folder $folder, \Conjoon\User\User $user)
     {
         $folderSecurityService = $this->getFolderSecurityServiceForUser($user);

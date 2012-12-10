@@ -45,6 +45,20 @@ interface Protocol {
      */
     public function setFlags(array $options);
 
+    /**
+     * Returns the specified message.
+     *
+     * @param array $options an array of options for this method:
+     *        - user: an instance of \Conjoon\User\User
+     *        - parameters: the list of parameters the original request was called
+     *        with, containing the key
+     *              - messageLocation which holds an instance of
+     *              \Conjoon\Mail\Client\Messagge\MessageLocation
+     *
+     * @return \Conjoon\Mail\Server\Protocol\ProtocolResult
+     */
+    public function getMessage(array $options);
+
 
 
 }
