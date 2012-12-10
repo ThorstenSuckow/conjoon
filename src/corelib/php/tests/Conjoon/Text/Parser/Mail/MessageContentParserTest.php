@@ -28,10 +28,42 @@ require_once 'Conjoon/Text/Parser/Mail/MessageContentParser.php';
  */
 class MessageContentParserTest extends \PHPUnit_Framework_TestCase {
 
-    public function testDummy()
+    protected $parser;
+
+    protected function setUp()
     {
-        $this->fail();
+        parent::setUp();
+
+        $this->parser = new MessageContentParser();
     }
 
+    /**
+     * @expectedException \Conjoon\Argument\InvalidArgumentException
+     */
+    public function testParseExceptionNoSplit()
+    {
+        $this->parser->parse("sfsfsf");
+    }
+
+    /**
+     * @expectedException \Conjoon\Argument\InvalidArgumentException
+     */
+    public function testParseExceptionEmpty()
+    {
+        $this->parser->parse("");
+    }
+
+    public function testOk()
+    {
+        $this->assertEquals(
+            array(
+                'contentTextPlain' => 'contentTextPlain',
+                'contentTextHtml'  => ''
+            ),
+            $this->parser->parse(
+                "Content-Type: text/plain\n\ncontentTextPlain"
+            )
+        );
+    }
 
 }

@@ -58,7 +58,12 @@ class DefaultServiceResult implements ServiceResult {
         $this->init($from);
 
         if ($patron && $this->isSuccess()) {
-            $this->data = $patron->applyForData($this->data);
+            try {
+                $this->data = $patron->applyForData($this->data);
+            } catch (\Exception $e) {
+                $this->isSuccess = false;
+                $this->data      = $this->traverseException($e);
+            }
         }
     }
 

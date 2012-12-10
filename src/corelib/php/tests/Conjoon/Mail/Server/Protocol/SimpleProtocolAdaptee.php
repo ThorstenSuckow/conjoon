@@ -63,7 +63,17 @@ class SimpleProtocolAdaptee implements ProtocolAdaptee {
         \Conjoon\User\User $user)
     {
         if ($this->alwaysSucceed) {
-            return new \Conjoon\Mail\Server\Protocol\DefaultResult\GetMessageResult();
+            return new \Conjoon\Mail\Server\Protocol\DefaultResult\GetMessageResult(
+                new \Conjoon\Data\Entity\Mail\ImapMessageEntity(),
+                new \Conjoon\Mail\Client\Message\DefaultMessageLocation(
+                    new \Conjoon\Mail\Client\Folder\Folder(
+                        new \Conjoon\Mail\Client\Folder\DefaultFolderPath(
+                            '["1", "2"]'
+                        )
+                    ),
+                    "1"
+                )
+            );
         }
 
         throw new \Conjoon\Mail\Server\Protocol\ProtocolException(

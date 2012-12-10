@@ -34,40 +34,57 @@ class GetMessageResultTest extends \PHPUnit_Framework_TestCase {
 
     protected $input;
 
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $toArray = array(
-            'getMessage' => array('__FAIL__')
-        );
-
-        $this->input = array(array(
-            'data' => array(
-                '__toString' => json_encode($toArray),
-                'toJson'     => json_encode($toArray),
-                'toArray'    => $toArray
-            )
-        ));
-
-    }
-
     /**
      * Ensures everathing works as expected
      */
     public function testOk()
     {
-        $this->fail();
-        return;
+        $entity = new \Conjoon\Data\Entity\Mail\ImapMessageEntity();
 
-        foreach ($this->input as $input) {
+        $entity->setDate('1970-01-01 00:00:00');
+        $entity->setSubject('subject');
+        $entity->setTo('to@to.to');
+        $entity->setCc('cc@cc.cc');
+        $entity->setBcc('bcc@bcc.bcc');
+        $entity->setFrom('from@from.from');
+        $entity->setReplyTo('replyTo@replyTo.replyTo');
+        $entity->setInReplyTo('inReplyTo@inReplyTo.inReplyTo');
+        $entity->setReferences('references');
+        $entity->setContentTextPlain('contentTextPlain');
+        $entity->setContentTextHtml('contentTextHtml');
 
-            $successResult = new GetMessageResult();
+        $successResult = new GetMessageResult(
+            $entity,
+            new \Conjoon\Mail\Client\Message\DefaultMessageLocation(
+                new \Conjoon\Mail\Client\Folder\Folder(
+                    new \Conjoon\Mail\Client\Folder\DefaultFolderPath(
+                        '["1", "2"]'
+                    )
+                ), "1"
+            )
+        );
 
-            foreach ($input['data'] as $method => $result) {
-                $this->assertEquals($result, $successResult->$method());
-            }
-        }
+        $this->assertEquals(
+            array(
+                'message' => array(
+                    'messageId' => "1",
+                    'path'       => array('1', '2'),
+                    'date'       => '1970-01-01 00:00:00',
+                    'subject'    => 'subject',
+                    'to'         => 'to@to.to',
+                    'cc'         => 'cc@cc.cc',
+                    'bcc'        => 'bcc@bcc.bcc',
+                    'from'       => 'from@from.from',
+                    'replyTo'    => 'replyTo@replyTo.replyTo',
+                    'inReplyTo'  => 'inReplyTo@inReplyTo.inReplyTo',
+                    'references' => 'references',
+                    'contentTextHtml'  => 'contentTextHtml',
+                    'contentTextPlain' => 'contentTextPlain'
+                )
+            ),
+            $successResult->toArray()
+        );
+
     }
 
 }

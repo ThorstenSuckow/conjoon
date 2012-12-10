@@ -16,10 +16,22 @@
 
 namespace Conjoon\Mail\Client\Service\ServicePatron;
 
+use Conjoon\Lang\MissingKeyException;
+
 /**
- * @see \Conjoon\Mail\Client\Service\ServicePatron\ServicePatron
+ * @see \Conjoon\Lang\MissingKeyException
  */
-require_once 'Conjoon/Mail/Client/Service/ServicePatron/ServicePatron.php';
+require_once 'Conjoon/Lang/MissingKeyException.php';
+
+/**
+ * @see \Conjoon\Mail\Client\Service\ServicePatron\AbstractServicePatron
+ */
+require_once 'Conjoon/Mail/Client/Service/ServicePatron/AbstractServicePatron.php';
+
+/**
+ * @see \Conjoon\Mail\Client\Service\ServicePatron\ServicePatronException
+ */
+require_once 'Conjoon/Mail/Client/Service/ServicePatron/ServicePatronException.php';
 
 /**
  * A service patron is responsible for changing data retrieved from a service
@@ -30,7 +42,8 @@ require_once 'Conjoon/Mail/Client/Service/ServicePatron/ServicePatron.php';
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class ReadMessagePatron implements \Conjoon\Mail\Client\Service\ServicePatron\ServicePatron {
+class ReadMessagePatron
+    extends \Conjoon\Mail\Client\Service\ServicePatron\AbstractServicePatron {
 
     /**
      * @var \Conjoon_Text_Parser_Mail_EmailAddressIdentityParser
@@ -42,37 +55,48 @@ class ReadMessagePatron implements \Conjoon\Mail\Client\Service\ServicePatron\Se
      */
     public function applyForData(array $data)
     {
-        $d =& $data['message'];
+        try {
 
-        $d['isPlainText'] = 1;
-        $d['body']        = $this->createBody($d['contentTextPlain']);
+            $this->v('message', $data);
 
-        /**
-         * @see \Conjoon_Date_Format
-         */
-        require_once 'Conjoon/Date/Format.php';
+            $d =& $data['message'];
 
-        $d['date'] = \Conjoon_Date_Format::utcToLocal($d['date']);
+            $d['isPlainText'] = 1;
+            $d['body']        = $this->createBody($this->v('contentTextPlain', $d));
 
-        $d['to']      = $this->createAddressList($d['to']);
-        $d['cc']      = $this->createAddressList($d['cc']);
-        $d['from']    = $this->createAddressList($d['from']);
-        $d['bcc']     = $this->createAddressList($d['bcc']);
-        $d['replyTo'] = $this->createAddressList($d['replyTo']);
+            /**
+             * @see \Conjoon_Date_Format
+             */
+            require_once 'Conjoon/Date/Format.php';
 
-        /**
-         * @see \Zend_Filter_HtmlEntities
-         */
-        require_once 'Zend/Filter/HtmlEntities.php';
+            $d['date'] = \Conjoon_Date_Format::utcToLocal($this->v('date', $d));
 
-        $htmlEntitiesFilter = new \Zend_Filter_HtmlEntities(array(
-            'quotestyle' => ENT_COMPAT
-        ));
+            $d['to']      = $this->createAddressList($this->v('to', $d));
+            $d['cc']      = $this->createAddressList($this->v('cc', $d));
+            $d['from']    = $this->createAddressList($this->v('from', $d));
+            $d['bcc']     = $this->createAddressList($this->v('bcc', $d));
+            $d['replyTo'] = $this->createAddressList($this->v('replyTo', $d));
 
-        $d['subject'] = $htmlEntitiesFilter->filter($d['subject']);
+            /**
+             * @see \Zend_Filter_HtmlEntities
+             */
+            require_once 'Zend/Filter/HtmlEntities.php';
 
-        unset($d['contentTextPlain']);
-        unset($d['contentTextHtml']);
+            $htmlEntitiesFilter = new \Zend_Filter_HtmlEntities(array(
+                'quotestyle' => ENT_COMPAT
+            ));
+
+            $d['subject'] = $htmlEntitiesFilter->filter($this->v('subject', $d));
+
+            unset($d['contentTextPlain']);
+            unset($d['contentTextHtml']);
+
+        } catch (\Exception $e) {
+            throw new ServicePatronException(
+                "Exception thrown by previous exception: " . $e->getMessage(),
+                0, $e
+            );
+        }
 
         return $data;
     }
@@ -197,10 +221,10 @@ class ReadMessagePatron implements \Conjoon\Mail\Client\Service\ServicePatron\Se
              */
             require_once 'Conjoon/Text/Parser/Mail/EmailAddressIdentityParser.php';
 
-            $identityParser = new \Conjoon_Text_Parser_Mail_EmailAddressIdentityParser();
+            $this->identityParser = new \Conjoon_Text_Parser_Mail_EmailAddressIdentityParser();
         }
 
-        $res = $identityParser->parse($text);
+        $res = $this->identityParser->parse($text);
 
         $addresses = array();
 

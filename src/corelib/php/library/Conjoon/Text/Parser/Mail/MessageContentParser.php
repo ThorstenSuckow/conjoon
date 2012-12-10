@@ -39,7 +39,10 @@ require_once 'Conjoon/Text/Parser.php';
 require_once 'Conjoon/Text/Parser/Exception.php';
 
 /**
- *
+ * Parses a raw email message's body for content text/plain and content text/html
+ * and returns the result in an array with the keys
+ * "contentTextPlain" and "contentTextHtml".
+ * Based on the input text, the value of one or both keys may be empty.
  *
  * @uses \Conjoon_Text_Parser
  * @category   Text
@@ -77,11 +80,18 @@ class MessageContentParser extends \Conjoon_Text_Parser {
 
         $message = $data['message'];
 
+        if (strpos((string) $input, "\n\n") === false) {
+            throw new InvalidArgumentException(
+                "Malformed message. Could not find splitter."
+            );
+        }
+
         $parts = explode("\n\n", $message, 2);
 
         if (count($parts) != 2) {
-            throw new InvalidArgumentException(
-                "Malformed message."
+            return array(
+                'contentTextPlain' => '',
+                'contentTextHtml'  => ''
             );
         }
 

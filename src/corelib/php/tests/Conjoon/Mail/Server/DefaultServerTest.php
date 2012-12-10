@@ -99,7 +99,7 @@ class DefaultServerTest extends \Conjoon\Mail\Server\Protocol\ProtocolTestCase {
 
         $this->assertTrue($response instanceof Response\DefaultResponse);
         $this->assertTrue(is_array($response->getResponseBody()->getData()));
-        $this->assertSame(Response\Response::STATUS_CODE_101, $response->getStatus());
+        $this->assertSame(Response\Response::STATUS_CODE_200, $response->getStatus());
 
     }
 

@@ -14,7 +14,7 @@
  */
 
 
-namespace Conjoon\Mail\Client\Service;
+namespace Conjoon\Mail\Client\Service\ServicePatron;
 
 /**
  * @see \Conjoon\Mail\Client\Service\ServiceException
@@ -28,7 +28,8 @@ require_once 'Conjoon/Mail/Client/Service/ServiceException.php';
  *
  * @uses Conjoon_Mail_Client_MailClientException
  */
-class MessageServiceException extends ServiceException {
+class ServicePatronException
+    extends \Conjoon\Mail\Client\Service\ServiceException {
 
 }
 

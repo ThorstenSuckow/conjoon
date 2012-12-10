@@ -17,18 +17,18 @@
 namespace Conjoon\Mail\Client\Service;
 
 /**
- * @see \Conjoon\Mail\Client\Service\ServiceException
+ * @see \Conjoon_Mail_Client_MailClientException
  */
-require_once 'Conjoon/Mail/Client/Service/ServiceException.php';
+require_once 'Conjoon/Mail/Client/MailClientException.php';
 
 
 /**
  * @category   Conjoon
  * @package    Exception
  *
- * @uses Conjoon_Mail_Client_MailClientException
+ * @uses \Conjoon_Mail_Client_MailClientException
  */
-class MessageServiceException extends ServiceException {
+class ServiceException extends \Conjoon_Mail_Client_MailClientException {
 
 }
 

@@ -27,6 +27,11 @@ require_once 'Conjoon/Mail/Client/Service/DefaultServiceResult.php';
 require_once dirname(__FILE__) . '/../../Server/Request/SimpleRequest.php';
 
 /**
+ *@see \Conjoon\Mail\Client\Service\ServicePatron\SimpleServicePatron
+ */
+require_once dirname(__FILE__) . '/ServicePatron/SimpleServicePatron.php';
+
+/**
  * @category   Conjoon
  * @package    Conjoon_Mail
  * @subpackage UnitTests
@@ -98,7 +103,28 @@ class DefaultServiceResultTest extends \PHPUnit_Framework_TestCase {
         $arr = $result->toArray();
 
         $this->assertSame(json_encode($arr), $result->toJson());
+    }
 
+    /**
+     * Ensures everything works as expected
+     */
+    public function testWithSimpleServicePatron()
+    {
+        $request = new \Conjoon\Mail\Server\Request\SimpleRequest(array());
+
+        $responseBody = new \Conjoon\Mail\Server\Response\DefaultResponseBody(
+            array('data' => 'data'));
+
+        $response = new \Conjoon\Mail\Server\Response\DefaultResponse(
+            $request,  $responseBody, array('status' => 200)
+        );
+
+        $result = new DefaultServiceResult(
+            $response, new ServicePatron\SimpleServicePatron()
+        );
+
+        $this->assertTrue($result->isSuccess());
+        $this->assertEquals(array('OK'), $result->getData());
     }
 
 }

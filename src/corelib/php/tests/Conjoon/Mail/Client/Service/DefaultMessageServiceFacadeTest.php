@@ -58,7 +58,20 @@ class DefaultMessageServiceFacadeTest extends
 
     public function testGetMessage()
     {
-        $this->fail();
+        $protocol = new \Conjoon\Mail\Server\Protocol\DefaultProtocol(
+            $this->protocolAdaptee
+        );
+
+        $defaultServer = new \Conjoon\Mail\Server\DefaultServer($protocol);
+
+        $messageFacade = new DefaultMessageServiceFacade($defaultServer);
+        $result = $messageFacade->getMessage(
+            "1", '["root","1","2"]', $this->user
+
+        );
+
+        $this->assertTrue($result instanceof ServiceResult);
+        $this->assertTrue($result->isSuccess());
     }
 
 }

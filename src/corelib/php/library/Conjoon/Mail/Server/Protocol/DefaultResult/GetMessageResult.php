@@ -84,7 +84,7 @@ class GetMessageResult implements \Conjoon\Mail\Server\Protocol\SuccessResult {
             'replyTo'    => $this->entity->getReplyTo(),
             'inReplyTo'  => $this->entity->getInReplyTo(),
             'references' => $this->entity->getReferences(),
-            'contentTextHtml'  => $this->entity->getContentTextPlain(),
+            'contentTextHtml'  => $this->entity->getContentTextHtml(),
             'contentTextPlain' => $this->entity->getContentTextPlain()
         ));
     }
