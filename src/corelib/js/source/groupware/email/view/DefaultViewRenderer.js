@@ -126,6 +126,16 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
     attachmentKeys : null,
 
     /**
+     * @type {Object} attachmentData
+     */
+    attachmentData : null,
+
+    /**
+     * @type {Ext.Element} attachmentContainer
+     */
+    attachmentContainer : null,
+
+    /**
      * @type {String} downloadTypeEmailAttachment
      */
     downloadTypeEmailAttachment : 'emailAttachment',
@@ -360,16 +370,18 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
 
         this.clear();
 
-        var subject     = data.subject;
-        var from        = data.from;
-        var to          = data.to;
-        var cc          = data.cc;
-        var bcc         = data.bcc;
-        var replyTo     = data.replyTo;
-        var date        = data.date;
-        var body        = data.body;
-        var attachments = data.attachments;
-        var isPlainText = data.isPlainText;
+        var subject     = data.subject,
+            from        = data.from,
+            to          = data.to,
+            cc          = data.cc,
+            bcc         = data.bcc,
+            replyTo     = data.replyTo,
+            date        = data.date,
+            body        = data.body,
+            attachments = data.attachments,
+            isPlainText = data.isPlainText,
+            path        = data.path,
+            messageId   = data.messageId;
 
         var ts = this.templates;
 
@@ -416,19 +428,29 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
         var attachHtml = "";
         var len = attachments.length;
 
-        for (var i = 0; i < len; i++) {
-            var attachmentTemplateId = Ext.id();
+        this.attachmentData = {};
 
-            attachItemsHtml   += ts.attachmentItem.apply({
+        for (var i = 0; i < len; i++) {
+            var attachmentTemplateId = Ext.id(),
+                attachmentId         = attachments[i].id || -1,
+                attachmentPath       = path;
+
+                this.attachmentData[attachmentTemplateId] = {
+                    attachmentId    : attachmentId,
+                    attachmentKey   : attachments[i].key,
+                    attachmentPath  : attachmentPath,
+                    messageId       : messageId,
+                    name            : attachments[i].fileName
+                };
+
+                attachItemsHtml   += ts.attachmentItem.apply({
                 mimeIconCls          : com.conjoon.util.MimeIconFactory
                                        .getIconCls(attachments[i].mimeType),
                 name                 : attachments[i].fileName,
-                attachmentId         : attachments[i].id,
-                attachmentKey        : attachments[i].key,
-                attachmentTemplateId : attachmentTemplateId
+                attachmentTemplateId : attachmentTemplateId,
             });
 
-            this.attachmentKeys[attachments[i].id+'_'+attachments[i].key]
+            this.attachmentKeys[attachmentId+'_'+attachments[i].key]
                 = attachmentTemplateId;
         }
 
@@ -451,6 +473,35 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
             this.createSplitBar(ifrAnchor);
 
             Ext.fly(ifrAnchor.parentNode).addClass('attachment');
+
+            this.attachmentContainer = new Ext.Element(ifrAnchor.parentNode);
+
+            this.attachmentContainer.on('click', function(e, t) {
+                e.stopEvent();
+
+                if (!this.attachmentData[t.id]) {
+                    return;
+                }
+
+                var data = this.attachmentData[t.id];
+
+                com.conjoon.groupware.DownloadManager.downloadEmailAttachment(
+                        data.attachmentId, data.attachmentKey,
+                        data.name, data.messageId, data.attachmentPath
+                );
+
+            }, this, {
+                delegate : 'div.com-conjoon-groupware-email-EmailView-attachmentItem'
+            })
+
+            /*this.attachmentData.attachmentTemplateId = {
+                    attachmentId    : attachmentId,
+                    attachmentKey   : attachments[i].key,
+                    attachmentPath  : attachmentPath,
+                    messageId       : messageId
+                };*/
+
+
         }
 
         var doc = this.doc;
@@ -495,6 +546,7 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
             return;
         }
 
+        this.attachmentData = {};
         this.attachmentKeys = {};
 
         var dom = document.getElementById(this.viewId);
@@ -517,6 +569,11 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
 
         if (prev) {
             prev.parentNode.removeChild(prev);
+        }
+
+        if (this.attachmentContainer) {
+            this.attachmentContainer.removeAllListeners();
+            this.attachmentContainer = null;
         }
 
         if (this.splitBar) {
@@ -681,26 +738,15 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
         if (!ts.attachmentItem) {
             ts.attachmentItem = new Ext.XTemplate(
                 '<div id="{attachmentTemplateId}" ',
-                'onclick="com.conjoon.groupware.DownloadManager.',
-                'downloadEmailAttachment({attachmentId}, \'{attachmentKey}\', ',
-                '\'{[this.sanitize(values.name)]}\');" tabindex="0" ',
+                ' tabindex="0" ',
                 'class="com-conjoon-groupware-email-EmailView-attachmentItem ',
                 '{mimeIconCls}" ',
                 ' qtip="{[this.qtipName(values.name)]}"',
                 '>{[this.renderName(values.name)]}</div>', {
-                    sanitize : function(value) {
-                        return value.replace(/'/g, "\\'");
-                    },
                     qtipName : function(value) {
                         return value.replace(/"/g, '&quot;');
                     },
                     renderName : function(value) {
-                        /*value = Ext.util.Format.htmlDecode(value);
-                        if (value.length > 39) {
-                            value = value.substring(0, 16)+'...'+
-                                    value.substring(value.length-18);
-                        }*/
-
                         return value;
                     }
                 }
@@ -748,16 +794,18 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
     {
         var data = record.data;
 
-        var subject     = data.subject     || '';
-        var from        = data.from        || '';
-        var to          = data.to          || '';
-        var cc          = data.cc          || '';
-        var replyTo     = data.replyTo     || '';
-        var bcc         = data.bcc         || '';
-        var date        = data.date        || '';
-        var body        = data.body        || '';
-        var attachments = data.attachments || '';
-        var isPlainText = data.isPlainText || false;
+        var subject     = data.subject     || '',
+            from        = data.from        || '',
+            to          = data.to          || '',
+            cc          = data.cc          || '',
+            replyTo     = data.replyTo     || '',
+            bcc         = data.bcc         || '',
+            date        = data.date        || '',
+            body        = data.body        || '',
+            attachments = data.attachments || '',
+            isPlainText = data.isPlainText || false,
+            path        = data.path,
+            messageId   = data.messageId;
 
         this.doRender({
             subject     : subject,
@@ -769,7 +817,9 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
             date        : date,
             body        : body,
             attachments : attachments,
-            isPlainText : isPlainText
+            isPlainText : isPlainText,
+            path        : path,
+            messageId   : messageId
         });
         this.layout();
         this.isPlainTextView = isPlainText;

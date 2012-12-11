@@ -42,6 +42,10 @@ require_once 'Conjoon/Data/EntityCreator/Mail/ImapMessageEntityCreator.php';
  */
 class DefaultImapMessageEntityCreator implements ImapMessageEntityCreator {
 
+    /**
+     * @var \Conjoon\Data\EntityCreator\Mail\MessageAttachmentEntityCreator
+     */
+    protected $attachmentCreator;
 
     /**
      * inheritdoc
@@ -65,11 +69,48 @@ class DefaultImapMessageEntityCreator implements ImapMessageEntityCreator {
         $message->setInReplyTo($header['inReplyTo']);
         $message->setReferences($header['references']);
 
+        $this->createAttachments($message, $body);
+
         $message->setContentTextPlain($body['contentTextPlain']);
         $message->setContentTextHtml($body['contentTextHtml']);
 
 
         return $message;
+    }
+
+    /**
+     * Adds attachments to the message if atatchments are available.
+     *
+     * @param \Conjoon\Data\Entity\Mail\ImapMessageEntity $message
+     * @param array $parsedMessage
+     */
+    protected function createAttachments(
+            \Conjoon\Data\Entity\Mail\ImapMessageEntity $message,
+            array $parsedMessage)
+    {
+        if (!isset($parsedMessage['attachments'])
+            || !is_array($parsedMessage['attachments'])) {
+            return;
+        }
+
+        if (!$this->attachmentCreator) {
+            /**
+             * @see \Conjoon\Data\EntityCreator\Mail\DefaultMessageAttachmentEntityCreator
+             */
+            require_once 'Conjoon/Data/EntityCreator/Mail/DefaultMessageAttachmentEntityCreator.php';
+
+            $this->attachmentCreator =
+                new \Conjoon\Data\EntityCreator\Mail\DefaultMessageAttachmentEntityCreator();
+        }
+
+        for ($i = 0, $len = count($parsedMessage['attachments']); $i < $len; $i++) {
+            $attachment =& $parsedMessage['attachments'][$i];
+
+            $attachmentEntity = $this->attachmentCreator->createFrom($attachment);
+
+            $message->addMessageAttachments($attachmentEntity);
+        }
+
     }
 
     /**

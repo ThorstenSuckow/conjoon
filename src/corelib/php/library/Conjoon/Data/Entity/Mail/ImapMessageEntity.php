@@ -30,4 +30,35 @@ require_once 'Conjoon/Data/Entity/Mail/AbstractMessageEntity.php';
  */
 class ImapMessageEntity extends AbstractMessageEntity {
 
+    /**
+     *  @var \Doctrine\Common\Collections\ArrayCollection
+     */
+    protected $messageAttachments;
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        /**
+         * @see \Doctrine\Common\Collections\ArrayCollection
+         */
+        require_once 'Doctrine/Common/Collections/ArrayCollection.php';
+
+        $this->messageAttachments = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+
+    public function addMessageAttachments(
+        \Conjoon\Data\Entity\Mail\MessageAttachmentEntity $attachment)
+    {
+        $this->messageAttachments[] = $attachment;
+
+        return $this;
+    }
+
+    public function getMessageAttachments()
+    {
+        return $this->messageAttachments;
+    }
+
 }

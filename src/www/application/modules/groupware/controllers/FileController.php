@@ -88,25 +88,60 @@ class Groupware_FileController extends Zend_Controller_Action {
         $type   = $this->_request->getParam('type');
         $name   = $this->_request->getParam('name');
 
+        $messageId = $this->_request->getParam('messageId');
+        $path      = $this->_request->getParam('path');
+
+        if ($path) {
+            $path = urldecode($path);
+        }
+
         $downloadCookieName = $this->_request->getParam('downloadCookieName');
 
         if ($type == 'emailAttachment') {
-            /**
-             * @see Conjoon_Modules_Groupware_Email_Attachment_Facade
-             */
-            require_once 'Conjoon/Modules/Groupware/Email/Attachment/Facade.php';
 
-            $facade = Conjoon_Modules_Groupware_Email_Attachment_Facade::getInstance();
+            if ($path && $messageId && $id <= 0) {
 
-            $data = $facade->getAttachmentDownloadDataForUserId(
-                $key, $id, $userId
-            );
+                // check if folder is remote folder
+                /**
+                 * @see Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser
+                 */
+                require_once 'Conjoon/Text/Parser/Mail/MailboxFolderPathJsonParser.php';
 
-            if ($data) {
-                $data['name']     = $data['file_name'];
-                $data['resource'] = $data['content'];
+                $parser = new Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser();
+
+                $pathInfo = $parser->parse($path);
+
+                /**
+                 * @see Conjoon_Modules_Groupware_Email_Folder_Facade
+                 */
+                require_once 'Conjoon/Modules/Groupware/Email/Folder/Facade.php';
+
+                $facade = Conjoon_Modules_Groupware_Email_Folder_Facade::getInstance();
+
+                if ($facade->isRemoteFolder($pathInfo['rootId'])) {
+                    return $this->getAttachmentFromRemoteServer($key, $messageId, $path);
+                }
+
+
+            } else {
+
+                /**
+                 * @see Conjoon_Modules_Groupware_Email_Attachment_Facade
+                 */
+                require_once 'Conjoon/Modules/Groupware/Email/Attachment/Facade.php';
+
+                $facade = Conjoon_Modules_Groupware_Email_Attachment_Facade::getInstance();
+
+                $data = $facade->getAttachmentDownloadDataForUserId(
+                    $key, $id, $userId
+                );
+
+                if ($data) {
+                    $data['name']     = $data['file_name'];
+                    $data['resource'] = $data['content'];
+                }
             }
-            
+
         } else {
             /**
              * @see Conjoon_Modules_Groupware_Files_File_Facade
@@ -243,6 +278,79 @@ class Groupware_FileController extends Zend_Controller_Action {
 
         $this->view->success = true;
         $this->view->files   = array($fileDto);
+    }
+
+// -------- helper
+    /**
+     * Helper function for fetching a single attachment directly from a remote
+     * server.
+     *
+     * @param string $key The key of the attachment
+     * @param string $messageId The message id of the message
+     * @param string $path The json encoded path where the message can be found
+     */
+    protected function getAttachmentFromRemoteServer($key, $messageId, $path)
+    {
+        /**
+         * @see Zend_Registry
+         */
+        require_once 'Zend/Registry.php';
+
+        /**
+         *@see Conjoon_Keys
+         */
+        require_once 'Conjoon/Keys.php';
+
+        $auth = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
+
+        /**
+         * @see Conjoon_User_AppUser
+         */
+        require_once 'Conjoon/User/AppUser.php';
+
+        $appUser = new \Conjoon\User\AppUser($auth->getIdentity());
+
+        $entityManager = Zend_Registry::get(Conjoon_Keys::DOCTRINE_ENTITY_MANAGER);
+
+        $mailFolderRepository =
+            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
+        $mesageFlagRepository =
+            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMessageFlagEntity');
+
+        $protocolAdaptee = new \Conjoon\Mail\Server\Protocol\DefaultProtocolAdaptee(
+            $mailFolderRepository, $mesageFlagRepository
+        );
+
+        /**
+         * @see \Conjoon\Mail\Server\Protocol\DefaultProtocol
+         */
+        $protocol = new \Conjoon\Mail\Server\Protocol\DefaultProtocol($protocolAdaptee);
+
+        /**
+         * @see \Conjoon\Mail\Server\DefaultServer
+         */
+        require_once 'Conjoon/Mail/Server/DefaultServer.php';
+
+        $server = new \Conjoon\Mail\Server\DefaultServer($protocol);
+
+
+        /**
+         * @see \Conjoon\Mail\Client\Service\DefaultMessageServiceFacade
+         */
+        require_once 'Conjoon/Mail/Client/Service/DefaultMessageServiceFacade.php';
+
+        $serviceFacade = new \Conjoon\Mail\Client\Service\DefaultMessageServiceFacade(
+            $server
+        );
+
+
+        $result = $serviceFacade->getAttachment($key, $messageId, $path, $appUser);
+
+        if ($result->isSuccess() {
+            return $result->getData();
+        }
+
+        return null;
     }
 
 

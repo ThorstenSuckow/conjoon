@@ -69,6 +69,25 @@ class GetMessageResult implements \Conjoon\Mail\Server\Protocol\SuccessResult {
      */
     public function toArray()
     {
+        $attachments = array();
+
+        $attEntities = $this->entity->getMessageAttachments();
+
+        for ($i = 0, $len = count($attEntities); $i < $len; $i++) {
+
+            $att =& $attEntities[$i];
+
+            $attachments[] = array(
+                'mimeType'  => $att->getMimeType(),
+                'encoding'  => $att->getEncoding(),
+                'fileName'  => $att->getFileName(),
+                'contentId' => $att->getContentId(),
+                'key'       => $att->getKey(),
+                'content'   => $att->getAttachmentContent()->getContent()
+            );
+
+        }
+
         return array('message' => array(
             'messageId' => $this->messageLocation->getMessageId(),
             'path' => array_merge(
@@ -85,7 +104,8 @@ class GetMessageResult implements \Conjoon\Mail\Server\Protocol\SuccessResult {
             'inReplyTo'  => $this->entity->getInReplyTo(),
             'references' => $this->entity->getReferences(),
             'contentTextHtml'  => $this->entity->getContentTextHtml(),
-            'contentTextPlain' => $this->entity->getContentTextPlain()
+            'contentTextPlain' => $this->entity->getContentTextPlain(),
+            'attachments'      => $attachments
         ));
     }
 

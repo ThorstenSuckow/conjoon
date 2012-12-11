@@ -64,6 +64,8 @@ class ReadMessagePatron
             $d['isPlainText'] = 1;
             $d['body']        = $this->createBody($this->v('contentTextPlain', $d));
 
+            $d['attachments'] = $this->createAttachments($this->v('attachments', $d));
+
             /**
              * @see \Conjoon_Date_Format
              */
@@ -102,6 +104,30 @@ class ReadMessagePatron
     }
 
 // -------- helper
+
+    /**
+     * Createsthe attachments.
+     *
+     * @param array
+     * @return array
+     *
+     */
+    protected function createAttachments(array $attachments)
+    {
+        $data = array();
+
+        for ($i = 0, $len = count($attachments); $i < $len; $i++) {
+            $att =& $attachments[$i];
+
+            $data[] = array(
+                'fileName' => $att['fileName'],
+                'mimeType' => $att['mimeType'],
+                'key'      => $att['key']
+            );
+        }
+
+        return $data;
+    }
 
     /**
      *

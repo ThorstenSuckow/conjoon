@@ -99,6 +99,11 @@ abstract class AbstractMessageEntity implements MessageEntity {
      */
     protected $sender;
 
+    public function __construct()
+    {
+
+    }
+
     /**
      * @inheritdoc
      */
