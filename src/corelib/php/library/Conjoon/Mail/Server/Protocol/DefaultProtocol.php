@@ -147,6 +147,49 @@ class DefaultProtocol implements Protocol {
         return $result;
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function getAttachment(array $options)
+    {
+        $result = null;
+
+        try {
+
+            ArgumentCheck::check(array(
+                'user' => array(
+                    'type'  => 'instanceof',
+                    'class' => '\Conjoon\User\User'
+                ),
+                'parameters' => array(
+                    'type'       => 'array',
+                    'allowEmpty' => false
+                )
+            ), $options);
+
+            ArgumentCheck::check(array(
+                'attachmentLocation' => array(
+                    'type'  => 'instanceof',
+                    'class' => '\Conjoon\Mail\Client\Message\AttachmentLocation'
+                )
+            ), $options['parameters']);
+
+        } catch (InvalidArgumentException $e) {
+            return $this->getResultForException($e);
+        }
+
+        try {
+            $result = $this->adaptee->getAttachment(
+                $options['parameters']['attachmentLocation'],
+                $options['user']
+            );
+        } catch (ProtocolException $e) {
+            $result = $this->getResultForException($e);
+        }
+
+        return $result;
+    }
+
 
 // -------- helper
 

@@ -61,6 +61,18 @@ class SimpleProtocolAdapteeTest extends ProtocolTestCase {
                 \Conjoon\Mail\Server\Protocol\DefaultResult\GetMessageResult
         );
 
+        $this->assertTrue(
+            $this->protocolAdaptee->getAttachment(
+                new \Conjoon\Mail\Client\Message\DefaultAttachmentLocation(
+                new \Conjoon\Mail\Client\Message\DefaultMessageLocation(
+                    $this->folderFlagCollection->getFolder(), 1
+                ), "1"),
+                $this->user
+            )
+                instanceof
+                \Conjoon\Mail\Server\Protocol\DefaultResult\GetAttachmentResult
+        );
+
     }
 
 }

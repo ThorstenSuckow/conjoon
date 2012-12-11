@@ -91,6 +91,8 @@ class Groupware_FileController extends Zend_Controller_Action {
         $messageId = $this->_request->getParam('messageId');
         $path      = $this->_request->getParam('path');
 
+        $data = null;
+
         if ($path) {
             $path = urldecode($path);
         }
@@ -119,9 +121,8 @@ class Groupware_FileController extends Zend_Controller_Action {
                 $facade = Conjoon_Modules_Groupware_Email_Folder_Facade::getInstance();
 
                 if ($facade->isRemoteFolder($pathInfo['rootId'])) {
-                    return $this->getAttachmentFromRemoteServer($key, $messageId, $path);
+                    $data = $this->getAttachmentFromRemoteServer($key, $messageId, $path);
                 }
-
 
             } else {
 
@@ -137,10 +138,10 @@ class Groupware_FileController extends Zend_Controller_Action {
                 );
 
                 if ($data) {
-                    $data['name']     = $data['file_name'];
                     $data['resource'] = $data['content'];
                 }
             }
+
 
         } else {
             /**
@@ -346,7 +347,7 @@ class Groupware_FileController extends Zend_Controller_Action {
 
         $result = $serviceFacade->getAttachment($key, $messageId, $path, $appUser);
 
-        if ($result->isSuccess() {
+        if ($result->isSuccess()) {
             return $result->getData();
         }
 

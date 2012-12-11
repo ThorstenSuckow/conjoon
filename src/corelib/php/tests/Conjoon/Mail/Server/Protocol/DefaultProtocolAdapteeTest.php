@@ -135,5 +135,35 @@ class DefaultProtocolAdapteeTest extends \Conjoon\DatabaseTestCaseDefault {
         $this->protocolAdaptee->setFlags($this->folderFlagCollection, $user);
     }
 
+    /**
+     * @expectedException \Conjoon\Mail\Server\Protocol\ProtocolException
+     */
+    public function testGetMessage()
+    {
+        $user = $this->userRepository->findById(2);
 
+        $this->protocolAdaptee->getMessage(
+            new \Conjoon\Mail\Client\Message\DefaultMessageLocation(
+                $this->folderFlagCollection->getFolder(), "1"
+            ),
+            $user
+        );
+    }
+
+    /**
+     * @expectedException \Conjoon\Mail\Server\Protocol\ProtocolException
+     */
+    public function testGetAttachment()
+    {
+        $user = $this->userRepository->findById(2);
+
+        $this->protocolAdaptee->getAttachment(
+            new \Conjoon\Mail\Client\Message\DefaultAttachmentLocation(
+            new \Conjoon\Mail\Client\Message\DefaultMessageLocation(
+                $this->folderFlagCollection->getFolder(), "1"
+            ), "1"
+            ),
+            $user
+        );
+    }
 }

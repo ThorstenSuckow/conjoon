@@ -79,7 +79,8 @@ class GetMessageResultTest extends \PHPUnit_Framework_TestCase {
                     'inReplyTo'  => 'inReplyTo@inReplyTo.inReplyTo',
                     'references' => 'references',
                     'contentTextHtml'  => 'contentTextHtml',
-                    'contentTextPlain' => 'contentTextPlain'
+                    'contentTextPlain' => 'contentTextPlain',
+                    'attachments'      => array()
                 )
             ),
             $successResult->toArray()

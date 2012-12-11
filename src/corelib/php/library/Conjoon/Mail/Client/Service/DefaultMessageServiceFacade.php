@@ -184,10 +184,6 @@ class DefaultMessageServiceFacade implements MessageServiceFacade {
 
             $response = $this->server->handle($request);
 
-            if ($response->isSuccess()) {
-
-            }
-
             /**
              * @see \Conjoon\Mail\Client\Service\ServicePatron\ReadMessagePatron
              */
@@ -206,9 +202,70 @@ class DefaultMessageServiceFacade implements MessageServiceFacade {
             ));
 
         }
-
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function getAttachment($key, $messageId, $path, \Conjoon\User\User $user)
+    {
+        try {
 
+            /**
+             * @see \Conjoon\Mail\Client\Folder\DefaultFolderPath
+             */
+            require_once 'Conjoon/Mail/Client/Folder/DefaultFolderPath.php';
+
+            $folderPath = new \Conjoon\Mail\Client\Folder\DefaultFolderPath(
+                $path
+            );
+
+            /**
+             * @see \Conjoon\Mail\Client\Folder\Folder
+             */
+            require_once 'Conjoon/Mail/Client/Folder/Folder.php';
+
+            $folder = new \Conjoon\Mail\Client\Folder\Folder($folderPath);
+
+            /**
+             * @see \Conjoon\Mail\Client\Message\DefaultMessageLocation
+             */
+            require_once 'Conjoon/Mail/Client/Message/DefaultMessageLocation.php';
+
+            $location = new \Conjoon\Mail\Client\Message\DefaultMessageLocation(
+                $folder, $messageId
+            );
+
+            /**
+             * @see \Conjoon\Mail\Client\Message\DefaultAttachmentLocation
+             */
+            require_once 'Conjoon/Mail/Client/Message/DefaultAttachmentLocation.php';
+
+            $attachmentLocation = new \Conjoon\Mail\Client\Message\DefaultAttachmentLocation(
+                $location, $key
+            );
+
+            $request = new \Conjoon\Mail\Server\Request\DefaultGetAttachmentRequest(array(
+                'user'       => $user,
+                'parameters' => array(
+                    'attachmentLocation' => $attachmentLocation
+                )));
+
+            $response = $this->server->handle($request);
+
+            return new DefaultServiceResult(
+                $response,
+                new \Conjoon\Mail\Client\Service\ServicePatron\DownloadAttachmentPatron()
+            );
+
+        } catch (\Exception $e) {
+
+            return new DefaultServiceResult(new MessageServiceException(
+                "Exception thrown by previous exception: " . $e->getMessage(),
+                0, $e
+            ));
+
+        }
+    }
 
 }

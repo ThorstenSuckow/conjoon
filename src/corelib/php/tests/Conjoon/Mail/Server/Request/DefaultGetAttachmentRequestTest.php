@@ -17,9 +17,9 @@
 namespace Conjoon\Mail\Server\Request;
 
 /**
- * @see Request
+ * @see DefaultGetAttachmentRequest
  */
-require_once 'Conjoon/Mail/Server/Request/DefaultGetMessageRequest.php';
+require_once 'Conjoon/Mail/Server/Request/DefaultGetAttachmentRequest.php';
 
 
 /**
@@ -30,16 +30,16 @@ require_once 'Conjoon/Mail/Server/Request/DefaultGetMessageRequest.php';
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class DefaultGetMessageRequestTest extends \PHPUnit_Framework_TestCase {
+class DefaultGetAttachmentRequestTest extends \PHPUnit_Framework_TestCase {
 
 
-    protected $messageLocation;
+    protected $attachmentLocation;
 
     protected $user;
 
     protected $request;
 
-    protected function getMessageLocation()
+    protected function getAttachmentLocation()
     {
         $folder = new \Conjoon\Mail\Client\Folder\Folder(
             new \Conjoon\Mail\Client\Folder\DefaultFolderPath(
@@ -47,9 +47,11 @@ class DefaultGetMessageRequestTest extends \PHPUnit_Framework_TestCase {
             )
         );
 
-        return new \Conjoon\Mail\Client\Message\DefaultMessageLocation(
-            $folder, 1
-        );
+        return
+            new \Conjoon\Mail\Client\Message\DefaultAttachmentLocation(
+                new \Conjoon\Mail\Client\Message\DefaultMessageLocation(
+                $folder, 1
+            ), "1");
     }
 
     protected function getUser()
@@ -77,10 +79,10 @@ class DefaultGetMessageRequestTest extends \PHPUnit_Framework_TestCase {
 
     protected function getRequest()
     {
-        return new DefaultGetMessageRequest(array(
+        return new DefaultGetAttachmentRequest(array(
             'user'       => $this->user,
             'parameters' => array(
-                'messageLocation' => $this->messageLocation
+                'attachmentLocation' => $this->attachmentLocation
             )
         ));
     }
@@ -91,7 +93,7 @@ class DefaultGetMessageRequestTest extends \PHPUnit_Framework_TestCase {
 
         $this->user = $this->getUser();
 
-        $this->messageLocation = $this->getMessageLocation();
+        $this->attachmentLocation = $this->getAttachmentLocation();
     }
 
     /**
@@ -99,7 +101,7 @@ class DefaultGetMessageRequestTest extends \PHPUnit_Framework_TestCase {
      */
     public function testConstructWithException()
     {
-        new DefaultGetMessageRequest(array(
+        new DefaultGetAttachmentRequest(array(
             'user'       => $this->user,
             'parameters' => array()
         ));
@@ -119,7 +121,7 @@ class DefaultGetMessageRequestTest extends \PHPUnit_Framework_TestCase {
     public function testGetProtocolCommand()
     {
         $this->assertSame(
-            "getMessage",
+            "getAttachment",
             $this->getRequest()->getProtocolCommand()
         );
     }
@@ -138,11 +140,11 @@ class DefaultGetMessageRequestTest extends \PHPUnit_Framework_TestCase {
     /**
      * Ensures everything works as expected
      */
-    public function testGetMessageLocation()
+    public function testGetAttachmentLocation()
     {
         $this->assertSame(
-            $this->messageLocation,
-            $this->getRequest()->getParameter('messageLocation')
+            $this->attachmentLocation,
+            $this->getRequest()->getParameter('attachmentLocation')
         );
     }
 
@@ -154,8 +156,8 @@ class DefaultGetMessageRequestTest extends \PHPUnit_Framework_TestCase {
         $params = $this->getRequest()->getParameters();
 
         $this->assertSame(
-            $this->messageLocation,
-            $params['messageLocation']
+            $this->attachmentLocation,
+            $params['attachmentLocation']
         );
     }
 }

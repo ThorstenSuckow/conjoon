@@ -57,6 +57,8 @@ class DefaultProtocolAdaptee implements ProtocolAdaptee {
         => '\Conjoon\Data\Repository\Mail\ImapMessageFlagRepository',
         'imapMessageRepository'
         => '\Conjoon\Data\Repository\Mail\ImapMessageRepository',
+        'imapAttachmentRepository'
+        => '\Conjoon\Data\Repository\Mail\ImapAttachmentRepository',
         'accountService'
         => '\Conjoon\Mail\Client\Account\DefaultAccountService'
 
@@ -183,6 +185,12 @@ class DefaultProtocolAdaptee implements ProtocolAdaptee {
             );
         }
 
+        if (!$mayRead) {
+            throw new \Conjoon\Mail\Server\Protocol\ProtocolException(
+                "User must not access the folder \"" . $folder->getNodeId() ."\""
+            );
+        }
+
         try {
             $isRemoteMailbox = $this->isFolderRepresentingRemoteMailbox(
                 $folder, $user);
@@ -235,6 +243,89 @@ class DefaultProtocolAdaptee implements ProtocolAdaptee {
 
         return new \Conjoon\Mail\Server\Protocol\DefaultResult\GetMessageResult(
             $entity,$messageLocation
+        );
+
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getAttachment(
+        \Conjoon\Mail\Client\Message\AttachmentLocation $attachmentLocation,
+        \Conjoon\User\User $user)
+    {
+
+        $messageLocation = $attachmentLocation->getMessageLocation();
+
+        $folder = $messageLocation->getFolder();
+
+        try {
+            $mayRead = $this->mayUserReadFolder($folder, $user);
+        } catch (\Conjoon\Mail\Client\Security\SecurityServiceException $e) {
+            throw new \Conjoon\Mail\Server\Protocol\ProtocolException(
+                "Exception thrown by previous exception: "
+                    . $e->getMessage(), 0, $e
+            );
+        }
+
+        if (!$mayRead) {
+            throw new \Conjoon\Mail\Server\Protocol\ProtocolException(
+                "User must not access the folder \"" . $folder->getNodeId() ."\""
+            );
+        }
+
+        try {
+            $isRemoteMailbox = $this->isFolderRepresentingRemoteMailbox(
+                $folder, $user);
+        } catch (\Conjoon\Mail\Client\Folder\FolderServiceException $e) {
+            throw new \Conjoon\Mail\Server\Protocol\ProtocolException(
+                "Exception thrown by previous exception: " . $e->getMessage(),
+                0, $e
+            );
+        }
+
+        if (!$isRemoteMailbox) {
+            throw new \Conjoon\Mail\Server\Protocol\ProtocolException(
+                "No support for folders representing POP3 mailboxes"
+            );
+        }
+
+        try{
+            $account = $this->getAccountServiceForUser($user)
+                ->getMailAccountToAccessRemoteFolder($folder);
+
+            if ($account) {
+                $imapAttachmentRepository =
+                    $this->defaultClassNames['imapAttachmentRepository'];
+                $imapRepository = new $imapAttachmentRepository($account);
+
+                $entity = $imapRepository->findById($attachmentLocation);
+
+                if ($entity == null) {
+                    throw new \Conjoon\Mail\Server\Protocol\ProtocolException(
+                        "Message not found"
+                    );
+                }
+
+            }
+        } catch (\Exception $e) {
+            throw new \Conjoon\Mail\Server\Protocol\ProtocolException(
+                "Exception thrown by previous exception: "
+                    . $e->getMessage(), 0, $e
+            );
+        }
+        if (!$account) {
+            throw new \Conjoon\Mail\Server\Protocol\ProtocolException(
+                "No mail account found for folder"
+            );
+        }
+        /**
+         * @see \Conjoon\Mail\Server\Protocol\DefaultResult\GetMessageResult
+         */
+        require_once 'Conjoon/Mail/Server/Protocol/DefaultResult/GetAttachmentResult.php';
+
+        return new \Conjoon\Mail\Server\Protocol\DefaultResult\GetAttachmentResult(
+            $entity, $attachmentLocation
         );
 
     }

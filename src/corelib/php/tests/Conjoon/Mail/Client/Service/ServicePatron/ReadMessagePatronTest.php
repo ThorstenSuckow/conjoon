@@ -50,7 +50,8 @@ class ReadMessagePatronTest extends \PHPUnit_Framework_TestCase {
                         'from' => '',
                         'bcc' => '',
                         'replyTo' => '',
-                        'subject' => ''
+                        'subject' => '',
+                        'attachments' => array()
                     )
                 ),
                 'output' => array(
@@ -63,7 +64,8 @@ class ReadMessagePatronTest extends \PHPUnit_Framework_TestCase {
                         'from' => array('addresses' => array()),
                         'bcc' => array('addresses' => array()),
                         'replyTo' => array('addresses' => array()),
-                        'subject' => ''
+                        'subject' => '',
+                        'attachments' => array()
                     )
                 )
             )

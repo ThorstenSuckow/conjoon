@@ -88,6 +88,23 @@ class DefaultProtocolTest extends ProtocolTestCase {
                 \Conjoon\Mail\Server\Protocol\DefaultResult\GetMessageResult
         );
 
+
+        $this->assertTrue(
+            $this->protocol->getAttachment(array(
+                'user'       => $this->user,
+                'parameters' => array(
+                    'attachmentLocation' =>
+                    new \Conjoon\Mail\Client\Message\DefaultAttachmentLocation(
+                        new \Conjoon\Mail\Client\Message\DefaultMessageLocation(
+                            $this->folderFlagCollection->getFolder(), 1
+                        ), "1"
+                    ),
+                )
+            ))
+                instanceof
+                \Conjoon\Mail\Server\Protocol\DefaultResult\GetAttachmentResult
+        );
+
         $this->assertTrue(
             $this->failProtocol->setFlags(array(
                 'user'       => $this->user,

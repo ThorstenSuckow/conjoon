@@ -59,6 +59,18 @@ interface Protocol {
      */
     public function getMessage(array $options);
 
-
+    /**
+     * Returns the attachment for the specified message.
+     *
+     * @param array $options an array of options for this method:
+     *        - user: an instance of \Conjoon\User\User
+     *        - parameters: the list of parameters the original request was called
+     *        with, containing the key
+     *              - attachmentLocation which holds an instance of
+     *              \Conjoon\Mail\Client\Messagge\AttachmentLocation
+     *
+     * @return \Conjoon\Mail\Server\Protocol\ProtocolResult
+     */
+    public function getAttachment(array $options);
 
 }

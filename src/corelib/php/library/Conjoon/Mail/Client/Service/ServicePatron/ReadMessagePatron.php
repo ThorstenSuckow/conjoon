@@ -34,8 +34,7 @@ require_once 'Conjoon/Mail/Client/Service/ServicePatron/AbstractServicePatron.ph
 require_once 'Conjoon/Mail/Client/Service/ServicePatron/ServicePatronException.php';
 
 /**
- * A service patron is responsible for changing data retrieved from a service
- * server response to data applicable fro the client.
+ * A service patron for reading an email message.
  *
  * @package Conjoon
  * @category Conjoon\Mail

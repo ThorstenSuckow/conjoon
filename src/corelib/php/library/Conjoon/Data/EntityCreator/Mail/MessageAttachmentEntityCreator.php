@@ -42,4 +42,16 @@ interface MessageAttachmentEntityCreator {
      */
     public function createFrom(array $options);
 
+    /**
+     * Returns an array with all attachments found in the raw message. The
+     * returned array may be empty.
+     *
+     * @param \Conjoon\Mail\Message\RawMessage
+     *
+     * @return array an array with instances of
+     * \Conjoon\Data\Entity\Mail\MessageAttachmentEntity
+     *
+     * @throws MailEntityCreatorException
+     */
+    public function createListFrom(\Conjoon\Mail\Message\RawMessage $message);
 }

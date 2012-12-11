@@ -46,6 +46,40 @@ require_once 'Conjoon/Data/Entity/Mail/DefaultAttachmentContentEntity.php';
  */
 class DefaultMessageAttachmentEntityCreator implements MessageAttachmentEntityCreator {
 
+    /**
+     * @inheritdoc
+     */
+    public function createListFrom(\Conjoon\Mail\Message\RawMessage $message)
+    {
+        $attachments = array();
+
+        try {
+            /**
+             * @see \Conjoon\Text\Parser\Mail\MessageContentParser
+             */
+            require_once 'Conjoon/Text/Parser/Mail/MessageContentParser.php';
+
+            $parser = new \Conjoon\Text\Parser\Mail\MessageContentParser();
+
+            $body = $parser->parse(
+                $message->getHeader() . "\n\n" . $message->getBody()
+            );
+
+            $att =& $body['attachments'];
+
+            for ($i = 0, $len = count($att); $i < $len; $i++) {
+                $attachments[] = $this->createFrom($att[$i]);
+            }
+
+            return $attachments;
+        } catch (\Exception $e) {
+
+            throw new MailEntityCreatorException(
+                "Exception thrown by previous exception: " . $e->getMessage(),
+                0, $e
+            );
+        }
+    }
 
     /**
      * @inheritdoc

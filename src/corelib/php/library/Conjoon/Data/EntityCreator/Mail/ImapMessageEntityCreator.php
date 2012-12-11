@@ -24,7 +24,6 @@ namespace Conjoon\Data\EntityCreator\Mail;
  */
 interface ImapMessageEntityCreator {
 
-
     /**
      * Returns an instance of \Conjoon\Data\Entity\Mail\ImapMessageEntity.
      *

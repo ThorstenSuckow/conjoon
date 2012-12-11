@@ -55,5 +55,17 @@ interface ProtocolAdaptee {
         \Conjoon\Mail\Client\Message\MessageLocation $messageLocation,
         \Conjoon\User\User $user);
 
+    /**
+     * @param \Conjoon\Mail\Client\Message\AttachmentLocation $attachmentLocation
+     * @param \Conjoon\User\User $user
+     *
+     *
+     * @return ProtocolResult
+     *
+     * @throws ProtocolException
+     */
+    public function getAttachment(
+        \Conjoon\Mail\Client\Message\AttachmentLocation $attachmentLocation,
+        \Conjoon\User\User $user);
 
 }

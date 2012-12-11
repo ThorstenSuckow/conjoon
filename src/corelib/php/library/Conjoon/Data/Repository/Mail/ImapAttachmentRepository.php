@@ -58,14 +58,14 @@ require_once 'Conjoon/Mail/Message/DefaultRawMessage.php';
  *
  * @author Thorsten-Suckow-Homberg <tsuckow@conjoon.org>
  */
-class ImapMessageRepository extends DefaultImapRepository
-    implements \Conjoon\Data\Repository\Mail\MessageRepository {
+class ImapAttachmentRepository extends DefaultImapRepository
+    implements \Conjoon\Data\Repository\Mail\AttachmentRepository {
 
     /**
      * @var string
      */
     protected $entityCreatorClassName =
-        '\Conjoon\Data\EntityCreator\Mail\DefaultImapMessageEntityCreator';
+        '\Conjoon\Data\EntityCreator\Mail\DefaultMessageAttachmentEntityCreator';
 
     /**
      * @var string
@@ -78,9 +78,9 @@ class ImapMessageRepository extends DefaultImapRepository
      * @param \Conjoon\Data\Entity\Mail\DefaultMailAccountEntity $account
      * @param array $options Addiotonal set of options this repository gets
      *             configured with
-     *              - imapMessageEntityCreatorClassName: a class name pointing to
+     *              - imapMessageAttachmentEntityCreatorClassName: a class name pointing to
      *                an implementation of
-     *                \Conjoon\Data\EntityCreator\Mail\ImapMessageEntityCreator.
+     *                \Conjoon\Data\EntityCreator\Mail\ImapMessageAttachmentEntityCreator.
      *
      * @throws \Conjoon\Argument\InvalidArgumentException
      * @throws \Conjoon\Data\Repository\Mail\MailRepositoryException
@@ -95,27 +95,27 @@ class ImapMessageRepository extends DefaultImapRepository
         $this->account = $account;
 
         ArgumentCheck::check(array(
-            'imapMessageEntityCreatorClassName' => array(
+            'imapMessageAttachmentEntityCreatorClassName' => array(
                 'type'       => 'string',
                 'allowEmpty' => false,
                 'mandatory'  => false
             )
         ), $options);
 
-        $options['imapMessageEntityCreatorClassName'] =
-            isset($options['imapMessageEntityCreatorClassName'])
-            ? $options['imapMessageEntityCreatorClassName']
+        $options['imapMessageAttachmentEntityCreatorClassName'] =
+            isset($options['imapMessageAttachmentEntityCreatorClassName'])
+            ? $options['imapMessageAttachmentEntityCreatorClassName']
             : $this->entityCreatorClassName;
 
-        $className = $options['imapMessageEntityCreatorClassName'];
+        $className = $options['imapMessageAttachmentEntityCreatorClassName'];
         $this->classLoader->loadClass($className);
 
         $this->entityCreator = new $className;
 
         if (!($this->entityCreator instanceof
-            \Conjoon\Data\EntityCreator\Mail\ImapMessageEntityCreator)) {
+            \Conjoon\Data\EntityCreator\Mail\MessageAttachmentEntityCreator)) {
             throw new InvalidArgumentException(
-                "entity creator must be of type \"ImapMessageEntityCreator\""
+                "entity creator must be of type \"MessageAttachmentEntityCreator\""
             );
         }
 
@@ -126,16 +126,18 @@ class ImapMessageRepository extends DefaultImapRepository
      */
     public function findById($id)
     {
-        $data = array('messageLocation' => $id);
+        $data = array('attachmentLocation' => $id);
 
         ArgumentCheck::check(array(
-            'messageLocation' => array(
+            'attachmentLocation' => array(
                 'type'  => 'instanceof',
-                'class' => '\Conjoon\Mail\Client\Message\MessageLocation'
+                'class' => '\Conjoon\Mail\Client\Message\AttachmentLocation'
             )
         ), $data);
 
-        $messageLocation = $data['messageLocation'];
+        $attachmentLocation = $data['attachmentLocation'];
+
+        $messageLocation = $attachmentLocation->getMessageLocation();
 
         $connection = $this->getConnection(array('mailAccount' => $this->account));
 
@@ -152,7 +154,7 @@ class ImapMessageRepository extends DefaultImapRepository
         );
 
         try {
-            $entity = $this->entityCreator->createFrom($raw);
+            $entities = $this->entityCreator->createListFrom($raw);
         } catch (\Conjoon\Data\EntityCreator\Mail\MailEntityCreatorException $e) {
             throw new MailRepositoryException(
                 "Exception thrown by previous exception: " . $e->getMessage(),
@@ -160,7 +162,13 @@ class ImapMessageRepository extends DefaultImapRepository
             );
         }
 
-        return $entity;
+        for ($i = 0, $len = count($entities); $i < $len; $i++) {
+            if ($entities[$i]->getKey() == $attachmentLocation->getIdentifier()) {
+                return $entities[$i];
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -168,7 +176,7 @@ class ImapMessageRepository extends DefaultImapRepository
      */
     public static function getEntityClassName()
     {
-        return '\Conjoon\Data\Entity\Mail\ImapMessageEntity';
+        return '\Conjoon\Data\Entity\Mail\DefaultMessageAttachmentEntity';
     }
 
 }

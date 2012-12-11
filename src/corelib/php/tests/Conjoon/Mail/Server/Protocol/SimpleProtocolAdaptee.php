@@ -81,4 +81,31 @@ class SimpleProtocolAdaptee implements ProtocolAdaptee {
         );
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function getAttachment(
+        \Conjoon\Mail\Client\Message\AttachmentLocation $attachmentLocation,
+        \Conjoon\User\User $user)
+    {
+        if ($this->alwaysSucceed) {
+            return new \Conjoon\Mail\Server\Protocol\DefaultResult\GetAttachmentResult(
+                new \Conjoon\Data\Entity\Mail\DefaultMessageAttachmentEntity(),
+                    new \Conjoon\Mail\Client\Message\DefaultAttachmentLocation(
+                     new \Conjoon\Mail\Client\Message\DefaultMessageLocation(
+                    new \Conjoon\Mail\Client\Folder\Folder(
+                        new \Conjoon\Mail\Client\Folder\DefaultFolderPath(
+                            '["1", "2"]'
+                        )
+                    ),
+                    "1"
+                ), "1")
+            );
+        }
+
+        throw new \Conjoon\Mail\Server\Protocol\ProtocolException(
+            "Unexpected Protocol Exception"
+        );
+    }
+
 }
