@@ -829,14 +829,15 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
      *
      * @param array $pathParts paths parts as parsed by
      * Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser
-     *
      * @param integer $userId The id of the user
+     * @param null|integer $accountId Optional, if specified only the folders
+     *                     for the specified account id will be read out
      *
      * @return Conjoon_Modules_Groupware_Email_Folder_Dto
      *
      * @throws Conjoon_ArgumentException
      */
-    public function getFoldersForPathAndUserId(Array $pathParts, $userId)
+    public function getFoldersForPathAndUserId(Array $pathParts, $userId, $accountId = -1)
     {
         Conjoon_Argument_Check::check(array(
             'path' => array(
@@ -856,9 +857,34 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
         $userId = $this->_checkParam($userId, 'userId');
         $path   = $pathParts['path'];
 
-        if (empty($pathParts['rootId'])) {
+        if (empty($pathParts['rootId']) && $accountId < 1) {
             // load root folders
             return $this->_getFolderDecorator()->getFoldersAsDto(0, $userId);
+        } else if (empty($pathParts['rootId'])) {
+            // get root folder for accot id
+            $folderIds = $this->_getFoldersAccountsModel()->getFolderIdsForAccountId($accountId);
+
+            if (empty($folderIds)) {
+                throw new RuntimeException(
+                    "No fodlers for account found"
+                );
+            }
+
+            if (count($folderIds) > 1) {
+                throw new RuntimeException(
+                    "Unexpected multiple folder ids for account returned"
+                );
+            }
+
+            if (!$this->isRemoteFolder($folderIds[0])) {
+                throw new RuntimeException(
+                    "Anything but remote folders not supported"
+                );
+            }
+
+            return array($this->_getFolderDecorator()->getFolderForIdAsDto(
+                $folderIds[0], $userId
+            ));
         }
 
         if (!$this->isRemoteFolder($pathParts['rootId'])) {

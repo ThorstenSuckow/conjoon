@@ -113,8 +113,15 @@ class Groupware_EmailFolderController extends Zend_Controller_Action {
 
         $userId = $this->_helper->registryAccess->getUserId();
 
+        $groupwareEmailAccountsId
+            = (int) $this->_request->getParam('groupwareEmailAccountsId');
+
+        $groupwareEmailAccountsId = $groupwareEmailAccountsId
+                                    ? $groupwareEmailAccountsId
+                                    : null;
+
         $folders = $facade->getFoldersForPathAndUserId(
-            $pathParts, $userId
+            $pathParts, $userId, $groupwareEmailAccountsId
         );
 
         $this->view->success = true;

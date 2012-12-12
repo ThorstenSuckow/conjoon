@@ -115,6 +115,10 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
      */
     deletedRecords : null,
 
+    /**
+     * @type {com.conjoon.groupware.email.account.view.ActionFolderMappingPanel}
+     */
+    actionFolderMappingPanel : null,
 
     initComponent : function()
     {
@@ -125,7 +129,7 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
 
         var accountGridPanel = new Ext.grid.GridPanel({
             cls            : 'com-conjoon-groupware-email-EmailAccountDialog-accountGrid',
-            height         : 235,
+            height         : 266,
             border         : true,
             sortInfo       : {field: 'name', direction: "DESC"},
             store          : this.accountStore,
@@ -457,6 +461,13 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
             ]
         });
 
+        this.actionFolderMappingPanel = new com.conjoon.groupware.email.account.view.ActionFolderMappingPanel({
+            bodyStyle   : 'padding:5px 15px 5px 15px;background-color:#F6F6F6',
+            defaultType : 'textfield',
+            baseCls     : 'x-small-editor',
+            labelAlign  : 'left'
+        });
+
         this.introPanel = new Ext.Panel({
             border   : false,
             hideMode : 'offsets',
@@ -480,11 +491,11 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
             style      : 'background:none',
             items      : [
                 identitySettingsPanel,
-                //serverSettingsPanel,
                 incomingMailPanel,
                 outgoingMailPanel,
                 commonSettingsPanel,
-                signatureSettingsPanel
+                signatureSettingsPanel,
+                this.actionFolderMappingPanel
             ]
         });
 
@@ -572,8 +583,8 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         this.modal = true;
         this.resizable = false;
         this.closable  = true;
-        this.height    = 400;
-        this.width     = 600;
+        this.height    = 425;
+        this.width     = 675;
         this.title     = com.conjoon.Gettext.gettext("Accounts");
         this.layout    = 'border';
         this.bodyStyle = 'background-color:#F6F6F6';
@@ -1483,6 +1494,17 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
 
         this.setAccountAsStandardButton.setDisabled(this.clkRecord.get('isStandard'));
         this.removeAccountButton.setDisabled(false);
+
+        if (this.mainTabPanel.getActiveTab() === this.actionFolderMappingPanel
+            && record.get('protocol') != 'IMAP') {
+            this.mainTabPanel.setActiveTab(0);
+        }
+
+        var prot = record.get('protocol');
+        if (prot == 'IMAP') {
+            this.actionFolderMappingPanel.setAccountRecord(record);
+        }
+        this.actionFolderMappingPanel.setDisabled(prot != 'IMAP');
     },
 
     /**
