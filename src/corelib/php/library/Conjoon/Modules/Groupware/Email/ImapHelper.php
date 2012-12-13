@@ -110,6 +110,25 @@ class Conjoon_Modules_Groupware_Email_ImapHelper {
     }
 
     /**
+     * Splits the passed argument into it's parts and returns it as an array.
+     * The splitter is the hierarchy delimiter of the passed imap account.
+     *
+     * @param Conjoon_Modules_Groupware_Email_Account_Dto $account
+     * @param string $path
+     *
+     * @throws Conjoon_Modules_Groupware_Email_Exception if the account is not
+     * an IMAP account, or if a connection to the host specified in the account
+     * could not be established or if no delim could be found
+     */
+    public static function splitFolderForImapAccount(
+        $path, Conjoon_Modules_Groupware_Email_Account_Dto $account)
+    {
+        $delim = self::getFolderDelimiterForImapAccount($account);
+
+        return explode($delim, $path);
+    }
+
+    /**
      * Returns the delimiter for the specified account. If the account is
      * not using the IMAP protocol, an exception will be thrown.
      *

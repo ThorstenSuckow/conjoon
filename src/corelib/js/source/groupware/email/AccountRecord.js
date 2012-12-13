@@ -35,5 +35,7 @@ com.conjoon.groupware.email.AccountRecord = Ext.data.Record.create([
     {name : 'portOutbox',           type : 'int'},
     {name : 'inboxConnectionType',  type : 'string'},
     {name : 'outboxConnectionType', type : 'string'},
-    {name : 'isCopyLeftOnServer',   type : 'bool'}
+    {name : 'isCopyLeftOnServer',   type : 'bool'},
+    {name : 'folderMappings'},
+    {name : ''}
 ]);

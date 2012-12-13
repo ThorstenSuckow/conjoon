@@ -126,6 +126,32 @@
             <value>2</value>
         </row>
     </table>
+
+    <table name="groupware_email_imap_mapping">
+        <column>id</column>
+        <column>groupware_email_accounts_id</column>
+        <column>global_name</column>
+        <column>type</column>
+        <row>
+            <value>1</value>
+            <value>1</value>
+            <value>INBOX</value>
+            <value>INBOX</value>
+        </row>
+        <row>
+            <value>2</value>
+            <value>1</value>
+            <value>Trash</value>
+            <value>TRASH</value>
+        </row>
+        <row>
+            <value>3</value>
+            <value>1</value>
+            <value>Drafts</value>
+            <value>DRAFT</value>
+        </row>
+    </table>
+
     <table name="groupware_email_folders">
         <column>id</column>
         <column>name</column>

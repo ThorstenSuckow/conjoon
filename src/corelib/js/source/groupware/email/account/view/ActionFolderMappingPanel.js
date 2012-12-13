@@ -21,11 +21,14 @@ com.conjoon.groupware.email.account.view.ActionFolderMappingPanel = Ext.extend(E
      */
     record : null,
 
+    settings : null,
+
     inboxPathTextField : null,
     sentPathTextField : null,
     draftPathTextField : null,
     trashPathTextField : null,
     junkPathTextField : null,
+    outboxPathTextField : null,
 
     /**
      *
@@ -33,6 +36,13 @@ com.conjoon.groupware.email.account.view.ActionFolderMappingPanel = Ext.extend(E
     initComponent : function()
     {
         var me = this;
+
+        me.addEvents(
+            /**
+             * Helper event for sending field changed state events.
+             */
+            'fieldchange'
+        );
 
         me.title = com.conjoon.Gettext.gettext("Mappings");
 
@@ -61,16 +71,22 @@ com.conjoon.groupware.email.account.view.ActionFolderMappingPanel = Ext.extend(E
             handler    : function() {this.openFolderDialog('draft');}
         });
 
+        var outboxRow = this.getFolderMappingRow({
+            fieldLabel : com.conjoon.Gettext.gettext("\"Outbox\" Folder"),
+            handler    : function() {this.openFolderDialog('outbox');}
+        });
 
-        me.inboxPathTextField = inboxRow.textField;
-        me.sentPathTextField  = sentRow.textField;
-        me.draftPathTextField = draftRow.textField;
-        me.trashPathTextField = trashRow.textField;
-        me.junkPathTextField  = junkRow.textField;
+
+        me.inboxPathTextField  = inboxRow.textField;
+        me.sentPathTextField   = sentRow.textField;
+        me.draftPathTextField  = draftRow.textField;
+        me.trashPathTextField  = trashRow.textField;
+        me.junkPathTextField   = junkRow.textField;
+        me.outboxPathTextField = outboxRow.textField;
 
         me.items = [
             new com.conjoon.groupware.util.FormIntro({
-                style     : 'margin:10px 0 25px 0;',
+                style     : 'margin:10px 0 20px 0;',
                 labelText : com.conjoon.Gettext.gettext("Map folders to actions"),
                 text      : com.conjoon.Gettext.gettext("This card allows for mapping remote folders to certain actions.<br />\"Actions\" represent different kind of workflows, such as moving an email message to the trash bin, or saving a \"sent\" message to a specific folder. Please specifiy the target folders for such actions using the form below.")
             }),
@@ -78,7 +94,8 @@ com.conjoon.groupware.email.account.view.ActionFolderMappingPanel = Ext.extend(E
             sentRow.container,
             trashRow.container,
             junkRow.container,
-            draftRow.container
+            draftRow.container,
+            outboxRow.container
         ];
 
         com.conjoon.groupware.email.account.view.ActionFolderMappingPanel.superclass.initComponent.call(this);
@@ -90,6 +107,17 @@ com.conjoon.groupware.email.account.view.ActionFolderMappingPanel = Ext.extend(E
      */
     setAccountRecord : function(record)
     {
+        var me = this;
+
+        me.settings = {
+            inbox  : {path : "", parts : []},
+            sent   : {path : "", parts : []},
+            trash  : {path : "", parts : []},
+            junk   : {path : "", parts : []},
+            draft  : {path : "", parts : []},
+            outbox : {path : "", parts : []}
+        };
+
         if (record.get('protocol') != 'IMAP') {
             throw("Invalid protocol for account record: \""
                 + record.get('protocol') + "\""
@@ -98,15 +126,69 @@ com.conjoon.groupware.email.account.view.ActionFolderMappingPanel = Ext.extend(E
 
         this.record = record;
 
-        this.fillFormFields(record);
+        me.applySettingsFromRecord(me.settings, record);
     },
 
     /**
      * @param {com.conjoon.groupware.email.AccountRecord} record
      */
-    fillFormFields : function(record)
+    applySettingsFromRecord : function(target, record)
     {
-        console.log("fillFormFields", record);
+        var me = this,
+            folderMappings = record.get('folderMappings'),
+            mapping, path,
+            inbox  = "",
+            outbox = "",
+            sent   = "",
+            draft  = "",
+            trash  = "",
+            junk   = "";
+
+        for (var i = 0, len = folderMappings.length; i < len; i++) {
+            mapping = folderMappings[i];
+
+            target[(mapping.type).toLowerCase()] = {
+                path  : '/' + mapping.path.join('/'),
+                parts : mapping.path
+            };
+
+            path = [];
+            for (var a = 0, lena = mapping.path.length; a < lena; a++) {
+                path.push(mapping.path[a]);
+            }
+
+            path.shift();
+            path.shift();
+
+            switch ((mapping.type).toLowerCase()) {
+                case 'inbox':
+                    inbox = path.join(' > ');
+                    break;
+                case 'sent':
+                    sent = path.join(' > ');
+                    break;
+                case 'draft':
+                    draft = path.join(' > ');
+                    break;
+                case 'trash':
+                    trash = path.join(' > ');
+                    break;
+                case 'junk':
+                    junk = path.join(' > ');
+                    break;
+                case 'outbox':
+                    outbox = path.join(' > ');
+                    break;
+            }
+        }
+
+        me.inboxPathTextField.setValue(inbox);
+        me.sentPathTextField.setValue(sent);
+        me.draftPathTextField.setValue(draft);
+        me.trashPathTextField.setValue(trash);
+        me.junkPathTextField.setValue(junk);
+        me.outboxPathTextField.setValue(outbox);
+
     },
 
     /**
@@ -122,16 +204,149 @@ com.conjoon.groupware.email.account.view.ActionFolderMappingPanel = Ext.extend(E
         w.show();
     },
 
+    saveToRecord : function(record)
+    {
+        var me = this,
+            settings = me.settings,
+            mapping,
+            found = {inbox : false, sent : false, draft : false,
+                    junk: false, trash : false, outbox : false
+            },
+            type, changed = false;
+
+        for (var i = 0, len = record.get('folderMappings').length; i < len; i++) {
+            mapping = record.get('folderMappings')[i];
+
+            type = (mapping.type).toLowerCase();
+
+            if (type == 'inbox') {
+                if (mapping.path.join('/') != settings.inbox.parts.join('/')) {
+                    mapping.path = settings.inbox.parts;
+                    changed = true;
+                }
+                found.inbox = true;
+                continue;
+            }
+            if (type == 'sent') {
+                if (mapping.path.join('/') != settings.sent.parts.join('/')) {
+                    mapping.path = settings.sent.parts;
+                    changed = true;
+                }
+                found.sent = true;
+                continue;
+            }
+            if (type == 'draft') {
+                if (mapping.path.join('/') != settings.draft.parts.join('/')) {
+                    mapping.path = settings.draft.parts;
+                    changed = true;
+                }
+                found.draft = true;
+                continue;
+            }
+            if (type == 'junk') {
+                if (mapping.path.join('/') != settings.junk.parts.join('/')) {
+                    mapping.path = settings.junk.parts;
+                    changed = true;
+                }
+                found.junk = true;
+                continue;
+            }
+            if (type == 'trash') {
+                if (mapping.path.join('/') != settings.trash.parts.join('/')) {
+                    mapping.path = settings.trash.parts;
+                    changed = true;
+                }
+                found.trash = true;
+                continue;
+            }
+            if (type == 'outbox') {
+                if (mapping.path.join('/') != settings.outbox.parts.join('/')) {
+                    mapping.path = settings.outbox.parts;
+                    changed = true;
+                }
+                found.outbox = true;
+                continue;
+            }
+        }
+
+        if (!found.inbox && settings.inbox.parts.length > 0) {
+            record.get('folderMappings').push({
+                path : settings.inbox.parts,
+                type : 'INBOX'
+            });
+            changed = true;
+        }
+        if (!found.sent && settings.sent.parts.length > 0) {
+            record.get('folderMappings').push({
+                path : settings.sent.parts,
+                type : 'SENT'
+            });
+            changed = true;
+        }
+        if (!found.draft && settings.draft.parts.length > 0) {
+            record.get('folderMappings').push({
+                path : settings.draft.parts,
+                type : 'DRAFT'
+            });
+            changed = true;
+        }
+        if (!found.junk && settings.junk.parts.length > 0) {
+            record.get('folderMappings').push({
+                path : settings.junk.parts,
+                type : 'JUNK'
+            });
+            changed = true;
+        }
+        if (!found.trash && settings.trash.parts.length > 0) {
+            record.get('folderMappings').push({
+                path : settings.trash.parts,
+                type : 'TRASH'
+            });
+            changed = true;
+        }
+        if (!found.outbox && settings.outbox.parts.length > 0) {
+            record.get('folderMappings').push({
+                path : settings.outbox.parts,
+                type : 'OUTBOX'
+            });
+            changed = true;
+        }
+
+        // force record to go into dirty state
+        if (changed) {
+            var tmp = record.get('folderMappings');
+            record.set('folderMappings', "");
+            record.set('folderMappings', tmp);
+        }
+    },
+
     /**
      * Listener for the FolderMappingDialog's selectpat event.
      *
      * @param {com.conjoon.groupware.email.account.view.FolderMappingDialog} dialog
-     * @param {Array} path
+     * @param {Object} pathInfo
      * @param {String} type
      */
-    onSelectPath :function(dialog, path, type)
+    onSelectPath :function(dialog, pathInfo, type)
     {
-        var me = this, pathText = path.join(' > '), textField;
+        var me = this, textField, path = [];
+
+        this.fireEvent('fieldchange', this);
+
+        this.settings[type] = {
+            parts : (pathInfo && pathInfo.parts ? pathInfo.parts : []),
+            path  : (pathInfo && pathInfo.path  ? pathInfo.path : "")
+        };
+
+        if (pathInfo && pathInfo.parts) {
+            for (var i = 0, len = pathInfo.parts.length; i < len; i++) {
+                path.push(pathInfo.parts[i]);
+            }
+
+            path.shift();
+            path.shift();
+
+        }
 
         switch (type) {
             case 'inbox':
@@ -149,9 +364,12 @@ com.conjoon.groupware.email.account.view.ActionFolderMappingPanel = Ext.extend(E
             case 'junk':
                 textField = me.junkPathTextField;
                 break;
+            case 'outbox':
+                textField = me.outboxPathTextField;
+                break;
         }
 
-        textField.setValue(pathText);
+        textField.setValue(path.join(' > '));
     },
 
 // -------- helper
@@ -183,7 +401,7 @@ com.conjoon.groupware.email.account.view.ActionFolderMappingPanel = Ext.extend(E
                         scope   : this,
                         handler : config.handler
                     }),
-                    new com.conjoon.groupware.util.Clear({style : 'height:10px'})
+                    new com.conjoon.groupware.util.Clear({style : 'height:7px'})
                 ]
             }),
             textField : textField
@@ -197,7 +415,7 @@ com.conjoon.groupware.email.account.view.ActionFolderMappingPanel = Ext.extend(E
      */
     getFolderDialog : function(type)
     {
-        var title = "";
+        var me = this, title = "";
 
         switch (type) {
             case 'inbox':
@@ -215,14 +433,18 @@ com.conjoon.groupware.email.account.view.ActionFolderMappingPanel = Ext.extend(E
             case 'draft':
                 title = com.conjoon.Gettext.gettext("Choose remote \"Draft\" Folder");
                 break;
+            case 'outbox':
+                title = com.conjoon.Gettext.gettext("Choose remote \"Outbox\" Folder");
+                break;
             default:
                 throw("Unknown type \"" + type + "\"");
         }
 
         return new com.conjoon.groupware.email.account.view.FolderMappingDialog({
-            record : this.record,
-            title  : title,
-            type   : type
+            record   : this.record,
+            title    : title,
+            type     : type,
+            pathInfo : me.settings[type]
         });
     }
 

@@ -118,6 +118,10 @@ Conjoon\Data\Entity\Mail\DefaultMailAccountEntity:
             type: boolean
             nullable: false
             column: is_deleted
+    oneToMany:
+        folderMappings:
+            targetEntity: Conjoon\Data\Entity\Mail\DefaultFolderMappingEntity
+            mappedBy: mailAccount
     manyToOne:
         user:
             targetEntity: Conjoon\Data\Entity\User\DefaultUserEntity

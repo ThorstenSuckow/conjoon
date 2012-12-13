@@ -42,6 +42,14 @@ com.conjoon.groupware.email.account.data.MappingTreeLoader = Ext.extend(
 
         return com.conjoon.groupware.email.account.data
             .MappingTreeLoader.superclass.createNode.call(this, attr);
+    },
+
+    abort : function()
+    {
+        // intentionally call original TreeLoaders abort since
+        // EmailtreeLoader relies on other NodeUI
+        com.conjoon.groupware.email.EmailTreeLoader
+            .superclass.abort.call(this);
     }
 
 });

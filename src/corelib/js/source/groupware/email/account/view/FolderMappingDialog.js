@@ -40,6 +40,17 @@ com.conjoon.groupware.email.account.view.FolderMappingDialog = Ext.extend(Ext.Wi
 
     type : null,
 
+    pathInfo : null,
+
+    /**
+     * @type {Boolean} mayTriggerEvent indicates whether the selectpath event
+     * gets fired. Set to true as soon as the user explicitely selects a tree
+     * node. This is so the previous value does not get accidently overwritten
+     * if the user does not select a node and intentionally closes the window
+     * using the "OK" button.
+     */
+    mayTriggerEvent : false,
+
     initComponent : function()
     {
 
@@ -50,7 +61,10 @@ com.conjoon.groupware.email.account.view.FolderMappingDialog = Ext.extend(Ext.Wi
         this.addEvents(
             /**
              * @param {com.conjoon.groupware.email.account.view.FolderMappingDialog} this
-             * @param {Array} path
+             * @param {Object} An object with the property "path" holding the
+             *                 path as computed by the framework, and "parts" with
+             *                 the individual path parts, without being polluted with
+             *                 a folder delimiter
              */
             'selectpath'
         );
@@ -80,7 +94,10 @@ com.conjoon.groupware.email.account.view.FolderMappingDialog = Ext.extend(Ext.Wi
             text    : com.conjoon.Gettext.gettext("OK"),
             width   : 75,
             handler : function() {
-                this.fireEvent('selectpath', this, this.selectedData, this.type);
+                if (this.mayTriggerEvent) {
+                    this.fireEvent('selectpath', this, this.selectedData, this.type);
+                }
+
                 this.close();
             },
             scope : this
@@ -97,6 +114,29 @@ com.conjoon.groupware.email.account.view.FolderMappingDialog = Ext.extend(Ext.Wi
 
 // -------- listener
 
+    onLoad : function(treeLoader, node)
+    {
+        var me = this, treePanel = me.treePanel,
+            path = me.pathInfo && me.pathInfo.path
+                  ? me.pathInfo.path : "",
+            foundNode;
+
+        if (treePanel.getChecked().length > 0 || !path) {
+            return;
+        }
+
+        node.findChildBy(function(node) {
+            if (node.getPath('idForPath') == path) {
+                foundNode = node;
+                return true;
+            }
+        });
+
+        if (foundNode) {
+            foundNode.getUI().toggleCheck(true);
+        }
+    },
+
     onBeforeLoad : function(treeLoader, node)
     {
         treeLoader.baseParams.groupwareEmailAccountsId = this.record.get('id');
@@ -104,6 +144,8 @@ com.conjoon.groupware.email.account.view.FolderMappingDialog = Ext.extend(Ext.Wi
 
     onCheckChange : function(node, checked)
     {
+        this.mayTriggerEvent = true;
+
         var me = this, treePanel = me.treePanel, textField = me.textField, path;
 
         if (checked) {
@@ -118,9 +160,13 @@ com.conjoon.groupware.email.account.view.FolderMappingDialog = Ext.extend(Ext.Wi
 
             path = node.getPathAsArray('idForPath');
 
-            me.selectedData = path;
+            me.selectedData = {
+                parts : path,
+                path  : node.getPath('idForPath')
+            };
 
-
+            // needed to store org array in selectedData
+            path = node.getPathAsArray('idForPath');
             path.shift();
             path.shift();
             textField.setValue(path.join(' > '));
@@ -139,8 +185,21 @@ com.conjoon.groupware.email.account.view.FolderMappingDialog = Ext.extend(Ext.Wi
 
     getTextField : function()
     {
-        if (this.textField) {
-            return this.textField;
+        var me = this;
+
+        if (me.textField) {
+            return me.textField;
+        }
+
+        var path = [];
+
+        if (me.pathInfo && me.pathInfo.parts) {
+            for (var i = 0, len = me.pathInfo.parts.length; i < len; i++) {
+                path.push( me.pathInfo.parts[i]);
+            }
+
+            path.shift();
+            path.shift();
         }
 
         return new Ext.form.TextField({
@@ -148,7 +207,8 @@ com.conjoon.groupware.email.account.view.FolderMappingDialog = Ext.extend(Ext.Wi
             emptyText  : '[' + this.title + ']',
             readOnly   : true,
             labelStyle : 'font-size:11px',
-            anchor     : '99%'
+            anchor     : '99%',
+            value      : path.join(' > ')
         });
     },
 
@@ -183,8 +243,12 @@ com.conjoon.groupware.email.account.view.FolderMappingDialog = Ext.extend(Ext.Wi
                     uiProvider : com.conjoon.groupware.email.account.view.MappingNodeUi
                 },
                 listeners : {
-                    'beforeload' : {
+                    beforeload : {
                         fn    : this.onBeforeLoad,
+                        scope : this
+                    },
+                    load : {
+                        fn    : this.onLoad,
                         scope : this
                     }
                 }

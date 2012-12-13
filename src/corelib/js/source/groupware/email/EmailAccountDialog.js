@@ -1046,6 +1046,8 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         this.mon(fields['passwordOutbox'], lConfig);
         this.mon(fields['signature'],      lConfig);
 
+        this.mon(this.actionFolderMappingPanel, 'fieldchange', this.onConfigChange, this);
+
         this.mon(this.accountStore, 'update', this.onUpdate, this);
 
         this.on('beforeclose', this.onBeforeClose, this);
@@ -1205,7 +1207,8 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
                 isSignatureUsed      : currUpd.get('isSignatureUsed'),
                 signature            : currUpd.get('signature'),
                 inboxConnectionType  : currUpd.get('inboxConnectionType'),
-                outboxConnectionType : currUpd.get('outboxConnectionType')
+                outboxConnectionType : currUpd.get('outboxConnectionType'),
+                folderMappings       : currUpd.get('folderMappings')
             });
         }
 
@@ -1691,6 +1694,10 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         if (passwordOutbox.trim() == "" || passwordOutbox.replace(/\*/g, '').trim() != "") {
             passwordOutbox = passwordOutbox.trim() == "" ? "" : passwordOutbox;
             record.set('passwordOutbox', passwordOutbox);
+        }
+
+        if (record.get('protocol') == 'IMAP') {
+            this.actionFolderMappingPanel.saveToRecord(record);
         }
 
         this.modifiedRecordCount = this.accountStore.getModifiedRecords().length;

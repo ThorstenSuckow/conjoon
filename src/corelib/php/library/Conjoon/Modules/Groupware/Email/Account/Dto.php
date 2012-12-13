@@ -41,5 +41,6 @@ class Conjoon_Modules_Groupware_Email_Account_Dto extends Conjoon_Dto {
     public $inboxConnectionType;
     public $outboxConnectionType;
     public $isCopyLeftOnServer;
+    public $folderMappings;
 
 }

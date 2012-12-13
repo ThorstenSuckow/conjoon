@@ -74,7 +74,7 @@ class Conjoon_Modules_Groupware_Email_Account_Filter_Account extends Conjoon_Fil
                 'portOutbox',
                 'isCopyLeftOnServer',
                 'inboxConnectionType',
-                'outboxConnectionType',
+                'outboxConnectionType'
 
         ),
         'create' =>

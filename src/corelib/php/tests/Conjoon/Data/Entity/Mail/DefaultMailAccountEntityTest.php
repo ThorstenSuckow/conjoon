@@ -29,8 +29,18 @@ class DefaultMailAccountEntityTest extends \PHPUnit_Framework_TestCase {
 
     protected $input;
 
+    protected $folderMapping1;
+
+    protected $folderMapping2;
+
     protected function setUp()
     {
+        $this->folderMapping1 =
+            new \Conjoon\Data\Entity\Mail\DefaultFolderMappingEntity();
+
+        $this->folderMapping2
+            = new \Conjoon\Data\Entity\Mail\DefaultFolderMappingEntity();
+
         $this->input = array(
             'name' => 'accountname',
             'address' => 'address',
@@ -62,18 +72,36 @@ class DefaultMailAccountEntityTest extends \PHPUnit_Framework_TestCase {
      */
     public function testOk()
     {
-        $folder = new DefaultMailAccountEntity();
+        $account = new DefaultMailAccountEntity();
 
         foreach ($this->input as $input => $value) {
 
             $set = 'set' . ucfirst($input);
             $get = 'get' . ucfirst($input);
 
-            $folder->$set($value);
+            $account->$set($value);
 
-            $this->assertSame($value, $folder->$get());
-
+            $this->assertSame($value, $account->$get());
         }
+
+        $this->assertSame(0, count($account->getFolderMappings()));
+
+        $this->assertSame($account, $account->addFolderMapping($this->folderMapping1));
+        $this->assertSame($account, $account->addFolderMapping($this->folderMapping2));
+
+        $this->assertSame(2, count($account->getFolderMappings()));
+
+        $account->removeFolderMapping($this->folderMapping1);
+
+        $this->assertSame(1, count($account->getFolderMappings()));
+
+        $res = $account->getFolderMappings();
+
+
+        $this->assertFalse(isset($res[0]));
+
+        $this->assertSame($this->folderMapping2, $res[1]);
+
     }
 
 }

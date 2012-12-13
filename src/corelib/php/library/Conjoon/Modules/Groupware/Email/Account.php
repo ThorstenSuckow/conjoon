@@ -64,6 +64,7 @@ class Conjoon_Modules_Groupware_Email_Account implements Conjoon_BeanContext, Se
     private $outboxConnectionType;
     private $isCopyLeftOnServer;
     private $_isDeleted;
+    private $folderMappings;
 
     /**
      * Constructor.
@@ -77,6 +78,8 @@ class Conjoon_Modules_Groupware_Email_Account implements Conjoon_BeanContext, Se
      */
     public function __construct()
     {
+        $this->folderMappings = array();
+
         $this->setPortInbox(self::PORT_POP3);
         $this->setPortOutbox(self::PORT_SMTP);
         $this->setProtocol(self::PROTOCOL_POP3);
@@ -108,6 +111,7 @@ class Conjoon_Modules_Groupware_Email_Account implements Conjoon_BeanContext, Se
     public function getOutboxConnectionType(){return $this->outboxConnectionType;}
     public function isCopyLeftOnServer(){return $this->isCopyLeftOnServer;}
     public function isDeleted(){return $this->_isDeleted;}
+    public function getFolderMappings(){return $this->folderMappings;}
 
     public function setId($id){$this->id = $id;}
     public function setUserId($userId){$this->userId = $userId;}
@@ -128,6 +132,7 @@ class Conjoon_Modules_Groupware_Email_Account implements Conjoon_BeanContext, Se
     public function setOutboxConnectionType($outboxConnectionType){$this->outboxConnectionType = $outboxConnectionType;}
     public function setSignature($signature){$this->signature = $signature;}
     public function setSignatureUsed($isSignatureUsed){$this->isSignatureUsed = $isSignatureUsed;}
+    public function setFolderMappings(array $folderMappings){$this->folderMappings = $folderMappings;}
 
     public function setPortInbox($portInbox)
     {
@@ -231,7 +236,8 @@ class Conjoon_Modules_Groupware_Email_Account implements Conjoon_BeanContext, Se
             'portOutbox'           => $this->portOutbox,
             'inboxConnectionType'  => $this->inboxConnectionType,
             'outboxConnectionType' => $this->outboxConnectionType,
-            'isCopyLeftOnServer'   => $this->isCopyLeftOnServer
+            'isCopyLeftOnServer'   => $this->isCopyLeftOnServer,
+            'folderMappings'       => $this->folderMappings
         );
     }
 
@@ -265,6 +271,7 @@ class Conjoon_Modules_Groupware_Email_Account implements Conjoon_BeanContext, Se
             'portOutbox: '.$data['portOutbox'].', '.
             'inboxConnectionType: '.$data['inboxConnectionType'].', '.
             'outboxConnectionType: '.$data['outboxConnectionType'].', '.
-            'isCopyLeftOnServer: '.$data['isCopyLeftOnServer'].';';
+            'isCopyLeftOnServer: '.$data['isCopyLeftOnServer'].', '.
+            'folderMappings: '.$data['folderMappings'].';';
     }
 }

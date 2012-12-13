@@ -633,3 +633,16 @@ ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_folders_accounts`
 ADD FOREIGN KEY ( `groupware_email_accounts_id` )
 REFERENCES `{DATABASE.TABLE.PREFIX}groupware_email_accounts` (`id`)
 ON DELETE CASCADE ON UPDATE CASCADE ;
+
+-- CN-699
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_imap_mapping` ADD UNIQUE (
+`groupware_email_accounts_id` ,
+`type`
+);
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_imap_mapping` ADD FOREIGN
+KEY ( `groupware_email_accounts_id` )
+REFERENCES `{DATABASE.TABLE.PREFIX}groupware_email_accounts` (`id`)
+ON DELETE CASCADE ON UPDATE CASCADE ;
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_imap_mapping`
+CHANGE `type` `type` ENUM( 'INBOX', 'OUTBOX', 'SENT', 'DRAFT', 'TRASH', 'JUNK' )
+CHARACTER SET utf8 COLLATE utf8_bin NOT NULL;

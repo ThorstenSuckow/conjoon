@@ -822,6 +822,25 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
     }
 
     /**
+     * Returns the root folder for the accoutn and user id.
+     *
+     * @param $accountId
+     * @param $userId
+     *
+     * @return Conjoon_Modules_Groupware_Email_Folder_Dto
+     *
+     * @throws InvalidArgumentException|RuntimeException
+     */
+    public function getRootFolderForAccountId(
+        Conjoon_Modules_Groupware_Email_Account_Dto $accountId, $userId)
+    {
+        return $this->getFoldersForPathAndUserId(
+            array('path' => array(), 'rootId' => "", "nodeId" => ""),
+            $userId, $accountId->id
+        );
+    }
+
+    /**
      * Returns the folder for the user based upon the passed parameter.
      * This method does automatically determine if the connected account
      * is an IMAP account, and if thatis the case, queries the specified

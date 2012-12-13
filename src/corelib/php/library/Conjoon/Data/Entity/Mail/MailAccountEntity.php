@@ -370,4 +370,28 @@ interface MailAccountEntity extends \Conjoon\Data\Entity\DataEntity {
     public function getUser();
 
 
+    /**
+     * Add folderMappings
+     *
+     * @param Conjoon\Data\Entity\Mail\FolderMappingEntity $folderMappings
+     * @return DefaultMailAccountEntity
+     */
+    public function addFolderMapping(
+        \Conjoon\Data\Entity\Mail\FolderMappingEntity $folderMapping);
+
+    /**
+     * Remove folderMappings
+     *
+     * @param Conjoon\Data\Entity\Mail\FolderMappingEntity $folderMappings
+     */
+    public function removeFolderMapping(
+        \Conjoon\Data\Entity\Mail\FolderMappingEntity $folderMapping);
+
+    /**
+     * Get folderMappings
+     *
+     * @return Doctrine\Common\Collections\Collection
+     */
+    public function getFolderMappings();
+
 }

@@ -511,6 +511,24 @@ class Conjoon_Modules_Groupware_Email_Account_Model_Account
                 ->order('is_standard DESC')
         );
 
+
+        $rows = $rows->toArray();
+        $adapter = $this->getDefaultAdapter();
+
+        foreach ($rows as $index => $row) {
+
+            $mappings = $adapter->fetchAll(
+                    $adapter->select()
+                    ->from(
+                        array('mappings' => self::getTablePrefix() . 'groupware_email_imap_mapping'),
+                        array('id', 'type', 'globalName' => 'global_name')
+                    )
+                    ->where('mappings.groupware_email_accounts_id=?', $row['id'])
+            );
+
+            $rows[$index]['folderMappings'] = $mappings;
+        }
+
         return $rows;
     }
 

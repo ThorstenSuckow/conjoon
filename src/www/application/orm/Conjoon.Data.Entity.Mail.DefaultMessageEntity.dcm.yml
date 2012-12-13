@@ -60,10 +60,10 @@ Conjoon\Data\Entity\Mail\DefaultMessageEntity:
 
     oneToMany:
         groupwareEmailItemsFlags:
-          targetEntity: Conjoon\Data\Entity\Mail\DefaultMessageFlagEntity
-          mappedBy: groupwareEmailItems
-          indexBy: groupwareEmailItemsFlags
-          orphanRemoval: true
+            targetEntity: Conjoon\Data\Entity\Mail\DefaultMessageFlagEntity
+            mappedBy: groupwareEmailItems
+            indexBy: groupwareEmailItemsFlags
+            orphanRemoval: true
     manyToOne:
         groupwareEmailFolders:
             targetEntity: Conjoon\Data\Entity\Mail\DefaultMailFolderEntity

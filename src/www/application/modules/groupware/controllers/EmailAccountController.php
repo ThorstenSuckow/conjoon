@@ -189,6 +189,45 @@ class Groupware_EmailAccountController extends Zend_Controller_Action {
 
         $dto = $decoratedModel->getAccountAsDto($addedId, $userId);
 
+        $dto->folderMappings = array();
+        // ADD FOLDER MAPPINGS
+        if ($dto->protocol == 'IMAP' ) {
+
+            /**
+             * @see \Conjoon\Data\Entity\Mail\DefaultFolderMappingEntity
+             */
+            require_once 'Conjoon/Data/Entity/Mail/DefaultFolderMappingEntity.php';
+
+            $entityManager = Zend_Registry::get(Conjoon_Keys::DOCTRINE_ENTITY_MANAGER);
+
+            $accRep = $entityManager->getRepository(
+                '\Conjoon\Data\Entity\Mail\DefaultMailAccountEntity');
+
+            $fmRep = $entityManager->getRepository(
+                '\Conjoon\Data\Entity\Mail\DefaultFolderMappingEntity');
+
+            $types = array('INBOX', 'SENT', 'JUNK', 'DRAFT', 'TRASH', 'OUTBOX');
+
+            $accountEnt = $accRep->findById($addedId);
+
+            foreach ($types as $type) {
+                $newEnt = new \Conjoon\Data\Entity\Mail\DefaultFolderMappingEntity();
+                $newEnt->setType($type);
+                $newEnt->setGlobalName("");
+                $newEnt->setMailAccount($accountEnt);
+                $fmRep->persist($newEnt);
+
+                $fmRep->flush();
+                $dto->folderMappings[] = array(
+                    'id'         => $newEnt->getId(),
+                    'type'       => $type,
+                    'globalName' => "",
+                    'path'       => array()
+                );
+            }
+
+        }
+
         if (!$dto->isOutboxAuth) {
             $dto->usernameOutbox = "";
             $dto->passwordOutbox = "";
@@ -320,8 +359,10 @@ class Groupware_EmailAccountController extends Zend_Controller_Action {
             }
         }
 
+        $folderMappingData = array();
         for ($i = 0; $i < $numToUpdate; $i++) {
             $_ = $toUpdate[$i];
+            $folderMappingData[$toUpdate[$i]['id']] = $toUpdate[$i]['folderMappings'];
             $filter = new Conjoon_Modules_Groupware_Email_Account_Filter_Account(
                 $_,
                 Conjoon_Filter_Input::CONTEXT_UPDATE
@@ -361,6 +402,65 @@ class Groupware_EmailAccountController extends Zend_Controller_Action {
 
             if ($affected != -1) {
                 $affected = $model->updateAccount($id, $data[$i]);
+
+                $entityManager = Zend_Registry::get(Conjoon_Keys::DOCTRINE_ENTITY_MANAGER);
+                // update folderMappings
+                if (isset($folderMappingData[$id])) {
+
+                    $fmRep = $entityManager->getRepository(
+                        '\Conjoon\Data\Entity\Mail\DefaultFolderMappingEntity');
+
+                    for ($u = 0, $lenu = count($folderMappingData[$id]); $u < $lenu; $u++) {
+                        if (isset($folderMappingData[$id][$u]['id'])
+                            && empty($folderMappingData[$id][$u]['path'])) {
+                            $updEnt = $fmRep->findById($folderMappingData[$id][$u]['id']);
+                            $updEnt->setGlobalName("");
+                            $fmRep->persist($updEnt);
+
+                        } else if (isset($folderMappingData[$id][$u]['id'])
+                            && !empty ($folderMappingData[$id][$u]['path'])) {
+
+                            /**
+                             * @see \Conjoon\Data\Entity\Mail\DefaultFolderMappingEntity
+                             */
+                            require_once 'Conjoon/Data/Entity/Mail/DefaultFolderMappingEntity.php';
+
+                            /**
+                             * @see Conjoon_Modules_Groupware_Email_ImapHelper
+                             */
+                            require_once 'Conjoon/Modules/Groupware/Email/ImapHelper.php';
+
+                            /**
+                             * @see Conjoon_BeanContext_Decorator
+                             */
+                            require_once 'Conjoon/BeanContext/Decorator.php';
+
+                            $decoratedModel = new Conjoon_BeanContext_Decorator(
+                                'Conjoon_Modules_Groupware_Email_Account_Model_Account'
+                            );
+
+                            $accDto = $decoratedModel->getAccountAsDto($id, $userId);
+
+                            $delim = Conjoon_Modules_Groupware_Email_ImapHelper
+                            ::getFolderDelimiterForImapAccount($accDto);
+
+                            $p = $folderMappingData[$id][$u]['path'];
+                            array_shift($p);
+                            array_shift($p);
+
+                            $globalName = implode($delim, $p);
+
+                            $updEnt = $fmRep->findById($folderMappingData[$id][$u]['id']);
+                            $updEnt->setGlobalName($globalName);
+                            $fmRep->persist($updEnt);
+
+                            continue;
+                        }
+                    }
+
+                    $fmRep->flush();
+                }
+
             }
 
             if ($affected == -1) {

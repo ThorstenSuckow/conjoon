@@ -148,6 +148,20 @@ class DefaultMailAccountEntity implements MailAccountEntity {
     private $user;
 
     /**
+     * @var \Doctrine\Common\Collections\ArrayCollection
+     */
+    protected $folderMappings;
+
+    /**
+     * Creates a new instance of this class.
+     */
+    public function __construct()
+    {
+        $this->folderMappings = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+
+    /**
      * @inheritdoc
      */
     public function getId()
@@ -550,5 +564,35 @@ class DefaultMailAccountEntity implements MailAccountEntity {
     {
         return $this->user;
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function addFolderMapping(
+        \Conjoon\Data\Entity\Mail\FolderMappingEntity $folderMapping)
+    {
+        $this->folderMappings[] = $folderMapping;
+
+        return $this;
+    }
+
+
+    /**
+     * @inheritdoc
+     */
+    public function removeFolderMapping(
+        \Conjoon\Data\Entity\Mail\FolderMappingEntity $folderMapping)
+    {
+        $this->folderMappings->removeElement($folderMapping);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getFolderMappings()
+    {
+        return $this->folderMappings;
+    }
+
 
 }

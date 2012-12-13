@@ -92,6 +92,13 @@ class DoctrineMailAccountRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
         $this->assertSame(false, $entity->getIsDeleted());
         $this->assertSame('reply_address', $entity->getReplyAddress());
 
+        $this->assertSame(3, count($entity->getFolderMappings()));
+
+        $res = $entity->getFolderMappings();
+
+        $this->assertSame('INBOX', $res[0]->getType());
+        $this->assertSame('INBOX', $res[0]->getGlobalName());
+
         $user = $entity->getUser();
 
         $this->assertSame(1, $user->getId());
@@ -197,6 +204,15 @@ class DoctrineMailAccountRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
         $expectedTable = $this->createXmlDataSet(
             dirname(__FILE__) . '/fixtures/mysql/mail_account.remove.result.xml'
         )->getTable("groupware_email_folders_accounts");
+        $this->assertTablesEqual($expectedTable, $queryTable);
+
+        // check mappings
+        $queryTable = $this->getConnection()->createQueryTable(
+            'groupware_email_imap_mapping', 'SELECT * FROM groupware_email_imap_mapping'
+        );
+        $expectedTable = $this->createXmlDataSet(
+            dirname(__FILE__) . '/fixtures/mysql/mail_account.remove.result.xml'
+        )->getTable("groupware_email_imap_mapping");
         $this->assertTablesEqual($expectedTable, $queryTable);
     }
 

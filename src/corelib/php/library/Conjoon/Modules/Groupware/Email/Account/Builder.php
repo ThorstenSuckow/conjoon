@@ -92,8 +92,46 @@ class Conjoon_Modules_Groupware_Email_Account_Builder extends Conjoon_Builder {
 
         $accounts = $decoratedModel->getAccountsForUserAsDto($userId);
 
+        /**
+         * @see Conjoon_Modules_Groupware_Email_ImapHelper
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/ImapHelper.php';
+
+        /**
+         * @see Conjoon_Modules_Groupware_Email_Folder_Facade
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/Folder/Facade.php';
+
+
+        $facade = Conjoon_Modules_Groupware_Email_Folder_Facade::getInstance();
+
         for ($i = 0, $len = count($accounts); $i < $len; $i++) {
             $dto =& $accounts[$i];
+
+            if ($dto->protocol == 'IMAP') {
+
+                $folderMappings =& $dto->folderMappings;
+
+                $folder = $facade->getRootFolderForAccountId(
+                    $dto, $userId
+                );
+                $folder = $folder[0];
+
+                for ($a = 0, $lena = count($folderMappings); $a < $lena; $a++) {
+                    $folderMappings[$a]['delimiter'] =
+                        Conjoon_Modules_Groupware_Email_ImapHelper
+                        ::getFolderDelimiterForImapAccount($dto);
+
+                    $folderMappings[$a]['path'] = array_merge(
+                        array('root', $folder['id']),
+                        Conjoon_Modules_Groupware_Email_ImapHelper
+                        ::splitFolderForImapAccount(
+                            $folderMappings[$a]['globalName'], $dto
+                        )
+                    );
+                }
+            }
+
             if (!$dto->isOutboxAuth) {
                 $dto->usernameOutbox = "";
                 $dto->passwordOutbox = "";
