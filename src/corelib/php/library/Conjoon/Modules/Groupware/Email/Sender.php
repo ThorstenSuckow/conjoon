@@ -167,7 +167,9 @@ class Conjoon_Modules_Groupware_Email_Sender {
             }
         }
 
-        $transport = new Zend_Mail_Transport_Smtp($account->getServerOutbox(), $config);
+        $transport = new Zend_Mail_Transport_Smtp(
+            $account->getServerOutbox(), $config
+        );
 
         // Zend_Mail_Protocol_Abstract would not supress errors thrown by the native
         // stream_socket_client function, thus - depending on the setting of error_reporting -

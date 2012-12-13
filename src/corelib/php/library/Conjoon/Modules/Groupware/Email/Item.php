@@ -96,7 +96,7 @@ class Conjoon_Modules_Groupware_Email_Item implements Conjoon_BeanContext, Seria
     public function setSender($sender){$this->sender = $sender;}
     public function setSubject($subject){$this->subject = $subject;}
     public function setReferencedAsTypes(Array $referencedAsTypes){$this->referencedAsTypes = $referencedAsTypes;}
-    public function setPath(Array $path){$this->path = $path;}
+    public function setPath(Array $path = null){$this->path = $path ? $path : array();}
     public function setDate($date){$this->date = $date;}
     public function setRead($isRead){$this->isRead = $isRead;}
     public function setAttachment($isAttachment){$this->isAttachment = $isAttachment;}

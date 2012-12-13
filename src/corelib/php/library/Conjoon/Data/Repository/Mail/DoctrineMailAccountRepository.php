@@ -36,7 +36,7 @@ require_once 'Conjoon/Data/Repository/Mail/MailAccountRepository.php';
  */
 class DoctrineMailAccountRepository
     extends \Conjoon\Data\Repository\DoctrineDataRepository
-    implements MailFolderRepository {
+    implements MailAccountRepository {
 
     /**
      * @inheritdoc
@@ -44,6 +44,30 @@ class DoctrineMailAccountRepository
     public static function getEntityClassName()
     {
         return '\Conjoon\Data\Entity\Mail\DefaultMailAccountEntity';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getStandardMailAccount(\Conjoon\User\User $user)
+    {
+        $em = $this->getEntityManager();
+
+        $query = $em->createQuery(
+            "SELECT a FROM \Conjoon\Data\Entity\Mail\DefaultMailAccountEntity a "
+            . " WHERE a.user = ?1 "
+            . " AND a.isStandard = ?2 "
+        );
+        $query->setParameter(1, $user);
+        $query->setParameter(2, true);
+
+        try {
+            $res = $query->getSingleResult();
+        } catch (\Doctrine\ORM\NoResultException $e) {
+            return null;
+        }
+
+        return $res;
     }
 
 }

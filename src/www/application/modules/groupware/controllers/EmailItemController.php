@@ -643,11 +643,13 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
 
         $mailFolderRepository =
             $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
+        $mailAccountRepository =
+            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMailAccountEntity');
         $mesageFlagRepository =
             $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMessageFlagEntity');
 
         $protocolAdaptee = new \Conjoon\Mail\Server\Protocol\DefaultProtocolAdaptee(
-            $mailFolderRepository, $mesageFlagRepository
+            $mailFolderRepository, $mesageFlagRepository, $mailAccountRepository
         );
 
         /**
@@ -669,7 +671,7 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
         require_once 'Conjoon/Mail/Client/Service/DefaultMessageServiceFacade.php';
 
         $serviceFacade = new \Conjoon\Mail\Client\Service\DefaultMessageServiceFacade(
-            $server
+            $server, $mailAccountRepository, $mailFolderRepository
         );
 
 
@@ -786,13 +788,15 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
 
         $entityManager = Zend_Registry::get(Conjoon_Keys::DOCTRINE_ENTITY_MANAGER);
 
+        $mailAccountRepository =
+            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMailAccountEntity');
         $mailFolderRepository =
             $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
         $mesageFlagRepository =
             $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMessageFlagEntity');
 
         $protocolAdaptee = new \Conjoon\Mail\Server\Protocol\DefaultProtocolAdaptee(
-            $mailFolderRepository, $mesageFlagRepository
+            $mailFolderRepository, $mesageFlagRepository, $mailAccountRepository
         );
 
         /**
@@ -814,11 +818,10 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
         require_once 'Conjoon/Mail/Client/Service/DefaultMessageServiceFacade.php';
 
         $serviceFacade = new \Conjoon\Mail\Client\Service\DefaultMessageServiceFacade(
-            $server
+            $server, $mailAccountRepository, $mailFolderRepository
         );
 
-
-        $result =  $serviceFacade->getMessage(
+        $result = $serviceFacade->getMessage(
             $this->_request->getParam('id'),
             $this->_request->getParam('path'),
             $appUser

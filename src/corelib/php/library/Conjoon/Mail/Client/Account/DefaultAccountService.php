@@ -60,6 +60,11 @@ class DefaultAccountService implements AccountService {
     protected $folderService;
 
     /**
+     * @var \Conjoon\Data\Repository\Data\Mail\MailAccountRepository
+     */
+    protected $mailAccountRepository;
+
+    /**
      * Creates a new instance of an account service.
      * An account service is bound to a user.
      *
@@ -68,6 +73,8 @@ class DefaultAccountService implements AccountService {
      *                       - user: and instance of \Conjoon\User\User
      *                       - folderService: an instance of
      *                         Conjoon\Mail\Client\Folder\FolderService
+     *                       - mailAccountRepository: an instance of
+     *                         \Conjoon\Data\Repository\Mail\MailAccountRepository
      *
      */
     public function __construct(Array $options)
@@ -80,11 +87,16 @@ class DefaultAccountService implements AccountService {
             'folderService' => array(
                 'type'  => 'instanceof',
                 'class' => '\Conjoon\Mail\Client\Folder\FolderService'
+            ),
+            'mailAccountRepository' => array(
+                'type'  => 'instanceof',
+                'class' => '\Conjoon\Data\Repository\Mail\MailAccountRepository'
             )
         ), $options);
 
-        $this->user              = $options['user'];
-        $this->folderService     = $options['folderService'];
+        $this->user                  = $options['user'];
+        $this->folderService         = $options['folderService'];
+        $this->mailAccountRepository = $options['mailAccountRepository'];
     }
 
     /**
@@ -145,6 +157,15 @@ class DefaultAccountService implements AccountService {
         $account = $accounts[0];
 
         return $account;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getStandardMailAccount()
+    {
+        return $this->mailAccountRepository->getStandardMailAccount(
+            $this->user);
     }
 
 

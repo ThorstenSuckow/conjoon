@@ -81,7 +81,7 @@ class Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade {
      * @throws Conjoon_Argument_Exception
      */
     public function getEmailItemList(
-        Array $pathInfo, $userId, Array $sortInfo = array())
+        Array $pathInfo, $userId, Array $sortInfo = array(), $from = 1, $to = -1)
     {
         /**
          * @see Conjoon_Argument_Check
@@ -114,7 +114,7 @@ class Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade {
             );
 
             return $this->_getEmailItemListForAccountAndRemoteFolder(
-                $accountDto, $pathInfo, $sortInfo, $userId
+                $accountDto, $pathInfo, $sortInfo, $userId, $from, $to
             );
         }
 
@@ -137,7 +137,7 @@ class Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade {
      */
     protected function _getEmailItemListForAccountAndRemoteFolder(
             Conjoon_Modules_Groupware_Email_Account_Dto $accountDto, Array $pathInfo,
-            Array $sortInfo = array(), $userId/*REMOVE THIS ARGUMENT*/)
+            Array $sortInfo = array(), $userId, $from, $to)
     {
 
         $path   = $pathInfo['path'];
@@ -168,7 +168,7 @@ class Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade {
 
 
         $messageStruct = $storage->getHeaderListAndMetaInformationForGlobalName(
-            $globalName
+            $globalName, $from, $to
         );
 
         /**
@@ -324,45 +324,49 @@ class Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade {
                 'isDraft'                 => 0,
                 'isOutboxPending'         => 0,
                 'referencedAsTypes'       => $header['referencedAsType'],
-                'groupwareEmailFoldersId' => 1,
+                'groupwareEmailFoldersId' => -1,
                 'path'                    => array_merge(array($rootId), $path)
              );
 
         }
 
+
+
         // sort
-        switch ($sortInfo['sort']) {
-            case 'date':
-                usort($responseItems, array($this, 'memorySortDate'));
-                break;
+        if (isset($sortInfo['sort'])) {
+            switch ($sortInfo['sort']) {
+                case 'date':
+                    usort($responseItems, array($this, 'memorySortDate'));
+                    break;
 
-            case 'subject':
-                usort($responseItems, array($this, 'memorySortSubject'));
-                break;
+                case 'subject':
+                    usort($responseItems, array($this, 'memorySortSubject'));
+                    break;
 
-            case 'recipients':
-                usort($responseItems, array($this, 'memorySortRecipients'));
-                break;
+                case 'recipients':
+                    usort($responseItems, array($this, 'memorySortRecipients'));
+                    break;
 
-            case 'sender':
-                usort($responseItems, array($this, 'memorySortSender'));
-                break;
+                case 'sender':
+                    usort($responseItems, array($this, 'memorySortSender'));
+                    break;
 
-            case 'is_spam':
-                usort($responseItems, array($this, 'memorySortIsSpam'));
-                break;
+                case 'is_spam':
+                    usort($responseItems, array($this, 'memorySortIsSpam'));
+                    break;
 
-            case 'is_read':
-                usort($responseItems, array($this, 'memorySortIsRead'));
-                break;
+                case 'is_read':
+                    usort($responseItems, array($this, 'memorySortIsRead'));
+                    break;
 
-            case 'is_attachment':
-                usort($responseItems, array($this, 'memorySortisAttachment'));
-                break;
-        }
+                case 'is_attachment':
+                    usort($responseItems, array($this, 'memorySortisAttachment'));
+                    break;
+            }
 
-        if ($sortInfo['dir'] == 'DESC') {
-            $responseItems = array_reverse($responseItems);
+            if ($sortInfo['dir'] == 'DESC') {
+                $responseItems = array_reverse($responseItems);
+            }
         }
 
         return $responseItems;

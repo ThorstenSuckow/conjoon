@@ -40,7 +40,16 @@ interface AccountService {
      *
      * @throws AccountServiceException
      */
-    public function getMailAccounttoAccessRemoteFolder(
+    public function getMailAccountToAccessRemoteFolder(
         \Conjoon\Mail\Client\Folder\Folder $folder);
+
+    /**
+     * Returns the standard mail account for the user bound to this instance
+     *
+     * @return null|\Conjoon\Data\Entity\Mail\MailAccountEntity
+     *
+     * @throws AccountServiceException
+     */
+    public function getStandardMailAccount();
 
 }

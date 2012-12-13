@@ -186,6 +186,25 @@ class UserMock implements \Conjoon\User\User {
 
     public function getUserName(){}
 
+    /**
+     * @inheritdoc
+     */
+    public function __toString()
+    {
+        return
+            str_replace(
+                array("{id}", "{firstname}", "{lastname}",
+                    "{emailAddress}", "{userName}"),
+                array($this->getId(), $this->getFirstname(),
+                    $this->getLastname(), $this->getEmailAddress(),
+                    $this->getUserName()
+                ),
+                "id:{id};firstname:{firstname};lastname:{lastname};"
+                    . "emailAddess:{emailAddress};userName:{userName}]"
+            );
+
+    }
+
 }
 
 class MailAccountMock extends \Conjoon\Data\Entity\Mail\DefaultMailAccountEntity {

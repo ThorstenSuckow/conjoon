@@ -107,4 +107,22 @@ abstract class DefaultUser implements User {
         return $this->_userName;
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function __toString()
+    {
+        return
+            str_replace(
+                array("{id}", "{firstname}", "{lastname}",
+                      "{emailAddress}", "{userName}"),
+                array($this->getId(), $this->getFirstname(),
+                    $this->getLastname(), $this->getEmailAddress(),
+                    $this->getUserName()
+                ),
+                "id:{id};firstname:{firstname};lastname:{lastname};"
+                . "emailAddess:{emailAddress};userName:{userName}]"
+            );
+
+    }
 }

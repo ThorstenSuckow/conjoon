@@ -62,10 +62,17 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
 
     var createPanel = function(emailItemRecord, type, recipient, position)
     {
-        var draftId = -1;
+        var draftId = -1, path = [];
 
         if ((emailItemRecord instanceof com.conjoon.groupware.email.EmailItemRecord)
             || (emailItemRecord instanceof com.conjoon.groupware.email.EmailRecord)) {
+
+            if (!emailItemRecord.get('path')) {
+                throw("cannot create panel without \"path\"");
+            }
+
+            path = emailItemRecord.get('path');
+
             draftId = emailItemRecord.id;
         } else {
             draftId = emailItemRecord;
@@ -168,7 +175,8 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
             requestId          : null,
             attachmentButton   : null,
             uploadMediator     : null,
-            removedAttachments : []
+            removedAttachments : [],
+            path               : path
         };
 
         var ajaxOptions = {
@@ -179,7 +187,8 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
                 id      : draftId || -1,
                 type    : type || 'new',
                 name    : '',
-                address : ''
+                address : '',
+                path    : Ext.util.JSON.encode(path)
             },
             success : onDraftLoad,
             failure : onDraftLoadException,
@@ -323,7 +332,7 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
             return onDraftLoadException(response, options);
         }
 
-        var draft = data.draft;
+        var draft = data.draft ? data.draft : data.data.draft;
         var type  = data.type;
 
         var recRecs         = [];

@@ -50,15 +50,33 @@ class DefaultMessageServiceFacade implements MessageServiceFacade {
     protected $server;
 
     /**
+     * @var \Conjoon\Data\Repository\Mail\MailAccountRepository
+     */
+    protected $mailAccountRepository;
+
+    /**
+     * @var \Conjoon\Data\Repository\Mail\MailFolderRepository
+     */
+    protected $mailFolderRepository;
+
+
+    /**
      * Creates a new instance of the MessageServiceFacade.
      *
      * @param \Conjoon\Mail\Server\DefaultServer $server The mail server the
      *        service facade should be using
      *
      */
-    public function __construct(\Conjoon\Mail\Server\DefaultServer $server)
+    public function __construct(
+        \Conjoon\Mail\Server\DefaultServer $server,
+        \Conjoon\Data\Repository\Mail\MailAccountRepository $mailAccountRepository,
+        \Conjoon\Data\Repository\Mail\MailFolderRepository $mailFolderRepository
+    )
     {
         $this->server = $server;
+
+        $this->mailAccountRepository = $mailAccountRepository;
+        $this->mailFolderRepository  = $mailFolderRepository;
     }
 
     /**
@@ -256,6 +274,97 @@ class DefaultMessageServiceFacade implements MessageServiceFacade {
             return new DefaultServiceResult(
                 $response,
                 new \Conjoon\Mail\Client\Service\ServicePatron\DownloadAttachmentPatron()
+            );
+
+        } catch (\Exception $e) {
+
+            return new DefaultServiceResult(new MessageServiceException(
+                "Exception thrown by previous exception: " . $e->getMessage(),
+                0, $e
+            ));
+
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getMessageForReply($id, $path, \Conjoon\User\User $user)
+    {
+        try {
+
+            /**
+             * @see \Conjoon\Mail\Client\Folder\DefaultFolderPath
+             */
+            require_once 'Conjoon/Mail/Client/Folder/DefaultFolderPath.php';
+
+            $folderPath = new \Conjoon\Mail\Client\Folder\DefaultFolderPath(
+                $path
+            );
+
+            /**
+             * @see \Conjoon\Mail\Client\Folder\Folder
+             */
+            require_once 'Conjoon/Mail/Client/Folder/Folder.php';
+
+            $folder = new \Conjoon\Mail\Client\Folder\Folder($folderPath);
+
+            /**
+             * @see \Conjoon\Mail\Client\Message\DefaultMessageLocation
+             */
+            require_once 'Conjoon/Mail/Client/Message/DefaultMessageLocation.php';
+
+            $location = new \Conjoon\Mail\Client\Message\DefaultMessageLocation(
+                $folder, $id
+            );
+
+            $request = new \Conjoon\Mail\Server\Request\DefaultGetMessageRequest(array(
+                'user'       => $user,
+                'parameters' => array(
+                    'messageLocation' => $location
+                )));
+
+            $response = $this->server->handle($request);
+
+            /**
+             * @see \Conjoon\Mail\Client\Service\ServicePatron\ReadMessagePatron
+             */
+            require_once 'Conjoon/Mail/Client/Service/ServicePatron/ReadMessagePatron.php';
+
+            /**
+             * @see \Conjoon\Mail\Client\Account\DefaultAccountService
+             */
+            require_once 'Conjoon/Mail/Client/Account/DefaultAccountService.php';
+
+            /**
+             * @see \Conjoon\Mail\Client\Folder\DefaultFolderService
+             */
+            require_once 'Conjoon/Mail/Client/Folder/DefaultFolderService.php';
+
+            /**
+             * @see \Conjoon\Mail\Client\Folder\DefaultFolderCommons
+             */
+            require_once 'Conjoon/Mail/Client/Folder/DefaultFolderCommons.php';
+
+            $accountService = new \Conjoon\Mail\Client\Account\DefaultAccountService(
+                array(
+                    'user'                  => $user,
+                    'mailAccountRepository' => $this->mailAccountRepository,
+                    'folderService'         =>
+                        new \Conjoon\Mail\Client\Folder\DefaultFolderService(array(
+                            'user'                 => $user,
+                            'mailFolderRepository' => $this->mailFolderRepository,
+                            'mailFolderCommons'    =>
+                                new \Conjoon\Mail\Client\Folder\DefaultFolderCommons(array(
+                                    'user' => $user,
+                                    'mailFolderRepository' => $this->mailFolderRepository
+            ))))));
+
+            return new DefaultServiceResult(
+                $response,
+                new \Conjoon\Mail\Client\Service\ServicePatron\ReplyMessagePatron(
+                    $accountService
+                )
             );
 
         } catch (\Exception $e) {

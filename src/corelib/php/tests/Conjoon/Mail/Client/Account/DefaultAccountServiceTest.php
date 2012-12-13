@@ -42,7 +42,9 @@ class DefaultAccountServiceTest extends \Conjoon\DatabaseTestCaseDefault {
 
         $this->service = new DefaultAccountService(
             array(
-                'user'          => new UserMock(),
+                'user'          => new UserMock(1),
+                'mailAccountRepository' => $this->_entityManager->getRepository(
+                    '\Conjoon\Data\Entity\Mail\DefaultMailAccountEntity'),
                 'folderService' => new \Conjoon\Mail\Client\Folder\DefaultFolderService(array(
                     'user'                 => new UserMock(),
                     'mailFolderCommons'    => new \Conjoon\Mail\Client\Folder\DefaultFolderCommons(
@@ -120,11 +122,23 @@ class DefaultAccountServiceTest extends \Conjoon\DatabaseTestCaseDefault {
                     )))->getId());
     }
 
+    public function testGetStandardMailAccount()
+    {
+        $this->assertSame(1, $this->service->getStandardMailAccount()->getId());
+    }
+
 }
 
 class UserMock implements \Conjoon\User\User {
 
-    public function getId(){}
+    protected $userId;
+
+    public function __construct($userId = null)
+    {
+        $this->userId = $userId;
+    }
+
+    public function getId(){if ($this->userId !== null)return $this->userId;}
 
     public function getFirstname(){}
 
@@ -133,5 +147,10 @@ class UserMock implements \Conjoon\User\User {
     public function getEmailAddress(){}
 
     public function getUserName(){}
+
+    public function __toString()
+    {
+        return "" . $this->userId;
+    }
 
 }

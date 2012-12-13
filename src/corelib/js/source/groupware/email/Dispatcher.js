@@ -85,6 +85,20 @@ com.conjoon.groupware.email.Dispatcher = function() {
             return;
         }
 
+        if (data.folderMappingError) {
+            var msg  = Ext.MessageBox;
+            msg.show({
+                title   : data.folderMappingError.title,
+                msg     : data.folderMappingError.message,
+                buttons : msg.OK,
+                icon    : msg.WARNING,
+                scope   : this,
+                cls     :'com-conjoon-msgbox-warning',
+                width   : 400
+            });
+            return;
+        }
+
         var itemRecord = com.conjoon.util.Record.convertTo(
             com.conjoon.groupware.email.EmailItemRecord,
             data.item,

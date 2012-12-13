@@ -239,9 +239,27 @@ class DefaultUserEntity extends UserEntity {
     /**
      * @inheritdoc
      */
-   public function getLastLogin()
+    public function getLastLogin()
     {
         return $this->lastLogin;
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function __toString()
+    {
+        return
+            str_replace(
+                array("{id}", "{firstname}", "{lastname}",
+                    "{emailAddress}", "{userName}"),
+                array($this->getId(), $this->getFirstname(),
+                    $this->getLastname(), $this->getEmailAddress(),
+                    $this->getUserName()
+                ),
+                "id:{id};firstname:{firstname};lastname:{lastname};"
+                    . "emailAddess:{emailAddress};userName:{userName}]"
+            );
+
+    }
 }

@@ -105,7 +105,7 @@ class ReadMessagePatron
 // -------- helper
 
     /**
-     * Createsthe attachments.
+     * Creates the attachments.
      *
      * @param array
      * @return array

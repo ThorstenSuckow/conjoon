@@ -105,6 +105,16 @@ class Conjoon_Text_Parser_Mail_MessageHeaderParser extends Conjoon_Text_Parser {
 
         $emailItem = array();
 
+        $messageId = "";
+
+        try {
+            $messageId = $message->messageId;
+        } catch (Zend_Mail_Exception $e) {
+            // ignore
+        }
+
+        $emailItem['messageId'] = $messageId;
+
         try {
             $emailItem['from'] = $message->from;
         } catch (Zend_Mail_Exception $e) {

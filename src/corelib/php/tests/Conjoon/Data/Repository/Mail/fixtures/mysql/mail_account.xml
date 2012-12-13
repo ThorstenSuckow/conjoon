@@ -90,7 +90,7 @@
             <value>name</value>
             <value>address</value>
             <value>reply_address</value>
-            <value>1</value>
+            <value>0</value>
             <value>POP3</value>
             <value>server_inbox</value>
             <value>server_outbox</value>

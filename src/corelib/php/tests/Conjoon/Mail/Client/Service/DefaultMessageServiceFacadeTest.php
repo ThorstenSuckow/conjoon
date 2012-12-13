@@ -37,6 +37,21 @@ require_once dirname(__FILE__) . '/../../Server/Protocol/ProtocolTestCase.php';
 class DefaultMessageServiceFacadeTest extends
     \Conjoon\Mail\Server\Protocol\ProtocolTestCase {
 
+    protected $mailAccountRepository;
+
+    protected $mailFolderRepository;
+
+
+    protected function setUp()
+    {
+        parent::setUp();
+
+        $this->mailAccountRepository = new DoctrineMailAccountRepositoryMock();
+
+        $this->mailFolderRepository = new DoctrineMailFolderRepositoryMock();
+
+    }
+
 
     public function testOk()
     {
@@ -46,7 +61,8 @@ class DefaultMessageServiceFacadeTest extends
 
         $defaultServer = new \Conjoon\Mail\Server\DefaultServer($protocol);
 
-        $messageFacade = new DefaultMessageServiceFacade($defaultServer);
+        $messageFacade = new DefaultMessageServiceFacade($defaultServer,
+            $this->mailAccountRepository, $this->mailFolderRepository);
         $result = $messageFacade->setFlagsForMessagesInFolder(
             '[{"id":"56","isRead":true}]', '["root","1","2"]', $this->user
 
@@ -64,7 +80,8 @@ class DefaultMessageServiceFacadeTest extends
 
         $defaultServer = new \Conjoon\Mail\Server\DefaultServer($protocol);
 
-        $messageFacade = new DefaultMessageServiceFacade($defaultServer);
+        $messageFacade = new DefaultMessageServiceFacade($defaultServer,
+            $this->mailAccountRepository, $this->mailFolderRepository);
         $result = $messageFacade->getMessage(
             "1", '["root","1","2"]', $this->user
 
@@ -74,6 +91,24 @@ class DefaultMessageServiceFacadeTest extends
         $this->assertTrue($result->isSuccess());
     }
 
+    public function testGetMessageForReply()
+    {
+        $protocol = new \Conjoon\Mail\Server\Protocol\DefaultProtocol(
+            $this->protocolAdaptee
+        );
+
+        $defaultServer = new \Conjoon\Mail\Server\DefaultServer($protocol);
+
+        $messageFacade = new DefaultMessageServiceFacade($defaultServer,
+            $this->mailAccountRepository, $this->mailFolderRepository);
+        $result = $messageFacade->getMessage(
+            "1", '["root","1","2"]', $this->user
+
+        );
+
+        $this->assertTrue($result instanceof ServiceResult);
+        $this->assertTrue($result->isSuccess());
+    }
 
     public function testGetAttachment()
     {
@@ -83,7 +118,11 @@ class DefaultMessageServiceFacadeTest extends
 
         $defaultServer = new \Conjoon\Mail\Server\DefaultServer($protocol);
 
-        $messageFacade = new DefaultMessageServiceFacade($defaultServer);
+        $messageFacade = new DefaultMessageServiceFacade(
+            $defaultServer,
+            $this->mailAccountRepository, $this->mailFolderRepository
+        );
+
         $result = $messageFacade->getAttachment(
             "32234234234324234", "1", '["root","1","2"]', $this->user
 
@@ -92,4 +131,23 @@ class DefaultMessageServiceFacadeTest extends
         $this->assertTrue($result instanceof ServiceResult);
         $this->assertTrue($result->isSuccess());
     }
+}
+
+
+class DoctrineMailAccountRepositoryMock extends \Conjoon\Data\Repository\Mail\DoctrineMailAccountRepository {
+
+    public function __construct()
+    {
+
+    }
+
+}
+
+class DoctrineMailFolderRepositoryMock extends \Conjoon\Data\Repository\Mail\DoctrineMailFolderRepository {
+
+    public function __construct()
+    {
+
+    }
+
 }

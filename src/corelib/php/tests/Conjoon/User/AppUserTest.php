@@ -86,7 +86,20 @@ class AppUserTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($this->_userData['lastName'], $appUser->getLastName());
         $this->assertEquals($this->_userData['emailAddress'], $appUser->getEmailAddress());
         $this->assertEquals($this->_userData['username'], $appUser->getUsername());
+    }
 
+    /**
+     * Ensures everythingworks as expected
+     */
+    public function test__toStringOk()
+    {
+        $appUser = new AppUser($this->_defaultUser);
+
+        $val = $appUser->__toString();
+
+        $this->assertFalse(empty($val));
+
+        $this->assertTrue(is_string($val));
     }
 
 }

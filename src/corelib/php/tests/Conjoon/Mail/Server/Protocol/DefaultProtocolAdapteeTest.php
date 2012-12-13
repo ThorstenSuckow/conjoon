@@ -47,6 +47,8 @@ class DefaultProtocolAdapteeTest extends \Conjoon\DatabaseTestCaseDefault {
 
     protected $userRepository;
 
+    protected $mailAccountRepository;
+
     public function getDataSet()
     {
         return $this->createXMLDataSet(
@@ -102,8 +104,13 @@ class DefaultProtocolAdapteeTest extends \Conjoon\DatabaseTestCaseDefault {
         $this->folderRepository = $this->_entityManager->getRepository(
             '\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
 
+        $this->mailAccountRepository = $this->_entityManager->getRepository(
+            '\Conjoon\Data\Entity\Mail\DefaultMailAccountEntity');
+
         $this->protocolAdaptee = new DefaultProtocolAdaptee(
-            $this->folderRepository, $this->messageFlagRepository
+            $this->folderRepository, $this->messageFlagRepository,
+            $this->mailAccountRepository
+
         );
 
         $this->buildFolderFlagCollection();

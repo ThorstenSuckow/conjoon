@@ -44,6 +44,41 @@ class Conjoon_Mail_Storage_Imap extends Zend_Mail_Storage_Imap
      */
     protected $_messageClass = 'Conjoon_Mail_Message';
 
+    /**
+     * Zend Framework does not return server response
+     *
+     * append a new message to mail storage
+     *
+     * @param  string                                     $message message as string or instance of message class
+     * @param  null|string|Zend_Mail_Storage_Folder       $folder  folder for new message, else current folder is taken
+     * @param  null|array                                 $flags   set flags for new message, else a default set is used
+     * @throws Zend_Mail_Storage_Exception
+     */
+     // not yet * @param string|Zend_Mail_Message|Zend_Mime_Message $message message as string or instance of message class
+    public function appendMessage($message, $folder = null, $flags = null)
+    {
+        if ($folder === null) {
+            $folder = $this->_currentFolder;
+        }
+
+        if ($flags === null) {
+            $flags = array(Zend_Mail_Storage::FLAG_SEEN);
+        }
+
+        $res = $this->_protocol->append($folder, $message, $flags);
+
+        // TODO: handle class instances for $message
+        if (!$res) {
+            /**
+             * @see Zend_Mail_Storage_Exception
+             */
+            require_once 'Zend/Mail/Storage/Exception.php';
+            throw new Zend_Mail_Storage_Exception('cannot create message, please check if the folder exists and your flags');
+        }
+
+        return $res;
+    }
+
 
     /**
      * @inheritdoc
@@ -153,7 +188,7 @@ class Conjoon_Mail_Storage_Imap extends Zend_Mail_Storage_Imap
     /**
      * @inheritdoc
      */
-    public function getHeaderListAndMetaInformationForGlobalName($globalName)
+    public function getHeaderListAndMetaInformationForGlobalName($globalName, $from = 1, $to = -1)
     {
         /**
          * @see Conjoon_Argument_Check
@@ -186,10 +221,11 @@ class Conjoon_Mail_Storage_Imap extends Zend_Mail_Storage_Imap
         }
 
         $count = $this->countMessages();
-
+        $to = $to == -1 ? $count : $to;
 
         $headers = array();
-        for ($i = 1, $len = $count +1; $i < $len; $i++) {
+
+        for ($i = $from, $len = $to + 1; $i < $len; $i++) {
 
 
             try {

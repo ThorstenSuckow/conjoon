@@ -62,4 +62,11 @@ interface User {
      */
     public function getUserName();
 
+
+    /**
+     * Returns a string representation of this object
+     *
+     * @return string
+     */
+    public function __toString();
 }

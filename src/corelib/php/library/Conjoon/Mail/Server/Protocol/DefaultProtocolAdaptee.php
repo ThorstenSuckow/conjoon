@@ -44,6 +44,12 @@ class DefaultProtocolAdaptee implements ProtocolAdaptee {
     protected $doctrineMessageFlagRepository;
 
     /**
+     * @var \Conjoon\Data\Repository\Mail\DoctrineMailAccountRepository
+     */
+    protected $doctrineMailAccountRepository;
+
+
+    /**
      * @var array
      */
     protected $defaultClassNames = array(
@@ -78,15 +84,19 @@ class DefaultProtocolAdaptee implements ProtocolAdaptee {
      *
      * @param \Conjoon\Data\Repository\Mail\DoctrineMailFolderRepository $doctrineMailFolderRepository
      * @param \Conjoon\Data\Repository\Mail\DoctrineMessageFlagRepository $doctrineMessageFlagRepository
-     *
+     * @param \Conjoon\Data\Repository\Mail\DoctrineMailAccountRepository $doctrineMailAccountRepository
+
      *
      */
     public function __construct(
         \Conjoon\Data\Repository\Mail\DoctrineMailFolderRepository $doctrineMailFolderRepository,
-        \Conjoon\Data\Repository\Mail\DoctrineMessageFlagRepository $doctrineMessageFlagRepository)
+        \Conjoon\Data\Repository\Mail\DoctrineMessageFlagRepository $doctrineMessageFlagRepository,
+        \Conjoon\Data\Repository\Mail\DoctrineMailAccountRepository $doctrineMailAccountRepository)
     {
         $this->doctrineMailFolderRepository  = $doctrineMailFolderRepository;
         $this->doctrineMessageFlagRepository = $doctrineMessageFlagRepository;
+        $this->doctrineMailAccountRepository = $doctrineMailAccountRepository;
+
     }
 
 
@@ -335,6 +345,16 @@ class DefaultProtocolAdaptee implements ProtocolAdaptee {
 // -------- helper API
 
     /**
+     * Returns the DoctrineMailAccountRepository this class was configured with.
+     *
+     * @return \Conjoon\Data\Mail\DoctrineMailAccountRepository
+     */
+    protected function getDoctrineMailAccountRepository()
+    {
+        return $this->doctrineMailAccountRepository;
+    }
+
+    /**
      * Returns the DoctrineMailFolderRepository this class was configured with.
      *
      * @return \Conjoon\Data\Mail\DoctrineMailFolderRepository
@@ -433,7 +453,8 @@ class DefaultProtocolAdaptee implements ProtocolAdaptee {
                         'user'                 => $user,
                         'folderService'        => $this->getServiceForUser(
                                                       'folderService', $user
-                                                  )
+                                                  ),
+                        'mailAccountRepository' => $this->getDoctrineMailAccountRepository()
                     ));
                     break;
             }

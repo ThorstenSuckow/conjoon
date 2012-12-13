@@ -121,6 +121,45 @@ class Groupware_EmailEditController extends Zend_Controller_Action {
      */
     public function getDraftAction()
     {
+        if ($this->_helper->conjoonContext()->getCurrentContext() !=
+            self::CONTEXT_JSON) {
+            /**
+             * see Conjoon_Controller_Action_InvalidContextException
+             */
+            require_once 'Conjoon/Controller/Action/InvalidContextException.php';
+
+            throw new Conjoon_Controller_Action_InvalidContextException(
+                "Invalid context for action, expected \""
+                    . self::CONTEXT_JSON
+                    . "\", got \""
+                    . $this->_helper->conjoonContext()->getCurrentContext()
+                    ."\""
+            );
+        }
+
+        $path = $_POST['path'];
+
+        // check if folder is remote folder
+        /**
+         * @see Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser
+         */
+        require_once 'Conjoon/Text/Parser/Mail/MailboxFolderPathJsonParser.php';
+
+        $parser = new Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser();
+
+        $pathInfo = $parser->parse($path);
+
+        /**
+         * @see Conjoon_Modules_Groupware_Email_Folder_Facade
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/Folder/Facade.php';
+
+        $facade = Conjoon_Modules_Groupware_Email_Folder_Facade::getInstance();
+
+        if (!empty($pathInfo) && $facade->isRemoteFolder($pathInfo['rootId'])) {
+            return $this->getDraftFromRemoteServer($_POST['id'], $path, $_POST['type']);
+        }
+
         /**
          * @see Conjoon_Keys
          */
@@ -350,6 +389,84 @@ class Groupware_EmailEditController extends Zend_Controller_Action {
         $this->view->draft   = $draft;
         $this->view->type    = $type;
     }
+
+    /**
+     * Loads and returns a draft from a remote repository.
+     *
+     * @param string $id
+     * @param string $path
+     * @param string $type
+     *
+     */
+    protected function getDraftFromRemoteServer($id, $path, $type)
+    {
+        /**
+         * @see Zend_Registry
+         */
+        require_once 'Zend/Registry.php';
+
+        /**
+         *@see Conjoon_Keys
+         */
+        require_once 'Conjoon/Keys.php';
+
+        $auth = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
+
+        /**
+         * @see Conjoon_User_AppUser
+         */
+        require_once 'Conjoon/User/AppUser.php';
+
+        $appUser = new \Conjoon\User\AppUser($auth->getIdentity());
+
+        $entityManager = Zend_Registry::get(Conjoon_Keys::DOCTRINE_ENTITY_MANAGER);
+
+        $mailFolderRepository =
+            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
+        $messageFlagRepository =
+            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMessageFlagEntity');
+        $mailAccountRepository =
+            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMailAccountEntity');
+
+        $protocolAdaptee = new \Conjoon\Mail\Server\Protocol\DefaultProtocolAdaptee(
+            $mailFolderRepository, $messageFlagRepository, $mailAccountRepository
+        );
+
+        /**
+         * @see \Conjoon\Mail\Server\Protocol\DefaultProtocol
+         */
+        $protocol = new \Conjoon\Mail\Server\Protocol\DefaultProtocol(
+            $protocolAdaptee
+        );
+
+        /**
+         * @see \Conjoon\Mail\Server\DefaultServer
+         */
+        require_once 'Conjoon/Mail/Server/DefaultServer.php';
+
+        $server = new \Conjoon\Mail\Server\DefaultServer($protocol);
+
+
+        /**
+         * @see \Conjoon\Mail\Client\Service\DefaultMessageServiceFacade
+         */
+        require_once 'Conjoon/Mail/Client/Service/DefaultMessageServiceFacade.php';
+
+        $serviceFacade = new \Conjoon\Mail\Client\Service\DefaultMessageServiceFacade(
+            $server, $mailAccountRepository, $mailFolderRepository
+        );
+
+        $result =  $serviceFacade->getMessageForReply(
+            $this->_request->getParam('id'),
+            $this->_request->getParam('path'),
+            $appUser
+        );
+
+        $this->view->success = $result->isSuccess();
+        $this->view->data    = $result->getData();
+        $this->view->error      = null;
+    }
+
 
     /**
      * Saves a draft into the database for later editing /sending.

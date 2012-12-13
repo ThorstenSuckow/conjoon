@@ -120,13 +120,9 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
         $cc  = array();
         $bcc = array();
 
-        $toString  = array();
-        $ccString  = array();
-
         foreach ($data['cc'] as $dcc) {
             $add        = new Conjoon_Modules_Groupware_Email_Address($dcc);
             $cc[]       = $add;
-            $toString[] = $add->__toString();
         }
         foreach ($data['bcc'] as $dbcc) {
             $add         = new Conjoon_Modules_Groupware_Email_Address($dbcc);
@@ -135,11 +131,7 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
         foreach ($data['to'] as $dto) {
             $add        = new Conjoon_Modules_Groupware_Email_Address($dto);
             $to[]       = $add;
-            $toString[] = $add->__toString();
         }
-
-        $toString  = implode(', ', $toString);
-        $ccString  = implode(', ', $ccString);
 
         $data['cc']  = $cc;
         $data['to']  = $to;
@@ -214,6 +206,8 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
          */
         require_once 'Conjoon/Modules/Groupware/Email/Sender.php';
 
+
+
         try {
             $mail = Conjoon_Modules_Groupware_Email_Sender::send(
                 $message, $account, $postedAttachments, $removeAttachmentIds
@@ -238,6 +232,142 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
             $this->view->error   = $error;
             $this->view->success = false;
             $this->view->item    = null;
+            return;
+        }
+
+        $folderMappingError = null;
+
+        if ($account->getProtocol() == 'IMAP') {
+
+            /**
+             * @see Conjoon_Modules_Groupware_Email_ImapHelper
+             */
+            require_once 'Conjoon/Modules/Groupware/Email/ImapHelper.php';
+
+            /**
+             * @see Zend_Registry
+             */
+            require_once 'Zend/Registry.php';
+
+            /**
+             *@see Conjoon_Keys
+             */
+            require_once 'Conjoon/Keys.php';
+
+            $respData = array();
+
+            $entityManager = Zend_Registry::get(Conjoon_Keys::DOCTRINE_ENTITY_MANAGER);
+
+            $mailAccountRepository =
+                $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMailAccountEntity');
+
+            $accEntity = $mailAccountRepository->findById($account->getId());
+
+            $mappings   = $accEntity->getFolderMappings();
+            $globalName = "";
+            for ($i = 0, $len = count($mappings); $i < $len; $i++) {
+                if ($mappings[$i]->getType() == 'SENT') {
+                    $globalName = $mappings[$i]->getGlobalName();
+                }
+            }
+
+            if ($globalName != "") {
+
+                /**
+                 * @see Conjoon_Mail_Storage_Imap
+                 */
+                require_once 'Conjoon/Mail/Storage/Imap.php';
+
+                $protocol = Conjoon_Modules_Groupware_Email_ImapHelper
+                    ::reuseImapProtocolForAccount($account->getDto());
+
+                $storage = new Conjoon_Mail_Storage_Imap($protocol);
+
+                try {
+                    $storage->selectFolder($globalName);
+                    $response = $storage->appendMessage(
+                        $mail->getHeader()
+                        . "\n\n"
+                        . $mail->getBody(),
+                        $globalName
+                    );
+
+                    $lastMessage = -1;
+                    $ret         = null;
+                    if (is_array($response) && isset($response[0])) {
+                        $ret = explode(' ', $response[0]);
+                    }
+                    if (is_array($ret) && count($ret) == 2 && is_numeric($ret[0])
+                        && trim(strtolower($ret[1])) == 'exists') {
+                        $lastMessage = $ret[0];
+                    }
+                    if ($lastMessage == -1) {
+                        $lastMessage = $storage->countMessages();
+                    }
+                    if ($lastMessage == -1) {
+                        throw new RuntimeException("Could not find message id.");
+                    }
+                    $uId = $storage->getUniqueId($lastMessage);
+
+                    // immediately setting the \Seen flag does not seemt
+                    // to work. Do so by hand.
+                    $storage->setFlags($lastMessage, array('\Seen'));
+
+                } catch (\Exception $e) {
+                    $folderMappingError = true;
+                }
+
+            } else {
+                $folderMappingError = true;
+            }
+
+            if ($folderMappingError) {
+                require_once 'Conjoon/Error.php';
+                $folderMappingError = new Conjoon_Error();
+                $folderMappingError = $folderMappingError->getDto();;
+                $folderMappingError->title   = 'Missing folder mapping';
+                $folderMappingError->message = 'The email was sent, but a "sent" version could not be stored to the configured IMAP account. Make sure you have configured the folder mappings for this account properly.';
+                $folderMappingError->level = Conjoon_Error::LEVEL_ERROR;
+            } else {
+
+                /**
+                 * @see Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade
+                 */
+                require_once 'Conjoon/Modules/Groupware/Email/Item/ItemListRequestFacade.php';
+
+                /**
+                 * @see Conjoon_Modules_Groupware_Email_Folder_Facade
+                 */
+                require_once 'Conjoon/Modules/Groupware/Email/Folder/Facade.php';
+
+                $folderFacade = Conjoon_Modules_Groupware_Email_Folder_Facade::getInstance();
+
+                $rootFolder = $folderFacade->getRootFolderForAccountId(
+                    $account->getDto(), $userId
+                );
+
+                $itemFacade = Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade::getInstance();
+
+                $delimiter = Conjoon_Modules_Groupware_Email_ImapHelper
+                    ::getFolderDelimiterForImapAccount($account->getDto());
+
+                $list =  $itemFacade->getEmailItemList(
+                    array(
+                        'rootId' => $rootFolder[0]->id,
+                        'path'   => explode($delimiter, $globalName)
+                    ),
+                    $userId, array(), $lastMessage, $lastMessage
+                );
+
+                $item = $list[0];
+
+            }
+
+            $this->view->error   = null;
+            $this->view->folderMappingError = $folderMappingError;
+            $this->view->success = true;
+            $this->view->item    = isset($item) ? $item : null;
+            $this->view->contextReferencedItem  = null;
             return;
         }
 
@@ -302,6 +432,7 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
 
 
         $this->view->error   = null;
+        $this->view->foldermappingError = $folderMappingError;
         $this->view->success = true;
         $this->view->item    = $item;
         $this->view->contextReferencedItem  = empty($contextReferencedItem)

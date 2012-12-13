@@ -71,6 +71,28 @@ class DoctrineMailAccountRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
     }
 
     /**
+     * Ensures everathing works as expected.
+     */
+    public function testGetStandardMailAccount()
+    {
+        $tmp  = $this->repository->findById(1);
+        $user = $tmp->getUser();
+
+        $entity = $this->repository->getStandardMailAccount($user);
+
+        $this->assertSame(1, $entity->getId());
+
+        $tmp  = $this->repository->findById(2);
+        $user = $tmp->getUser();
+
+        $entity = $this->repository->getStandardMailAccount($user);
+
+        $this->assertNull($entity);
+
+
+    }
+
+    /**
      * Ensure everything works as expected
      */
     public function testFindNone()

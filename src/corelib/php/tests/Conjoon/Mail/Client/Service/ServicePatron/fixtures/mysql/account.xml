@@ -1,40 +1,5 @@
 <?xml version="1.0" ?>
 <dataset>
-
-    <table name="users">
-        <column>id</column>
-        <column>firstname</column>
-        <column>lastname</column>
-        <column>email_address</column>
-        <column>user_name</column>
-        <column>password</column>
-        <column>is_root</column>
-        <column>auth_token</column>
-        <column>last_login</column>
-        <row>
-            <value>1</value>
-            <value>Firstname</value>
-            <value>Lastname</value>
-            <value>EmailAddress</value>
-            <value>UserName1</value>
-            <value>Password</value>
-            <value>1</value>
-            <value>AuthToken</value>
-            <value>2</value>
-        </row>
-        <row>
-            <value>2</value>
-            <value>Firstname</value>
-            <value>Lastname</value>
-            <value>EmailAddress</value>
-            <value>UserName2</value>
-            <value>Password</value>
-            <value>1</value>
-            <value>AuthToken</value>
-            <value>2</value>
-        </row>
-    </table>
-
     <table name="groupware_email_accounts">
         <column>id</column>
         <column>user_id</column>
@@ -62,35 +27,10 @@
         <row>
             <value>1</value>
             <value>1</value>
-            <value>testchange</value>
-            <value>address</value>
-            <value>reply_address</value>
-            <value>1</value>
-            <value>POP3</value>
-            <value>server_inbox</value>
-            <value>server_outbox</value>
-            <value>username_inbox</value>
-            <value>username_outbox</value>
-            <value>user_name</value>
-            <value>1</value>
-            <value>password_inbox</value>
-            <value>password_outbox</value>
-            <value>signature</value>
-            <value>1</value>
-            <value>25</value>
-            <value>25</value>
-            <value>SSL</value>
-            <value>SSL</value>
-            <value>1</value>
-            <value>0</value>
-        </row>
-        <row>
-            <value>2</value>
-            <value>2</value>
             <value>name</value>
             <value>address</value>
             <value>reply_address</value>
-            <value>0</value>
+            <value>1</value>
             <value>POP3</value>
             <value>server_inbox</value>
             <value>server_outbox</value>
@@ -117,14 +57,6 @@
             <value>1</value>
             <value>1</value>
         </row>
-        <row>
-            <value>2</value>
-            <value>1</value>
-        </row>
-        <row>
-            <value>3</value>
-            <value>2</value>
-        </row>
     </table>
     <table name="groupware_email_folders">
         <column>id</column>
@@ -140,7 +72,7 @@
             <value>folder 1</value>
             <value>1</value>
             <value>0</value>
-            <value>root</value>
+            <value>root_remote</value>
             <value>inbox</value>
             <null />
             <value>0</value>
@@ -157,12 +89,42 @@
         </row>
         <row>
             <value>3</value>
-            <value>folder 3</value>
+            <value>folder 1</value>
             <value>1</value>
             <value>0</value>
             <value>root</value>
             <value>inbox</value>
-            <value>2</value>
+            <null />
+            <value>0</value>
+        </row>
+        <row>
+            <value>4</value>
+            <value>folder 2</value>
+            <value>1</value>
+            <value>0</value>
+            <value>root</value>
+            <value>inbox</value>
+            <value>3</value>
+            <value>0</value>
+        </row>
+        <row>
+            <value>5</value>
+            <value>folder 1</value>
+            <value>1</value>
+            <value>0</value>
+            <value>root_remote</value>
+            <value>inbox</value>
+            <null />
+            <value>0</value>
+        </row>
+        <row>
+            <value>6</value>
+            <value>folder 2</value>
+            <value>1</value>
+            <value>0</value>
+            <value>root</value>
+            <value>inbox</value>
+            <value>5</value>
             <value>0</value>
         </row>
     </table>

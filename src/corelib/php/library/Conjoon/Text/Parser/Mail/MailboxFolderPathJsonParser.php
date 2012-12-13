@@ -74,7 +74,7 @@ class Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser extends Conjoon_Text_
     {
         $path = $input;
 
-        if ($path == "") {
+        if ($path == "" || $path == "[]") {
             return array();
         }
 

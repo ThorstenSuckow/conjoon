@@ -60,7 +60,8 @@ class Conjoon_Text_Parser_Mail_MessageHeaderParserTest extends PHPUnit_Framework
                 'date'       => 'Mon, 19 Nov 2012 13:01:38 +0100',
                 'cc'         => '',
                 'references' => '',
-                'inReplyTo'  => ''
+                'inReplyTo'  => '',
+                'messageId'  => '<uniqueid@somegatewy.tld>'
             )
         );
 

@@ -1313,20 +1313,10 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
             }
         }
 
-        /**
-         * @todo  it is possible that the tree is not fully loaded yet. Thus we
-         * check if the folderOutbox.id is available and exit if that is not the
-         * case. This should be enhancened when support for one tree per account
-         * is available
-         */
-        if (!tp.folderOutbox) {
-            return;
-        }
-
         // if the email was loaded from outbox/draft and sent, update pending nodes
         // minus 1, but only if the id of the itemRecord equals to the id of the draft,
         // which will basically tell that an email pending in the outbox folder was sent
-        if (referencedRecord && ((oldFolderId == tp.folderOutbox.id || oldFolderId == tp.folderDraft.id)
+        if (tp.folderOutbox && referencedRecord && ((oldFolderId == tp.folderOutbox.id || oldFolderId == tp.folderDraft.id)
             && emailRecord.get('id') == referencedRecord.get('id'))) {
             // if grid is visible, remove the record with the specified id!
             if (currFolderId == oldFolderId) {
@@ -1340,12 +1330,33 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
         }
 
         // if the visible grid is the grid for sent items, add the recod to the store
-        if (emailRecord.get('groupwareEmailFoldersId') == currFolderId) {
+        // use emailfolders id first, then path
+        if (emailRecord.get('groupwareEmailFoldersId') > -1 &&
+            emailRecord.get('groupwareEmailFoldersId') == currFolderId) {
             var index = store.findInsertIndex(emailRecord);
             store.insert(index, emailRecord.copy());
+        } else if (emailRecord.get('path') && emailRecord.get('path').length > 0) {
+            var parts = emailRecord.get('path'),
+                newPath = [], i = 0, len = parts.length,
+                node, path, index, newRecord;
+            for (; i < len; i++) {
+                newPath.push(parts[i]);
+            }
+            if (newPath[0] == 'root') {
+                newPath.shift();
+            }
+
+            path = '/root/' + newPath.join('/');
+
+            node = this.treePanel.getNodeById(this.clkNodeId);
+
+            if (node && node.getPath('idForPath') == path) {
+                index = store.findInsertIndex(emailRecord);
+                newRecord = emailRecord.copy();
+                newRecord.set('path', newPath);
+                store.insert(index, newRecord);
+            }
         }
-
-
     },
 
     /**
