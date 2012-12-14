@@ -52,4 +52,15 @@ interface AccountService {
      */
     public function getStandardMailAccount();
 
+    /**
+     * Returns the configured mail accounts for the user bound to this instance.
+     * Only those accounts which are not marked as deleted are returned.
+     *
+     * @return array of \Conjoon\Data\Entity\Mail\MailAccountEntity. The array
+     *         may be empty
+     *
+     * @throws AccountServiceException
+     */
+    public function getMailAccounts();
+
 }

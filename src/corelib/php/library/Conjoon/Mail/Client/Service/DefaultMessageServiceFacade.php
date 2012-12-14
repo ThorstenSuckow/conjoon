@@ -15,6 +15,13 @@
 
 namespace Conjoon\Mail\Client\Service;
 
+use Conjoon\Argument\ArgumentCheck;
+
+/**
+ * @see Conjoon\Argument\ArgumentCheck
+ */
+require_once 'Conjoon/Argument/ArgumentCheck.php';
+
 /**
  * @see MessageServiceFacade
  */
@@ -289,9 +296,20 @@ class DefaultMessageServiceFacade implements MessageServiceFacade {
     /**
      * @inheritdoc
      */
-    public function getMessageForReply($id, $path, \Conjoon\User\User $user)
+    public function getMessageForReply(
+        $id, $path, \Conjoon\User\User $user, $replyAll = false)
     {
         try {
+
+            $data = array('replyAll' => $replyAll);
+
+            ArgumentCheck::check(array(
+                'replyAll' => array(
+                    'type'      => 'boolean',
+                    'allowEmpty' => false
+            )), $data);
+
+            $replyAll = $data['replyAll'];
 
             /**
              * @see \Conjoon\Mail\Client\Folder\DefaultFolderPath
@@ -363,7 +381,7 @@ class DefaultMessageServiceFacade implements MessageServiceFacade {
             return new DefaultServiceResult(
                 $response,
                 new \Conjoon\Mail\Client\Service\ServicePatron\ReplyMessagePatron(
-                    $accountService
+                    $accountService, $replyAll
                 )
             );
 

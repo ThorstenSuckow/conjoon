@@ -168,5 +168,12 @@ class DefaultAccountService implements AccountService {
             $this->user);
     }
 
-
+    /**
+     * @inheritdoc
+     */
+    public function getMailAccounts()
+    {
+        return $this->mailAccountRepository->getMailAccounts(
+            $this->user);
+    }
 }

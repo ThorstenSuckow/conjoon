@@ -108,6 +108,14 @@ class DefaultMessageServiceFacadeTest extends
 
         $this->assertTrue($result instanceof ServiceResult);
         $this->assertTrue($result->isSuccess());
+
+        // $replyAll-> true
+        $result = $messageFacade->getMessageForReply(
+            "1", '["root","1","2"]', $this->user, true
+        );
+
+        $this->assertTrue($result instanceof ServiceResult);
+        $this->assertTrue($result->isSuccess());
     }
 
     public function testGetAttachment()
@@ -144,6 +152,11 @@ class DoctrineMailAccountRepositoryMock extends \Conjoon\Data\Repository\Mail\Do
     public function getStandardMailAccount(\Conjoon\User\User $user)
     {
         return new \Conjoon\Data\Entity\Mail\DefaultMailAccountEntity();
+    }
+
+    public function getMailAccounts(\Conjoon\User\User $user)
+    {
+        return array();
     }
 
 }

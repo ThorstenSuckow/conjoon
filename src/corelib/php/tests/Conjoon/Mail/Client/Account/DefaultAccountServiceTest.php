@@ -127,6 +127,12 @@ class DefaultAccountServiceTest extends \Conjoon\DatabaseTestCaseDefault {
         $this->assertSame(1, $this->service->getStandardMailAccount()->getId());
     }
 
+    public function testGetMailAccounts()
+    {
+        $this->assertTrue(is_array($this->service->getMailAccounts()));
+        $this->assertSame(1, count($this->service->getMailAccounts()));
+    }
+
 }
 
 class UserMock implements \Conjoon\User\User {

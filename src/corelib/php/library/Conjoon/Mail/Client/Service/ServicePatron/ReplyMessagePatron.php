@@ -16,7 +16,13 @@
 
 namespace Conjoon\Mail\Client\Service\ServicePatron;
 
-use Conjoon\Lang\MissingKeyException;
+use Conjoon\Lang\MissingKeyException,
+    Conjoon\Argument\ArgumentCheck;
+
+/**
+ * @see Conjoon\Argument\ArgumentCheck
+ */
+require_once 'Conjoon/Argument/ArgumentCheck.php';
 
 /**
  * @see \Conjoon\Lang\MissingKeyException
@@ -54,15 +60,35 @@ class ReplyMessagePatron
      */
     protected $identityParser;
 
+    /**
+     * @var boolean
+     */
+    protected $replyAll;
 
     /**
      * Creates a new instance of this class.
      *
      * @param \Conjoon\Mail\Client\Account\AccountService $accountService
+     * @param boolean $replyAll whether the patrong shpuld prepare the message
+     *                to reply to all recipients
+     *
+     * @throws \Conjoon\Argument\InvalidArgumentException
      */
     public function __construct(
-        \Conjoon\Mail\Client\Account\AccountService $accountService)
+        \Conjoon\Mail\Client\Account\AccountService $accountService,
+        $replyAll = false
+        )
     {
+        $data = array('replyAll' => $replyAll);
+
+        ArgumentCheck::check(array(
+            'replyAll' => array(
+                'type'      => 'boolean',
+                'allowEmpty' => false
+            )), $data);
+
+        $this->replyAll = $data['replyAll'];
+
         $this->accountService = $accountService;
     }
 
@@ -87,9 +113,19 @@ class ReplyMessagePatron
 
             $d['date'] = \Conjoon_Date_Format::utcToLocal($this->v('date', $d));
 
-            $d['to']  = $this->getToAddress($this->v('from', $d));
+            // build "cc" before "to" since "to" gets overwritten later on
+            $d['cc'] = $this->buildCcAddressList(
+                $this->v('cc', $d), $this->v('to', $d)
+            );
+
+            $d['to'] = $this->getToAddress(
+                $this->v('from', $d), $this->v('replyTo', $d)
+            );
+
             $d['bcc'] = array();
-            $d['cc']  = array();
+
+
+
 
             $d['attachments'] = array();
 
@@ -143,6 +179,45 @@ class ReplyMessagePatron
     }
 
 // -------- helper
+
+    /**
+     * @param string $cc
+     * @param string $to
+     *
+     * @return array
+     */
+    protected function buildCcAddressList($ccText, $toText)
+    {
+        if (!$this->replyAll) {
+            return array();
+        }
+
+        $cc = $this->buildAddresses($ccText);
+        $to = $this->buildAddresses($toText);
+
+        $accounts = $this->accountService->getMailAccounts();
+
+        $userAddresses = array();
+
+        for ($i = 0, $len = count($accounts); $i < $len; $i++) {
+            $userAddresses[] = $accounts[$i]->getAddress();
+        }
+
+        $merge = array();
+        for ($i = 0, $len = max(count($cc), count($to)); $i < $len; $i++) {
+            if (isset($cc[$i]) && !in_array($cc[$i]['address'], $userAddresses)) {
+                $merge[] = $cc[$i];
+            }
+            if (isset($to[$i]) && !in_array($to[$i]['address'], $userAddresses)) {
+                $merge[] = $to[$i];
+            }
+        }
+
+
+        return $merge;
+    }
+
+
 
     /**
      * @param string $text
@@ -208,7 +283,22 @@ class ReplyMessagePatron
      *
      * @return array
      */
-    protected function getToAddress($text)
+    protected function getToAddress($text, $replyToText)
+    {
+        if ($replyToText != "") {
+            $text = $replyToText;
+        }
+
+        return $this->buildAddresses($text);
+    }
+
+    /**
+     *
+     * @param string $text
+     *
+     * @return array
+     */
+    protected function buildAddresses($text)
     {
         if (!$this->identityParser) {
             /**
@@ -232,7 +322,6 @@ class ReplyMessagePatron
         }
 
         return $addresses;
-
     }
 
 }

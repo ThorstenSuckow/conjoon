@@ -62,13 +62,17 @@ interface MessageServiceFacade {
      *
      * @param mixed $id The id of the message that was requested
      * @param mixed $path A path to the folder where the message can be found
+     * @param boolean $replyAll If true, the message gets prepared to reply
+     *                to all recipients of the original message, otherwise just
+     *                for the sender of the original message
      * @param \Conjoon\User\User $user The user object representing the user
      *                                   who triggered this operation
      *
      *
      * @return GetMessageServiceResult
      */
-    public function getMessageForReply($id, $path, \Conjoon\User\User $user);
+    public function getMessageForReply(
+        $id, $path, \Conjoon\User\User $user, $replyAll = false);
 
     /**
      * Returns the attachment for downloading.

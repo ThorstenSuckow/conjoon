@@ -73,17 +73,18 @@ class ReplyMessagePatronTest extends \Conjoon\DatabaseTestCaseDefault {
                     )))));
 
         $this->input = array(
-            array(
+            'reply' => array(
+
                 'input' => array(
                     'message' => array(
                         'contentTextPlain' => 'sfasfajksfajkl',
                         'contentTextHtml' => '',
                         'date' => '',
-                        'to' => '',
+                        'to' => 'gocheckitoutyo@receivingreceiver.com',
                         'cc' => '',
                         'from' => 'Peter Parker <peter.parker@spiderman.com>',
                         'bcc' => '',
-                        'replyTo' => '',
+                        'replyTo' => 'secretaddress@peterparker.com',
                         'subject' => 'Subject',
                         'messageId' => '<messageId>',
                         'references' => '<reference1> <reference2>',
@@ -95,10 +96,12 @@ class ReplyMessagePatronTest extends \Conjoon\DatabaseTestCaseDefault {
                         'contentTextPlain' => '<blockquote>sfasfajksfajkl</blockquote>',
                         'contentTextHtml' => '',
                         'date' => '1970-01-01 00:00:00',
-                        'to' => array(array(
-                            'name'    => 'Peter Parker',
-                            'address' => 'peter.parker@spiderman.com'
-                        )),
+                        'to' => array(
+                            array(
+                                'address' => 'secretaddress@peterparker.com',
+                                'name'    => ''
+                            )
+                        ),
                         'cc' => array(),
                         'bcc' => array(),
                         'subject' => 'Re: Subject',
@@ -108,11 +111,72 @@ class ReplyMessagePatronTest extends \Conjoon\DatabaseTestCaseDefault {
                         'groupwareEmailAccountsId' => 1
                     )
                 )
-            )
-        );
+
+        ),
+            'replyAll' => array(
+
+                    'input' => array(
+                        'message' => array(
+                            'contentTextPlain' => 'sfasfajksfajkl',
+                            'contentTextHtml' => '',
+                            'date' => '',
+                            'to' => 'Local Local <local@somedomain.com>',
+                            'cc' => 'yeahthisaddressshouldprettymuchnotappearinthegeneratedmessage@orly.com, IMIN@inaddress.com, Peter Griffin <peter.griffin@familyguy.com>',
+                            'from' => 'Peter Parker <peter.parker@spiderman.com>',
+                            'bcc' => '',
+                            'replyTo' => '',
+                            'subject' => 'Subject',
+                            'messageId' => '<messageId>',
+                            'references' => '<reference1> <reference2>',
+                            'attachments' => array()
+                        )
+                    ),
+                    'output' => array(
+                        'draft' => array(
+                            'contentTextPlain' => '<blockquote>sfasfajksfajkl</blockquote>',
+                            'contentTextHtml' => '',
+                            'date' => '1970-01-01 00:00:00',
+                            'to' => array(array(
+                                'name'    => 'Peter Parker',
+                                'address' => 'peter.parker@spiderman.com'
+                            )),
+                            'cc' => array(
+                                array(
+                                    'name'    => 'Local Local',
+                                    'address' => 'local@somedomain.com'
+                                ),
+                                array(
+                                    'name'    => '',
+                                    'address' => 'IMIN@inaddress.com'
+                                ),
+                                array(
+                                    'name'    => 'Peter Griffin',
+                                    'address' => 'peter.griffin@familyguy.com'
+                                )
+                            ),
+                            'bcc' => array(),
+                            'subject' => 'Re: Subject',
+                            'attachments' => array(),
+                            'inReplyTo' => '<messageId>',
+                            'references' => '<reference1> <reference2> <messageId>',
+                            'groupwareEmailAccountsId' => 1
+                        )
+                    )
+
+            ));
 
         $this->patron = new ReplyMessagePatron(
             $this->service
+        );
+    }
+
+    /**
+     * @expectedException \Conjoon\Argument\InvalidArgumentException
+     */
+    public function testConstructor_Exception()
+    {
+        new ReplyMessagePatron(
+            $this->service, array()
         );
     }
 
@@ -129,11 +193,60 @@ class ReplyMessagePatronTest extends \Conjoon\DatabaseTestCaseDefault {
     /**
      * Ensures everything works as expected.
      */
-    public function testOk()
+    public function testReplyOk_NoArgument()
     {
+        $patron = new ReplyMessagePatron(
+            $this->service
+        );
+
         $this->assertEquals(
-            $this->input[0]['output'],
-            $this->patron->applyForData($this->input[0]['input'])
+            $this->input['reply']['output'],
+            $patron->applyForData($this->input['reply']['input'])
+        );
+    }
+
+    /**
+     * Ensures everything works as expected.
+     */
+    public function testReplyOk_Argument()
+    {
+        $patron = new ReplyMessagePatron(
+            $this->service, false
+        );
+
+        $this->assertEquals(
+            $this->input['reply']['output'],
+            $patron->applyForData($this->input['reply']['input'])
+        );
+    }
+
+    /**
+     * Ensures everything works as expected.
+     */
+    public function testReplyAllOk()
+    {
+        $patron = new ReplyMessagePatron(
+            $this->service, true
+        );
+
+        $this->assertEquals(
+            $this->input['replyAll']['output'],
+            $patron->applyForData($this->input['replyAll']['input'])
+        );
+    }
+
+    /**
+     * Ensures everything works as expected.
+     */
+    public function testReplyOk_False()
+    {
+        $patron = new ReplyMessagePatron(
+            $this->service, true
+        );
+
+        $this->assertNotEquals(
+            $this->input['reply']['output'],
+            $patron->applyForData($this->input['reply']['input'])
         );
     }
 
