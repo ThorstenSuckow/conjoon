@@ -101,7 +101,7 @@ class DefaultMessageServiceFacadeTest extends
 
         $messageFacade = new DefaultMessageServiceFacade($defaultServer,
             $this->mailAccountRepository, $this->mailFolderRepository);
-        $result = $messageFacade->getMessage(
+        $result = $messageFacade->getMessageForReply(
             "1", '["root","1","2"]', $this->user
 
         );
@@ -139,6 +139,11 @@ class DoctrineMailAccountRepositoryMock extends \Conjoon\Data\Repository\Mail\Do
     public function __construct()
     {
 
+    }
+
+    public function getStandardMailAccount(\Conjoon\User\User $user)
+    {
+        return new \Conjoon\Data\Entity\Mail\DefaultMailAccountEntity();
     }
 
 }
