@@ -50,7 +50,7 @@ class ArgumentCheck {
 
             if (!$isSettingAvailable && $isMandatory) {
                 throw new InvalidArgumentException(
-                    "\"$argumentName\" does not exist in data"
+                    "\"$argumentName\" is mandatory, but does not exist in data"
                 );
             } else if (!$isSettingAvailable && !$isMandatory) {
                 return;
@@ -112,10 +112,17 @@ class ArgumentCheck {
                     }
                     break;
 
-
+                case 'boolean':
                 case 'bool':
+
+                    if (!is_bool($data[$argumentName])) {
+                        throw new InvalidArgumentException(
+                            "No boolean value passed for $argumentName"
+                        );
+                    }
+
                     if (isset($data[$argumentName])) {
-                        $data[$argumentName] = (bool)$data[$argumentName];
+                        $data[$argumentName] = (bool) $data[$argumentName];
                     } else if ($allowEmpty === false) {
                         throw new InvalidArgumentException(
                             "no argument provided for $argumentName"

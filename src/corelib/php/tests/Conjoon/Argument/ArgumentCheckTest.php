@@ -40,6 +40,51 @@ class ArgumentCheckTest extends \PHPUnit_Framework_TestCase {
     public function setUp()
     {
         $this->_checks = array(
+            'testBool' => array(
+                'testFor' => array(
+                    'fail' => array(
+                        // first test
+                        array(
+                            array(
+                                'input' => array(
+                                    'type'       => 'bool',
+                                    'allowEmpty' => false
+                                )),
+                            array(
+                                new \stdClass,
+                                array(),
+                                "",
+                                null,
+                                1,
+                                0,
+                                "1",
+                                "0"
+                            ))),
+                    'success' => array(
+                        // first test
+                        array(
+                            array(
+                                'input' => array(
+                                    'type'       => 'bool',
+                                    'allowEmpty' => false
+                                )),
+                            array(
+                                true,
+                                false
+                            )),
+                        array(
+                            array(
+                                'input' => array(
+                                    'type'       => 'bool',
+                                    'allowEmpty' => true
+                                )),
+                            array(
+                                true,
+                                false
+                            ))
+                    )
+                )
+            ),
             'testString' => array(
                 'testFor' => array(
                     'fail' => array(
@@ -180,6 +225,60 @@ class ArgumentCheckTest extends \PHPUnit_Framework_TestCase {
                 'mandatory'  => false
             )
         ), $data);
+    }
+
+    /**
+     * Ensures everything works as expected
+     *
+     * @ticket CN-704
+     */
+    public function testBooleanException()
+    {
+        $tests = $this->_checks['testBool']['testFor']['fail'];
+
+        for ($i = 0, $len = count($tests); $i < $len; $i++) {
+            $rule   = $tests[$i][0];
+            $inputs = $tests[$i][1];
+
+            for ($a = 0, $lena = count($inputs); $a < $lena; $a++) {
+                $in = array('input' => $inputs[$a]);
+
+                try {
+                    ArgumentCheck::check($rule, $in);
+                } catch (\Exception $e) {
+                    $this->assertTrue($e instanceof InvalidArgumentException);
+                    continue;
+                }
+
+                $this->fail(
+                    "No InvalidArgumentException thrown for "
+                        . "test $i and input $a"
+                );
+            }
+        }
+    }
+
+    /**
+     * Ensures everything works as expected
+     *
+     * @ticket CN-704
+     */
+    public function testBooleanSuccess()
+    {
+        $tests = $this->_checks['testBool']['testFor']['success'];
+
+        for ($i = 0, $len = count($tests); $i < $len; $i++) {
+            $rule   = $tests[$i][0];
+            $inputs = $tests[$i][1];
+
+            for ($a = 0, $lena = count($inputs); $a < $lena; $a++) {
+                $in = array('input' => $inputs[$a]);
+
+                ArgumentCheck::check($rule, $in);
+
+                $this->assertSame($in['input'], $inputs[$a]);
+            }
+        }
     }
 
     /**
