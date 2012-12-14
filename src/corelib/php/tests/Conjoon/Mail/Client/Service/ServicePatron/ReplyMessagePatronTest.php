@@ -99,6 +99,8 @@ class ReplyMessagePatronTest extends \Conjoon\DatabaseTestCaseDefault {
                             'name'    => 'Peter Parker',
                             'address' => 'peter.parker@spiderman.com'
                         )),
+                        'cc' => array(),
+                        'bcc' => array(),
                         'subject' => 'Re: Subject',
                         'attachments' => array(),
                         'inReplyTo' => '<messageId>',
