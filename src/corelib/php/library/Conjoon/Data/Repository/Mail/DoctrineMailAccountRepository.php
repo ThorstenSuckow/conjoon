@@ -55,11 +55,13 @@ class DoctrineMailAccountRepository
 
         $query = $em->createQuery(
             "SELECT a FROM \Conjoon\Data\Entity\Mail\DefaultMailAccountEntity a "
-            . " WHERE a.user = ?1 "
+            . ",\Conjoon\Data\Entity\User\DefaultUserEntity u"
+            . " WHERE u.id = ?1 "
+            . " AND a.user = u "
             . " AND a.isStandard = ?2 "
             . " AND a.isDeleted = ?3"
         );
-        $query->setParameter(1, $user);
+        $query->setParameter(1, $user->getId());
         $query->setParameter(2, true);
         $query->setParameter(3, false);
 
@@ -80,11 +82,13 @@ class DoctrineMailAccountRepository
         $em = $this->getEntityManager();
 
         $query = $em->createQuery(
-            "SELECT a FROM \Conjoon\Data\Entity\Mail\DefaultMailAccountEntity a "
-                . " WHERE a.user = ?1 "
+            "SELECT a FROM \Conjoon\Data\Entity\Mail\DefaultMailAccountEntity a"
+             . ",\Conjoon\Data\Entity\User\DefaultUserEntity u"
+                . " WHERE u.id = ?1 "
+                . " AND a.user=u "
                 . " AND a.isDeleted = ?2"
         );
-        $query->setParameter(1, $user);
+        $query->setParameter(1, $user->getId());
         $query->setParameter(2, false);
 
         try {
