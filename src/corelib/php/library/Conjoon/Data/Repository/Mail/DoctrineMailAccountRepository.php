@@ -57,9 +57,11 @@ class DoctrineMailAccountRepository
             "SELECT a FROM \Conjoon\Data\Entity\Mail\DefaultMailAccountEntity a "
             . " WHERE a.user = ?1 "
             . " AND a.isStandard = ?2 "
+            . " AND a.isDeleted = ?3"
         );
         $query->setParameter(1, $user);
         $query->setParameter(2, true);
+        $query->setParameter(3, false);
 
         try {
             $res = $query->getSingleResult();

@@ -53,7 +53,7 @@ class DoctrineMailAccountRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
 
 
         $this->assertEquals(
-            2,
+            3,
             $this->getConnection()->getRowCount('groupware_email_accounts'),
             "Pre-Condition"
         );
@@ -88,8 +88,26 @@ class DoctrineMailAccountRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
         $entity = $this->repository->getStandardMailAccount($user);
 
         $this->assertNull($entity);
+    }
 
+    /**
+     * Ensures everathing works as expected.
+     *
+     * @ticket CN-705
+     */
+    public function testGetStandardMail_AccountMarkedDeleted()
+    {
+        $tmp  = $this->repository->findById(3);
+        $user = $tmp->getUser();
 
+        $account = $this->repository->findById(3);
+
+        $this->assertSame(3, $account->getUser()->getId());
+        $this->assertTrue($account->getIsDeleted());
+
+        $entity = $this->repository->getStandardMailAccount($user);
+
+        $this->assertNull(null, $entity);
     }
 
     /**
@@ -158,14 +176,14 @@ class DoctrineMailAccountRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
         // PERSIST
         $this->repository->persist($entity);
 
-        $this->assertEquals(2,
+        $this->assertEquals(3,
             $this->getConnection()->getRowCount('groupware_email_accounts'),
             "Post-Condition"
         );
 
         $this->repository->flush();
 
-        $this->assertEquals(3,
+        $this->assertEquals(4,
             $this->getConnection()->getRowCount('groupware_email_accounts'),
             "Post-Condition"
         );
@@ -184,7 +202,7 @@ class DoctrineMailAccountRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
         $this->repository->persist($entity);
 
         $this->assertEquals(
-            2,
+            3,
             $this->getConnection()->getRowCount('groupware_email_accounts'),
             "Pre-Condition"
         );
