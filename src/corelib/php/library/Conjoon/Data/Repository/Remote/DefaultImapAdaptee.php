@@ -157,10 +157,10 @@ class DefaultImapAdaptee extends AbstractImapAdaptee  {
     /**
      * @inheritdoc
      */
-    protected function _getMessage($messageId)
+    protected function _getMessage($uId)
     {
         try {
-            $num = $this->storage->getNumberByUniqueId($messageId);
+            $num = $this->storage->getNumberByUniqueId($uId);
 
             $result = $this->protocol->fetch(
                 array('RFC822.HEADER', 'RFC822.TEXT'), $num

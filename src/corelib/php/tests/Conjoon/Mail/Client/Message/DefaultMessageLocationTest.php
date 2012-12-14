@@ -61,7 +61,7 @@ class DefaultMessageLocationTest extends \PHPUnit_Framework_TestCase {
         $loc = new DefaultMessageLocation($this->folder, 1);
 
         $this->assertSame($this->folder, $loc->getFolder());
-        $this->assertSame("1", $loc->getMessageId());
+        $this->assertSame("1", $loc->getUId());
 
     }
 

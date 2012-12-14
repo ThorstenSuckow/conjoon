@@ -88,7 +88,7 @@ class Groupware_FileController extends Zend_Controller_Action {
         $type   = $this->_request->getParam('type');
         $name   = $this->_request->getParam('name');
 
-        $messageId = $this->_request->getParam('messageId');
+        $uId = $this->_request->getParam('uId');
         $path      = $this->_request->getParam('path');
 
         $data = null;
@@ -101,7 +101,7 @@ class Groupware_FileController extends Zend_Controller_Action {
 
         if ($type == 'emailAttachment') {
 
-            if ($path && $messageId && $id <= 0) {
+            if ($path && $uId && $id <= 0) {
 
                 // check if folder is remote folder
                 /**
@@ -121,7 +121,7 @@ class Groupware_FileController extends Zend_Controller_Action {
                 $facade = Conjoon_Modules_Groupware_Email_Folder_Facade::getInstance();
 
                 if ($facade->isRemoteFolder($pathInfo['rootId'])) {
-                    $data = $this->getAttachmentFromRemoteServer($key, $messageId, $path);
+                    $data = $this->getAttachmentFromRemoteServer($key, $uId, $path);
                 }
 
             } else {
@@ -287,10 +287,10 @@ class Groupware_FileController extends Zend_Controller_Action {
      * server.
      *
      * @param string $key The key of the attachment
-     * @param string $messageId The message id of the message
+     * @param string $uId The message id of the message
      * @param string $path The json encoded path where the message can be found
      */
-    protected function getAttachmentFromRemoteServer($key, $messageId, $path)
+    protected function getAttachmentFromRemoteServer($key, $uId, $path)
     {
         /**
          * @see Zend_Registry
@@ -315,11 +315,13 @@ class Groupware_FileController extends Zend_Controller_Action {
 
         $mailFolderRepository =
             $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
-        $mesageFlagRepository =
+        $mailAccountRepository =
+            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMailAccountEntity');
+        $messageFlagRepository =
             $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMessageFlagEntity');
 
         $protocolAdaptee = new \Conjoon\Mail\Server\Protocol\DefaultProtocolAdaptee(
-            $mailFolderRepository, $mesageFlagRepository
+            $mailFolderRepository, $messageFlagRepository, $mailAccountRepository
         );
 
         /**
@@ -341,11 +343,11 @@ class Groupware_FileController extends Zend_Controller_Action {
         require_once 'Conjoon/Mail/Client/Service/DefaultMessageServiceFacade.php';
 
         $serviceFacade = new \Conjoon\Mail\Client\Service\DefaultMessageServiceFacade(
-            $server
+            $server, $mailAccountRepository, $mailFolderRepository
         );
 
 
-        $result = $serviceFacade->getAttachment($key, $messageId, $path, $appUser);
+        $result = $serviceFacade->getAttachment($key, $uId, $path, $appUser);
 
         if ($result->isSuccess()) {
             return $result->getData();

@@ -141,7 +141,7 @@ class ImapMessageRepository extends DefaultImapRepository
 
         $connection->selectFolder($messageLocation->getFolder());
 
-        $message = $connection->getMessage($messageLocation->getMessageId());
+        $message = $connection->getMessage($messageLocation->getUId());
 
         if ($message == null) {
             return null;

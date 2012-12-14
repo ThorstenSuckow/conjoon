@@ -95,7 +95,7 @@ class SimpleImapAdaptee extends AbstractImapAdaptee {
     /**
      * @inheritdoc
      */
-    protected function _getMessage($messageId)
+    protected function _getMessage($uId)
     {
         return array(
             'header' => "HEADER",

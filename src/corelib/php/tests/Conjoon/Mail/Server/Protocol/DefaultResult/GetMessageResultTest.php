@@ -52,6 +52,7 @@ class GetMessageResultTest extends \PHPUnit_Framework_TestCase {
         $entity->setReferences('references');
         $entity->setContentTextPlain('contentTextPlain');
         $entity->setContentTextHtml('contentTextHtml');
+        $entity->setMessageId('<messageId>');
 
         $successResult = new GetMessageResult(
             $entity,
@@ -67,7 +68,7 @@ class GetMessageResultTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(
             array(
                 'message' => array(
-                    'messageId' => "1",
+                    'uId'        => "1",
                     'path'       => array('1', '2'),
                     'date'       => '1970-01-01 00:00:00',
                     'subject'    => 'subject',
@@ -78,6 +79,7 @@ class GetMessageResultTest extends \PHPUnit_Framework_TestCase {
                     'replyTo'    => 'replyTo@replyTo.replyTo',
                     'inReplyTo'  => 'inReplyTo@inReplyTo.inReplyTo',
                     'references' => 'references',
+                    'messageId'  => '<messageId>',
                     'contentTextHtml'  => 'contentTextHtml',
                     'contentTextPlain' => 'contentTextPlain',
                     'attachments'      => array()

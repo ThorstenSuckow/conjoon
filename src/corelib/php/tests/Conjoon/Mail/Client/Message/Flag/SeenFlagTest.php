@@ -33,7 +33,7 @@ class SeenFlagTest extends \PHPUnit_Framework_TestCase {
     protected function setUp()
     {
         $this->_input = array(
-            'messageId' => "hklhkl",
+            'uId' => "hklhkl",
             'clear'     => true
         );
     }
@@ -52,12 +52,12 @@ class SeenFlagTest extends \PHPUnit_Framework_TestCase {
     public function testConstructOk()
     {
         $flag = new SeenFlag(
-            $this->_input['messageId'],
+            $this->_input['uId'],
             $this->_input['clear']
         );
 
         $this->assertSame('\Seen', $flag->__toString());
-        $this->assertSame($this->_input['messageId'], $flag->getMessageId());
+        $this->assertSame($this->_input['uId'], $flag->getUId());
         $this->assertSame($this->_input['clear'], $flag->isClear());
 
     }

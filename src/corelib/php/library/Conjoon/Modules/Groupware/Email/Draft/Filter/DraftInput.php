@@ -70,7 +70,7 @@ class Conjoon_Modules_Groupware_Email_Draft_Filter_DraftInput extends Conjoon_Fi
             'type',
             'attachments',
             'removedAttachments',
-            'referencedData',
+             'referencedData',
             'path'
         ),
         self::CONTEXT_DRAFT => array(
@@ -214,7 +214,7 @@ class Conjoon_Modules_Groupware_Email_Draft_Filter_DraftInput extends Conjoon_Fi
             array('GreaterThan', 0)
          ),
         'referencedData' => array(
-            'allowEmpty' => false
+            'allowEmpty' => true
         ),
         'path' => array(
             'allowEmpty' => false
@@ -236,7 +236,10 @@ class Conjoon_Modules_Groupware_Email_Draft_Filter_DraftInput extends Conjoon_Fi
             new Conjoon_Modules_Groupware_Email_Draft_Filter_DraftFormatFilter()
         );
 
-        if ($this->_context == self::CONTEXT_CREATE && !empty($this->_data) && $this->_data['to'] == "" && $this->_data['cc'] == "" && $this->_data['bcc'] == "") {
+        if ($this->_context == self::CONTEXT_CREATE
+            && !empty($this->_data)
+            && $this->_data['to'] == ""
+            && $this->_data['cc'] == "" && $this->_data['bcc'] == "") {
             $this->_validators['to']['allowEmpty'] = false;
         }
 

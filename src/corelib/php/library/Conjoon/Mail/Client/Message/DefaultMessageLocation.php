@@ -84,7 +84,7 @@ class DefaultMessageLocation implements MessageLocation {
     /**
      * @inheritdoc
      */
-    public function getMessageId()
+    public function getUId()
     {
         return $this->id;
     }

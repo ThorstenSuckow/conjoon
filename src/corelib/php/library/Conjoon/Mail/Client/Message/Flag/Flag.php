@@ -31,7 +31,7 @@ abstract class Flag implements \Conjoon\Mail\Message\Flag\MessageFlag{
     /**
      * @var string
      */
-    protected $_messageId;
+    protected $_uId;
 
     /**
      * @var bool
@@ -41,16 +41,16 @@ abstract class Flag implements \Conjoon\Mail\Message\Flag\MessageFlag{
     /**
      * Constructs a new instance of this class.
      *
-     * @param string $messageId
+     * @param string $uId
      * @param bool $clear whether the flag represented by this class
      * should be removed, or not
      *
      * @throws Conjoon_Argument_Exception if either $meesageId or $clear
      * did not evaluate to the expected types.
      */
-    public function __construct($messageId, $clear = false)
+    public function __construct($uId, $clear = false)
     {
-        $data = array('messageId' => $messageId, 'clear' => $clear);
+        $data = array('uId' => $uId, 'clear' => $clear);
 
         /**
          * @see Conjoon_Argument_Check
@@ -58,7 +58,7 @@ abstract class Flag implements \Conjoon\Mail\Message\Flag\MessageFlag{
         require_once 'Conjoon/Argument/Check.php';
 
         \Conjoon_Argument_Check::check(array(
-            'messageId' => array(
+            'uId' => array(
                 'type'       => 'string',
                 'allowEmpty' => false
             ),
@@ -68,16 +68,16 @@ abstract class Flag implements \Conjoon\Mail\Message\Flag\MessageFlag{
             ),
         ), $data);
 
-        $this->_messageId = $data['messageId'];
+        $this->_uId = $data['uId'];
         $this->_clear     = $data['clear'];
     }
 
     /**
      * @inheritdoc
      */
-    public function getMessageId()
+    public function getUId()
     {
-        return $this->_messageId;
+        return $this->_uId;
     }
 
     /**

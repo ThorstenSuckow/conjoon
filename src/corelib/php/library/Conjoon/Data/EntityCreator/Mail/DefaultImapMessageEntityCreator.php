@@ -59,6 +59,7 @@ class DefaultImapMessageEntityCreator implements ImapMessageEntityCreator {
 
         $message = new \Conjoon\Data\Entity\Mail\ImapMessageEntity();
 
+        $message->setMessageId($header['messageId']);
         $message->setDate($header['date']);
         $message->setSubject($header['subject']);
         $message->setTo($header['to']);

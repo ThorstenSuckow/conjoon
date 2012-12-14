@@ -40,7 +40,7 @@ interface MessageLocation {
      *
      * @return mixed
      */
-    public function getMessageId();
+    public function getUId();
 
 }
 

@@ -1040,7 +1040,7 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
             rec         = store.getById(id),
             rec         = rec
                           ? rec
-                          : store.getById(emailRecord.get('messageId'));
+                          : store.getById(emailRecord.get('uId'));
 
         if (rec) {
             this.setItemsAsRead([rec], true);

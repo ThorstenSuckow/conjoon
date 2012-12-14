@@ -91,6 +91,11 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
              $this->view->item    = null;
              return;
         }
+        // input filter does not work properly sometimes with refrenced data
+        // check here for referencedData, throw an exception if not set
+        if (!isset($data['referencedData']) || !is_array($data['referencedData'])) {
+            throw new Exception("referencedData missing.");
+        }
 
         /**
          * @see Conjoon_Modules_Groupware_Email_Address
@@ -245,9 +250,10 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
 
         $isRemoteItemReferenced = false;
 
-        if (!empty($referencedData)) {
+        if (!empty($referencedData) && isset($referencedData['uId']) &&
+            $referencedData['uId'] > 0) {
 
-            $messageId      = $referencedData['messageId'];
+            $uId            = $referencedData['uId'];
             $referencedPath = $referencedData['path'];
 
             // check if folder is remote folder
@@ -295,7 +301,8 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
                 $storage = new Conjoon_Mail_Storage_Imap($protocol);
 
                 // get the number of the message by it's unique id
-                $messageNumber = $storage->getNumberByUniqueId($messageId);
+                $storage->selectFolder($globalName);
+                $messageNumber = $storage->getNumberByUniqueId($uId);
 
                 $storage->setFlags($messageNumber, array('\Seen', '\Answered'));
 
@@ -328,8 +335,6 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
              *@see Conjoon_Keys
              */
             require_once 'Conjoon/Keys.php';
-
-            $respData = array();
 
             $entityManager = Zend_Registry::get(Conjoon_Keys::DOCTRINE_ENTITY_MANAGER);
 
@@ -381,7 +386,6 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
                     if ($lastMessage == -1) {
                         throw new RuntimeException("Could not find message id.");
                     }
-                    $uId = $storage->getUniqueId($lastMessage);
 
                     // immediately setting the \Seen flag does not seemt
                     // to work. Do so by hand.
@@ -413,9 +417,11 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
             // check here if a remote item was referenced.
             // if this is not the case, get the local itemand update it's
             // references
-            if (!$isRemoteItemReferenced && !$referencedRemoteItem) {
+            if (!$isRemoteItemReferenced && !$referencedRemoteItem &&
+                isset($referencedData) &&  isset($referencedData['uId'])
+                && $referencedData['uId'] > 0) {
 
-                $messageId   = $referencedData['messageId'];
+                $uId         = $referencedData['uId'];
                 $localFolder = $referencedData['path'][count($referencedData['path']) -1 ];
 
                 /**
@@ -426,7 +432,7 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
                 $iModel = new Conjoon_Modules_Groupware_Email_Item_Model_Item();
 
                 $iModel->updateReferenceFromARemoteItem(
-                    $messageId, $localFolder, $userId, $data['type']);
+                    $uId, $localFolder, $userId, $data['type']);
 
                 /**
                  * @see Conjoon_Modules_Groupware_Email_Item_Filter_ItemResponse
@@ -446,7 +452,7 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
                 );
 
                 $contextReferencedItem = $itemDecorator->getItemForUserAsDto(
-                    $messageId, $userId
+                    $uId, $userId
                 );
             }
 
@@ -479,7 +485,7 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
 
         $item = $itemDecorator->saveSentEmailAsDto(
             $message, $account, $userId, $mail, $data['type'],
-            ($referencedRemoteItem ? -1 : $data['referencedData']['messageId']),
+            ($referencedRemoteItem ? -1 : $data['referencedData']['uId']),
             $postedAttachments,
             $removeAttachmentIds
         );

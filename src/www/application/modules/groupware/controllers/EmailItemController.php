@@ -760,12 +760,12 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
      * Helper function for fetching a single email message from a remote
      * server.
      *
-     * @param string $messageId The id of the message
+     * @param string $uId The id of the message
      * @param string $path The json encoded path where the message can be found
      *
      *
      */
-    protected function getMessageFromRemoteServer($messageId, $path)
+    protected function getMessageFromRemoteServer($uId, $path)
     {
         /**
          * @see Zend_Registry

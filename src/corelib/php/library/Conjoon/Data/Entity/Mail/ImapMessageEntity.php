@@ -35,6 +35,11 @@ class ImapMessageEntity extends AbstractMessageEntity {
      */
     protected $messageAttachments;
 
+    /**
+     * @var string
+     */
+    protected $messageId;
+
     public function __construct()
     {
         parent::__construct();
@@ -59,6 +64,18 @@ class ImapMessageEntity extends AbstractMessageEntity {
     public function getMessageAttachments()
     {
         return $this->messageAttachments;
+    }
+
+    public function setMessageId($messageId)
+    {
+        $this->messageId = $messageId;
+
+        return $this;
+    }
+
+    public function getMessageId()
+    {
+        return $this->messageId;
     }
 
 }

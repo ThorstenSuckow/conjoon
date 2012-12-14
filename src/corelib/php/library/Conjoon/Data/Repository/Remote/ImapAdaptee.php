@@ -91,7 +91,7 @@ interface ImapAdaptee  {
      *
      * @throws \Conjoon\Argument\InvalidArgumentException
      */
-    public function getMessage($messageId);
+    public function getMessage($uId);
 
     /**
      * Logs the user out and disconnects from the server.

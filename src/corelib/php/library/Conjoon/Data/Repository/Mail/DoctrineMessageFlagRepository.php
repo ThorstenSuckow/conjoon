@@ -64,7 +64,7 @@ class DoctrineMessageFlagRepository
      * Override so the composite key containing the messageId and the
      * userId can be passed.
      *
-     * @param array $id An assoc array containing the messageId and the userId
+     * @param array $id An assoc array containing the uId and the userId
      * of the flag to query.
      *
      */
@@ -76,14 +76,14 @@ class DoctrineMessageFlagRepository
             'id' => array(
                 'type'       => 'array',
                 'allowEmpty' => false,
-                'inArray'    => array('messageId', 'userId')
+                'inArray'    => array('uId', 'userId')
             )
         ), $data);
 
         $id = $data['id'];
 
         ArgumentCheck::check(array(
-            'messageId' => array(
+            'uId' => array(
                 'type'        => 'int',
                 'allowEmpty'  => false,
                 'greaterThan' => 0
@@ -96,11 +96,11 @@ class DoctrineMessageFlagRepository
         ), $id);
 
 
-        $messageId = $id['messageId'];
+        $uId = $id['uId'];
         $userId    = $id['userId'];
 
         $entity = $this->find(array(
-            'groupwareEmailItems' => $messageId,
+            'groupwareEmailItems' => $uId,
             'users'               => $userId
         ));
 
@@ -150,14 +150,14 @@ class DoctrineMessageFlagRepository
         $flags = $folderFlagCollection->getFlagCollection()->getFlags();
 
         for ($i = 0, $len = count($flags); $i < $len; $i++) {
-            $messageId  = $flags[$i]->getMessageId();
+            $uId  = $flags[$i]->getUId();
             $clear      = $flags[$i]->isClear();
 
             switch (true) {
                 case ($flags[$i]->__toString() === '\Seen'):
                         try {
                             $isRead = !$clear;
-                            $flagModel->flagItemAsRead($messageId, $userId, $isRead);
+                            $flagModel->flagItemAsRead($uId, $userId, $isRead);
                         } catch (\Exception $e) {
                             throw new MailRepositoryException(
                                 "Exception thrown by previous exception: "
@@ -169,7 +169,7 @@ class DoctrineMessageFlagRepository
                 case ($flags[$i]->__toString() === '$Junk'):
                     try {
                         $isSpam = !$clear;
-                        $flagModel->flagItemAsSpam($messageId, $userId, $isSpam);
+                        $flagModel->flagItemAsSpam($uId, $userId, $isSpam);
                     } catch (\Exception $e) {
                         throw new MailRepositoryException(
                             "Exception thrown by previous exception: "
@@ -180,7 +180,7 @@ class DoctrineMessageFlagRepository
 
                 case ($flags[$i]->__toString() === '$NotJunk'):
                     try {
-                        $flagModel->flagItemAsSpam($messageId, $userId, false);
+                        $flagModel->flagItemAsSpam($uId, $userId, false);
                     } catch (\Exception $e) {
                         throw new MailRepositoryException(
                             "Exception thrown by previous exception: "

@@ -127,14 +127,14 @@ class DefaultImapConnection implements ImapConnection {
                     case ($messageFlag instanceof \Conjoon\Mail\Message\Flag\JunkFlag
                           && !$messageFlag->isClear()):
                         $removeFlag = new \Conjoon\Mail\Client\Message\Flag\NotJunkFlag(
-                            $messageFlag->getMessageId(), true
+                            $messageFlag->getUId(), true
                         );
                     break;
 
                     case ($messageFlag instanceof \Conjoon\Mail\Message\Flag\NotJunkFlag
                           && !$messageFlag->isClear()):
                         $removeFlag = new \Conjoon\Mail\Client\Message\Flag\JunkFlag(
-                            $messageFlag->getMessageId(), true
+                            $messageFlag->getUId(), true
                         );
                         break;
                 }
@@ -142,14 +142,14 @@ class DefaultImapConnection implements ImapConnection {
                 if ($removeFlag) {
                     $this->imapAdaptee->setFlag(
                         $removeFlag->__toString(),
-                        $removeFlag->getMessageId(),
+                        $removeFlag->getUId(),
                         '-'
                     );
                 }
 
                 $this->imapAdaptee->setFlag(
                     $messageFlag->__toString(),
-                    $messageFlag->getMessageId(),
+                    $messageFlag->getUId(),
                     ($messageFlag->isClear() ? '-' : '+')
                 );
             } catch (InvalidArgumentException $e) {
@@ -166,10 +166,10 @@ class DefaultImapConnection implements ImapConnection {
     /**
      * @inheritdoc
      */
-    public function getMessage($messageId)
+    public function getMessage($uId)
     {
         try {
-            return $this->imapAdaptee->getMessage($messageId);
+            return $this->imapAdaptee->getMessage($uId);
         } catch (InvalidArgumentException $e) {
             throw new ImapConnectionException(
                 "Exception thrown by previous exception: " . $e->getMessage(),

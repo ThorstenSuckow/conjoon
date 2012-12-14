@@ -31,7 +31,7 @@ interface MessageFlag  {
      *
      * @return string
      */
-    public function getMessageId();
+    public function getUId();
 
     /**
      * Returns whether the flag should be removed.

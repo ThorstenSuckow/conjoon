@@ -114,7 +114,7 @@ class DefaultFlagCollectionTest extends \PHPUnit_Framework_TestCase {
                     }
                 }
 
-                $this->assertSame($output[$i][0], $flags[$i]->getMessageId());
+                $this->assertSame($output[$i][0], $flags[$i]->getUId());
             }
 
             $a++;

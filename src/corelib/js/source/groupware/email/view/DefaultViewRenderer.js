@@ -381,7 +381,7 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
             attachments = data.attachments,
             isPlainText = data.isPlainText,
             path        = data.path,
-            messageId   = data.messageId;
+            uId         = data.uId;
 
         var ts = this.templates;
 
@@ -439,7 +439,7 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
                     attachmentId    : attachmentId,
                     attachmentKey   : attachments[i].key,
                     attachmentPath  : attachmentPath,
-                    messageId       : messageId,
+                    uId             : uId,
                     name            : attachments[i].fileName
                 };
 
@@ -487,20 +487,12 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
 
                 com.conjoon.groupware.DownloadManager.downloadEmailAttachment(
                         data.attachmentId, data.attachmentKey,
-                        data.name, data.messageId, data.attachmentPath
+                        data.name, data.uId, data.attachmentPath
                 );
 
             }, this, {
                 delegate : 'div.com-conjoon-groupware-email-EmailView-attachmentItem'
             })
-
-            /*this.attachmentData.attachmentTemplateId = {
-                    attachmentId    : attachmentId,
-                    attachmentKey   : attachments[i].key,
-                    attachmentPath  : attachmentPath,
-                    messageId       : messageId
-                };*/
-
 
         }
 
@@ -805,7 +797,7 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
             attachments = data.attachments || '',
             isPlainText = data.isPlainText || false,
             path        = data.path,
-            messageId   = data.messageId;
+            uId         = data.uId;
 
         this.doRender({
             subject     : subject,
@@ -819,7 +811,7 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
             attachments : attachments,
             isPlainText : isPlainText,
             path        : path,
-            messageId   : messageId
+            uId         : uId
         });
         this.layout();
         this.isPlainTextView = isPlainText;

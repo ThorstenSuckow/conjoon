@@ -97,7 +97,7 @@ com.conjoon.groupware.DownloadManager = function() {
 
     };
 
-    var downloadImpl = function(id, key, name, type, messageId, path) {
+    var downloadImpl = function(id, key, name, type, uId, path) {
 
         var DownloadManager = com.conjoon.groupware.DownloadManager;
 
@@ -129,9 +129,9 @@ com.conjoon.groupware.DownloadManager = function() {
         var download = new com.conjoon.cudgets.data.Download({
             url    : url,
             params : {
-                name      : name,
-                messageId : messageId,
-                path      : path
+                name : name,
+                uId  : uId,
+                path : path
             }
         });
 
@@ -210,11 +210,11 @@ com.conjoon.groupware.DownloadManager = function() {
          * @param {String} name
          *
          */
-        downloadEmailAttachment : function(id, key, name, messageId, path)
+        downloadEmailAttachment : function(id, key, name, uId, path)
         {
             downloadImpl(id, key, name,
                 com.conjoon.groupware.DownloadManager.TYPE_EMAIL_ATTACHMENT,
-                messageId, Ext.util.JSON.encode(path));
+                uId, Ext.util.JSON.encode(path));
         },
 
         on : function(eventName, func, scope, options)

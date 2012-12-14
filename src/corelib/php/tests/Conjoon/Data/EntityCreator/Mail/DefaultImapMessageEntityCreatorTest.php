@@ -54,6 +54,7 @@ class DefaultImapMessageEntityCreatorTest extends \PHPUnit_Framework_TestCase {
                 'date'       => '2012-11-19 12:01:38',
                 'cc'         => '',
                 'references' => '',
+                'messageId'  => '<uniqueid@somegatewy.tld>',
                 'inReplyTo'  => ''
             )
         );

@@ -70,7 +70,7 @@ abstract class AbstractImapAdaptee implements ImapAdaptee  {
      *
      * @throws \Conjoon\Data\Repository\Remote\ImapConnectionException
      */
-    abstract protected function _getMessage($messageId);
+    abstract protected function _getMessage($uId);
 
     /**
      * Sets the flag for the specified message.
@@ -183,22 +183,22 @@ abstract class AbstractImapAdaptee implements ImapAdaptee  {
     /**
      * @inheritdoc
      */
-    public function getMessage($messageId)
+    public function getMessage($uId)
     {
         $this->throwExceptionIfNotConnected();
 
-        $data = array('messageId' => $messageId);
+        $data = array('uId' => $uId);
 
         ArgumentCheck::check(array(
-            'messageId' => array(
+            'uId' => array(
                 'type'        => 'string',
                 'allowEmpty'  => false
             )
         ), $data);
 
-        $messageId = $data['messageId'];
+        $uId = $data['uId'];
 
-        return $this->_getMessage($messageId);
+        return $this->_getMessage($uId);
 
     }
 

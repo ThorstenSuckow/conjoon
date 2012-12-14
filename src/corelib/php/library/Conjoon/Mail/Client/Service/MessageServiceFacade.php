@@ -81,7 +81,7 @@ interface MessageServiceFacade {
      * the message.
      *
      * @param mixed $key The key of the attachment
-     * @param mixed $messageId The id of the message. This is either an
+     * @param mixed $uId The id of the message. This is either an
      *              identifier from the local data storage or the identifier of
      *              the mail message as stored on the server
      * @param mixed $path A path to the folder where the message can be found
@@ -90,6 +90,6 @@ interface MessageServiceFacade {
      *
      * @return ServiceResult
      */
-    public function getAttachment($key, $messageId, $path, \Conjoon\User\User $user);
+    public function getAttachment($key, $uId, $path, \Conjoon\User\User $user);
 
 }

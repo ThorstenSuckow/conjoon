@@ -149,7 +149,7 @@ class DoctrineMessageFlagRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
     public function testFindNone()
     {
 
-        $entity = $this->messageFlagRepository->findById(array('messageId' => 231, 'userId' => 1));
+        $entity = $this->messageFlagRepository->findById(array('uId' => 231, 'userId' => 1));
 
         $this->assertSame(null, $entity);
     }
@@ -159,7 +159,7 @@ class DoctrineMessageFlagRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
      */
     public function testFindById()
     {
-        $entity = $this->messageFlagRepository->findById(array('messageId' => 1, 'userId' => 1));
+        $entity = $this->messageFlagRepository->findById(array('uId' => 1, 'userId' => 1));
 
         $this->assertSame(1, $entity->getGroupwareEmailItems()->getId());
         $this->assertSame(1, $entity->getUsers()->getId());
@@ -290,7 +290,7 @@ class DoctrineMessageFlagRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
     public function testPersistUpdate()
     {
         $flag = $this->repository->findById(array(
-            'messageId' => 1, 'userId' => 2
+            'uId' => 1, 'userId' => 2
         ));
 
         $flag->setIsRead(0);
@@ -354,7 +354,7 @@ class DoctrineMessageFlagRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
     public function testRemove()
     {
         $flag = $this->repository->findById(array(
-            'messageId' => 1, 'userId' => 2
+            'uId' => 1, 'userId' => 2
         ));
 
         $this->assertEquals(

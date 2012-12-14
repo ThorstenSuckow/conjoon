@@ -33,7 +33,7 @@ class JunkFlagTest extends \PHPUnit_Framework_TestCase {
     protected function setUp()
     {
         $this->_input = array(
-            'messageId' => "hklhkl",
+            'uId' => "hklhkl",
             'clear'     => true
         );
     }
@@ -52,14 +52,14 @@ class JunkFlagTest extends \PHPUnit_Framework_TestCase {
     public function testConstructOk()
     {
         $flag = new JunkFlag(
-            $this->_input['messageId'],
+            $this->_input['uId'],
             $this->_input['clear']
         );
 
         $this->assertTrue($flag instanceof \Conjoon\Mail\Message\Flag\JunkFlag);
 
         $this->assertSame('$Junk', $flag->__toString());
-        $this->assertSame($this->_input['messageId'], $flag->getMessageId());
+        $this->assertSame($this->_input['uId'], $flag->getUId());
         $this->assertSame($this->_input['clear'], $flag->isClear());
 
     }

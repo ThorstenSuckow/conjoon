@@ -879,13 +879,13 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
             id                 : id,
             attachments        : Ext.encode(attachments),
             removedAttachments : Ext.encode(fValues.removedAttachments),
-            referencedData     : Ext.encode(fValues.type == 'edit'
-                                 ? {messageId : -1, path : []}
+            referencedData     : Ext.encode((fValues.type == 'edit'
+                                 ? {uId : -1, path : []}
                                  : (fValues.emailItemRecord
-                                    ? {messageId : fValues.emailItemRecord.id,
+                                    ? {uId : fValues.emailItemRecord.id,
                                        path : fValues.emailItemRecord.get('path')}
-                                    : {messageId : -1, path : []})
-                                ),
+                                    : {uId : -1, path : []})
+                                )),
             /**
              * @deprecated
              */

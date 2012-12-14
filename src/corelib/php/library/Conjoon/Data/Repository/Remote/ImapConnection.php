@@ -72,5 +72,5 @@ interface ImapConnection extends RemoteConnection {
      *
      * @throws ImapConnectionException
      */
-    public function getMessage($messageId);
+    public function getMessage($uId);
 }

@@ -232,7 +232,7 @@ class DefaultMessageServiceFacade implements MessageServiceFacade {
     /**
      * @inheritdoc
      */
-    public function getAttachment($key, $messageId, $path, \Conjoon\User\User $user)
+    public function getAttachment($key, $uId, $path, \Conjoon\User\User $user)
     {
         try {
 
@@ -258,7 +258,7 @@ class DefaultMessageServiceFacade implements MessageServiceFacade {
             require_once 'Conjoon/Mail/Client/Message/DefaultMessageLocation.php';
 
             $location = new \Conjoon\Mail\Client\Message\DefaultMessageLocation(
-                $folder, $messageId
+                $folder, $uId
             );
 
             /**

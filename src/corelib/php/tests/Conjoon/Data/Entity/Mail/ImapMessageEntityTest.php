@@ -41,6 +41,7 @@ class ImapMessageEntityTest extends \PHPUnit_Framework_TestCase {
             'bcc'                   => "bcc",
             'inReplyTo'             => "in_reply_to",
             'references'            => "References",
+            'messageId'             => '<messageId>',
             'contentTextPlain'      => "content text plain",
             'contentTextHtml'       => "content text html",
             'recipients'            => "Recipients",
