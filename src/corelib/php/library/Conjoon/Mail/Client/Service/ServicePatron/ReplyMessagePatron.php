@@ -104,8 +104,6 @@ class ReplyMessagePatron
 
             $d =& $data['message'];
 
-
-
             /**
              * @see \Conjoon_Date_Format
              */
@@ -113,9 +111,16 @@ class ReplyMessagePatron
 
             $d['date'] = \Conjoon_Date_Format::utcToLocal($this->v('date', $d));
 
+            $ccList = $this->buildAddresses($this->v('cc', $d));
+            $toList = $this->buildAddresses($this->v('to', $d));
+
+            $usedAccount = $this->guessAccountUsed(
+                array_merge($toList, $ccList)
+            );
+
             // build "cc" before "to" since "to" gets overwritten later on
             $d['cc'] = $this->buildCcAddressList(
-                $this->v('cc', $d), $this->v('to', $d)
+                $ccList, $toList, $usedAccount
             );
 
             $d['to'] = $this->getToAddress(
@@ -136,12 +141,11 @@ class ReplyMessagePatron
                                ? $d['references'] . ' ' . $messageId
                                : $messageId;
 
-            $standardAccount = $this->accountService->getStandardMailAccount();
 
             $d['groupwareEmailAccountsId'] = null;
 
-            if ($standardAccount) {
-                $d['groupwareEmailAccountsId'] = $standardAccount->getId();
+            if ($usedAccount) {
+                $d['groupwareEmailAccountsId'] = $usedAccount->getId();
             }
 
             /**
@@ -183,32 +187,35 @@ class ReplyMessagePatron
     /**
      * @param string $cc
      * @param string $to
+     * @param \Conjoon\Data\Entity\Mail\MailAccountEntity $usedAccount The mail account
+     *        which is most likely used to answer to this message
      *
      * @return array
      */
-    protected function buildCcAddressList($ccText, $toText)
+    protected function buildCcAddressList(array $cc, array $to,
+        \Conjoon\Data\Entity\Mail\MailAccountEntity $usedAccount = null)
     {
         if (!$this->replyAll) {
             return array();
         }
 
-        $cc = $this->buildAddresses($ccText);
-        $to = $this->buildAddresses($toText);
-
         $accounts = $this->accountService->getMailAccounts();
 
-        $userAddresses = array();
+        $filterAddressList = array();
 
         for ($i = 0, $len = count($accounts); $i < $len; $i++) {
-            $userAddresses[] = $accounts[$i]->getAddress();
+            if ($usedAccount && $usedAccount->getId() == $accounts[$i]->getId()) {
+                $filterAddressList[] = $accounts[$i]->getAddress();
+                break;
+            }
         }
 
         $merge = array();
         for ($i = 0, $len = max(count($cc), count($to)); $i < $len; $i++) {
-            if (isset($cc[$i]) && !in_array($cc[$i]['address'], $userAddresses)) {
+            if (isset($cc[$i]) && !in_array($cc[$i]['address'], $filterAddressList)) {
                 $merge[] = $cc[$i];
             }
-            if (isset($to[$i]) && !in_array($to[$i]['address'], $userAddresses)) {
+            if (isset($to[$i]) && !in_array($to[$i]['address'], $filterAddressList)) {
                 $merge[] = $to[$i];
             }
         }
@@ -217,6 +224,37 @@ class ReplyMessagePatron
         return $merge;
     }
 
+    /**
+     * Tries to guess the account being used by comparing recipients
+     * adresses with adresses found in the mail accounts configured for the
+     * user. If the account could not be guessed, tdard mail account for
+     * the user will be returned. If this was not successfull, null is returned.
+     *
+     * @param array $addressList
+     *
+     * @return null|\Conjoon\Data\Entity\Mail\MailAccountEntity
+     */
+    protected function guessAccountUsed(array $addressList)
+    {
+        $accounts = $this->accountService->getMailAccounts();
+
+        $addresses = array();
+        $matching = array();
+        for ($i = 0, $len = count($accounts); $i < $len; $i++) {
+            $add = $accounts[$i]->getAddress();
+            $addresses[] = $add;
+            $matching[$add] = $accounts[$i];
+        }
+
+        for ($i = 0, $len = count($addressList); $i < $len; $i++) {
+            if (in_array($addressList[$i]['address'], $addresses)) {
+                return $matching[$addressList[$i]['address']];
+            }
+        }
+
+        return $this->accountService->getStandardMailAccount();
+
+    }
 
 
     /**
