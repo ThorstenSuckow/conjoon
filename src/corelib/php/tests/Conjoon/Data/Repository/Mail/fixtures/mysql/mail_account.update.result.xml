@@ -109,6 +109,31 @@
             <value>1</value>
             <value>0</value>
         </row>
+        <row>
+            <value>3</value>
+            <value>3</value>
+            <value>name</value>
+            <value>address</value>
+            <value>reply_address</value>
+            <value>1</value>
+            <value>POP3</value>
+            <value>server_inbox</value>
+            <value>server_outbox</value>
+            <value>username_inbox</value>
+            <value>username_outbox</value>
+            <value>user_name</value>
+            <value>1</value>
+            <value>password_inbox</value>
+            <value>password_outbox</value>
+            <value>signature</value>
+            <value>1</value>
+            <value>25</value>
+            <value>25</value>
+            <value>SSL</value>
+            <value>SSL</value>
+            <value>1</value>
+            <value>1</value>
+        </row>
     </table>
     <table name="groupware_email_folders_accounts">
         <column>groupware_email_folders_id</column>

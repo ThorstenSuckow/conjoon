@@ -72,4 +72,28 @@ class DoctrineMailAccountRepository
         return $res;
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function getMailAccounts(\Conjoon\User\User $user)
+    {
+        $em = $this->getEntityManager();
+
+        $query = $em->createQuery(
+            "SELECT a FROM \Conjoon\Data\Entity\Mail\DefaultMailAccountEntity a "
+                . " WHERE a.user = ?1 "
+                . " AND a.isDeleted = ?2"
+        );
+        $query->setParameter(1, $user);
+        $query->setParameter(2, false);
+
+        try {
+            $res = $query->getResult();
+        } catch (\Doctrine\ORM\NoResultException $e) {
+            return array();
+        }
+
+        return $res;
+    }
+
 }

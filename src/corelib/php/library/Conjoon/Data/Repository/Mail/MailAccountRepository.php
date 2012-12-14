@@ -32,7 +32,7 @@ require_once 'Conjoon/Data/Repository/DataRepository.php';
 interface MailAccountRepository extends \Conjoon\Data\Repository\DataRepository {
 
     /**
-     * returns the account marked as standard for the specified user.
+     * Returns the account marked as standard for the specified user.
      *
      * @param \Conjoon\User\User $user The user for whom the standard account
      *                           should be looked up
@@ -40,5 +40,17 @@ interface MailAccountRepository extends \Conjoon\Data\Repository\DataRepository 
      * @return null|\Conjoon\Data\Entity\Mail\MailAccountEntity
      */
     public function getStandardMailAccount(\Conjoon\User\User $user);
+
+    /**
+     * Returns all email accounts which are not marked as deleted for the
+     * specified user.
+     *
+     * @param \Conjoon\User\User $user The user for whom the accounts should be
+     *                           looked up.
+     *
+     * @return array of \Conjoon\Data\Entity\Mail\MailAccountEntity. The array
+     *         may be empty
+     */
+    public function getMailAccounts(\Conjoon\User\User $user);
 
 }

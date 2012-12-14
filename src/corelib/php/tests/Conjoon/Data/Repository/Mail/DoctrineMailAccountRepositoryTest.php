@@ -26,6 +26,11 @@ require_once 'Conjoon/Data/Repository/Mail/DoctrineMailAccountRepository.php';
 require_once 'Conjoon/DatabaseTestCaseDefault.php';
 
 /**
+ * @see Conjoon\User\SimpleUser
+ */
+require_once dirname(__FILE__) . '/../../../User/SimpleUser.php';
+
+/**
  * @package    Conjoon/Tests
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
@@ -71,7 +76,41 @@ class DoctrineMailAccountRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
     }
 
     /**
-     * Ensures everathing works as expected.
+     * Ensures everything works as expected.
+     *
+     * @ticket CN-706
+     */
+    public function testMailAccountsForUser()
+    {
+        $tmp  = $this->repository->findById(1);
+        $user = $tmp->getUser();
+
+        $entities = $this->repository->getMailAccounts($user);
+
+        $this->assertTrue(is_array($entities));
+        $this->assertSame(1, count($entities));
+
+        $this->assertTrue($entities[0] instanceof \Conjoon\Data\Entity\Mail\MailAccountEntity);
+
+        $entities = $this->repository->getMailAccounts(
+            new \Conjoon\User\SimpleUser()
+        );
+
+        $this->assertTrue(is_array($entities));
+        $this->assertSame(0, count($entities));
+
+
+        $tmp  = $this->repository->findById(3);
+        $user = $tmp->getUser();
+
+        $entities = $this->repository->getMailAccounts($user);
+
+        $this->assertTrue(is_array($entities));
+        $this->assertSame(0, count($entities));
+    }
+
+    /**
+     * Ensures everything works as expected.
      */
     public function testGetStandardMailAccount()
     {
@@ -91,7 +130,7 @@ class DoctrineMailAccountRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
     }
 
     /**
-     * Ensures everathing works as expected.
+     * Ensures everything works as expected.
      *
      * @ticket CN-705
      */
