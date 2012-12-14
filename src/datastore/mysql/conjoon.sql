@@ -147,7 +147,7 @@ CREATE TABLE IF NOT EXISTS `{DATABASE.TABLE.PREFIX}groupware_email_items` (
   PRIMARY KEY  (`id`),
   KEY `groupware_email_folders_id` (`groupware_email_folders_id`),
   KEY `date` (`date`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='Table for storing incomin emails in a readable format.';
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='Table for storing incoming emails in a readable format.';
 
 -- --------------------------------------------------------
 
@@ -646,3 +646,10 @@ ON DELETE CASCADE ON UPDATE CASCADE ;
 ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_imap_mapping`
 CHANGE `type` `type` ENUM( 'INBOX', 'OUTBOX', 'SENT', 'DRAFT', 'TRASH', 'JUNK' )
 CHARACTER SET utf8 COLLATE utf8_bin NOT NULL;
+
+-- CN-700
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_references`
+CHANGE `groupware_email_items_id` `groupware_email_items_id` INT( 10 )
+UNSIGNED NULL DEFAULT NULL;
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_references` DROP PRIMARY KEY ,
+ADD PRIMARY KEY ( `groupware_email_items_id` , `user_id` , `reference_items_id` );

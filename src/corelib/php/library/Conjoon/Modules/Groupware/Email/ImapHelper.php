@@ -67,7 +67,12 @@ class Conjoon_Modules_Groupware_Email_ImapHelper {
         }
 
         if (isset(self::$_imapProtocolCache[$account->id])) {
-            return self::$_imapProtocolCache[$account->id];
+            try {
+                self::$_imapProtocolCache[$account->id]->noop();
+                return self::$_imapProtocolCache[$account->id];
+            } catch (Zend_Mail_Protocol_Exception $e) {
+                // let the protocol be rebuilt
+            }
         }
 
         // Zend Framework does not support this out of teh box.. d'oh
@@ -156,11 +161,12 @@ class Conjoon_Modules_Groupware_Email_ImapHelper {
             );
         }
 
+        $protocol = self::reuseImapProtocolForAccount($account);
+
         if (isset(self::$_delimiterCache[$account->id])) {
             return self::$_delimiterCache[$account->id];
         }
 
-        $protocol = self::reuseImapProtocolForAccount($account);
         $mailboxes = $protocol->listMailbox();
 
         $delim = "";

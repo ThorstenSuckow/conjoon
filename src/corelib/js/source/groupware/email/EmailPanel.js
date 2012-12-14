@@ -1303,20 +1303,35 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
         // check if the grid with the record for old id is open. Update the specific record
         // with the reference type, if message.type equals to forward, reply or reply_all
         if (contextReferencedItem) {
-            var refRecord = store.getById(contextReferencedItem.id);
-            if (refRecord) {
-                store.suspendEvents();
-                refRecord.set('referencedAsTypes', '');
-                refRecord.set('referencedAsTypes', contextReferencedItem.get('referencedAsTypes'));
-                store.resumeEvents();
-                store.commitChanges();
+            // check if the referenced item's path equals to the opened folder
+            var path = contextReferencedItem.get('path'),
+                refPath = path.join('/');
+            if (path[0] != 'root') {
+                refPath = '/root/' + refPath;
+            }
+            var node = this.treePanel.getNodeById(this.clkNodeId);
+
+            if (node && node.getPath('idForPath') == refPath) {
+                // currently viewing the referenced item's folder
+                var refRecord = store.getById(contextReferencedItem.id);
+                if (refRecord) {
+                    store.suspendEvents();
+                    refRecord.set('referencedAsTypes', '');
+                    refRecord.set(
+                        'referencedAsTypes',
+                        contextReferencedItem.get('referencedAsTypes')
+                    );
+                    store.resumeEvents();
+                    store.commitChanges();
+                }
             }
         }
 
         // if the email was loaded from outbox/draft and sent, update pending nodes
         // minus 1, but only if the id of the itemRecord equals to the id of the draft,
         // which will basically tell that an email pending in the outbox folder was sent
-        if (tp.folderOutbox && referencedRecord && ((oldFolderId == tp.folderOutbox.id || oldFolderId == tp.folderDraft.id)
+        if (tp.folderOutbox && referencedRecord
+            && ((oldFolderId == tp.folderOutbox.id || oldFolderId == tp.folderDraft.id)
             && emailRecord.get('id') == referencedRecord.get('id'))) {
             // if grid is visible, remove the record with the specified id!
             if (currFolderId == oldFolderId) {

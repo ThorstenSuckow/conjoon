@@ -97,4 +97,12 @@ com.conjoon.groupware.email.data.Draft = Ext.data.Record.create([
      */
     {name : 'attachments'},
 
+    /**
+     * object
+     */
+    {name : 'referencesData'},
+    /**
+     * object
+     */
+    {name : 'path'}
 ]);

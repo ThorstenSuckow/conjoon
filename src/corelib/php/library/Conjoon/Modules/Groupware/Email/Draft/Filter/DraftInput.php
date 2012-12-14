@@ -69,7 +69,9 @@ class Conjoon_Modules_Groupware_Email_Draft_Filter_DraftInput extends Conjoon_Fi
             'bcc',
             'type',
             'attachments',
-            'removedAttachments'
+            'removedAttachments',
+            'referencedData',
+            'path'
         ),
         self::CONTEXT_DRAFT => array(
             'format',
@@ -87,7 +89,9 @@ class Conjoon_Modules_Groupware_Email_Draft_Filter_DraftInput extends Conjoon_Fi
             'bcc',
             'type',
             'attachments',
-            'removedAttachments'
+            'removedAttachments',
+            'referencedData',
+            'path'
         )
 
     );
@@ -141,6 +145,12 @@ class Conjoon_Modules_Groupware_Email_Draft_Filter_DraftInput extends Conjoon_Fi
             'JsonDecode',
             'PositiveArrayValues'
 
+        ),
+        'referencedData' => array(
+            'JsonDecode'
+        ),
+        'path' => array(
+            'JsonDecode'
         )
     );
 
@@ -202,7 +212,13 @@ class Conjoon_Modules_Groupware_Email_Draft_Filter_DraftInput extends Conjoon_Fi
          'removedAttachments' => array(
             'allowEmpty' => true,
             array('GreaterThan', 0)
-         )
+         ),
+        'referencedData' => array(
+            'allowEmpty' => false
+        ),
+        'path' => array(
+            'allowEmpty' => false
+        )
     );
 
     protected function _init()

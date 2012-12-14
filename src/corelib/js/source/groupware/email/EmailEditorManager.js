@@ -862,11 +862,33 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
                 }
             }
         }
+
+        // error if no path is available
+        if (fValues.type != 'edit' && fValues.emailItemRecord) {
+            if (!fValues.emailItemRecord.get('path')) {
+                throw("Cannot proceed, path for target item record missing.");
+            }
+        }
+
+        if (!fValues.path) {
+            throw("Cannot proceed, path for source item record missing.");
+        }
+
         var params = {
             format             : 'text/plain', // can be 'text/plain', 'text/html' or 'multipart'
             id                 : id,
             attachments        : Ext.encode(attachments),
             removedAttachments : Ext.encode(fValues.removedAttachments),
+            referencedData     : Ext.encode(fValues.type == 'edit'
+                                 ? {messageId : -1, path : []}
+                                 : (fValues.emailItemRecord
+                                    ? {messageId : fValues.emailItemRecord.id,
+                                       path : fValues.emailItemRecord.get('path')}
+                                    : {messageId : -1, path : []})
+                                ),
+            /**
+             * @deprecated
+             */
             referencesId       : (fValues.type == 'edit'
                                  ? -1
                                  : (fValues.emailItemRecord ? fValues.emailItemRecord.id : -1)),
@@ -881,6 +903,10 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
             to           : to.length  > 0 ? Ext.encode(to)  : '',
             cc           : cc.length  > 0 ? Ext.encode(cc)  : '',
             bcc          : bcc.length > 0 ? Ext.encode(bcc) : '',
+            path         : Ext.encode(fValues.path),
+            /**
+             * @deprecated
+             */
             groupwareEmailFoldersId : (
                 (fValues.type == 'edit' || type == 'edit')
                 ? fValues.folderId

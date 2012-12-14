@@ -43,7 +43,8 @@ class Conjoon_Modules_Groupware_Email_Item_Model_References extends Conjoon_Db_T
      */
     protected $_primary = array(
         'groupware_email_items_id',
-        'user_id'
+        'user_id',
+        'reference_items_id'
     );
 
 }

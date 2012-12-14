@@ -23,6 +23,6 @@ require_once 'Conjoon/Exception.php';
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-Conjoon_Modules_Groupware_Email_Exception extends Conjoon_Exception {
+class Conjoon_Modules_Groupware_Email_Exception extends Conjoon_Exception {
 
 }

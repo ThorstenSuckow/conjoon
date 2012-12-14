@@ -54,6 +54,8 @@ class Conjoon_Modules_Groupware_Email_Draft implements Conjoon_BeanContext, Seri
     private $cc;
     private $bcc;
     private $attachments;
+    private $referencedData;
+    private $path;
 
     /**
      * Constructor.
@@ -64,6 +66,9 @@ class Conjoon_Modules_Groupware_Email_Draft implements Conjoon_BeanContext, Seri
         $this->cc          = array();
         $this->bcc         = array();
         $this->attachments = array();
+        $this->data        = array();
+
+        $this->referencedData = array();
     }
 
 // -------- accessors
@@ -81,6 +86,8 @@ class Conjoon_Modules_Groupware_Email_Draft implements Conjoon_BeanContext, Seri
     public function getInReplyTo(){return $this->inReplyTo;}
     public function getReferences(){return $this->references;}
     public function getAttachments(){return $this->attachments;}
+    public function getReferencedData(){return $this->referencedData;}
+    public function getPath(){return $this->path;}
 
 
     public function setId($id){$this->id = $id;}
@@ -96,6 +103,8 @@ class Conjoon_Modules_Groupware_Email_Draft implements Conjoon_BeanContext, Seri
     public function setInReplyTo($inReplyTo){$this->inReplyTo = $inReplyTo;}
     public function setReferences($references){$this->references = $references;}
     public function setAttachments(array $attachments){$this->attachments = $attachments;}
+    public function setReferencedData(array $referencedData){$this->referencedData = $referencedData;}
+    public function setPath(array $path){$this->path = $path;}
 
     public function addAttachment(Conjoon_Modules_Groupware_Email_Attachment $attachment) {
         $this->attachments[] = $attachment;
@@ -217,7 +226,9 @@ class Conjoon_Modules_Groupware_Email_Draft implements Conjoon_BeanContext, Seri
             'bcc'                      => $bcc,
             'attachments'              => $attachments,
             'inReplyTo'                => $this->inReplyTo,
-            'references'               => $this->references
+            'references'               => $this->references,
+            'referencedData'           => $this->referencedData,
+            'path'                     => $this->path
         );
     }
 

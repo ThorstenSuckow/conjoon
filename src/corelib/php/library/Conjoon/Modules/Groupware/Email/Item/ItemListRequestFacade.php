@@ -209,7 +209,6 @@ class Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade {
 
         $quoteTransformer = new Conjoon_Text_Transformer_Mail_EmailAddressNameQuoteTransformer();
 
-
         $parsedHeaders = array();
         for ($i = 0, $len = count($messageStruct); $i < $len; $i++) {
 

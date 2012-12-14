@@ -240,10 +240,89 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
         $rows = $adapter->fetchAll($select);
 
         if ($rows != false) {
+
+            $rows = $this->applyPathToEmailItems($rows);
+
             return $rows;
         }
 
         return array();
+    }
+
+    /**
+     * Updates the reference table for a referenced message without the id of
+     * the message that triggered the reference. This is for messages which
+     * are only available on remote servers which do not have an id.
+     *
+     * @param integer $messageId
+     * @param integer $localFolder
+     * @param integer $userId
+     */
+    public function updateReferenceFromARemoteItem(
+        $messageId, $localFolder, $userId, $type)
+    {
+        $messageId   = (int)$messageId;
+        $localFolder = (int)$localFolder;
+
+        if ($messageId <= 0 || $localFolder <= 0) {
+            return false;
+        }
+
+        $select = $this->select()
+            ->from($this)
+            ->where('`groupware_email_folders_id` = ?', $localFolder)
+            ->where('`id` = ?', $messageId);
+
+        $row = $this->fetchRow($select);
+
+        if (!$row) {
+            return false;
+        }
+
+        /**
+         * @see Conjoon_Modules_Groupware_Email_Item_Model_References
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/Item/Model/References.php';
+
+        $referenceModel = new Conjoon_Modules_Groupware_Email_Item_Model_References();
+
+
+        $select = $this->select()
+            ->from($this)
+            ->where('`groupware_email_folders_id` = ?', $localFolder)
+            ->where('`id` = ?', $messageId);
+
+        $row = $this->fetchRow($select);
+
+        if (!$row) {
+            return false;
+        }
+
+        $adapter = $this->getAdapter();
+
+        $select = $adapter->select()
+                  ->from(
+                    array('references' => self::getTablePrefix()
+                                          . 'groupware_email_items_references'
+                    ))
+                  ->where('`reference_type` = ?', $type)
+                  ->where('`reference_items_id` = ?', $messageId)
+                  ->where('`user_id` = ?', $userId)
+                  ->where('`groupware_email_items_id` = ?', 0);
+
+        $row = $adapter->fetchRow($select);
+
+        if ($row) {
+            return true;
+        }
+
+        $referenceModel->insert(array(
+            'user_id'            => $userId,
+            'reference_type'     => $type,
+            'reference_items_id' => $messageId
+        ));
+
+        return true;
     }
 
     /**
@@ -277,7 +356,9 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
             return array();
         }
 
-        return $row;
+        $rows = $this->applyPathToEmailItems(array($row));
+
+        return $rows[0];
     }
 
     /**

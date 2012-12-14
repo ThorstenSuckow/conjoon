@@ -235,6 +235,81 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
             return;
         }
 
+        // check here if the referenced data contains an IMAP message.
+        // if this is the case, update the message with the \Answered
+        // flag if applicable
+        $referencedData       = $message->getReferencedData();
+        $referencedRemoteItem = null;
+
+        $contextReferencedItem  = null;
+
+        $isRemoteItemReferenced = false;
+
+        if (!empty($referencedData)) {
+
+            $messageId      = $referencedData['messageId'];
+            $referencedPath = $referencedData['path'];
+
+            // check if folder is remote folder
+            /**
+             * @see Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser
+             */
+            require_once 'Conjoon/Text/Parser/Mail/MailboxFolderPathJsonParser.php';
+
+            $parser = new Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser();
+
+            $pathInfo = $parser->parse(json_encode($referencedPath));
+
+            /**
+             * @see Conjoon_Modules_Groupware_Email_Folder_Facade
+             */
+            require_once 'Conjoon/Modules/Groupware/Email/Folder/Facade.php';
+
+            $facade = Conjoon_Modules_Groupware_Email_Folder_Facade::getInstance();
+
+            // get the account for the root folder first
+            $imapAccount =
+                $facade->getImapAccountForFolderIdAndUserId($pathInfo['rootId'],
+                    $userId);
+
+            if ($imapAccount && !empty($pathInfo) && $facade->isRemoteFolder($pathInfo['rootId'])) {
+
+                $isRemoteItemReferenced = true;
+
+                // if remote, where is the referenced mail stored?
+                $globalName = $facade->getAssembledGlobalNameForAccountAndPath(
+                    $imapAccount, $pathInfo['path']);
+
+                /**
+                 * @see Conjoon_Modules_Groupware_Email_ImapHelper
+                 */
+                require_once 'Conjoon/Modules/Groupware/Email/ImapHelper.php';
+                /**
+                 * @see Conjoon_Mail_Storage_Imap
+                 */
+                require_once 'Conjoon/Mail/Storage/Imap.php';
+
+                $protocol = Conjoon_Modules_Groupware_Email_ImapHelper
+                ::reuseImapProtocolForAccount($imapAccount);
+
+                $storage = new Conjoon_Mail_Storage_Imap($protocol);
+
+                // get the number of the message by it's unique id
+                $messageNumber = $storage->getNumberByUniqueId($messageId);
+
+                $storage->setFlags($messageNumber, array('\Seen', '\Answered'));
+
+                $referencedRemoteItem = $this->getSingleImapListItem(
+                    $imapAccount, $userId, $messageNumber, $globalName);
+
+                // force a reconnect if internal noop fails
+                Conjoon_Modules_Groupware_Email_ImapHelper
+                ::reuseImapProtocolForAccount($imapAccount);
+
+            }
+
+        }
+
         $folderMappingError = null;
 
         if ($account->getProtocol() == 'IMAP') {
@@ -280,7 +355,6 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
 
                 $protocol = Conjoon_Modules_Groupware_Email_ImapHelper
                     ::reuseImapProtocolForAccount($account->getDto());
-
                 $storage = new Conjoon_Mail_Storage_Imap($protocol);
 
                 try {
@@ -330,44 +404,59 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
                 $folderMappingError->level = Conjoon_Error::LEVEL_ERROR;
             } else {
 
-                /**
-                 * @see Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade
-                 */
-                require_once 'Conjoon/Modules/Groupware/Email/Item/ItemListRequestFacade.php';
+                $item = $this->getSingleImapListItem(
+                    $account->getDto(), $userId, $lastMessage, $globalName);
+
+
+            }
+
+            // check here if a remote item was referenced.
+            // if this is not the case, get the local itemand update it's
+            // references
+            if (!$isRemoteItemReferenced && !$referencedRemoteItem) {
+
+                $messageId   = $referencedData['messageId'];
+                $localFolder = $referencedData['path'][count($referencedData['path']) -1 ];
 
                 /**
-                 * @see Conjoon_Modules_Groupware_Email_Folder_Facade
+                 * @see Conjoon_Modules_Groupware_Email_Item_Model_Item
                  */
-                require_once 'Conjoon/Modules/Groupware/Email/Folder/Facade.php';
+                require_once 'Conjoon/Modules/Groupware/Email/Item/Model/Item.php';
 
-                $folderFacade = Conjoon_Modules_Groupware_Email_Folder_Facade::getInstance();
+                $iModel = new Conjoon_Modules_Groupware_Email_Item_Model_Item();
 
-                $rootFolder = $folderFacade->getRootFolderForAccountId(
-                    $account->getDto(), $userId
-                );
+                $iModel->updateReferenceFromARemoteItem(
+                    $messageId, $localFolder, $userId, $data['type']);
 
-                $itemFacade = Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade::getInstance();
+                /**
+                 * @see Conjoon_Modules_Groupware_Email_Item_Filter_ItemResponse
+                 */
+                require_once 'Conjoon/Modules/Groupware/Email/Item/Filter/ItemResponse.php';
 
-                $delimiter = Conjoon_Modules_Groupware_Email_ImapHelper
-                    ::getFolderDelimiterForImapAccount($account->getDto());
-
-                $list =  $itemFacade->getEmailItemList(
-                    array(
-                        'rootId' => $rootFolder[0]->id,
-                        'path'   => explode($delimiter, $globalName)
+                // if the email was send successfully, save it into the db and
+                // return the params savedId (id of the newly saved email)
+                // and savedFolderId (id of the folder where the email was saved in)
+                $itemDecorator = new Conjoon_BeanContext_Decorator(
+                    'Conjoon_Modules_Groupware_Email_Item_Model_Item',
+                    new Conjoon_Modules_Groupware_Email_Item_Filter_ItemResponse(
+                        array(),
+                        Conjoon_Filter_Input::CONTEXT_RESPONSE
                     ),
-                    $userId, array(), $lastMessage, $lastMessage
+                    false
                 );
 
-                $item = $list[0];
-
+                $contextReferencedItem = $itemDecorator->getItemForUserAsDto(
+                    $messageId, $userId
+                );
             }
 
             $this->view->error   = null;
             $this->view->folderMappingError = $folderMappingError;
             $this->view->success = true;
             $this->view->item    = isset($item) ? $item : null;
-            $this->view->contextReferencedItem  = null;
+            $this->view->contextReferencedItem  = $contextReferencedItem
+                                                  ? $contextReferencedItem
+                                                  : $referencedRemoteItem;
             return;
         }
 
@@ -389,8 +478,10 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
         );
 
         $item = $itemDecorator->saveSentEmailAsDto(
-            $message, $account, $userId, $mail, $data['type'], $data['referencesId'],
-            $postedAttachments, $removeAttachmentIds
+            $message, $account, $userId, $mail, $data['type'],
+            ($referencedRemoteItem ? -1 : $data['referencedData']['messageId']),
+            $postedAttachments,
+            $removeAttachmentIds
         );
 
         if (!$item) {
@@ -424,20 +515,22 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
 
         // if the sent email referenced an existing message, tr to fetch this message
         // and send it along as context-referenced item
-
-        $contextReferencedItem = $itemDecorator->getReferencedItemAsDto(
-            $item->id,
-            $userId
-        );
-
+        if (!$referencedRemoteItem) {
+            $contextReferencedItem = $itemDecorator->getReferencedItemAsDto(
+                $item->id,
+                $userId
+            );
+        }
 
         $this->view->error   = null;
         $this->view->foldermappingError = $folderMappingError;
         $this->view->success = true;
         $this->view->item    = $item;
-        $this->view->contextReferencedItem  = empty($contextReferencedItem)
-                                            ? null
-                                            : $contextReferencedItem;
+        $this->view->contextReferencedItem  = $referencedRemoteItem
+                                              ? $referencedRemoteItem
+                                              : (empty($contextReferencedItem)
+                                                ? null
+                                                : $contextReferencedItem);
     }
 
     /**
@@ -698,6 +791,44 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
                                  : null;
         $this->view->contextReferencedItems = $contextReferencedItems;
 
+    }
+
+
+    /**
+     *
+     */
+    protected function getSingleImapListItem($accountDto, $userId, $messageNumber, $globalName)
+    {
+        /**
+         * @see Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/Item/ItemListRequestFacade.php';
+
+        /**
+         * @see Conjoon_Modules_Groupware_Email_Folder_Facade
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/Folder/Facade.php';
+
+        $folderFacade = Conjoon_Modules_Groupware_Email_Folder_Facade::getInstance();
+
+        $rootFolder = $folderFacade->getRootFolderForAccountId(
+            $accountDto, $userId
+        );
+
+        $itemFacade = Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade::getInstance();
+
+        $delimiter = Conjoon_Modules_Groupware_Email_ImapHelper
+        ::getFolderDelimiterForImapAccount($accountDto);
+
+        $list =  $itemFacade->getEmailItemList(
+            array(
+                'rootId' => $rootFolder[0]->id,
+                'path'   => explode($delimiter, $globalName)
+            ),
+            $userId, array(), $messageNumber, $messageNumber
+        );
+
+        return $list[0];
     }
 
 
