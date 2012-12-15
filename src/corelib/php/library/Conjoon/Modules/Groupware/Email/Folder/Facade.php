@@ -1114,9 +1114,28 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
          */
         require_once 'Conjoon/Modules/Groupware/Email/ImapHelper.php';
 
+        $em = Zend_Registry::get(Conjoon_Keys::DOCTRINE_ENTITY_MANAGER);
+
+        $rep = $em->getRepository('\Conjoon\Data\Entity\Mail\DefaultMailAccountEntity');
+
+        $accountEntity = $rep->findById($account->id);
+        $map = array();
+
+        if ($accountEntity) {
+            $mappings = $accountEntity->getFolderMappings();
+
+            for ($i = 0, $len = count($mappings); $i < $len; $i++) {
+                $map[$mappings[$i]->getGlobalName()] =
+                    strtolower($mappings[$i]->getType());
+            }
+        }
+
         foreach  ($iFolders as $localName => $iFold) {
+            $gb = $iFold->getGlobalName();
             $folders[] = $this->_transformImapFolder(
-                $iFold, $account, $protocol, $isRootLevel
+                $iFold, $account, $protocol, $isRootLevel,
+                (isset($map[$gb])
+                 ? $map[$gb] : 'folder')
             );
         }
 
@@ -1208,40 +1227,42 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
         Zend_Mail_Storage_Folder $folder,
         Conjoon_Modules_Groupware_Email_Account_Dto $account,
         Zend_Mail_Protocol_Imap $protocol,
-        $isRootLevel = false
+        $isRootLevel = false,
+        $type = 'folder'
     )
     {
-            $delim = Conjoon_Modules_Groupware_Email_ImapHelper::
-                     getFolderDelimiterForImapAccount($account);
+        $delim = Conjoon_Modules_Groupware_Email_ImapHelper::
+                 getFolderDelimiterForImapAccount($account);
 
-            $globalName = $folder->getGlobalName();
-            $path = explode($delim, $globalName);
-            $path = $path[count($path)-1];
+        $globalName = $folder->getGlobalName();
+        $path = explode($delim, $globalName);
+        $path = $path[count($path)-1];
 
-            $pendingCount = 0;
+        $pendingCount = 0;
 
-            if ($folder->isSelectable()) {
-                try{
-                    $protocol->select($globalName);
-                    $res = $protocol->requestAndResponse('SEARCH', array('UNSEEN'));
-                    if (is_array($res)) {
-                        $res = $res[0];
-                        if ($res[0] === 'SEARCH') {
-                            array_shift($res);
-                        }
-                        $pendingCount = count($res);
+        if ($folder->isSelectable()) {
+            try{
+                $protocol->select($globalName);
+                $res = $protocol->requestAndResponse('SEARCH', array('UNSEEN'));
+                if (is_array($res)) {
+                    $res = $res[0];
+                    if ($res[0] === 'SEARCH') {
+                        array_shift($res);
                     }
-                } catch (Exception $e) {
-                    // ignore
+                    $pendingCount = count($res);
                 }
+            } catch (Exception $e) {
+                // ignore
             }
+        }
 
-            return Conjoon_Modules_Groupware_Email_ImapHelper::transformToFolderDto(
-                $folder, $isRootLevel, array(
-                'id'           => $account->id.'_'.$globalName,
-                'idForPath'    => $path,
-                'pendingCount' => $pendingCount
-            ));
+        return Conjoon_Modules_Groupware_Email_ImapHelper::transformToFolderDto(
+            $folder, $isRootLevel, array(
+            'id'           => $account->id.'_'.$globalName,
+            'idForPath'    => $path,
+            'pendingCount' => $pendingCount,
+            'type'         => $type
+        ));
     }
 
     /**

@@ -105,6 +105,7 @@ Ext.extend(com.conjoon.groupware.email.EmailTreeLoader, Ext.tree.TreeLoader, {
                 attr.iconCls   = 'com-conjoon-groupware-email-EmailTree-inboxIcon';
             break;
             case 'spam':
+            case 'junk':
                 attr.allowDrag     = false;
                 attr.iconCls = 'com-conjoon-groupware-email-EmailTree-spamIcon';
             break;

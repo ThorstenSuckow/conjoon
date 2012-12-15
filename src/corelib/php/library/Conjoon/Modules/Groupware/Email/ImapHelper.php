@@ -235,25 +235,13 @@ class Conjoon_Modules_Groupware_Email_ImapHelper {
             $tmpFolder->pendingCount = $config['pendingCount'];
         }
 
-        $tmpFolder->type           = 'folder';
+        $tmpFolder->type           = $config['type'];
         $tmpFolder->name           = $folder->getLocalName();
         $tmpFolder->isChildAllowed = 1;
         $tmpFolder->isLocked       = 0;
         //hasChildren doesnt seem to work
         $tmpFolder->childCount     = $folder->isLeaf() ? 0 : 1;
         $tmpFolder->isSelectable   = $folder->isSelectable() ? 1 : 0;
-
-        // check whether we adjust properties based on standard names
-        if ($lookupStandardNames) {
-            if (strtolower($tmpFolder->name) === "inbox") {
-                //$tmpFolder->type     = 'inbox';
-                //$tmpFolder->isLocked = 1;
-            } else if (strtolower($tmpFolder->name) === "trash") {
-                //$tmpFolder->type     = 'trash';
-               // $tmpFolder->isLocked = 1;
-            }
-
-        }
 
         return $tmpFolder;
     }
