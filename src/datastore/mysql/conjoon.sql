@@ -652,4 +652,5 @@ ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_references`
 CHANGE `groupware_email_items_id` `groupware_email_items_id` INT( 10 )
 UNSIGNED NULL DEFAULT NULL;
 ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_references` DROP PRIMARY KEY ,
-ADD PRIMARY KEY ( `groupware_email_items_id` , `user_id` , `reference_items_id` );
+ADD PRIMARY KEY ( `groupware_email_items_id` , `user_id` , `reference_items_id` ,
+`reference_type` );

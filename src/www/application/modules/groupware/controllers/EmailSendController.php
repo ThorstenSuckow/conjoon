@@ -304,7 +304,14 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
                 $storage->selectFolder($globalName);
                 $messageNumber = $storage->getNumberByUniqueId($uId);
 
-                $storage->setFlags($messageNumber, array('\Seen', '\Answered'));
+                $flags = array('\Seen');
+                if ($data['type'] == 'reply' || $data['type'] == 'reply_all') {
+                    $flags = array('\Seen', '\Answered');
+                } else if ($data['type'] == 'forward') {
+                    $flags = array('\Seen', '$Forwarded');
+                }
+
+                $protocol->store($flags, $messageNumber, null, '+');
 
                 $referencedRemoteItem = $this->getSingleImapListItem(
                     $imapAccount, $userId, $messageNumber, $globalName);

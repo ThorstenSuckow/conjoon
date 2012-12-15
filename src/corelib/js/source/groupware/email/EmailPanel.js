@@ -1346,11 +1346,11 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
 
         // if the visible grid is the grid for sent items, add the recod to the store
         // use emailfolders id first, then path
-        if (emailRecord.get('groupwareEmailFoldersId') > -1 &&
+        if (emailRecord && emailRecord.get('groupwareEmailFoldersId') > -1 &&
             emailRecord.get('groupwareEmailFoldersId') == currFolderId) {
             var index = store.findInsertIndex(emailRecord);
             store.insert(index, emailRecord.copy());
-        } else if (emailRecord.get('path') && emailRecord.get('path').length > 0) {
+        } else if (emailRecord && emailRecord.get('path') && emailRecord.get('path').length > 0) {
             var parts = emailRecord.get('path'),
                 newPath = [], i = 0, len = parts.length,
                 node, path, index, newRecord;

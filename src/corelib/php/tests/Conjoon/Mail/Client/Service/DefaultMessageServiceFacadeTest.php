@@ -91,6 +91,33 @@ class DefaultMessageServiceFacadeTest extends
         $this->assertTrue($result->isSuccess());
     }
 
+    public function testGetMessageForForwarding()
+    {
+        $protocol = new \Conjoon\Mail\Server\Protocol\DefaultProtocol(
+            $this->protocolAdaptee
+        );
+
+        $defaultServer = new \Conjoon\Mail\Server\DefaultServer($protocol);
+
+        $messageFacade = new DefaultMessageServiceFacade($defaultServer,
+            $this->mailAccountRepository, $this->mailFolderRepository);
+        $result = $messageFacade->getMessageForReply(
+            "1", '["root","1","2"]', $this->user
+
+        );
+
+        $this->assertTrue($result instanceof ServiceResult);
+        $this->assertTrue($result->isSuccess());
+
+        // $replyAll-> true
+        $result = $messageFacade->getMessageForForwarding(
+            "1", '["root","1","2"]', $this->user, true
+        );
+
+        $this->assertTrue($result instanceof ServiceResult);
+        $this->assertTrue($result->isSuccess());
+    }
+
     public function testGetMessageForReply()
     {
         $protocol = new \Conjoon\Mail\Server\Protocol\DefaultProtocol(

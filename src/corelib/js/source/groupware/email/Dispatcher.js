@@ -96,14 +96,16 @@ com.conjoon.groupware.email.Dispatcher = function() {
                 cls     :'com-conjoon-msgbox-warning',
                 width   : 400
             });
-            return;
         }
 
-        var itemRecord = com.conjoon.util.Record.convertTo(
-            com.conjoon.groupware.email.EmailItemRecord,
-            data.item,
-            data.item.id
-        );
+        var itemRecord = null;
+        if (data.item) {
+            itemRecord = com.conjoon.util.Record.convertTo(
+                com.conjoon.groupware.email.EmailItemRecord,
+                data.item,
+                data.item.id
+            );
+        }
 
         var subject = '';
 

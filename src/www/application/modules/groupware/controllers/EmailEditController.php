@@ -157,9 +157,6 @@ class Groupware_EmailEditController extends Zend_Controller_Action {
         $facade = Conjoon_Modules_Groupware_Email_Folder_Facade::getInstance();
 
         if (!empty($pathInfo) && $facade->isRemoteFolder($pathInfo['rootId'])) {
-            if ($_POST['type'] == 'forward') {
-                throw new RuntimeException("No support for forwarding remote messages yet.");
-            }
             return $this->getDraftFromRemoteServer($_POST['id'], $path, $_POST['type']);
         }
 
@@ -459,12 +456,18 @@ class Groupware_EmailEditController extends Zend_Controller_Action {
             $server, $mailAccountRepository, $mailFolderRepository
         );
 
-        $result =  $serviceFacade->getMessageForReply($id, $path, $appUser,
-            $type == 'reply_all');
+        if ($type == 'forward') {
+            $result =  $serviceFacade->getMessageForForwarding($id, $path, $appUser);
+        } else {
+            $result =  $serviceFacade->getMessageForReply($id, $path, $appUser,
+                $type == 'reply_all');
+        }
+
 
         $this->view->success = $result->isSuccess();
         $this->view->data    = $result->getData();
-        $this->view->error      = null;
+        $this->view->error   = null;
+        $this->view->type    = $type;
     }
 
 

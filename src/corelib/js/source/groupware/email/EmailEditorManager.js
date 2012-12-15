@@ -728,7 +728,8 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
         // check if a panelId is available in the options.
         // if that is not the case, the EditorManager did not trigger this message
         // and we can exit here
-        if (!message.options || (message.options && (!message.options.panelId || !formValues[message.options.panelId]))) {
+        if (!message.options || (message.options
+            && (!message.options.panelId || !formValues[message.options.panelId]))) {
             return;
         }
 
@@ -756,7 +757,9 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
 
         clearPendingState(panelId);
 
-        formValues[panelId].emailItemRecord = message.itemRecord.copy();
+        formValues[panelId].emailItemRecord = message.itemRecord
+                                              ? message.itemRecord.copy()
+                                              : null;
         formValues[panelId].state = null;
 
         if (subject == 'com.conjoon.groupware.email.editor.draftSave') {
@@ -769,9 +772,12 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
 
             formValues[panelId].dirty = false;
         } else {
-            contentPanel.un('beforeremove',  onBeforeClose, com.conjoon.groupware.email.EmailEditorManager);
+            contentPanel.un(
+                'beforeremove',
+                onBeforeClose, com.conjoon.groupware.email.EmailEditorManager);
             contentPanel.remove(Ext.getCmp(panelId));
-            contentPanel.on('beforeremove',  onBeforeClose, com.conjoon.groupware.email.EmailEditorManager);
+            contentPanel.on('beforeremove',
+                onBeforeClose, com.conjoon.groupware.email.EmailEditorManager);
         }
     };
 
