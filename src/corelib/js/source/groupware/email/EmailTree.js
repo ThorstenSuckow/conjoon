@@ -31,6 +31,54 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
     folderSpam   : null,
     folderTrash  : null,
 
+    isFolderOfType : function(nodeId, type)
+    {
+        var _store = com.conjoon.groupware.email.AccountStore.getInstance();
+        var _folderMappingCache = [];
+
+        var accounts = _store.getRange();
+
+        for (var i = 0, len = accounts.length; i < len; i++) {
+            var account = accounts[i];
+            if (account.get('protocol') == 'IMAP') {
+                var mappings = account.get('folderMappings');
+
+                for (var a = 0, lena = mappings.length; a < lena; a++) {
+                    var mapping = mappings[a];
+
+                    _folderMappingCache['/' + (mapping.path).join('/')]
+                        = (mapping.type).toLowerCase();
+                }
+
+            }
+        }
+
+        switch (true) {
+            case (this.folderInbox && this.folderInbox.id == nodeId && type == 'inbox'):
+                return true;
+            case (this.folderOutbox && this.folderOutbox.id == nodeId && type == 'outbox'):
+                return true;
+            case (this.folderSent && this.folderSent.id == nodeId && type == 'sent'):
+                return true;
+            case (this.folderSpam && this.folderSpam.id == nodeId && type == 'junk'):
+                return true;
+            case (this.folderTrash && this.folderTrash.id == nodeId && type == 'trash'):
+                return true;
+            case (this.folderDraft && this.folderDraft.id == nodeId && type == 'draft'):
+                return true;
+        }
+
+        var n = this.getNodeById(nodeId);
+
+        if (!n) {
+            return;
+        }
+
+        return _folderMappingCache[n.getPath('idForPath')] == type;
+
+    },
+
+
     /**
      * A simple storage for nodes which are being edited. This is needed for
      * newly created nodes, since a new node will be written in to the database
@@ -251,7 +299,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
             });
 
         } else {
-            this.moveFolderToTrash(this, this.folderTrash, clkNode);
+            this.moveFolderToTrash(this, this.folderTrash.RESOLVE.THIS, clkNode);
         }
     },
 
@@ -522,7 +570,10 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
                 if (record.data.pending < 0) {
                     record.data.pending = 0;
                 }
-                node.getUI().updatePending(record.data.pending, (node.attributes.type == 'draft' || node.attributes.type == 'outbox'));
+                node.getUI().updatePending(
+                    record.data.pending,
+                    (node.attributes.type == 'draft'
+                        || node.attributes.type == 'outbox'));
                 //node.getUI().updatePending(record.data.pending);
             }
         }
@@ -1308,26 +1359,32 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
 
         var attr = node.attributes;
 
-        switch (attr.type) {
-            case 'inbox':
-                this.folderInbox = node;
-            break;
-            case 'spam':
-                this.folderSpam = node;
-            break;
-            case 'outbox':
-                this.folderOutbox = node;
-            break;
-            case 'sent':
-                this.folderSent = node;
-            break;
-            case 'draft':
-                this.folderDraft = node;
-            break;
-            case 'trash':
-                this.folderTrash = node;
-            break;
+        if (parent.attributes.type == 'accounts_root') {
+
+            var arr = node.getPathAsArray();
+
+            switch (attr.type) {
+                case 'inbox':
+                    this.folderInbox = node;
+                break;
+                case 'spam':
+                    this.folderSpam = node;
+                break;
+                case 'outbox':
+                    this.folderOutbox = node;
+                break;
+                case 'sent':
+                    this.folderSent = node;
+                break;
+                case 'draft':
+                    this.folderDraft = node;
+                break;
+                case 'trash':
+                    this.folderTrash = node;
+                break;
+            }
         }
+
 
         this.pendingItemStore.add(new com.conjoon.groupware.email.PendingNodeItemRecord({
             pending : parseInt(attr.pendingCount)

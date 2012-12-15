@@ -270,7 +270,8 @@ com.conjoon.groupware.email.EmailGrid = Ext.extend(Ext.ux.grid.livegrid.GridPane
         subItems.get(3).setIconClass('');
         subItems.get(4).setIconClass('');
 
-        if (this.controller.clkNodeId == this.controller.treePanel.folderSpam.id) {
+        if (this.controller.treePanel.isFolderOfType(this.controller.clkNodeId, 'junk')) {
+        //if (this.controller.clkNodeId == this.controller.treePanel.folderSpam.id) {
             subItems.get(3).setDisabled(true);
             subItems.get(4).setDisabled(false);
         } else {
@@ -308,10 +309,14 @@ com.conjoon.groupware.email.EmailGrid = Ext.extend(Ext.ux.grid.livegrid.GridPane
         // mark as spam has to be disabled in outbox, drafts and sent
         var tp = this.controller.treePanel;
         var clkNodeId = this.controller.clkNodeId;
-        var isDrafts = clkNodeId == tp.folderDraft.id;
-        var isOutbox = clkNodeId == tp.folderOutbox.id;
-        var disableSpamItems = isDrafts || clkNodeId == tp.folderOutbox.id  ||
-                                clkNodeId == tp.folderSent.id;
+
+        var isDrafts = tp.isFolderOfType(clkNodeId, 'draft');
+        var isOutbox = tp.isFolderOfType(clkNodeId, 'outbox');
+
+        var disableSpamItems = isDrafts
+                               || tp.isFolderOfType(clkNodeId, 'draft')
+                               || tp.isFolderOfType(clkNodeId, 'sent');
+
         var sendNowItem = menuItems.get(1);
         var editDraft   = menuItems.get(2);
         var openView    = menuItems.get(0);

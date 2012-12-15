@@ -458,6 +458,8 @@ class Groupware_EmailEditController extends Zend_Controller_Action {
 
         if ($type == 'forward') {
             $result =  $serviceFacade->getMessageForForwarding($id, $path, $appUser);
+        } else if ($type == 'edit') {
+            $result = $serviceFacade->getMessageForComposing($id, $path, $appUser);
         } else {
             $result =  $serviceFacade->getMessageForReply($id, $path, $appUser,
                 $type == 'reply_all');

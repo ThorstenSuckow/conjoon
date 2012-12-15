@@ -145,6 +145,25 @@ class DefaultMessageServiceFacadeTest extends
         $this->assertTrue($result->isSuccess());
     }
 
+    public function testGetMessageForComposing()
+    {
+        $protocol = new \Conjoon\Mail\Server\Protocol\DefaultProtocol(
+            $this->protocolAdaptee
+        );
+
+        $defaultServer = new \Conjoon\Mail\Server\DefaultServer($protocol);
+
+        $messageFacade = new DefaultMessageServiceFacade($defaultServer,
+            $this->mailAccountRepository, $this->mailFolderRepository);
+        $result = $messageFacade->getMessageForComposing(
+            "1", '["root","1","2"]', $this->user
+
+        );
+
+        $this->assertTrue($result instanceof ServiceResult);
+        $this->assertTrue($result->isSuccess());
+    }
+
     public function testGetAttachment()
     {
         $protocol = new \Conjoon\Mail\Server\Protocol\DefaultProtocol(

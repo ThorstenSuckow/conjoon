@@ -604,14 +604,16 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
     allowNodePendingUpdate : function(nodeId)
     {
         var tp = this.treePanel;
-        switch (nodeId) {
-            case tp.folderDraft.id:
-                return false;
-            case tp.folderOutbox.id:
-                return false;
-            default:
-                return true;
+
+        if (tp.isFolderOfType(nodeId, 'draft')) {
+            return false;
         }
+
+        if (tp.isFolderOfType(nodeId, 'outbox')) {
+            return false;
+        }
+
+        return true;
     },
 
     /**
@@ -750,19 +752,19 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
          * @todo better check if folders are loaded
          */
         if (!tp.folderDraft) {
-            return;
+            //return;
         }
 
-        var isDrafts = this.clkNodeId == tp.folderDraft.id;
+        var isDrafts = tp.isFolderOfType(this.clkNodeId, 'draft');
 
         this.editDraftButton.setVisible(isDrafts);
 
         var isSpam = record ? record.data.isSpam : false;
 
-        var isSendable = (this.clkNodeId == tp.folderOutbox.id);
+        var isSendable = tp.isFolderOfType(this.clkNodeId, 'outbox');
 
         var isNotSpammable = (!record) || (isDrafts) ||
-                             (this.clkNodeId == tp.folderSent.id) ||
+                             (tp.isFolderOfType(this.clkNodeId, 'sent')) ||
                              (isSendable);
 
         this.spamButton.setDisabled(isNotSpammable || isSpam);
@@ -1097,7 +1099,7 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
          * This needs to be enhanced
          */
         if (!tp.folderDraft) {
-            return;
+            //return;
         }
 
         var draft        = message.draft;
@@ -1107,8 +1109,9 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
         var pendingStore = tp.pendingItemStore;
 
         // update pending count of drafts if the message was in the draft folder
-        if (draft.get('groupwareEmailFoldersId') == tp.folderDraft.id) {
-            var pendingRecord = pendingStore.getById(tp.folderDraft.id);
+        if (tp.isPathOfType(draft.get('path'), 'draft')) {
+
+            var pendingRecord = pendingStore.getById('/' + draft.get('path').join('/'));
             if (pendingRecord) {
                 pendingRecord.set('pending', pendingRecord.data.pending-1);
             }
@@ -1117,13 +1120,13 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
             // the referenced item will be in any case the itemrecord from
             // the draft folder, since the draft itself was from the
             // draftFolder
-            if (tp.folderDraft.id == currFolderId) {
+            if (tp.isFolderOfType(currFolderId, 'draft')) {
                 store.remove(message.referencedItem);
             }
         }
 
         // pending count will be updated in every case
-        var pendingRecord = pendingStore.getById(tp.folderOutbox.id);
+        var pendingRecord = pendingStore.getById(tp.RESOLVE_THIS.folderOutbox.id);
         if (pendingRecord) {
             pendingRecord.set('pending', pendingRecord.data.pending+1);
         }
@@ -1131,7 +1134,7 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
         // create a record for the current grid if and only if
         // the currently opened folder equals to the folder the email
         // was moved to
-        if (tp.folderOutbox.id == currFolderId) {
+        if (tp.isFolderOfType(currFolderId, 'outbox')) {
             var index = store.findInsertIndex(itemRecord);
             store.insert(index, itemRecord.copy());
         }
@@ -1171,19 +1174,19 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
 
         // update pending count in any case
         // outbox
-        var pendingRecord = pendingStore.getById(tp.folderOutbox.id);
+        var pendingRecord = pendingStore.getById(tp.RESOLVE_THIS.folderOutbox.id);
         if (pendingRecord) {
             pendingRecord.set('pending', pendingRecord.data.pending+notSent.length);
         }
 
         // check which folder is currently visible and insert records
         var ind = 0;
-        if (currFolderId == tp.folderSent.id) {
+        if (tp.isFolderOfType(currFolderId, 'sent')) {
             for (var i = 0, len = sentItems.length; i < len; i++) {
                 ind = store.findInsertIndex(sentItems[i]);
                 store.insert(ind, sentItems[i].copy());
             }
-        } else if (currFolderId == tp.folderOutbox.id) {
+        } else if (tp.isFolderOfType(currFolderId, 'outbox')) {
             for (var i = 0, len = notSent.length; i < len; i++) {
                 ind = store.findInsertIndex(notSent[i]);
                 store.insert(ind, notSent[i].copy());
@@ -1224,7 +1227,7 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
         var emailItems = message.emailItems;
         var length     = emailItems.length;
 
-        if (currFolderId == tp.folderOutbox.id) {
+        if (tp.isFolderOfType(currFolderId, 'outbox')) {
             var ind = 0;
             for (var i = 0; i < length; i++) {
                 ind = store.findInsertIndex(emailItems[i]);
@@ -1233,7 +1236,7 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
         }
 
         // update pending count in any case
-        var pendingRecord = pendingStore.getById(tp.folderOutbox.id);
+        var pendingRecord = pendingStore.getById(tp.RESOLVE_THIS.folderOutbox.id);
         if (pendingRecord) {
             pendingRecord.set('pending', pendingRecord.data.pending+length);
         }
@@ -1255,12 +1258,12 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
         var emailItems = message.emailItems;
         var length     = emailItems.length;
 
-        if (currFolderId == tp.folderOutbox.id) {
+        if (tp.isFolderOfType(currFolderId, 'outbox')) {
             store.bulkRemove(emailItems);
         }
 
         // update pending count in any case
-        var pendingRecord = pendingStore.getById(tp.folderOutbox.id);
+        var pendingRecord = pendingStore.getById(tp.RESOLVE_THIS.folderOutbox.id);
         if (pendingRecord) {
             pendingRecord.set('pending', pendingRecord.data.pending-length);
         }
@@ -1286,7 +1289,7 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
         var emailRecord = message.itemRecord;
         var draft       = message.draft;
         var oldId       = -1;
-        var oldFolderId = -1;
+        var oldFolderPath = -1;
         var type        = draft.get('type');
 
         var tp           = this.treePanel;
@@ -1296,8 +1299,7 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
 
         if (referencedRecord) {
             oldId       = referencedRecord.get('id');
-            oldFolderId = referencedRecord.get('groupwareEmailFoldersId');
-
+            oldFolderPath = referencedRecord.get('path');
         }
 
         // check if the grid with the record for old id is open. Update the specific record
@@ -1330,15 +1332,15 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
         // if the email was loaded from outbox/draft and sent, update pending nodes
         // minus 1, but only if the id of the itemRecord equals to the id of the draft,
         // which will basically tell that an email pending in the outbox folder was sent
-        if (tp.folderOutbox && referencedRecord
-            && ((oldFolderId == tp.folderOutbox.id || oldFolderId == tp.folderDraft.id)
+        if (referencedRecord
+            && ((tp.isPathOfType(oldFolderPath, 'outbox') || tp.isPathOfType(oldFolderPath, 'draft'))
             && emailRecord.get('id') == referencedRecord.get('id'))) {
             // if grid is visible, remove the record with the specified id!
-            if (currFolderId == oldFolderId) {
+            if (this.tree.getNodeById(currFolderId).getPath('idForPath') == '/' + oldFolderPath.join('/')) {
                 store.remove(referencedRecord);
             }
             // update pending count in any case
-            var pendingRecord = pendingStore.getById(oldFolderId);
+            var pendingRecord = pendingStore.getById(oldFolderId.RESOLVE.THIS);
             if (pendingRecord) {
                 pendingRecord.set('pending', pendingRecord.data.pending-1);
             }
@@ -1390,15 +1392,15 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
          * This needs to be enhanced
          */
         if (!tp.folderDraft) {
-            return;
+            //return;
         }
 
         var referencedRecord = message.referencedItem;
 
         var oldDraftId   = message.draft.get('id');
-        var oldFolderId  = message.groupwareEmailFoldersId;
+        var oldFolderPath  = message.path;
         var itemRecord   = message.itemRecord;
-        var newFolderId  = itemRecord.get('groupwareEmailFoldersId');
+        var newFolderPath  = itemRecord.get('path');
         var currFolderId = this.clkNodeId;
         var store        = this.gridPanel.getStore();
         var pendingStore  = tp.pendingItemStore;
@@ -1409,16 +1411,16 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
         // if they differ, try to remove the record out of oldFolderId
         // and add the new record to the new folder, but only if the oldDraftId
         // was anything but <= 0
-        if (oldFolderId != newFolderId && oldDraftId > 0) {
+        if (tp.pathEqualsPath(oldFolderPath, newFolderPath) && oldDraftId > 0) {
             // check if visible
             // remove the record and update pending nodes
-            if (currFolderId == oldFolderId) {
+            if (tp.idEqualsPath(currFolderId, oldFolderPath)) {
                 if (referencedRecord) {
                     store.remove(referencedRecord);
                 }
             }
 
-            var pendingRecord = pendingStore.getById(oldFolderId);
+            var pendingRecord = pendingStore.getById(oldFolderId.RESOLVE.THIS);
             if (pendingRecord) {
                 pendingRecord.set('pending', pendingRecord.data.pending-1);
             }
@@ -1427,13 +1429,13 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
         // if the oldDraftId is equal to the new draft id, we do not need to update
         // the pending count
         if (oldDraftId != itemRecord.id) {
-            var pendingRecord = pendingStore.getById(newFolderId);
+            var pendingRecord = pendingStore.getById(newFolderId.RESOLVE.THIS);
             if (pendingRecord) {
                 pendingRecord.set('pending', pendingRecord.data.pending+1);
             }
         }
 
-        if (currFolderId == newFolderId) {
+        if (tp.idEqualsPath(currFolderId, newFolderPath)) {
             this._replaceAndRefreshIfNeeded(referencedRecord, itemRecord);
         }
     },
