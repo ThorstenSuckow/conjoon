@@ -166,7 +166,6 @@ class Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade {
 
         $storage = new Conjoon_Mail_Storage_Imap($protocol);
 
-
         $messageStruct = $storage->getHeaderListAndMetaInformationForGlobalName(
             $globalName, $from, $to
         );
@@ -212,7 +211,11 @@ class Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade {
         $parsedHeaders = array();
         for ($i = 0, $len = count($messageStruct); $i < $len; $i++) {
 
-            $header = $parser->parse($messageStruct[$i]['header']);
+            try{
+                $header = $parser->parse($messageStruct[$i]['header']);
+            } catch (Exception $e) {
+                continue;
+            }
 
             $header['date'] = Conjoon_Date_Format::toUtc(
                 $sanitizeDateTransformer->transform($header['date'])

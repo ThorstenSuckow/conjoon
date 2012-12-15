@@ -462,7 +462,9 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
             this.fireEvent('emailsdeleted', records);
 
             var pendingStore  = this.treePanel.pendingItemStore;
-            var pendingRecord = pendingStore.getById(this.clkNodeId);
+            var pendingRecord = pendingStore.getById(
+                this.treePanel.getNodeById(this.clkNodeId).getPath('idForPath')
+            );
             if (pendingRecord) {
                 pendingRecord.set('pending', pendingRecord.data.pending-unread);
             }
@@ -525,12 +527,12 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
         gs.bulkRemove(records);
 
         var pendingStore  = this.treePanel.pendingItemStore;
-        var pendingRecord = pendingStore.getById(folderId);
+        var pendingRecord = pendingStore.getById(this.treePanel.getNodeById(folderId).getPath('idForPath'));
         if (pendingRecord) {
             pendingRecord.set('pending', pendingRecord.data.pending+unread);
         }
 
-        pendingRecord = pendingStore.getById(currFolderId);
+        pendingRecord = pendingStore.getById(this.treePanel.getNodeById(currFolderId).getPath('idForPath'));
         if (pendingRecord) {
             pendingRecord.set('pending', pendingRecord.data.pending - (allowPendingUpdate ? unread : updatePendingCount));
         }
@@ -570,7 +572,9 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
 
         if (currFolderId && this.allowNodePendingUpdate(currFolderId)) {
             var pendingStore  = this.treePanel.pendingItemStore;
-            var pendingRecord = pendingStore.getById(currFolderId);
+            var pendingRecord = pendingStore.getById(
+                this.treePanel.getNodeById(currFolderId).getPath('idForPath')
+            );
             if (pendingRecord) {
                 pendingRecord.set('pending', pendingRecord.data.pending+unread);
              }
@@ -1002,7 +1006,7 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
             }
 
             var pendingStore  = this.treePanel.pendingItemStore;
-            var pendingRecord = pendingStore.getById(record.data.groupwareEmailFoldersId);
+            var pendingRecord = pendingStore.getById(this.treePanel.assemblePath(record.data.path));
             if (pendingRecord) {
                 pendingRecord.set('pending', pendingRecord.data.pending+up);
             }
@@ -1111,7 +1115,7 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
         // update pending count of drafts if the message was in the draft folder
         if (tp.isPathOfType(draft.get('path'), 'draft')) {
 
-            var pendingRecord = pendingStore.getById('/' + draft.get('path').join('/'));
+            var pendingRecord = pendingStore.getById(tp.assemblePath(draft.get('path')));
             if (pendingRecord) {
                 pendingRecord.set('pending', pendingRecord.data.pending-1);
             }
@@ -1126,7 +1130,7 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
         }
 
         // pending count will be updated in every case
-        var pendingRecord = pendingStore.getById(tp.RESOLVE_THIS.folderOutbox.id);
+        var pendingRecord = pendingStore.getById(tp.assemblePath(itemRecord.get('path')));
         if (pendingRecord) {
             pendingRecord.set('pending', pendingRecord.data.pending+1);
         }
@@ -1174,7 +1178,11 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
 
         // update pending count in any case
         // outbox
-        var pendingRecord = pendingStore.getById(tp.RESOLVE_THIS.folderOutbox.id);
+        var pendingRecord;
+        if (notSent[0]) {
+            pendingRecord = pendingStore.getById(tp.assemblePath(notSent[0].get('path')));
+        }
+
         if (pendingRecord) {
             pendingRecord.set('pending', pendingRecord.data.pending+notSent.length);
         }
@@ -1236,7 +1244,7 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
         }
 
         // update pending count in any case
-        var pendingRecord = pendingStore.getById(tp.RESOLVE_THIS.folderOutbox.id);
+        var pendingRecord = pendingStore.getById(tp.assemblePath(emailItems[0].get('path')));
         if (pendingRecord) {
             pendingRecord.set('pending', pendingRecord.data.pending+length);
         }
@@ -1263,7 +1271,7 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
         }
 
         // update pending count in any case
-        var pendingRecord = pendingStore.getById(tp.RESOLVE_THIS.folderOutbox.id);
+        var pendingRecord = pendingStore.getById(tp.assemblePath(emailItems[0].get('path')));
         if (pendingRecord) {
             pendingRecord.set('pending', pendingRecord.data.pending-length);
         }
@@ -1298,7 +1306,7 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
         var pendingStore = tp.pendingItemStore;
 
         if (referencedRecord) {
-            oldId       = referencedRecord.get('id');
+            oldId         = referencedRecord.get('id');
             oldFolderPath = referencedRecord.get('path');
         }
 
@@ -1333,14 +1341,21 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
         // minus 1, but only if the id of the itemRecord equals to the id of the draft,
         // which will basically tell that an email pending in the outbox folder was sent
         if (referencedRecord
-            && ((tp.isPathOfType(oldFolderPath, 'outbox') || tp.isPathOfType(oldFolderPath, 'draft'))
-            && emailRecord.get('id') == referencedRecord.get('id'))) {
+            && (
+            (tp.isPathOfType(oldFolderPath, 'outbox') || tp.isPathOfType(oldFolderPath, 'draft'))
+            &&
+            (
+                (!message.newVersion && emailRecord.get('id') == referencedRecord.get('id'))
+             || (message.newVersion && message.previousId == referencedRecord.get('id'))
+            )
+
+            )) {
             // if grid is visible, remove the record with the specified id!
-            if (this.tree.getNodeById(currFolderId).getPath('idForPath') == '/' + oldFolderPath.join('/')) {
+            if (tp.idEqualsPath(currFolderId, oldFolderPath)) {
                 store.remove(referencedRecord);
             }
             // update pending count in any case
-            var pendingRecord = pendingStore.getById(oldFolderId.RESOLVE.THIS);
+            var pendingRecord = pendingStore.getById(tp.assemblePath(referencedRecord.get('path')));
             if (pendingRecord) {
                 pendingRecord.set('pending', pendingRecord.data.pending-1);
             }
@@ -1397,12 +1412,14 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
 
         var referencedRecord = message.referencedItem;
 
-        var oldDraftId   = message.draft.get('id');
-        var oldFolderPath  = message.path;
-        var itemRecord   = message.itemRecord;
-        var newFolderPath  = itemRecord.get('path');
-        var currFolderId = this.clkNodeId;
-        var store        = this.gridPanel.getStore();
+        var oldDraftId    = message.draft.get('id');
+        var newVersion    = message.newVersion;
+        var previousId     = message.previousId;
+        var oldFolderPath = message.path;
+        var itemRecord    = message.itemRecord;
+        var newFolderPath = itemRecord.get('path');
+        var currFolderId  = this.clkNodeId;
+        var store         = this.gridPanel.getStore();
         var pendingStore  = tp.pendingItemStore;
 
         // the draft was moved while saving from one draft folder to another
@@ -1420,7 +1437,7 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
                 }
             }
 
-            var pendingRecord = pendingStore.getById(oldFolderId.RESOLVE.THIS);
+            var pendingRecord = pendingStore.getById(tp.assemblePath(oldFolderPath));
             if (pendingRecord) {
                 pendingRecord.set('pending', pendingRecord.data.pending-1);
             }
@@ -1428,15 +1445,15 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
 
         // if the oldDraftId is equal to the new draft id, we do not need to update
         // the pending count
-        if (oldDraftId != itemRecord.id) {
-            var pendingRecord = pendingStore.getById(newFolderId.RESOLVE.THIS);
+        if (!newVersion && oldDraftId != itemRecord.id) {
+            var pendingRecord = pendingStore.getById(tp.assemblePath(itemRecord.get('path')));
             if (pendingRecord) {
                 pendingRecord.set('pending', pendingRecord.data.pending+1);
             }
         }
 
         if (tp.idEqualsPath(currFolderId, newFolderPath)) {
-            this._replaceAndRefreshIfNeeded(referencedRecord, itemRecord);
+            this._replaceAndRefreshIfNeeded(referencedRecord, itemRecord, newVersion);
         }
     },
 
@@ -1727,11 +1744,12 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
         }
 
         var folderId = record.data.groupwareEmailFoldersId;
+        var folderPath = record.data.path;
 
-        if (this.lastClkNodeId && (this.lastClkNodeId == folderId
+        if (this.lastClkNodeId && (tp.idEqualsPath(this.lastClkNodeId, folderPath)
             && !this.gridPanel.store.proxy.activeRequest[Ext.data.Api.actions.read])) {
             var pendingStore  = this.treePanel.pendingItemStore;
-            var pendingRecord = pendingStore.getById(folderId);
+            var pendingRecord = pendingStore.getById(tp.assemblePath(folderPath));
             if (pendingRecord) {
                 pendingRecord.set('pending', pendingRecord.data.pending+1);
                 this.pendingRecords[this.lastClkNodeId]--;
@@ -1761,19 +1779,22 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
         if (pendingItems == -1) {
             return;
         }
+
+        var tp = this.treePanel;
+
         // only update pending records if the last updated timestamp is less than
         // the actual timestamp
         var ts = (new Date()).getTime();
-        var folderId = options.params.groupwareEmailFoldersId;
+        var folderPath = tp.assemblePath(Ext.decode(options.params.path));
 
-        if (this.pendingRecordsDate[folderId] > ts) {
+        if (this.pendingRecordsDate[folderPath] > ts) {
             return;
         }
 
-        this.pendingRecordsDate[folderId] = ts;
+        this.pendingRecordsDate[folderPath] = ts;
 
         var pendingStore  = this.treePanel.pendingItemStore;
-        var pendingRecord = pendingStore.getById(folderId);
+        var pendingRecord = pendingStore.getById(folderPath);
 
         if (pendingRecord) {
             pendingRecord.set('pending', pendingItems);
@@ -1833,13 +1854,16 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
         this.pendingRecords = {};
 
         var folderId = null;
+        var tp = this.treePanel;
 
         this.gridPanel.view.un('rowsinserted', this.processQueue, this);
         this.gridPanel.view.on('rowsinserted', this.processQueue, this);
 
         var ts = (new Date()).getTime();
         for (var i = 0, max_i = records.length; i < max_i; i++) {
-            folderId = records[i].data.groupwareEmailFoldersId;
+
+            folderId = tp.assemblePath(records[i].data.path);
+
             if (this.pendingRecordsDate[folderId] < store.lastLoadingDate) {
                 if (!this.pendingRecords[folderId]) {
                     this.pendingRecords[folderId] = 1;
@@ -1856,7 +1880,7 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
 
         for (var folderId in this.pendingRecords) {
             this.pendingRecordsDate[folderId] = ts;
-            if (folderId != this.lastClkNodeId) {
+            if (!tp.idEqualsPath(this.lastClkNodeId, folderId)) {
                 pendingRecord = pendingStore.getById(folderId);
                 if (pendingRecord) {
                     pendingRecord.set('pending', pendingRecord.data.pending+this.pendingRecords[folderId]);
@@ -1883,10 +1907,12 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
      * and is not up to date anymore due to changes made.
      * @param {Ext.data.Record} itemRecord The new version of referencedRecord, after
      * editing
+     * @param {Boolean} newVersion whether the itemRecord is a new version of the
+     *                  referencedRecord, with a new id
      *
      * @private
      */
-    _replaceAndRefreshIfNeeded : function(referencedRecord, itemRecord)
+    _replaceAndRefreshIfNeeded : function(referencedRecord, itemRecord, newVersion)
     {
         var store    = this.gridPanel.getStore();
         var itemCopy = itemRecord.copy();
@@ -1898,7 +1924,7 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
         // referencedRecord is currently in the visible rect
         // only use the referenced record if the referencedRecord id equals to the
         // id of the itemRecord. Then the method has to update an existing item in the grid
-        if (referencedRecord && referencedRecord.id == itemCopy.id) {
+        if (referencedRecord && (referencedRecord.id == itemCopy.id || newVersion)) {
             var wasSelected = false;
             var view        = this.gridPanel.getView();
             var refresh     = view.isRecordRendered(referencedRecord);

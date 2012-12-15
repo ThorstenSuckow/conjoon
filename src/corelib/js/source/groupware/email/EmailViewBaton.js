@@ -115,6 +115,30 @@ com.conjoon.groupware.email.EmailViewBaton = function() {
     };
 
     /**
+     * Called when the message with the subject "com.conjoon.groupware.email.editor.draftSave"
+     * is published over Ext.ux.util.MessageBus.
+     * Will check if a new version of the draft is available and remap the
+     * openedEmail cache if necessary.
+     *
+     * @param {String} subject
+     * @param {Object} message
+     *
+     */
+    var _onDraftSave = function(subject, message)
+    {
+        var newVersion = message.newVersion;
+        var previousId =  message.previousId;
+
+        if (newVersion && previousId) {
+            if (openedEmails[previousId]) {
+                openedEmails[message.itemRecord.get('id')] = openedEmails[previousId];
+                delete openedEmails[previousId];
+            }
+        }
+
+    };
+
+    /**
      * Called when the message with the subject "com.conjoon.groupware.email.EmailGrid.store.remove"
      * or "com.conjoon.groupware.email.EmailGrid.store.bulkremove"
      * is published over Ext.ux.util.MessageBus.
@@ -171,7 +195,10 @@ com.conjoon.groupware.email.EmailViewBaton = function() {
         'com.conjoon.groupware.email.LatestEmailsPanel.store.remove',
         _onEmailRemove
     );
-
+    Ext.ux.util.MessageBus.subscribe(
+        'com.conjoon.groupware.email.editor.draftSave',
+        _onDraftSave
+    );
     return {
 
         /**

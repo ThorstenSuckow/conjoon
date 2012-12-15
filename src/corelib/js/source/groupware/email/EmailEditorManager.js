@@ -384,7 +384,7 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
         Ext.apply(formValues[options.panelId], {
             initialized : true,
             state       : null,
-            id          : (data.type != 'edit' ? -1 : draft.id),
+            id          : (data.type != 'edit' ? -1 : (draft.id ? draft.id : draft.uId )),
             type        : data.type,
             disabled    : false,
             references  : draft.references,
@@ -523,6 +523,12 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
         if (formValues[panelId].accountId) {
             accountField.setValue(formValues[panelId].accountId);
             _attachSignature(panelId, formValues[panelId].accountId);
+        }
+
+        if (formValues[panelId].type == 'edit') {
+            accountField.setDisabled(true);
+        } else {
+            accountField.setDisabled(false);
         }
 
         recipientStore.removeAll();
@@ -768,7 +774,7 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
             // scratch
             formValues[panelId].id   = message.itemRecord.id;
             formValues[panelId].type = 'edit';
-            formValues[panelId].folderId = message.itemRecord.get('groupwareEmailFoldersId');
+            formValues[panelId].path = message.itemRecord.get('path');
 
             formValues[panelId].dirty = false;
         } else {
@@ -854,7 +860,7 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
             attachments = [];
 
         var id = (fValues.type == 'edit' || type == 'edit')
-                 ? fValues.id
+                 ? (fValues.id ? fValues.id : fValues.uId)
                  : -1;
 
         if (files.length) {
@@ -1179,6 +1185,11 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
         formValues[activePanel.id].dirty = true;
         _attachSignature(activePanel.id, record.id, true);
 
+    };
+
+    var onBeforeAccountSelect = function(comboBox, record, index)
+    {
+        return false;
     };
 
     /**

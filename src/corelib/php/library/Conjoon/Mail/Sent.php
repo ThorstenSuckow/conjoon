@@ -29,13 +29,36 @@ class Conjoon_Mail_Sent{
     private $_header;
     private $_body;
 
+    private $transport;
 
-    public function __construct(Conjoon_Mail $mailObject, $header, $body)
+    public function __construct(Conjoon_Mail $mailObject, $header, $body = null)
     {
         $this->_mailObject = $mailObject;
+
+        if ($body === null && ($header instanceof \Conjoon\Mail\Transport\Smtp)) {
+
+            $this->transport = $header;
+            $this->_header   = $header->header
+                               ? $header->header
+                               : $header->getPreparedHeader(
+                                      $mailObject->getHeaders()
+                               );
+
+            $this->_body = $header->body
+                           ? $header->body
+                           : $mailObject->getBodyText(true);
+
+            return;
+        }
+
         $this->_header     = $header;
         $this->_body       = $body;
 
+    }
+
+    public function getTransport()
+    {
+        return $this->transport;
     }
 
     public function getMailObject()

@@ -79,6 +79,30 @@ class Conjoon_Modules_Groupware_Email_Sender {
         $postedAttachments = array(), $removeAttachmentIds = array()
      )
     {
+        $mail = self::getAssembledMail($draft, $account, $postedAttachments, $removeAttachmentIds);
+
+        $mailObject = $mail->getMailObject();
+
+        $transport = $mail->getTransport();
+
+        // Zend_Mail_Protocol_Abstract would not supress errors thrown by the native
+        // stream_socket_client function, thus - depending on the setting of error_reporting -
+        // a warning will bubble up if no internet conn is available while sending emails.
+        // supress this error here.
+        // An excpetion will be thrown right at this point if the message could not
+        // be sent
+        @$mailObject->send($transport);
+
+
+        return $mail;
+    }
+
+
+    public static function getAssembledMail(
+        Conjoon_Modules_Groupware_Email_Draft $draft, Conjoon_Modules_Groupware_Email_Account $account,
+        $postedAttachments = array(), $removeAttachmentIds = array()
+    )
+    {
         $mail = new Conjoon_Mail('UTF-8');
 
         // let everyone know...
@@ -167,22 +191,17 @@ class Conjoon_Modules_Groupware_Email_Sender {
             }
         }
 
-        $transport = new Zend_Mail_Transport_Smtp(
+        /**
+         * @see \Conjoon\Mail\Transport\Smtp
+         */
+        require_once 'Conjoon/Mail/Transport/Smtp.php';
+
+        $transport = new \Conjoon\Mail\Transport\Smtp(
             $account->getServerOutbox(), $config
         );
 
-        // Zend_Mail_Protocol_Abstract would not supress errors thrown by the native
-        // stream_socket_client function, thus - depending on the setting of error_reporting -
-        // a warning will bubble up if no internet conn is available while sending emails.
-        // supress this error here.
-        // An excpetion will be thrown right at this point if the message could not
-        // be sent
-        @$mail->send($transport);
-
-
-        return new Conjoon_Mail_Sent($mail, $transport->header, $transport->body);
+        return new Conjoon_Mail_Sent($mail, $transport);
     }
-
 
     protected static function _applyAttachments(
         Conjoon_Modules_Groupware_Email_Draft $draft, Conjoon_Mail $mail,

@@ -829,7 +829,7 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
 
         $this->view->success = $result->isSuccess();
         $this->view->data    = $result->getData();
-        $this->view->error      = null;
+        $this->view->error   = null;
     }
 
 

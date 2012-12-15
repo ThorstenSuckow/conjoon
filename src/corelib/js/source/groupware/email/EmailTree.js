@@ -31,6 +31,127 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
     folderSpam   : null,
     folderTrash  : null,
 
+    assemblePath : function(path)
+    {
+        if (path[0] == 'root') {
+            return '/' + path.join('/');
+        }
+
+        return '/root/' + path.join('/');
+    },
+
+    getNodeForPath :function(path)
+    {
+        var node = this.root.findChildBy(function(node) {
+            if (node.getPath('idForPath') == path) {
+                return true;
+            }
+        }, this, true);
+
+        return node;
+    },
+
+    isPathOfType : function(path, type)
+    {
+        var _store = com.conjoon.groupware.email.AccountStore.getInstance();
+        var _folderMappingCache = [];
+
+        var myPath = path[0] == 'root'
+                     ? '/' + path.join('/')
+                     : '/root/' + path.join('/');
+
+        var accounts = _store.getRange();
+
+        for (var i = 0, len = accounts.length; i < len; i++) {
+            var account = accounts[i];
+            if (account.get('protocol') == 'IMAP') {
+                var mappings = account.get('folderMappings');
+
+                for (var a = 0, lena = mappings.length; a < lena; a++) {
+                    var mapping = mappings[a];
+
+                    _folderMappingCache['/' + (mapping.path).join('/')]
+                        = (mapping.type).toLowerCase();
+                }
+
+            }
+        }
+
+        switch (true) {
+            case (this.folderInbox && this.folderInbox.getPath('idForPath') == myPath && type == 'inbox'):
+                return true;
+            case (this.folderOutbox && this.folderOutbox.getPath('idForPath') == myPath && type == 'outbox'):
+                return true;
+            case (this.folderSent && this.folderSent.getPath('idForPath') == myPath && type == 'sent'):
+                return true;
+            case (this.folderSpam && this.folderSpam.getPath('idForPath') == myPath && type == 'junk'):
+                return true;
+            case (this.folderTrash && this.folderTrash.getPath('idForPath') == myPath && type == 'trash'):
+                return true;
+            case (this.folderDraft && this.folderDraft.getPath('idForPath') == myPath && type == 'draft'):
+                return true;
+        }
+
+        return _folderMappingCache[myPath] == type;
+    },
+
+
+    /**
+     * Helper function for checking if the passed node id points to the same
+     * path as specified in the path parts.
+     *
+     * @param {String} nodeId
+     * @param {Array} path
+     *
+     * return {Boolean}
+     */
+    idEqualsPath : function(nodeId, path)
+    {
+        var node = this.getNodeById(nodeId);
+
+        if (!node) {
+            return false;
+        }
+
+        var sourcePath = node.getPath('idForPath');
+
+        if (typeof path == 'string' || path instanceof String) {
+
+            path = path.split('/');
+        }
+
+        if (path && path[0]) {
+
+            var targetPath = path.join('/');
+
+            if (path[0] != 'root') {
+                targetPath = '/root/' + targetPath;
+            }
+
+            return sourcePath == targetPath;
+        }
+
+        return false;
+    },
+
+    /**
+     * Helper function for checking if the passed path parts point to the same
+     * path as specified in the second path parts.
+     *
+     * @param {Array} oldFolderPath
+     * @param {Array} newFolderPath
+     *
+     * return {Boolean}
+     */
+    pathEqualsPath : function(oldFolderPath, newFolderPath)
+    {
+        if (!oldFolderPath || !newFolderPath) {
+            return false;
+        }
+
+        return oldFolderPath.join() == newFolderPath.join();
+    },
+
     isFolderOfType : function(nodeId, type)
     {
         var _store = com.conjoon.groupware.email.AccountStore.getInstance();
@@ -565,7 +686,8 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
     updatePendingNodes : function(store, record, operation)
     {
         if (operation == 'edit') {
-            var node = this.getNodeById(record.id);
+
+            var node = this.getNodeForPath(record.id);
             if (node) {
                 if (record.data.pending < 0) {
                     record.data.pending = 0;
@@ -1388,7 +1510,8 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
 
         this.pendingItemStore.add(new com.conjoon.groupware.email.PendingNodeItemRecord({
             pending : parseInt(attr.pendingCount)
-        }, attr.id));
+        }, node.getPath('idForPath')));
+
     },
 
     /**

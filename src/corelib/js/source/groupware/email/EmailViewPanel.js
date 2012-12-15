@@ -354,12 +354,16 @@ com.conjoon.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
     {
         var emailItem = message.itemRecord;
 
-        if (!this.emailItem || emailItem.get('id') != this.emailItem.get('id')) {
+        if (!this.emailItem
+            || (!message.newVersion && emailItem.get('id') != this.emailItem.get('id'))
+            || (message.newVersion && message.previousId != this.emailItem.get('id'))
+            ) {
             return;
         }
 
         this.setEmailItem(emailItem.copy(), true);
         this.emailRecord = message.emailRecord.copy();
+
         this.renderView();
     },
 

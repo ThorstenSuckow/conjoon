@@ -130,6 +130,16 @@ com.conjoon.groupware.email.Dispatcher = function() {
                         contextReferencedItem : cri
                     });
                 }
+
+                Ext.apply(pubObject, {
+                    // tells if a new message was created for sending a draft.
+                    // This basically happens on IMAP servers when a draft is
+                    // for composing a new message. The message is created and
+                    // stored with a new id in a "sent" flder, wehile the draft
+                    // with the previousId gets removed from the server
+                    newVersion : data.newVersion,
+                    previousId : data.previousId
+                });
             break;
 
             case 'outbox':
@@ -144,7 +154,13 @@ com.conjoon.groupware.email.Dispatcher = function() {
                     data.emailRecord.id
                 );
                 Ext.apply(pubObject, {
-                    emailRecord : emailRecord
+                    emailRecord : emailRecord,
+                    // tells if a new version was stored. this basically means that
+                    // the draft that was previously edited was removed, and a new
+                    // id for this draft is available
+                    newVersion : data.newVersion,
+                    previousId : data.previousId
+
                 });
             break;
         }

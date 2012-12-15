@@ -250,6 +250,65 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
 
         $isRemoteItemReferenced = false;
 
+        // check if the mesage was loaded from a remote draft
+        // if this is the case, remove the draft from the rmeote server
+        if ($message->getId() > 0) {
+
+            $uId = $message->getId();
+            $path = $message->getPath();
+
+            // check if folder is remote folder
+            /**
+             * @see Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser
+             */
+            require_once 'Conjoon/Text/Parser/Mail/MailboxFolderPathJsonParser.php';
+
+            $parser = new Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser();
+
+            $pathInfo = $parser->parse(json_encode($path));
+
+            /**
+             * @see Conjoon_Modules_Groupware_Email_Folder_Facade
+             */
+            require_once 'Conjoon/Modules/Groupware/Email/Folder/Facade.php';
+
+            $facade = Conjoon_Modules_Groupware_Email_Folder_Facade::getInstance();
+
+            // get the account for the root folder first
+            $imapAccount =
+                $facade->getImapAccountForFolderIdAndUserId($pathInfo['rootId'],
+                    $userId);
+
+            if ($imapAccount && !empty($pathInfo) && $facade->isRemoteFolder($pathInfo['rootId'])) {
+
+                // if remote, where is the referenced mail stored?
+                $globalName = $facade->getAssembledGlobalNameForAccountAndPath(
+                    $imapAccount, $pathInfo['path']);
+
+                /**
+                 * @see Conjoon_Modules_Groupware_Email_ImapHelper
+                 */
+                require_once 'Conjoon/Modules/Groupware/Email/ImapHelper.php';
+
+                /**
+                 * @see Conjoon_Mail_Storage_Imap
+                 */
+                require_once 'Conjoon/Mail/Storage/Imap.php';
+
+                $protocol = Conjoon_Modules_Groupware_Email_ImapHelper
+                ::reuseImapProtocolForAccount($imapAccount);
+
+                $storage = new Conjoon_Mail_Storage_Imap($protocol);
+
+                // get the number of the message by it's unique id
+                $storage->selectFolder($globalName);
+                $messageNumber = $storage->getNumberByUniqueId($uId);
+
+                $storage->removeMessage($messageNumber);
+                $storage->close();
+            }
+        }
+
         if (!empty($referencedData) && isset($referencedData['uId']) &&
             $referencedData['uId'] > 0) {
 
@@ -366,10 +425,11 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
                 require_once 'Conjoon/Mail/Storage/Imap.php';
 
                 $protocol = Conjoon_Modules_Groupware_Email_ImapHelper
-                    ::reuseImapProtocolForAccount($account->getDto());
+                ::reuseImapProtocolForAccount($account->getDto());
                 $storage = new Conjoon_Mail_Storage_Imap($protocol);
 
                 try {
+
                     $storage->selectFolder($globalName);
                     $response = $storage->appendMessage(
                         $mail->getHeader()
@@ -399,6 +459,7 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
                     $storage->setFlags($lastMessage, array('\Seen'));
 
                 } catch (\Exception $e) {
+                    var_dump($e);die();
                     $folderMappingError = true;
                 }
 
@@ -464,6 +525,11 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
             }
 
             $this->view->error   = null;
+            $this->view->newVersion = $message->getId() > 0;
+            if ($message->getId() > 0) {
+                $this->view->previousId = $message->getId();
+            }
+
             $this->view->folderMappingError = $folderMappingError;
             $this->view->success = true;
             $this->view->item    = isset($item) ? $item : null;
