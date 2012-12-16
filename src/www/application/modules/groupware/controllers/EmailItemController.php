@@ -201,21 +201,9 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
                 $currentAccount =& $accounts[$i];
 
                 // check here if we have an actual INBOX folder configured for the
-                // account. If not, break an return without fetching mails.
+                // account. 
                 if ($currentAccount->getProtocol() == 'IMAP') {
-                    $folderId = false;/* $facade->getDefaultInboxFolderForAcountId(
-                        $currentAccount->getId()
-                    );*/
-
-                    if ($folderId === false) {
-                        $this->view->success                  = false;
-                        $this->view->totalCount               = 0;
-                        $this->view->items                    = array();
-                        $this->view->error                    = null;
-                        $this->view->missingInboxForAccountId = $currentAccount->getId();
-
-                        return;
-                    }
+                    continue;
                 }
 
                 $tmpEmails = Conjoon_Modules_Groupware_Email_Letterman::fetchEmails($userId, $currentAccount);

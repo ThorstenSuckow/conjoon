@@ -1258,7 +1258,8 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
             try{
                 $pendingCount = $this->itemListRequestFacade
                                      ->getPendingCountForGlobalName(
-                                         $account, $globalName);
+                                         $account, $globalName
+                                    );
             } catch (Exception $e) {
                 // ignore
             }

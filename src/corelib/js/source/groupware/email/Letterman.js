@@ -358,15 +358,7 @@ com.conjoon.groupware.email.Letterman = function(config) {
             _messageBroadcaster.publish('com.conjoon.groupware.email.Letterman.loadexception', {});
             this.wakeup();
 
-            if (response.raw && response.raw.missingInboxForAccountId) {
-                var accountId = parseInt(response.raw.missingInboxForAccountId);
-                com.conjoon.groupware.email.options.FolderMappingBaton.showNotice(
-                    accountId, 'INBOX'
-                );
-                return;
-            } else {
-                com.conjoon.groupware.ResponseInspector.handleFailure(response);
-            }
+            com.conjoon.groupware.ResponseInspector.handleFailure(response);
         },
 
         /**

@@ -1629,7 +1629,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
         if (!this.rendered) {
             return;
         }
-
+console.log(subject, message);
         if (this.root.firstChild == null) {
             this.root.reload();
         } else {

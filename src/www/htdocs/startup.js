@@ -27,7 +27,6 @@ Ext.onReady(function(){
     var groupware           = com.conjoon.groupware;
     var emailAccountStore   = groupware.email.AccountStore.getInstance();
     var feedsAccountStore   = groupware.feeds.AccountStore.getInstance();
-    var mappingStore        = groupware.email.options.folderMapping.data.Store.getInstance();
     var feedsFeedStore      = groupware.feeds.FeedStore.getInstance();
     var reception           = groupware.Reception;
     var twitterAccountStore = com.conjoon.service.twitter.data.AccountStore.getInstance();
@@ -38,20 +37,8 @@ Ext.onReady(function(){
 
     var loadingInd = null;
 
-    var groupedStores = {
-        emailStores : 2
-    };
     var _load = function(store) {
         var id = store.storeId;
-
-        if (id === emailAccountStore.storeId || id === mappingStore.storeId) {
-            id = 'emailStores';
-        }
-
-        if (groupedStores[id] && (--groupedStores[id]) > 0) {
-            return;
-        }
-
         _updateIndicator(id);
     };
 
@@ -87,10 +74,6 @@ Ext.onReady(function(){
 
         var id = store.storeId;
 
-        if (id === emailAccountStore.storeId || id === mappingStore.storeId) {
-            id = 'emailStores';
-        }
-
         var config = preLoader.getStoreConfig(store);
         if (config && config.ignoreLoadException !== true) {
             var sm = com.conjoon.groupware.ResponseInspector.generateMessage(response, options);
@@ -112,12 +95,6 @@ Ext.onReady(function(){
         var div = document.getElementById(id);
         if (!div) {
             return;
-        }
-
-        if (id == 'emailStores') {
-            if (groupedStores[id] > 0) {
-                return;
-            }
         }
 
         Ext.fly(div).addClass('done');
@@ -149,10 +126,8 @@ Ext.onReady(function(){
                 msg = com.conjoon.Gettext.gettext("Loading Twitter accounts...");
             break;
 
-            case mappingStore:
             case emailAccountStore:
                 msg = com.conjoon.Gettext.gettext("Loading Email accounts...");
-                id  = 'emailStores';
             break;
 
             case feedsAccountStore:
@@ -202,7 +177,6 @@ Ext.onReady(function(){
     });
 
     preLoader.addStore(emailAccountStore);
-    preLoader.addStore(mappingStore);
     preLoader.addStore(feedsAccountStore);
     preLoader.addStore(twitterAccountStore, {
         ignoreLoadException : true

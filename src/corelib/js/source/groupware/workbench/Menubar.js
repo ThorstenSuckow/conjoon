@@ -30,31 +30,6 @@ com.conjoon.groupware.workbench.Menubar = function(){
     var _accStore = null;
 
     /**
-     * Listener for the "Email"-menu "beforeshow"-event.
-     * Will either render the "Folder mappings..." menu item enabled or disabled
-     * based on the availability of IMAP accounts.
-     *
-     */
-    var _onEmailMenuBeforeShow = function()
-    {
-        if (!_accStore) {
-            _accStore = com.conjoon.groupware.email.AccountStore.getInstance();
-        }
-
-        var recs = _accStore.getRange();
-
-        var found = false;;
-        for (var i = 0, len = recs.length; i < len; i++) {
-            if (recs[i].get('protocol').toLowerCase() == 'imap') {
-                found = true;
-                break;
-            }
-        }
-
-        _emailMenu.menu.items.get(3).setDisabled(!found);
-    };
-
-    /**
      *
      * @return {Ext.Toolbar.Button}
      */
@@ -78,15 +53,8 @@ com.conjoon.groupware.workbench.Menubar = function(){
                     var dialog = new com.conjoon.groupware.email.EmailAccountDialog();
                     dialog.show();
                 }
-            }, {
-                text    : com.conjoon.Gettext.gettext("Folder mappings..."),
-                handler : function() {
-                    com.conjoon.groupware.email.options.FolderMappingBaton.showDialog();
-                }
             }]
         });
-
-        _emailMenu.menu.on('beforeshow', _onEmailMenuBeforeShow);
 
         return _emailMenu;
     };
