@@ -194,7 +194,7 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
                 labelStyle : 'width:102px;font-size:11px',
                 ctCls      : 'com-conjoon-smalleditor',
                 fieldLabel : com.conjoon.Gettext.gettext("Protocol"),
-                value      : 'POP3',
+                value      : 'POP',
                 width      : 225
             }),
             'serverInbox' : new TextField({

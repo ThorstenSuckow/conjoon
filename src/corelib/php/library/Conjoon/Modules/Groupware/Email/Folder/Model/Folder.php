@@ -91,7 +91,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
 
         $row = $this->fetchRow($select);
 
-        if ($row && $row->parent_id === '0') {
+        if ($row && $row->parent_id == null) {
             return $row->type;
         }
 
@@ -688,7 +688,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
                 'is_locked'        => 1,
                 'type'             => 'accounts_root',
                 'meta_info'        => 'inbox',
-                'parent_id'        => 0
+                'parent_id'        => null
             ));
             $ids[] = $parentId;
 
@@ -1368,7 +1368,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
                 'is_locked'        => 1,
                 'type'             => 'root_remote',
                 'meta_info'        => 'inbox',
-                'parent_id'        => 0
+                'parent_id'        => null
             ));
             $ids[] = $parentId;
 

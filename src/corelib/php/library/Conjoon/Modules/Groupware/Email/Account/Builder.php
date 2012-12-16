@@ -112,23 +112,49 @@ class Conjoon_Modules_Groupware_Email_Account_Builder extends Conjoon_Builder {
 
                 $folderMappings =& $dto->folderMappings;
 
-                $folder = $facade->getRootFolderForAccountId(
-                    $dto, $userId
-                );
-                $folder = $folder[0];
+                $folder = null;
+
+                try {
+                    $folder = $facade->getRootFolderForAccountId(
+                        $dto, $userId
+                    );
+                    $folder = $folder[0];
+
+                } catch (Exception $e) {
+                    // connection exception ignore
+                }
 
                 for ($a = 0, $lena = count($folderMappings); $a < $lena; $a++) {
-                    $folderMappings[$a]['delimiter'] =
-                        Conjoon_Modules_Groupware_Email_ImapHelper
-                        ::getFolderDelimiterForImapAccount($dto);
 
-                    $folderMappings[$a]['path'] = array_merge(
-                        array('root', $folder['id']),
-                        Conjoon_Modules_Groupware_Email_ImapHelper
-                        ::splitFolderForImapAccount(
-                            $folderMappings[$a]['globalName'], $dto
-                        )
-                    );
+                    if (!$folder) {
+                        // connection exception, ignore
+                        $folderMappings[$a]['globalName'] = "";
+                        $folderMappings[$a]['delimiter']  = "";
+                        $folderMappings[$a]['path']       = array();
+                        continue;
+                    }
+
+                    try {
+                        $folderMappings[$a]['delimiter'] =
+                            Conjoon_Modules_Groupware_Email_ImapHelper
+                            ::getFolderDelimiterForImapAccount($dto);
+
+                        $folderMappings[$a]['path'] = array_merge(
+                            array('root', $folder['id']),
+                            Conjoon_Modules_Groupware_Email_ImapHelper
+                            ::splitFolderForImapAccount(
+                                $folderMappings[$a]['globalName'], $dto
+                            )
+                        );
+
+                    } catch (Exception $e) {
+                        // connection exception, ignore
+                        $folderMappings[$a]['globalName'] = "";
+                        $folderMappings[$a]['delimiter']  = "";
+                        $folderMappings[$a]['path']       = array();
+                    }
+
+
                 }
             }
 
