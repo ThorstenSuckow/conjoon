@@ -51,8 +51,52 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
         return node;
     },
 
+    findPathFor : function(id, type)
+    {
+        type = type.toLowerCase();
+
+        var _store = com.conjoon.groupware.email.AccountStore.getInstance();
+
+        var accounts = _store.getRange();
+
+        for (var i = 0, len = accounts.length; i < len; i++) {
+            var account = accounts[i];
+            if (account.get('protocol') == 'IMAP') {
+                var mappings = account.get('folderMappings');
+
+                for (var a = 0, lena = mappings.length; a < lena; a++) {
+                    var mapping = mappings[a];
+                    //console.log(mapping.path[1], id, type, mapping.type.toLowerCase());
+                    if (mapping.path[1] == id && type == mapping.type.toLowerCase()) {
+                        return mapping.path;
+                    }
+                }
+
+            }
+        }
+
+        switch (true) {
+            case (this.folderInbox && this.folderInbox.getPathAsArray('idForPath')[1] == id && type == 'inbox'):
+                return this.folderInbox.getPathAsArray('idForPath');
+            case (this.folderOutbox && this.folderOutbox.getPathAsArray('idForPath')[1] == id && type == 'outbox'):
+                return this.folderOutbox.getPathAsArray('idForPath');
+            case (this.folderSent && this.folderSent.getPathAsArray('idForPath')[1] == id && type == 'sent'):
+                return this.folderSent.getPathAsArray('idForPath');
+            case (this.folderSpam && this.folderSpam.getPathAsArray('idForPath')[1] == id && type == 'junk'):
+                return this.folderSpam.getPathAsArray('idForPath');
+            case (this.folderTrash && this.folderTrash.getPathAsArray('idForPath')[1] == id && type == 'trash'):
+                return this.folderTrash.getPathAsArray('idForPath');
+            case (this.folderDraft && this.folderDraft.getPathAsArray('idForPath')[1] == id && type == 'draft'):
+                return this.folderDraft.getPathAsArray('idForPath');
+        }
+
+        return null;
+    },
+
     isPathOfType : function(path, type)
     {
+        type = type.toLowerCase();
+
         var _store = com.conjoon.groupware.email.AccountStore.getInstance();
         var _folderMappingCache = [];
 
@@ -154,6 +198,9 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
 
     isFolderOfType : function(nodeId, type)
     {
+
+        type = type.toLowerCase();
+
         var _store = com.conjoon.groupware.email.AccountStore.getInstance();
         var _folderMappingCache = [];
 
@@ -407,20 +454,61 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
         var clkNode = this.clkNode;
 
         if (clkNode.getPath('type').indexOf('/trash') != -1) {
-            var nodeId = clkNode.id;
+            var nodeId   = clkNode.id,
+                nodePath = clkNode.getPathAsJson('idForPath');
             clkNode.remove();
             this.clkNode = null;
 
             Ext.Ajax.request({
                 url    : './groupware/email.folder/delete.folder/format/json',
                 params : {
-                    id : nodeId
+                    path : nodePath,
+                    id   : nodeId
                 },
                 disableCaching : true
             });
 
         } else {
-            this.moveFolderToTrash(this, this.folderTrash.RESOLVE.THIS, clkNode);
+
+            var currP = clkNode.getPathAsArray('idForPath')[1];
+
+            var trashId = this.findPathFor(currP, 'trash');
+
+            var msg = Ext.MessageBox;
+
+            if (!trashId) {
+
+                msg.show({
+                    title   : com.conjoon.Gettext.gettext("No trashbin found"),
+                    msg     : com.conjoon.Gettext.gettext("No trashbin for the current account found. Have you configured the account's folder mappings?"),
+                    buttons : msg.OK,
+                    icon    : msg.WARNING,
+                    scope   : this,
+                    cls     :'com-conjoon-msgbox-warning',
+                    width   : 400
+                });
+
+                return;
+            }
+
+            var to   = this.getNodeForPath('/' + trashId.join('/'));
+
+            if (!to) {
+                msg.show({
+                    title   : com.conjoon.Gettext.gettext("No trashbin found"),
+                    msg     : com.conjoon.Gettext.gettext("No trashbin for the current account found. Maybe it is not expanded?"),
+                    buttons : msg.OK,
+                    icon    : msg.WARNING,
+                    scope   : this,
+                    cls     :'com-conjoon-msgbox-warning',
+                    width   : 400
+                });
+
+                return;
+            }
+
+            clkNode.attributes.tmpPath = clkNode.getPathAsJson('idForPath');
+            this.moveFolderToTrash(this, to, clkNode);
         }
     },
 
@@ -631,7 +719,9 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
         // this can be rarely caused by when the user works in the trash and
         // reorders his folders in there.
         var oldParent = node.parentNode;
+
         var msg   = Ext.MessageBox;
+
         msg.show({
             title   : com.conjoon.Gettext.gettext("Confirm - Delete folder"),
             msg     : com.conjoon.Gettext.gettext("The selected folder and all its contents will be moved into the trash bin. Are you sure you want to continue?"),
@@ -841,14 +931,14 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
         };
 
         if (!node.attributes.tmpPath) {
+            throw("tmpPath must be specified!");
             // tmp store the old path of the node.
             // needed to move from one path to another successfully
             // this is done in the beforedrop event, but if the node gets
             // manually moved when moving a node to the trash,
             // this might be needed.
-            var p = oldParent.getPathAsArray('idForPath');
-            p.push(node.id);
-            node.attributes.tmpPath = Ext.util.JSON.encode(p);
+            //var p = oldParent.getPathAsArray('idForPath');
+            //node.attributes.tmpPath = Ext.util.JSON.encode(p);
         }
 
         this.saveNode(nodeConfig);

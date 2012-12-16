@@ -443,7 +443,9 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
     deleteEmails : function(records)
     {
 
-        if (this.clkNodeId && this.treePanel.getNodeById(this.clkNodeId).getPath('type').indexOf('trash') != -1) {
+        if (this.clkNodeId
+            && this.treePanel.getNodeById(this.clkNodeId)
+            .getPath('type').indexOf('trash') != -1) {
             var unread = 0;
 
             var max_i = records.length
@@ -472,6 +474,8 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
             Ext.Ajax.request({
                 url: './groupware/email.item/delete.items/format/json',
                 params: {
+                    path          : Ext.encode(this.treePanel.getNodeById(this.clkNodeId)
+                                    .getPathAsArray('idForPath')),
                     itemsToDelete : Ext.encode(requestArray)
                 }
             });
@@ -479,7 +483,30 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
             gs.bulkRemove(records);
 
         } else {
-            this.moveEmails(records, this.treePanel.folderTrash.id);
+
+            var currP = this.treePanel.getNodeById(this.clkNodeId)
+                .getPathAsArray('idForPath')[1];
+
+            var trashId = this.treePanel.findPathFor(currP, 'trash');
+
+            if (!trashId) {
+                var msg = Ext.MessageBox;
+
+                msg.show({
+                    title   : com.conjoon.Gettext.gettext("No trashbin found"),
+                    msg     : com.conjoon.Gettext.gettext("No trashbin for the current account found. Have you configured the account's folder mappings?"),
+                    buttons : msg.OK,
+                    icon    : msg.WARNING,
+                    scope   : this,
+                    cls     :'com-conjoon-msgbox-warning',
+                    width   : 400
+                });
+
+                return;
+            }
+
+
+            this.moveEmails(records, trashId);
         }
     },
 
@@ -491,9 +518,15 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
      */
     moveEmails : function(records, folderId)
     {
+        var tp = this.treePanel;
+
+        if ((typeof folderId).toLowerCase() != "object") {
+            folderId = tp.getNodeById(folderId).getPathAsArray('idForPath');
+        }
+
         var currFolderId  = this.clkNodeId;
 
-        if (currFolderId == folderId) {
+        if (tp.idEqualsPath(currFolderId, folderId)) {
             return;
         }
 
@@ -506,7 +539,7 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
             unread += (records[i].get('isRead') ? 0 : 1);
             requestArray.push({
                 id                      : records[i].id,
-                groupwareEmailFoldersId : folderId
+                groupwareEmailFoldersId : folderId[folderId.length - 1]
             });
         }
 
@@ -520,6 +553,8 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
         Ext.Ajax.request({
             url: './groupware/email.item/move.items/format/json',
             params: {
+                toPath      : Ext.encode(folderId),
+                fromPath    : Ext.encode(tp.getNodeById(currFolderId).getPathAsArray('idForPath')),
                 itemsToMove : Ext.encode(requestArray)
             }
         });
@@ -527,7 +562,7 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
         gs.bulkRemove(records);
 
         var pendingStore  = this.treePanel.pendingItemStore;
-        var pendingRecord = pendingStore.getById(this.treePanel.getNodeById(folderId).getPath('idForPath'));
+        var pendingRecord = pendingStore.getById('/' + folderId.join('/'));
         if (pendingRecord) {
             pendingRecord.set('pending', pendingRecord.data.pending+unread);
         }

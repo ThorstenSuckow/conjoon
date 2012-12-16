@@ -316,6 +316,12 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
             $toDelete = Zend_Json::decode($_POST['itemsToDelete'], Zend_Json::TYPE_ARRAY);
         }
 
+        if ($this->imapItemsDeleted($toDelete, $_POST['path'])) {
+            $this->view->success = true;
+            $this->view->error   = null;
+            return;
+        }
+
         require_once 'Conjoon/Modules/Groupware/Email/Item/Filter/Item.php';
 
         $filter = new Conjoon_Modules_Groupware_Email_Item_Filter_Item(
@@ -358,6 +364,15 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
         if ($this->_helper->conjoonContext()->getCurrentContext() == self::CONTEXT_JSON) {
             require_once 'Zend/Json.php';
             $toMove = Zend_Json::decode($_POST['itemsToMove'], Zend_Json::TYPE_ARRAY);
+
+            $fromPath = $_POST['fromPath'];
+            $toPath   = $_POST['toPath'];
+        }
+
+        if ($this->imapItemsMoved($toMove, $fromPath, $toPath)) {
+            $this->view->success = true;
+            $this->view->error   = null;
+            return;
         }
 
         require_once 'Conjoon/Modules/Groupware/Email/Item/Filter/Item.php';
@@ -830,6 +845,165 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
         $this->view->success = $result->isSuccess();
         $this->view->data    = $result->getData();
         $this->view->error   = null;
+    }
+
+
+    /**
+     *
+     *
+     */
+    protected function imapItemsDeleted(array $toDelete, $path)
+    {
+        require_once 'Conjoon/Keys.php';
+
+        $auth   = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
+        $userId = $auth->getIdentity()->getId();
+
+        // check if folder is remote folder
+        /**
+         * @see Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser
+         */
+        require_once 'Conjoon/Text/Parser/Mail/MailboxFolderPathJsonParser.php';
+
+        $parser = new Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser();
+
+        $pathInfo = $parser->parse($path);
+
+        /**
+         * @see Conjoon_Modules_Groupware_Email_Folder_Facade
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/Folder/Facade.php';
+
+        $facade = Conjoon_Modules_Groupware_Email_Folder_Facade::getInstance();
+
+        // get the account for the root folder first
+        $imapAccount = $facade->getImapAccountForFolderIdAndUserId(
+            $pathInfo['rootId'], $userId);
+
+        if (!$imapAccount || empty($pathInfo)
+            || !$facade->isRemoteFolder($pathInfo['rootId'])) {
+            return false;
+        }
+
+        $globalName = $facade->getAssembledGlobalNameForAccountAndPath(
+            $imapAccount, $pathInfo['path']);
+
+        /**
+         * @see Conjoon_Modules_Groupware_Email_ImapHelper
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/ImapHelper.php';
+
+        /**
+         * @see Conjoon_Mail_Storage_Imap
+         */
+        require_once 'Conjoon/Mail/Storage/Imap.php';
+
+        $protocol = Conjoon_Modules_Groupware_Email_ImapHelper
+        ::reuseImapProtocolForAccount($imapAccount);
+
+        $storage = new Conjoon_Mail_Storage_Imap($protocol);
+
+        foreach ($toDelete as $values) {
+            $uId = $values['id'];
+
+            $storage->selectFolder($globalName);
+            $messageNumber = $storage->getNumberByUniqueId($uId);
+            $protocol->store(array('\Deleted'), $messageNumber, null, '+');
+        }
+
+        $protocol->expunge();
+        $storage->close();
+
+        return true;
+    }
+
+    /**
+     *
+     */
+    protected function imapItemsMoved(array $toMove, $fromPath, $toPath)
+    {
+        require_once 'Conjoon/Keys.php';
+
+        $auth   = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
+        $userId = $auth->getIdentity()->getId();
+
+        // check if folder is remote folder
+        /**
+         * @see Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser
+         */
+        require_once 'Conjoon/Text/Parser/Mail/MailboxFolderPathJsonParser.php';
+
+        $parser = new Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser();
+
+        $pathInfo = $parser->parse($fromPath);
+
+        $pathInfoTo = $parser->parse($toPath);
+
+        /**
+         * @see Conjoon_Modules_Groupware_Email_Folder_Facade
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/Folder/Facade.php';
+
+        $facade = Conjoon_Modules_Groupware_Email_Folder_Facade::getInstance();
+
+        // get the account for the root folder first
+        $imapAccount = $facade->getImapAccountForFolderIdAndUserId(
+            $pathInfo['rootId'], $userId);
+
+        if (!$imapAccount || empty($pathInfo)
+            || !$facade->isRemoteFolder($pathInfo['rootId'])) {
+            return false;
+        }
+
+        $globalNameFrom = $facade->getAssembledGlobalNameForAccountAndPath(
+            $imapAccount, $pathInfo['path']);
+
+        $globalNameTo = $facade->getAssembledGlobalNameForAccountAndPath(
+            $imapAccount, $pathInfoTo['path']);
+
+
+        /**
+         * @see Conjoon_Modules_Groupware_Email_ImapHelper
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/ImapHelper.php';
+
+        /**
+         * @see Conjoon_Mail_Storage_Imap
+         */
+        require_once 'Conjoon/Mail/Storage/Imap.php';
+
+        $protocol = Conjoon_Modules_Groupware_Email_ImapHelper
+        ::reuseImapProtocolForAccount($imapAccount);
+
+        $storage = new Conjoon_Mail_Storage_Imap($protocol);
+
+        foreach ($toMove as $values) {
+            $uId = $values['id'];
+
+            $storage->selectFolder($globalNameFrom);
+            $messageNumber = $storage->getNumberByUniqueId($uId);
+            $storage->copyMessage($messageNumber, $globalNameTo);
+
+            // go to target folder and flag message as seen
+            $storage->selectFolder($globalNameTo);
+            $num = $storage->countMessages();
+
+            $protocol->store(array('\Seen'), $num, null, '+');
+        }
+
+        $storage->selectFolder($globalNameFrom);
+        foreach ($toMove as $values) {
+            $uId = $values['id'];
+            $messageNumber = $storage->getNumberByUniqueId($uId);
+            $protocol->store(array('\Deleted'), $messageNumber, null, '+');
+        }
+
+
+        $protocol->expunge();
+        $storage->close();
+
+
+        return true;
     }
 
 

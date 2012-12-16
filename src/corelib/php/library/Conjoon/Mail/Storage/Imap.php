@@ -79,6 +79,29 @@ class Conjoon_Mail_Storage_Imap extends Zend_Mail_Storage_Imap
         return $res;
     }
 
+    /**
+     * Zend Framework does not return server response
+     *
+     * copy an existing message
+     *
+     * @param  int                             $id     number of message
+     * @param  string|Zend_Mail_Storage_Folder $folder name or instance of targer folder
+     * @return null
+     * @throws Zend_Mail_Storage_Exception
+     */
+    public function copyMessage($id, $folder)
+    {
+        $res = $this->_protocol->copy($folder, $id);
+        if (!$res) {
+            /**
+             * @see Zend_Mail_Storage_Exception
+             */
+            require_once 'Zend/Mail/Storage/Exception.php';
+            throw new Zend_Mail_Storage_Exception('cannot copy message, does the folder exist?');
+        }
+
+        return $res;
+    }
 
     /**
      * @inheritdoc
@@ -88,7 +111,7 @@ class Conjoon_Mail_Storage_Imap extends Zend_Mail_Storage_Imap
         /**
          * @see Conjoon_Argument_Check
          */
-        require_once 'Conjoonn/Argument/Check.php';
+        require_once 'Conjoon/Argument/Check.php';
 
         $data = array('id' => $id);
 
