@@ -173,9 +173,21 @@ class EditMessagePatron
         $plainToHtmlFilter  = new \Conjoon_Filter_PlainToHtml();
 
 
-        $data['contentTextPlain'] = $signatureStripper->filter(
+        /**
+         * @see \Zend_Filter_HtmlEntities
+         */
+        require_once 'Zend/Filter/HtmlEntities.php';
+
+        $entitiesFilter = new \Zend_Filter_HtmlEntities(
+            array(
+                'quotestyle' => ENT_COMPAT,
+                'charset'    => 'UTF-8'
+            )
+        );
+
+        $text = $signatureStripper->filter(
             $lineFeedFilter->filter(
-                $text
+                $entitiesFilter->filter($text)
             )
         );
 

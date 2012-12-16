@@ -328,10 +328,21 @@ class ForwardMessagePatron
         $lineFeedFilter     = new \Conjoon_Filter_NormalizeLineFeeds();
         $plainToHtmlFilter  = new \Conjoon_Filter_PlainToHtml();
 
+        /**
+         * @see \Zend_Filter_HtmlEntities
+         */
+        require_once 'Zend/Filter/HtmlEntities.php';
 
-        $data['contentTextPlain'] = $signatureStripper->filter(
+        $entitiesFilter = new \Zend_Filter_HtmlEntities(
+            array(
+                'quotestyle' => ENT_COMPAT,
+                'charset'    => 'UTF-8'
+            )
+        );
+
+        $text = $signatureStripper->filter(
             $lineFeedFilter->filter(
-                $text
+                $entitiesFilter->filter($text)
             )
         );
 
