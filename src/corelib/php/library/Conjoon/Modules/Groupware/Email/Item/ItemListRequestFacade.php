@@ -408,7 +408,7 @@ class Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade {
      * @param $accountName
      * @param $globalName
      */
-    protected function getPendingCountForGlobalName($accountDto, $globalName)
+    public function getPendingCountForGlobalName($accountDto, $globalName)
     {
         /**
          * @see Zend_Registry

@@ -18,6 +18,10 @@
  */
 require_once 'Conjoon/Argument/Check.php';
 
+/**
+ * @see Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade
+ */
+require_once 'Conjoon/Modules/Groupware/Email/Item/ItemListRequestFacade.php';
 
 /**
  * This facade eases the access to often neededoperations on local folders/
@@ -63,6 +67,11 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
      * @var Conjoon_Modules_Groupware_Email_Folder_FolderRootTypeBuilder $_folderRootTypeBuilder
      */
     private $_folderRootTypeBuilder = null;
+
+    /**
+     * @var Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade
+     */
+    private $itemListRequestFacade;
 
     /**
      * Enforce singleton.
@@ -1240,17 +1249,16 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
 
         $pendingCount = 0;
 
+
+        if (!$this->itemListRequestFacade) {
+            $this->itemListRequestFacade = Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade::getInstance();
+        }
+
         if ($folder->isSelectable()) {
             try{
-                $protocol->select($globalName);
-                $res = $protocol->requestAndResponse('SEARCH', array('UNSEEN'));
-                if (is_array($res)) {
-                    $res = $res[0];
-                    if ($res[0] === 'SEARCH') {
-                        array_shift($res);
-                    }
-                    $pendingCount = count($res);
-                }
+                $pendingCount = $this->itemListRequestFacade
+                                     ->getPendingCountForGlobalName(
+                                         $account, $globalName);
             } catch (Exception $e) {
                 // ignore
             }
