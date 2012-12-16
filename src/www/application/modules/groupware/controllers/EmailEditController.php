@@ -809,6 +809,16 @@ class Groupware_EmailEditController extends Zend_Controller_Action {
         }
 
         $draft = Conjoon_BeanContext_Inspector::create(
+            'Conjoon_Modules_Groupware_Email_Draft',
+            $data,
+            true
+        );
+
+        if ($account->getProtocol() == 'IMAP') {
+            return $this->moveImapToOutbox($account, $draft, $userId);
+        }
+
+        $draft = Conjoon_BeanContext_Inspector::create(
                 'Conjoon_Modules_Groupware_Email_Draft',
                 $data,
                 true
@@ -981,7 +991,7 @@ class Groupware_EmailEditController extends Zend_Controller_Action {
         $response = $storage->appendMessage(
             $mail->getHeader()
                 . "\n\n"
-                . $mail->getBody(),
+                . $draft->getContentTextPlain(),
             $globalName
         );
 
@@ -1139,5 +1149,172 @@ class Groupware_EmailEditController extends Zend_Controller_Action {
         return array();
     }
 
+
+    /**
+     *
+     *
+     */
+    protected function moveImapToOutbox($account, $draft, $userId)
+    {
+        // check ifmapping is okay
+        $accountId = $account->getId();
+
+        $em = Zend_Registry::get(Conjoon_Keys::DOCTRINE_ENTITY_MANAGER);
+
+        $rep = $em->getRepository('\Conjoon\Data\Entity\Mail\DefaultMailAccountEntity');
+
+        $accountEntity = $rep->findById($accountId);
+
+        $mappings = $accountEntity->getFolderMappings();
+
+        $globalName = "";
+        for ($i = 0, $len = count($mappings); $i <$len; $i++) {
+            if ($mappings[$i]->getType() == 'OUTBOX') {
+                $globalName = $mappings[$i]->getGlobalName();
+                break;
+            }
+        }
+
+        if ($globalName == "") {
+            require_once 'Conjoon/Error.php';
+            $folderMappingError = new Conjoon_Error();
+            $folderMappingError = $folderMappingError->getDto();
+            $folderMappingError->title   = 'Missing folder mapping';
+            $folderMappingError->message = 'The message cannot be moved into the outbox folder, since no valid outbox folder was found. Did you configure the folder mappings of the account?';
+            $folderMappingError->level = Conjoon_Error::LEVEL_ERROR;
+
+            $this->view->error   = $folderMappingError;
+            $this->view->success = false;
+            $this->view->item    = null;
+
+            return;
+        }
+
+        // assemble mail
+
+        /**
+         * @see Conjoon_Modules_Groupware_Email_Sender
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/Sender.php';
+
+        $mail = Conjoon_Modules_Groupware_Email_Sender::getAssembledMail(
+            $draft, $account, array(), array()
+        );
+
+        /**
+         * @see Conjoon_Mail_Storage_Imap
+         */
+        require_once 'Conjoon/Mail/Storage/Imap.php';
+
+        /**
+         * @see Conjoon_Modules_Groupware_Email_ImapHelper
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/ImapHelper.php';
+
+        /*REMOVE DRAFT!*/
+        if ($draft->getId() > 0) {
+
+            $uId  = $draft->getId();
+            $path = $draft->getPath();
+
+            // check if folder is remote folder
+            /**
+             * @see Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser
+             */
+            require_once 'Conjoon/Text/Parser/Mail/MailboxFolderPathJsonParser.php';
+
+            $parser = new Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser();
+
+            $pathInfo = $parser->parse(json_encode($path));
+
+            /**
+             * @see Conjoon_Modules_Groupware_Email_Folder_Facade
+             */
+            require_once 'Conjoon/Modules/Groupware/Email/Folder/Facade.php';
+
+            $facade = Conjoon_Modules_Groupware_Email_Folder_Facade::getInstance();
+
+            // get the account for the root folder first
+            $imapAccount =
+                $facade->getImapAccountForFolderIdAndUserId($pathInfo['rootId'],
+                    $userId);
+
+            if ($imapAccount && !empty($pathInfo)
+                && $facade->isRemoteFolder($pathInfo['rootId'])) {
+
+                // if remote, where is the referenced mail stored?
+                $prevGlobalName = $facade->getAssembledGlobalNameForAccountAndPath(
+                    $imapAccount, $pathInfo['path']);
+
+                /**
+                 * @see Conjoon_Modules_Groupware_Email_ImapHelper
+                 */
+                require_once 'Conjoon/Modules/Groupware/Email/ImapHelper.php';
+
+                /**
+                 * @see Conjoon_Mail_Storage_Imap
+                 */
+                require_once 'Conjoon/Mail/Storage/Imap.php';
+
+                $protocol = Conjoon_Modules_Groupware_Email_ImapHelper
+                    ::reuseImapProtocolForAccount($imapAccount);
+
+                $storage = new Conjoon_Mail_Storage_Imap($protocol);
+
+                // get the number of the message by it's unique id
+                $storage->selectFolder($prevGlobalName);
+                $messageNumber = $storage->getNumberByUniqueId($uId);
+
+                $storage->removeMessage($messageNumber);
+                $storage->close();
+            }
+        }
+        /* ^^EO REMOVE DRAFT */
+
+        $protocol = Conjoon_Modules_Groupware_Email_ImapHelper
+        ::reuseImapProtocolForAccount($account->getDto());
+
+        $storage = new Conjoon_Mail_Storage_Imap($protocol);
+
+        $storage->selectFolder($globalName);
+
+        $response = $storage->appendMessage(
+            $mail->getHeader()
+                . "\n\n"
+                . $draft->getContentTextPlain(),
+            $globalName
+        );
+
+        $lastMessage = -1;
+        $ret         = null;
+        if (is_array($response) && isset($response[0])) {
+            $ret = explode(' ', $response[0]);
+        }
+        if (is_array($ret) && count($ret) == 2 && is_numeric($ret[0])
+            && trim(strtolower($ret[1])) == 'exists') {
+            $lastMessage = $ret[0];
+        }
+        if ($lastMessage == -1) {
+            $lastMessage = $storage->countMessages();
+        }
+        if ($lastMessage == -1) {
+            throw new RuntimeException("Could not find message id.");
+        }
+
+        $protocol->store(array('\Seen'), $lastMessage, null, '+');
+
+        $item = $this->getSingleImapListItem(
+            $account->getDto(), $userId, $lastMessage, $globalName
+        );
+
+
+        $this->view->error         = null;
+        $this->view->success       = true;
+        $this->view->item          = $item;
+        /*$this->view->newVersion    = $newVersion;
+        if ($newVersion) {
+            $this->view->previousId = $draft->getId();
+        }*/
+    }
 
 }

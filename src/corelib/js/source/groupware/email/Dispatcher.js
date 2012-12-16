@@ -58,9 +58,10 @@ com.conjoon.groupware.email.Dispatcher = function() {
         }
 
         Ext.ux.util.MessageBus.publish('com.conjoon.groupware.email.Smtp.bulkSent', {
-           emailItems             : options.emailItems,
-           sentItems              : sentData,
-           contextReferencedItems : cris
+            newVersions            : data.newVersions,
+            emailItems             : options.emailItems,
+            sentItems              : sentData,
+            contextReferencedItems : cris
         });
 
     };
@@ -323,7 +324,10 @@ com.conjoon.groupware.email.Dispatcher = function() {
 
             var ids = [];
             for (var i = 0, len = emailItems.length; i < len; i++) {
-                ids.push(emailItems[i].get('id'));
+                ids.push({
+                    id   : emailItems[i].get('id'),
+                    path : emailItems[i].get('path')
+                });
             }
 
             var params = {

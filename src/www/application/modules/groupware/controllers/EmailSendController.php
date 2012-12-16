@@ -434,7 +434,7 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
                     $response = $storage->appendMessage(
                         $mail->getHeader()
                         . "\n\n"
-                        . $mail->getBody(),
+                        . $message->getContentTextPlain(),
                         $globalName
                     );
 
@@ -459,7 +459,6 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
                     $storage->setFlags($lastMessage, array('\Seen'));
 
                 } catch (\Exception $e) {
-                    var_dump($e);die();
                     $folderMappingError = true;
                 }
 
@@ -728,27 +727,35 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
 
         $recipientsFilter = new Conjoon_Filter_EmailRecipients();
 
+        $newVersion             = array();
         $sendItems              = array();
         $contextReferencedItems = array();
 
         $errors = array();
 
-        foreach ($toSend as $id) {
+        foreach ($toSend as $pathInfo) {
 
-            $id = (int)$id;
+            $remoteInfo = array();
 
-            if ($id <= 0) {
-                continue;
+            $id   = $pathInfo['id'];
+            $path = $pathInfo['path'];
+
+            // check if path is remote!
+            $isRemote = $this->isRemotePath($path, $userId);
+            if ($isRemote) {
+                $rawDraft = $this->getRawImapMessage($id, $path);
+                if (empty($rawDraft)) {
+                    continue;
+                }
+                $remoteInfo = array(
+                    'uid'     => $id,
+                    'account' => $isRemote,
+                    'path'    => $path
+                );
+                $rawDraft['groupwareEmailAccountsId'] = $isRemote->id;
+            } else {
+                $rawDraft = $draftModel->getDraft($id, $userId);
             }
-
-            $rawDraft = $draftModel->getDraft($id, $userId);
-
-            if (empty($rawDraft)) {
-                continue;
-            }
-
-            Conjoon_Util_Array::camelizeKeys($rawDraft);
-
 
             $account = $accountDecorator->getAccountAsEntity(
                 $rawDraft['groupwareEmailAccountsId'],
@@ -764,6 +771,20 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
                  */
                 continue;
             }
+
+
+            $id = (int)$id;
+
+            if ($id <= 0) {
+                continue;
+            }
+
+            if (empty($rawDraft)) {
+                continue;
+            }
+
+            Conjoon_Util_Array::camelizeKeys($rawDraft);
+
 
             $rawDraft['to']  = $recipientsFilter->filter($rawDraft['to']);
             $rawDraft['cc']  = $recipientsFilter->filter($rawDraft['cc']);
@@ -812,28 +833,116 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
                 continue;
             }
 
-            // if the email was send successfully, save it into the db and
-            // return the params savedId (id of the newly saved email)
-            // and savedFolderId (id of the folder where the email was saved in)
-            $itemDecorator = new Conjoon_BeanContext_Decorator(
-                'Conjoon_Modules_Groupware_Email_Item_Model_Item',
-                new Conjoon_Modules_Groupware_Email_Item_Filter_ItemResponse(
-                    array(),
-                    Conjoon_Filter_Input::CONTEXT_RESPONSE
-                ),
-                false
-            );
+            if ($isRemote) {
 
-            $item = $itemDecorator->saveSentEmailAsDto($message, $account, $userId, $mail, '');
+                /**
+                 * @see Conjoon_Modules_Groupware_Email_ImapHelper
+                 */
+                require_once 'Conjoon/Modules/Groupware/Email/ImapHelper.php';
 
-            if (!$item) {
-                continue;
-            }
+                $uId     = $remoteInfo['uid'];
+                $account = $remoteInfo['account'];
+                $path    = $remoteInfo['path'];
 
-            $sendItems[] = $item;
-            $cri = $itemDecorator->getReferencedItemAsDto($item->id, $userId);
-            if (!empty($cri)) {
-                $contextReferencedItems[]= $cri;
+                // check if folder is remote folder
+                /**
+                 * @see Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser
+                 */
+                require_once 'Conjoon/Text/Parser/Mail/MailboxFolderPathJsonParser.php';
+
+                $parser = new Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser();
+
+                $pathInfo = $parser->parse(json_encode($path));
+
+                /**
+                 * @see Conjoon_Modules_Groupware_Email_Folder_Facade
+                 */
+                require_once 'Conjoon/Modules/Groupware/Email/Folder/Facade.php';
+
+                $facade = Conjoon_Modules_Groupware_Email_Folder_Facade::getInstance();
+
+                // get the account for the root folder first
+                $imapAccount =
+                    $facade->getImapAccountForFolderIdAndUserId($pathInfo['rootId'],
+                        $userId);
+
+                if ($imapAccount && !empty($pathInfo) && $facade->isRemoteFolder($pathInfo['rootId'])) {
+
+                    // if remote, where is the referenced mail stored?
+                    $globalName = $facade->getAssembledGlobalNameForAccountAndPath(
+                        $imapAccount, $pathInfo['path']);
+
+                    /**
+                     * @see Conjoon_Modules_Groupware_Email_ImapHelper
+                     */
+                    require_once 'Conjoon/Modules/Groupware/Email/ImapHelper.php';
+
+                    /**
+                     * @see Conjoon_Mail_Storage_Imap
+                     */
+                    require_once 'Conjoon/Mail/Storage/Imap.php';
+
+                    $protocol = Conjoon_Modules_Groupware_Email_ImapHelper
+                    ::reuseImapProtocolForAccount($imapAccount);
+
+                    $storage = new Conjoon_Mail_Storage_Imap($protocol);
+
+                    // get the number of the message by it's unique id
+                    $storage->selectFolder($globalName);
+                    $messageNumber = $storage->getNumberByUniqueId($uId);
+
+                    // move from sent folder
+                    $sentGlobalName = $this->getGlobalNameForFolderType(
+                        $imapAccount, 'SENT'
+                    );
+                    if (!$sentGlobalName) {
+                        continue;
+                    }
+                    $storage->copyMessage($messageNumber, $sentGlobalName);
+                    $storage->selectFolder($sentGlobalName);
+                    $newMessageNumber = $storage->countMessages();
+                    $storage->selectFolder($globalName);
+                    $storage->removeMessage($storage->getNumberByUniqueId($uId));
+                    $storage->close();
+                }
+
+                // put email into sent folder
+                $protocol = Conjoon_Modules_Groupware_Email_ImapHelper
+                    ::reuseImapProtocolForAccount($imapAccount);
+                $storage = new Conjoon_Mail_Storage_Imap($protocol);
+
+                // read out single item
+                $item = $this->getSingleImapListItem(
+                    $account, $userId, $newMessageNumber, $sentGlobalName
+                );
+                $newVersions[$uId] = $item['id'];
+                $sendItems[] = $item;
+
+            } else {
+
+                // if the email was send successfully, save it into the db and
+                // return the params savedId (id of the newly saved email)
+                // and savedFolderId (id of the folder where the email was saved in)
+                $itemDecorator = new Conjoon_BeanContext_Decorator(
+                    'Conjoon_Modules_Groupware_Email_Item_Model_Item',
+                    new Conjoon_Modules_Groupware_Email_Item_Filter_ItemResponse(
+                        array(),
+                        Conjoon_Filter_Input::CONTEXT_RESPONSE
+                    ),
+                    false
+                );
+
+                $item = $itemDecorator->saveSentEmailAsDto($message, $account, $userId, $mail, '');
+
+                if (!$item) {
+                    continue;
+                }
+
+                $sendItems[] = $item;
+                $cri = $itemDecorator->getReferencedItemAsDto($item->id, $userId);
+                if (!empty($cri)) {
+                    $contextReferencedItems[]= $cri;
+                }
             }
         }
 
@@ -863,11 +972,13 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
 
         }
 
-        $this->view->success   = true;
-        $this->view->sentItems = $sendItems;
-        $this->view->error     = isset($error)
-                                 ? $error->getDto()
-                                 : null;
+        $this->view->newVersions = $newVersions;
+        $this->view->success     = true;
+        $this->view->sentItems   = $sendItems;
+        $this->view->error       = isset($error)
+                                   ? $error->getDto()
+                                   : null;
+
         $this->view->contextReferencedItems = $contextReferencedItems;
 
     }
@@ -910,5 +1021,132 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
         return $list[0];
     }
 
+
+    protected function isRemotePath($path, $userId)
+    {
+        // check if folder is remote folder
+        /**
+         * @see Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser
+         */
+        require_once 'Conjoon/Text/Parser/Mail/MailboxFolderPathJsonParser.php';
+
+        $parser = new Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser();
+
+        $pathInfo = $parser->parse(json_encode($path));
+
+        /**
+         * @see Conjoon_Modules_Groupware_Email_Folder_Facade
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/Folder/Facade.php';
+
+        $facade = Conjoon_Modules_Groupware_Email_Folder_Facade::getInstance();
+
+        // get the account for the root folder first
+        $imapAccount =
+            $facade->getImapAccountForFolderIdAndUserId($pathInfo['rootId'],
+                $userId);
+
+        if ($imapAccount && !empty($pathInfo)
+            && $facade->isRemoteFolder($pathInfo['rootId'])) {
+            return $imapAccount;
+        }
+
+    }
+
+    /**
+     * @param $account
+     * @param $id
+     * @param $userId
+     */
+    protected function getRawImapMessage($uId, $path)
+    {
+        $path = json_encode($path);
+
+        /**
+         * @see Zend_Registry
+         */
+        require_once 'Zend/Registry.php';
+
+        /**
+         *@see Conjoon_Keys
+         */
+        require_once 'Conjoon/Keys.php';
+
+        $auth = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
+
+        /**
+         * @see Conjoon_User_AppUser
+         */
+        require_once 'Conjoon/User/AppUser.php';
+
+        $appUser = new \Conjoon\User\AppUser($auth->getIdentity());
+
+        $entityManager = Zend_Registry::get(Conjoon_Keys::DOCTRINE_ENTITY_MANAGER);
+
+        $mailAccountRepository =
+            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMailAccountEntity');
+        $mailFolderRepository =
+            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
+        $mesageFlagRepository =
+            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMessageFlagEntity');
+
+        $protocolAdaptee = new \Conjoon\Mail\Server\Protocol\DefaultProtocolAdaptee(
+            $mailFolderRepository, $mesageFlagRepository, $mailAccountRepository
+        );
+
+        /**
+         * @see \Conjoon\Mail\Server\Protocol\DefaultProtocol
+         */
+        $protocol = new \Conjoon\Mail\Server\Protocol\DefaultProtocol($protocolAdaptee);
+
+        /**
+         * @see \Conjoon\Mail\Server\DefaultServer
+         */
+        require_once 'Conjoon/Mail/Server/DefaultServer.php';
+
+        $server = new \Conjoon\Mail\Server\DefaultServer($protocol);
+
+        /**
+         * @see \Conjoon\Mail\Client\Service\DefaultMessageServiceFacade
+         */
+        require_once 'Conjoon/Mail/Client/Service/DefaultMessageServiceFacade.php';
+
+        $serviceFacade = new \Conjoon\Mail\Client\Service\DefaultMessageServiceFacade(
+            $server, $mailAccountRepository, $mailFolderRepository
+        );
+
+        $result = $serviceFacade->getUnformattedMessage(
+            $uId, $path, $appUser
+        );
+
+        if ($result->isSuccess()) {
+            $d = $result->getData();
+            return $d['message'];
+        }
+
+        return array();
+    }
+
+
+    protected function getGlobalNameForFolderType($account, $type)
+    {
+        $entityManager = Zend_Registry::get(Conjoon_Keys::DOCTRINE_ENTITY_MANAGER);
+
+        $mailAccountRepository =
+            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMailAccountEntity');
+
+        $accEntity = $mailAccountRepository->findById($account->id);
+
+        $mappings   = $accEntity->getFolderMappings();
+        $globalName = "";
+        for ($i = 0, $len = count($mappings); $i < $len; $i++) {
+            if ($mappings[$i]->getType() == $type) {
+                $globalName = $mappings[$i]->getGlobalName();
+                break;
+            }
+        }
+
+        return $globalName;
+    }
 
 }

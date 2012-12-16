@@ -1111,11 +1111,12 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
         var currFolderId = this.clkNodeId;
         var store        = this.gridPanel.getStore();
         var pendingStore = tp.pendingItemStore;
+        var pathDecode   = Ext.decode(draft.get('path'));
 
         // update pending count of drafts if the message was in the draft folder
-        if (tp.isPathOfType(draft.get('path'), 'draft')) {
+        if (tp.isPathOfType(pathDecode, 'draft')) {
 
-            var pendingRecord = pendingStore.getById(tp.assemblePath(draft.get('path')));
+            var pendingRecord = pendingStore.getById(tp.assemblePath(pathDecode));
             if (pendingRecord) {
                 pendingRecord.set('pending', pendingRecord.data.pending-1);
             }
@@ -1159,6 +1160,7 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
         var tp           = this.treePanel;
         var pendingStore = tp.pendingItemStore;
         var store        = this.gridPanel.getStore();
+        var newVersions  = message.newVersions;
 
         var notSent = [];
 
@@ -1171,7 +1173,7 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
                     break;
                 }
             }
-            if (!found) {
+            if (!found && !newVersions[emailItems[a].get('id')]) {
                 notSent.push(emailItems[a]);
             }
         }
@@ -1745,10 +1747,11 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
 
         var folderId = record.data.groupwareEmailFoldersId;
         var folderPath = record.data.path;
+        var tp = this.treePanel;
 
         if (this.lastClkNodeId && (tp.idEqualsPath(this.lastClkNodeId, folderPath)
             && !this.gridPanel.store.proxy.activeRequest[Ext.data.Api.actions.read])) {
-            var pendingStore  = this.treePanel.pendingItemStore;
+            var pendingStore  = tp.pendingItemStore;
             var pendingRecord = pendingStore.getById(tp.assemblePath(folderPath));
             if (pendingRecord) {
                 pendingRecord.set('pending', pendingRecord.data.pending+1);

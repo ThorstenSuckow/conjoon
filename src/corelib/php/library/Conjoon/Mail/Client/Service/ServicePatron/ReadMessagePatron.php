@@ -215,6 +215,18 @@ class ReadMessagePatron
 
         $transformer = new \Conjoon_Text_Transformer_EmailAddressToHtml();
 
+        /**
+         * @see \Zend_Filter_HtmlEntities
+         */
+        require_once 'Zend/Filter/HtmlEntities.php';
+
+        $zfe  = new \Zend_Filter_HtmlEntities(
+            array(
+                'quotestyle' => ENT_COMPAT/*,
+                'charset'    => 'UTF-8'*/
+            )
+        );
+
         return $transformer->transform(
             $plainToHtmlFilter->filter(
                 $signatureFilter->filter(
@@ -222,7 +234,7 @@ class ReadMessagePatron
                         $urlFilter->filter(
                             $emoticonFilter->filter(
                                 $lineFeedFilter->filter(
-                                    $text
+                                    $zfe->filter($text)
                                 )
                             )
                         )

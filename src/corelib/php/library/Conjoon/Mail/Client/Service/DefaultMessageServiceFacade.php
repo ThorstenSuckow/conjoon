@@ -172,6 +172,60 @@ class DefaultMessageServiceFacade implements MessageServiceFacade {
     /**
      * @inheritdoc
      */
+    public function getUnformattedMessage($id, $path, \Conjoon\User\User $user)
+    {
+        try {
+
+            /**
+             * @see \Conjoon\Mail\Client\Folder\DefaultFolderPath
+             */
+            require_once 'Conjoon/Mail/Client/Folder/DefaultFolderPath.php';
+
+            $folderPath = new \Conjoon\Mail\Client\Folder\DefaultFolderPath(
+                $path
+            );
+
+            /**
+             * @see \Conjoon\Mail\Client\Folder\Folder
+             */
+            require_once 'Conjoon/Mail/Client/Folder/Folder.php';
+
+            $folder = new \Conjoon\Mail\Client\Folder\Folder($folderPath);
+
+            /**
+             * @see \Conjoon\Mail\Client\Message\DefaultMessageLocation
+             */
+            require_once 'Conjoon/Mail/Client/Message/DefaultMessageLocation.php';
+
+            $location = new \Conjoon\Mail\Client\Message\DefaultMessageLocation(
+                $folder, $id
+            );
+
+            $request = new \Conjoon\Mail\Server\Request\DefaultGetMessageRequest(array(
+                'user'       => $user,
+                'parameters' => array(
+                    'messageLocation' => $location
+                )));
+
+            $response = $this->server->handle($request);
+
+            return new DefaultServiceResult(
+                $response
+            );
+
+        } catch (\Exception $e) {
+
+            return new DefaultServiceResult(new MessageServiceException(
+                "Exception thrown by previous exception: " . $e->getMessage(),
+                0, $e
+            ));
+
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getMessage($id, $path, \Conjoon\User\User $user)
     {
         try {
