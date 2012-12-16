@@ -838,14 +838,25 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
             return false;
         }
 
-        var source = dragOverEvent.source;
+        var     source = dragOverEvent.source,
+            targetPath = dragOverEvent.target.getPathAsArray('idForPath'),
+            sourcePath;
+
 
         if (source instanceof Ext.ux.grid.livegrid.DragZone) {
+
+            sourcePath = dragOverEvent.data.grid.controller.treePanel
+                         .clkNode.getPathAsArray('idForPath');
+
+            if (sourcePath[1] != targetPath[1]) {
+                return false;
+            }
+
             return source.isDropValid === true;
         }
 
-        var sourcePath = dragOverEvent.data.node.getPathAsArray('idForPath');
-        var targetPath = dragOverEvent.target.getPathAsArray('idForPath');
+        sourcePath = dragOverEvent.data.node.getPathAsArray('idForPath');
+
 
         if (sourcePath[1] != targetPath[1]) {
             return false;
