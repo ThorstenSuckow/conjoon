@@ -78,6 +78,8 @@ com.conjoon.groupware.email.LatestEmailsPanel = Ext.extend(Ext.ux.grid.livegrid.
             }
         });
 
+        // when changing from single select adjust the params being sent with the
+        // set.email.flag request
         this.selModel = new Ext.ux.grid.livegrid.RowSelectionModel({singleSelect:true});
     // ------------------------- ^^ EO set up buffered grid ------------------------
 
@@ -296,12 +298,17 @@ com.conjoon.groupware.email.LatestEmailsPanel = Ext.extend(Ext.ux.grid.livegrid.
             }
         }
 
+        if (max_i > 1) {
+            throw("unexpected value for max_i: \""+ max_i +"\"");
+        }
+
 
         if (requestArray.length > 0) {
             Ext.Ajax.request({
                 url: './groupware/email.item/set.email.flag/format/json',
                 params: {
                     type : 'read',
+                    path : Ext.encode(records[0].get('path')),
                     json : Ext.encode(requestArray)
                 }
             });

@@ -561,15 +561,19 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
 
         gs.bulkRemove(records);
 
+
         var pendingStore  = this.treePanel.pendingItemStore;
         var pendingRecord = pendingStore.getById('/' + folderId.join('/'));
         if (pendingRecord) {
             pendingRecord.set('pending', pendingRecord.data.pending+unread);
         }
 
-        pendingRecord = pendingStore.getById(this.treePanel.getNodeById(currFolderId).getPath('idForPath'));
+        pendingRecord = pendingStore.getById(
+            this.treePanel.getNodeById(currFolderId).getPath('idForPath')
+        );
         if (pendingRecord) {
-            pendingRecord.set('pending', pendingRecord.data.pending - (allowPendingUpdate ? unread : updatePendingCount));
+            pendingRecord.set('pending', pendingRecord.data.pending -
+                (allowPendingUpdate ? unread : updatePendingCount));
         }
     },
 
@@ -1790,7 +1794,7 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
             var pendingRecord = pendingStore.getById(tp.assemblePath(folderPath));
             if (pendingRecord) {
                 pendingRecord.set('pending', pendingRecord.data.pending+1);
-                this.pendingRecords[this.lastClkNodeId]--;
+                this.pendingRecords[tp.getNodeById(this.lastClkNodeId).getPath('idForPath')]--;
             }
             var ds = this.gridPanel.store;
             var index = 0;
@@ -1823,6 +1827,7 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
         // only update pending records if the last updated timestamp is less than
         // the actual timestamp
         var ts = (new Date()).getTime();
+
         var folderPath = tp.assemblePath(Ext.decode(options.params.path));
 
         if (this.pendingRecordsDate[folderPath] > ts) {
@@ -1873,8 +1878,13 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
      */
     onPendingStoreAdd : function(store, records, index)
     {
+        var tp = this.treePanel, id;
+
         for (var i = 0, len = records.length; i < len; i++) {
-            this.pendingRecordsDate[records[i].id] = (new Date()).getTime();
+
+            id = records[i].id;
+
+            this.pendingRecordsDate[id] = (new Date()).getTime();
         }
     },
 

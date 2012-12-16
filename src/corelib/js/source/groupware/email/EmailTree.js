@@ -33,11 +33,15 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
 
     assemblePath : function(path)
     {
+        var res = "";
+
         if (path[0] == 'root') {
-            return '/' + path.join('/');
+            res = '/' + path.join('/');
+        } else {
+            res = '/root/' + path.join('/');
         }
 
-        return '/root/' + path.join('/');
+        return res;
     },
 
     getNodeForPath :function(path)
@@ -160,15 +164,14 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
         var sourcePath = node.getPath('idForPath');
 
         if (typeof path == 'string' || path instanceof String) {
-
             path = path.split('/');
         }
 
-        if (path && path[0]) {
+        if (path) {
 
             var targetPath = path.join('/');
 
-            if (path[0] != 'root') {
+            if (targetPath.indexOf('/root') !== 0) {
                 targetPath = '/root/' + targetPath;
             }
 
@@ -1196,7 +1199,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
             this.pendingItemStore.add(
                 new com.conjoon.groupware.email.PendingNodeItemRecord({
                     pending : pendingCount
-                }, newId)
+                }, node.getPath('idForPath'))
             );
         }
     },
