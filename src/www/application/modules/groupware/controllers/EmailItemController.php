@@ -195,13 +195,22 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
              */
             require_once 'Conjoon/Modules/Groupware/Email/Folder/Facade.php';
 
+            /**
+             * @see Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade
+             */
+            require_once 'Conjoon/Modules/Groupware/Email/Item/ItemListRequestFacade.php';
+
+            $itemListRequestFacade = Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade::getInstance();
+
             //$facade = Conjoon_Modules_Groupware_Email_Folder_Facade::getInstance();
+
+            $imapEmails = array();
 
             for ($i = 0, $accLen = count($accounts); $i < $accLen; $i++) {
                 $currentAccount =& $accounts[$i];
 
                 // check here if we have an actual INBOX folder configured for the
-                // account. 
+                // account.
                 if ($currentAccount->getProtocol() == 'IMAP') {
                     continue;
                 }
@@ -221,7 +230,9 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
                                (strlen($currentAccount->getPasswordInbox()) > 0 ? 'yes' : 'no').')';
         }
 
-        $len = count($emails);
+        $len       = count($emails);
+        $queryImap = true;
+
         if ($len > 0) {
             /**
              * @see Conjoon_BeanContext_Decorator
@@ -250,6 +261,9 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
             );
 
             if ($len >= $max) {
+                // dont return imap emails in this case
+                $queryImap = false;
+                $imapEmails = array();
                 $emails = $decoratedModel->getLatestEmailItemsForAsDto(
                     $userId, $time,
                     array(
@@ -269,6 +283,20 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
                 );
             }
         }
+
+        if ($queryImap) {
+            for ($i = 0, $accLen = count($accounts); $i < $accLen; $i++) {
+                $currentAccount =& $accounts[$i];
+                if ($currentAccount->getProtocol() == 'IMAP') {
+                    $imapItems = $itemListRequestFacade->getRecentItemsForAccount(
+                        $currentAccount->getDto(), $userId
+                    );
+                    $imapEmails = array_merge($imapEmails, $imapItems);
+                }
+            }
+        }
+
+        $emails = array_merge($imapEmails, $emails);
 
         $this->view->success    = true;
         // count again, since during db operation old records might have

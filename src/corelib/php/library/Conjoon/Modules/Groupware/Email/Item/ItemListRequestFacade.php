@@ -123,7 +123,7 @@ class Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade {
 
             return $this->_getEmailItemListForAccountAndRemoteFolder(
                 $accountDto, $pathInfo, $sortInfo, $additionalInfo,
-                $userId, $from, $to
+                $from, $to, $userId
             );
         }
 
@@ -145,16 +145,30 @@ class Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade {
      * @throws Conjoon_Argument_Exception
      */
     protected function _getEmailItemListForAccountAndRemoteFolder(
-            Conjoon_Modules_Groupware_Email_Account_Dto $accountDto, Array $pathInfo,
-            Array $sortInfo = array(), $additionalInfo,
-            $userId, $from, $to)
+            Conjoon_Modules_Groupware_Email_Account_Dto $accountDto, $pathInfo,
+            Array $sortInfo = array(), $additionalInfo, $from, $to, $userId)
     {
 
-        $path   = $pathInfo['path'];
-        $rootId = $pathInfo['rootId'];
+        if (is_array($pathInfo)) {
+            $path   = $pathInfo['path'];
+            $rootId = $pathInfo['rootId'];
 
-        $globalName = $this->_getFolderFacade()
-            ->getAssembledGlobalNameForAccountAndPath($accountDto, $path);
+            $globalName = $this->_getFolderFacade()
+                ->getAssembledGlobalNameForAccountAndPath($accountDto, $path);
+        } else {
+            $globalName = $pathInfo;
+            $fld = $this->_getFolderFacade()->getRootFolderForAccountId($accountDto, $userId);
+            $rootId = $fld[0]->id;
+
+            /**
+             * @see Conjoon_Modules_Groupware_Email_ImapHelper
+             */
+            require_once 'Conjoon/Modules/Groupware/Email/ImapHelper.php';
+
+            $path = Conjoon_Modules_Groupware_Email_ImapHelper::splitFolderForImapAccount(
+                $globalName, $accountDto
+            );
+        }
 
         /**
          * @see Conjoon_Date_Format
@@ -401,6 +415,93 @@ class Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade {
 
         return $responseItems;
 
+    }
+
+    /**
+     *
+     *
+     * @param $accountDto
+     *
+     * @return array
+     */
+    public function getRecentItemsForAccount($accountDto, $userId)
+    {
+        /**
+         * @see Zend_Registry
+         */
+        require_once 'Zend/Registry.php';
+
+        /**
+         * @see Conjoon_Keys
+         */
+        require_once 'Conjoon/Keys.php';
+
+        $em = Zend_Registry::get(Conjoon_Keys::DOCTRINE_ENTITY_MANAGER);
+
+        $rep = $em->getRepository('\Conjoon\Data\Entity\Mail\DefaultMailAccountEntity');
+
+        $entity = $rep->findById($accountDto->id);
+
+        if (!$entity) {
+            return array();
+        }
+
+        $mappings = $entity->getFolderMappings();
+
+        /**
+         * @see Conjoon_Modules_Groupware_Email_ImapHelper
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/ImapHelper.php';
+
+        $protocol = Conjoon_Modules_Groupware_Email_ImapHelper
+        ::reuseImapProtocolForAccount($accountDto);
+
+        /**
+         * @see Zend_Mail_Storage_Imap
+         */
+        require_once 'Conjoon/Mail/Storage/Imap.php';
+        $storage = new Conjoon_Mail_Storage_Imap($protocol);
+
+        $globalName = "";
+
+        $result = array();
+
+        try{
+            for ($i = 0,$len = count($mappings); $i < $len; $i++) {
+                if ($mappings[$i]->getType() == 'INBOX'
+                    && $mappings[$i]->getGlobalName()!= "") {
+                    $globalName = $mappings[$i]->getGlobalName();
+                    break;
+                }
+            }
+
+            if ($globalName != "") {
+                $protocol->select($globalName);
+                $res = $protocol->requestAndResponse('SEARCH', array('RECENT'));
+
+                if (is_array($res)) {
+                    $res = $res[0];
+                    if ($res[0] === 'SEARCH') {
+                        array_shift($res);
+                    }
+
+                    for ($i = 0, $len = count($res); $i < $len; $i++) {
+
+                         $item = $this->_getEmailItemListForAccountAndRemoteFolder(
+                                    $accountDto, $globalName, array(), false,
+                                    $res[$i], $res[$i], $userId);
+
+                        if (isset($item[0])) {
+                            $result[] = $item[0];
+                        }
+                    }
+                }
+            }
+        } catch (Exception $e) {
+            // ignore
+        }
+
+        return $result;
     }
 
     /**
