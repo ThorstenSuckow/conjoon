@@ -1015,7 +1015,7 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
                 'rootId' => $rootFolder[0]->id,
                 'path'   => explode($delimiter, $globalName)
             ),
-            $userId, array(), $messageNumber, $messageNumber
+            $userId, array(), false, $messageNumber, $messageNumber
         );
 
         return $list[0];

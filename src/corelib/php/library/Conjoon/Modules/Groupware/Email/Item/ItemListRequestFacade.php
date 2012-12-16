@@ -75,13 +75,21 @@ class Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade {
      *  - dir   => sort direction - ASC or DESC
      *  - limit => max number of messagesto sort
      *  - start => starting position of message to sort
+     * @param $additionalInfo return additionalinfo in an array. The whole
+     *                        result will be available in
+     *                        - items: an array of items
+     *                        - totalCount: the totalCount of available items
+     * @param integer $from return only the index within the result set
+     * @param integer $to return only the index within the result set
+     *
      *
      * @return array
      *
      * @throws Conjoon_Argument_Exception
      */
     public function getEmailItemList(
-        Array $pathInfo, $userId, Array $sortInfo = array(), $from = 1, $to = -1)
+        Array $pathInfo, $userId, Array $sortInfo = array(), $additionalInfo = false,
+        $from = 1, $to = -1)
     {
         /**
          * @see Conjoon_Argument_Check
@@ -114,7 +122,8 @@ class Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade {
             );
 
             return $this->_getEmailItemListForAccountAndRemoteFolder(
-                $accountDto, $pathInfo, $sortInfo, $userId, $from, $to
+                $accountDto, $pathInfo, $sortInfo, $additionalInfo,
+                $userId, $from, $to
             );
         }
 
@@ -137,7 +146,8 @@ class Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade {
      */
     protected function _getEmailItemListForAccountAndRemoteFolder(
             Conjoon_Modules_Groupware_Email_Account_Dto $accountDto, Array $pathInfo,
-            Array $sortInfo = array(), $userId, $from, $to)
+            Array $sortInfo = array(), $additionalInfo,
+            $userId, $from, $to)
     {
 
         $path   = $pathInfo['path'];
@@ -371,9 +381,101 @@ class Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade {
             }
         }
 
+        $totalCount = count($responseItems);
+
+        if (isset($sortInfo['limit']) && isset($sortInfo['start'])) {
+            $responseItems = array_splice(
+                $responseItems, $sortInfo['start'], $sortInfo['limit']
+            );
+        }
+
+        if ($additionalInfo) {
+            return array(
+                'items'        => $responseItems,
+                'totalCount'   => $totalCount,
+                'pendingItems' => $this->getPendingCountForGlobalName(
+                    $accountDto, $globalName
+                )
+            );
+        }
+
         return $responseItems;
 
     }
+
+    /**
+     *
+     * @param $accountName
+     * @param $globalName
+     */
+    protected function getPendingCountForGlobalName($accountDto, $globalName)
+    {
+        /**
+         * @see Zend_Registry
+         */
+        require_once 'Zend/Registry.php';
+
+        /**
+         * @see Conjoon_Keys
+         */
+        require_once 'Conjoon/Keys.php';
+
+        $em = Zend_Registry::get(Conjoon_Keys::DOCTRINE_ENTITY_MANAGER);
+
+        $rep = $em->getRepository('\Conjoon\Data\Entity\Mail\DefaultMailAccountEntity');
+
+        $entity = $rep->findById($accountDto->id);
+
+        if (!$entity) {
+            return 0;
+        }
+
+        $mappings = $entity->getFolderMappings();
+
+        /**
+         * @see Conjoon_Modules_Groupware_Email_ImapHelper
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/ImapHelper.php';
+
+        $protocol = Conjoon_Modules_Groupware_Email_ImapHelper
+        ::reuseImapProtocolForAccount($accountDto);
+
+        /**
+         * @see Zend_Mail_Storage_Imap
+         */
+        require_once 'Conjoon/Mail/Storage/Imap.php';
+
+        $storage = new Conjoon_Mail_Storage_Imap($protocol);
+
+        // return unsee for all except outbox and draft, where we will return
+        // the total count
+
+        try{
+            for ($i = 0,$len = count($mappings); $i < $len; $i++) {
+                if (($mappings[$i]->getType() == 'DRAFT'
+                    || $mappings[$i]->getType() == 'OUTBOX')
+                    && $mappings[$i]->getGlobalName() == $globalName) {
+                    $storage->selectFolder($globalName);
+                    return $storage->countMessages();
+                }
+            }
+
+            $protocol->select($globalName);
+            $res = $protocol->requestAndResponse('SEARCH', array('UNSEEN'));
+            if (is_array($res)) {
+                $res = $res[0];
+                if ($res[0] === 'SEARCH') {
+                    array_shift($res);
+                }
+                return count($res);
+            }
+        } catch (Exception $e) {
+            // ignore
+        }
+
+        return 0;
+    }
+
 
     public function memorySortSubject($a, $b)
     {

@@ -248,25 +248,24 @@ class Conjoon_Mail_Storage_Imap extends Zend_Mail_Storage_Imap
 
         $headers = array();
 
-        for ($i = $from, $len = $to + 1; $i < $len; $i++) {
+        try {
+            $result = $this->_protocol->fetch(
+                array('RFC822.HEADER', 'BODYSTRUCTURE', 'FLAGS', 'UID'), $from, $to
+            );
 
+        } catch (Zend_Mail_Protocol_Exception $e) {
+            /**
+             * @see Conjoon_Mail_Service_MailServiceException
+             */
+            require_once 'Conjoon/Mail/Service/MailServiceException.php';
 
-            try {
-                $tmp = $this->_protocol->fetch(
-                    array('RFC822.HEADER', 'BODYSTRUCTURE', 'FLAGS', 'UID'), $i
-                );
+            throw new Conjoon_Mail_Service_MailServiceException(
+                "Exception thrown by previous exception: "
+                . $e->getMessage(), 0, $e
+            );
+        }
 
-            } catch (Zend_Mail_Protocol_Exception $e) {
-                /**
-                 * @see Conjoon_Mail_Service_MailServiceException
-                 */
-                require_once 'Conjoon/Mail/Service/MailServiceException.php';
-
-                throw new Conjoon_Mail_Service_MailServiceException(
-                    "Exception thrown by previous exception: "
-                    . $e->getMessage(), 0, $e
-                );
-            }
+        foreach ($result as $tmp) {
 
             $headers[] = array(
                 'header'        => $tmp['RFC822.HEADER'],

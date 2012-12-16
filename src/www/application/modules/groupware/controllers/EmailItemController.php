@@ -498,14 +498,14 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
 
             $listFacade = Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade::getInstance();
 
-            $items = $listFacade->getEmailItemList($pathInfo, $userId, $sortInfo);
+            $itemData = $listFacade->getEmailItemList($pathInfo, $userId, $sortInfo, true);
 
             $this->view->success      = true;
             $this->view->error        = null;
-            $this->view->items        = $items;
+            $this->view->items        = $itemData['items'];
             $this->view->version      = 1;
-            $this->view->totalCount   = count($items);
-            $this->view->pendingItems = 0;
+            $this->view->totalCount   = $itemData['totalCount'];
+            $this->view->pendingItems = $itemData['pendingItems'];
             return;
         }
 
