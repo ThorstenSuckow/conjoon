@@ -40,21 +40,28 @@
 $LIBRARY_PATH_BOOTSTRAP = dirname(__FILE__) . '/../../../';
 /*@REMOVE@*/
 /*@BUILD_ACTIVE@
-   function __autoload($className)
+   function __conjoon_autoload($className)
    {
-       // note! LIBRARY_PATH_BOOTSTRAP will be replaced during installation
-       // with the path where the Zend/Conjoon libs used for this installation
-       // of conjoon can be found. If any error occurres and LIBRARY_PATH_BOOTSTRAP
-       // was not replaced, you can do so by hand.
-       $res = @include_once $LIBRARY_PATH_BOOTSTRAP . '/'
-                            . str_replace('_', '/', $className) . '.php';
-       if (!$res) {
-           throw new Exception(
-               "Could not load $className - I looked in $LIBRARY_PATH_BOOTSTRAP "
-               ."but it does not seem to exits"
-           );
-       }
+        // note! LIBRARY_PATH_BOOTSTRAP will be replaced during installation
+        // with the path where the Zend/Conjoon libs used for this installation
+        // of conjoon can be found. If any error occurres and LIBRARY_PATH_BOOTSTRAP
+        // was not replaced, you can do so by hand.
+        if (strpos($className, '\\') !== false) {
+            $className = str_replace('\\', '/', ltrim($className, '\\'));
+        } else {
+            $className = str_replace('_', '/', $className);
+        }
+
+        if (strpos($className, 'Symfony') === 0) {
+            $className = 'Doctrine/' . $className;
+        }
+
+        $res = @include_once $LIBRARY_PATH_BOOTSTRAP . '/'
+               . $className . '.php';
    }
+
+   spl_autoload_register('__conjoon_autoload');
+
 @BUILD_ACTIVE@*/
 
 // +----------------------------------------------------------------------------
@@ -263,7 +270,7 @@ require_once 'Zend/Controller/Exception.php';
         $LIBRARY_PATH_BOOTSTRAP . '/src/corelib/php/library/'
         /*@REMOVE@*/
         /*@BUILD_ACTIVE@
-        . $LIBRARY_PATH_BOOTSTRAP
+        $LIBRARY_PATH_BOOTSTRAP
         @BUILD_ACTIVE@*/
         . '/Conjoon/Data/Entity/Proxy'
     );
