@@ -350,6 +350,29 @@
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/////////////////////////////////////////////
 ..............................................................................-->
 
+<!--.............................................................................
+//////////////////////////// rebuild doctrine \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+..............................................................................-->
+<!-- builds doctrine library for build_install -->
+<!-- not to be directly invoked -->
+<target if="global.called.build_install_helper"
+        name="_build_install_doctrine"
+        unless="global.called._build_install_doctrine"
+        >
+    <property file="${file.tmpProperties}" />
+    <property name="global.called._build_install_doctrine" value="1" />
+    <exportallowed targetfile="${file.tmpProperties}" allowed="global"  />
+    <delete dir="./build/build/htdocs/install/files/conjoon_libs/Doctrine" />
+    <copy todir="./build/build/htdocs/install/files/conjoon_libs/Doctrine" includeemptydirs="true">
+        <fileset dir="./build/export/vendor/doctrine/Doctrine" />
+        <filterchain>
+            <filterreader classname="filters.RemoveRequire" />
+        </filterchain>
+    </copy>
+</target>
+<!--.............................................................................
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/////////////////////////////////////////////
+..............................................................................-->
 
 <!--.............................................................................
 //////////////////////////// rebuild datastore\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -494,6 +517,7 @@
         <phingcall target="_build_install_config_cache" />
         <phingcall target="_build_install_application" />
         <phingcall target="_build_install_zend" />
+        <phingcall target="_build_install_doctrine" />
         <phingcall target="_build_install_conjoon_php" />
         <phingcall target="_build_install_datastore" />
         <copy file="./build/export/LICENSE.txt"
