@@ -947,7 +947,7 @@ class Groupware_EmailEditController extends Zend_Controller_Action {
             $folderMappingError = new Conjoon_Error();
             $folderMappingError = $folderMappingError->getDto();;
             $folderMappingError->title   = 'Missing folder mapping';
-            $folderMappingError->message = 'The email was sent, but a "sent" version could not be stored to the configured IMAP account. Make sure you have configured the folder mappings for this account properly.';
+            $folderMappingError->message = 'Cannot save draft, since no "draft" folder mapping is available. Please configure the folder mappings for this account first.';
             $folderMappingError->level = Conjoon_Error::LEVEL_ERROR;
 
             $this->view->error   = $folderMappingError;
