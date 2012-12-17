@@ -103,10 +103,10 @@ include('./scripts/check_auth.php');
 
 
  // check PHP version
- $php_version_match   = version_compare(PHP_VERSION, '5.2.5' , '>=');
+ $php_version_match   = version_compare(PHP_VERSION, '5.3' , '>=');
  $current_php_version = PHP_VERSION;
 
- $CHECK['php_version_required'] = '5.2.5';
+ $CHECK['php_version_required'] = '5.3';
  $CHECK['php_version_match']    = $php_version_match;
  $CHECK['current_php_version']  = $current_php_version;
 

@@ -19,10 +19,10 @@
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 
-if (version_compare(PHP_VERSION, '5.2.5' , '<')) {
+if (version_compare(PHP_VERSION, '5.3' , '<')) {
     die(
         "Sorry, your version of PHP is " . PHP_VERSION .". "
-        ."You need at least PHP 5.2.5 to run conjoon."
+        ."You need at least PHP 5.3 to run conjoon."
     );
 }
 
