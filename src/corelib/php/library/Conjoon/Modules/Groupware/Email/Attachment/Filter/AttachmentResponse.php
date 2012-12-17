@@ -19,7 +19,7 @@
 require_once 'Conjoon/Filter/Input.php';
 
 /**
- * @see Zend_Filter_Htmlentities
+ * @see Zend_Filter_HtmlEntities
  */
 require_once 'Zend/Filter/HtmlEntities.php';
 
@@ -49,7 +49,7 @@ class Conjoon_Modules_Groupware_Email_Attachment_Filter_AttachmentResponse exten
 
     protected function _init()
     {
-        $this->_defaultEscapeFilter = new Zend_Filter_Htmlentities(
+        $this->_defaultEscapeFilter = new Zend_Filter_HtmlEntities(
             array(
                 'quotestyle' => ENT_COMPAT,
                 'charset'    => 'UTF-8'
