@@ -302,7 +302,7 @@ class Conjoon_Modules_Groupware_Email_Account_Filter_Account extends Conjoon_Fil
             return $data;
         }
 
-        if ($data['protocol'] == 'POP') {
+        if (isset($data['protocol']) && $data['protocol'] == 'POP') {
             $data['protocol'] = 'POP3';
         }
 
