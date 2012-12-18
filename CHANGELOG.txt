@@ -1,4 +1,164 @@
-﻿2012-12-03 0.1.5.1
+﻿2012-12-18 0.1.6EAP1
+====================
+Release Notes - conjoon - Version 0.1.6EAP1
+
+** Bug
+    * [CN-595] - Cannot dive into nested folders of IMAP account
+    * [CN-602] - No original value shown for Conjoon_Argument_Check::check's
+                 type "string" on error, enhance casting of "int" when dealing
+                 with objects/arrays
+    * [CN-625] - Add override for issue with Zend Framework when parsing IMAP
+                 BODYSTRUCTURE responses
+    * [CN-642] - sortInfo not properly considered in ItemListRequestFacade
+    * [CN-665] - MailboxFolderPathJsonParser returns a node id although the path
+                 is empty
+    * [CN-670] - FolderCommons does not work properly which makes the
+                 SecurityService bail out on possible remote folders
+    * [CN-671] - Message Flag's "clear" property is not interpreted correctly
+    * [CN-682] - Email Filter for Items returns error message
+    * [CN-684] - RuntimeException in DefaultProtocolAdaptee is referencing wrong
+                 namespace
+    * [CN-685] - Typo in Conjoon\Mail\Storage\Pop3
+    * [CN-686] - Folder Facade treats rootIds and nodeIds not correct when
+                 trying to read out folders for user
+    * [CN-688] - Livegrid shows wrong behavior when rows are added to the end of
+                 it's store
+    * [CN-690] - Right clicking an IMAP email item throws error "tp.folderDraft
+                 is undefined"
+    * [CN-693] - State of selection for message items is erroneous
+    * [CN-702] - ReplyMessagePatronTest fails due to changes related to address
+                 list handling
+    * [CN-703] - DefaultMessageServiceFacadeTest throws error "call to
+                 createQuery() on a non-object"
+    * [CN-705] - DoctrineMailAccountRepository's "getStandardMailAccount()" does
+                 not consider accounts marked as deleted
+    * [CN-707] - Doctrine DQL not returning proper results in
+                 DoctrineMailAccountRepository
+    * [CN-709] - Naming mismatch leads to wrong references when sending messages
+    * [CN-713] - Check folder hierarchy when dragging email items
+    * [CN-714] - contentTextPlain not properly rendered into email editor
+    * [CN-716] - pendingCount not correctly read out from remote IMAP server on
+                 folder level
+    * [CN-717] - Adding new email accounts does not work
+    * [CN-718] - Minor issues related to pendingItem/email item stores
+    * [CN-725] - Updating an email account gives error: undefined index
+                 "protocol"
+    * [CN-726] - Wrong error message for missing draft folder mapping
+    * [CN-727] - AttachmentResponse filter throws error
+                 "class Zend_Filter_Htmlentities" not found
+
+** Improvement
+    * [CN-417] - Resize the Make a Suggestion- and Report a Bug-dialog
+    * [CN-629] - Constructor for  Conjoon_Text_Parser should throw exceptions
+                 of the type Conjoon_Argument_Exception
+    * [CN-630] - Add "previous" exception argument to Conjoon_Exception for <
+                 PHP 5.3
+    * [CN-636] - Change
+                 ImapStorageService::getHeaderAndBodyStructureForGlobalName to
+                 also return FLAGS
+    * [CN-637] - Allow MimeDecoder to work with empty values
+    * [CN-639] - ImapStorageService::getHeaderAndMetaInformationForGlobalName
+                 should alos return each UID for every message
+    * [CN-640] - Change filters and client item record properties for message
+                 id's from int to string
+    * [CN-652] - Conjoon_Argument_Check's "bool" should test for object/array
+                 and throw an error if test passes
+    * [CN-694] - Add "mandatory" configuration option to
+                 Conjoon\Argument\ArgumentCheck
+    * [CN-704] - ArgumentCheck should be strict for boolean types
+    * [CN-711] - Read out folder types from mappings when IMAP folder get loaded
+    * [CN-712] - Improve header list and meta information retrieval for IMAP
+                 server and enable limit parameter support
+
+** New Feature
+    * [CN-600] - Create code to read out and display IMAP Email Items from
+                 remote Server without using cache/db
+    * [CN-646] - Enable deleting of IMAP folders
+    * [CN-647] - Enable moving of messages between different IMAP folders
+    * [CN-648] - Enable marking an IMAP Email Message as "read/unread"
+    * [CN-649] - Enable marking an IMAP Email Message as "junk/nojunk"
+    * [CN-650] - IMAP Email Messages flagged as "recent" should be rendered
+                 accordingly in the grid
+    * [CN-699] - Add folder mapping workflow so conjoon knows which remote
+                 folders are used for specific actions
+    * [CN-700] - Add functionality for composing, editing, replying and
+                 forwarding messages using IMAP accounts
+    * [CN-706] - Add method to MailAccountRepository for returning all accounts
+                 which belong to a specific user
+
+** Task
+    * [CN-363] - Check for SSL support
+    * [CN-365] - Check naming conventions for IMAP folders
+    * [CN-489] - Bring Server Type Card back into Email Account Assistant
+    * [CN-571] - Bring back "Folder mappings" menu item
+    * [CN-587] - Update wording in Settings Tab in Email Accounts Dialog
+    * [CN-593] - Update client code to consider new "root_remote" folder type
+    * [CN-614] - Conjoon_Text_Transformer::transform must also order subclasses
+                 to throw exceptions of the type Conjoon_Argument_Exception
+    * [CN-624] - bring 0.1.5 into main dev line
+    * [CN-631] - Add Unit Test stubs for Conjoon_Mail
+    * [CN-632] - Add Unit Test stubs for Conjoon_Mail_Storage
+    * [CN-633] - Add Unit Test stubs for Conjoon_Mail_Protocol
+    * [CN-657] - Check build process for newly added files (doctrin/orm)
+    * [CN-663] - Remove AllTests.php from UnitTests
+    * [CN-664] - Add method to ClientFolderService to check whether a specific
+                 folder may be accessed by a user
+    * [CN-678] - Conjoon\Mail\Server\response\ResponseBody should hold an array
+                 by default
+    * [CN-679] - Remove SuccessResponse/ErrorResponseBody since tagging a
+                 successfull response is not needed
+    * [CN-680] - Conjoon\Mail\Server\Request\Request needs access to params for
+                 forwarding to protocol commands as arguments
+    * [CN-683] - Add tests for email recipients filters to make sure they work
+                 with refactorings
+    * [CN-687] - Update email accounts data structure with foreign key relations
+    * [CN-692] - Load IMAP message into preview panel
+    * [CN-697] - Attachments must be downloadable from a remote server
+    * [CN-715] - Remove obsolete Folder Mapping code
+    * [CN-722] - Update prerequisites with PHP 5.3
+    * [CN-723] - Remove version check from index.php
+    * [CN-724] - Update autoloader to consider new PHP 5.3 namespaces
+
+** Sub-task
+    * [CN-601] - The path to the requested folder should be submitted to the
+                 server when requesting the contents of an IMAP folder
+    * [CN-603] - refactor Conjoon_Filter_DateToUtc and add Unit Tests
+    * [CN-604] - refactor Conjoon_Filter_DateUtcToLocal and add Unit Tests
+    * [CN-605] - Refactor Conjoon_Filter_EmailRecipients and add Unit Tests
+    * [CN-606] - refactor Conjoon_Filter_EmailRecipientsToString and add Unit
+                 Tests
+    * [CN-607] - refactor Conjoon_Filter_MimeDecodeHeader and add Unit Tests
+    * [CN-608] - Refactor Conjoon_Filter_SanitizeDate and add Unit Tests
+    * [CN-609] - Refactor Conjoon_Filter_SortDirection and add Unit Tests
+    * [CN-610] - Add methods to read out raw messages and message header lists
+                 to Conjoon_Mail_Storage_Imap
+    * [CN-611] - Add method to translate a path value as sent by the client into
+                 an IMAP global name
+    * [CN-612] - Refactor Conjoon_Text_Transformer_EmailAddressToHtml into
+                 Conjoon_Text_Transformer_Email-namespace
+    * [CN-613] - Create Parser base class in Conjoon_Text to provide interface
+                 for parsing text input
+    * [CN-634] - Add parser for mailbox folder paths as sent by the client
+    * [CN-635] - Add MessageHeaderParser for parsing email message header
+    * [CN-653] - DefaultClientMessageFlagColelction does not assign flag objects
+                 properly
+    * [CN-654] - ClientMailboxFolder should also provide access to the client
+                 folder's root id
+    * [CN-655] - Update groupware_email_folders with foreign key for parent_id
+                 <-> id
+    * [CN-656] - Introduce Doctrine as Vendor Library
+    * [CN-658] - DoctrineMailFolderRepository references missing file
+    * [CN-659] - Add test to DoctrineMailFolderRepository for checking if entity
+                 was found
+    * [CN-660] - Add initial Folder Service with method to check whether Client
+                 Folder represents a remote folder
+    * [CN-661] - Update groupware_email_items/flags with proper foreign key
+                 settings
+    * [CN-662] - Create entities and repositories for email message items/flags
+                 and users
+
+
+2012-12-03 0.1.5.1
 ==================
 Release Notes - conjoon - Version 0.1.5.1
 
