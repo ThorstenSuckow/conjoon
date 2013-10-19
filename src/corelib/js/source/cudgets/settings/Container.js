@@ -526,10 +526,19 @@ com.conjoon.cudgets.settings.Container = Ext.extend(Ext.Container, {
      */
     getEntriesButtons : function()
     {
-        return [
-            this.getAddEntryButton(),
-            this.getRemoveEntryButton()
-        ];
+        var me = this,
+            items = [];
+
+
+        items = this.getAddEntryButton()
+                ? items.concat(this.getAddEntryButton())
+                : items;
+
+        items = this.getRemoveEntryButton()
+                ? items.concat(this.getRemoveEntryButton())
+                : items;
+
+        return items;
     }
 
 

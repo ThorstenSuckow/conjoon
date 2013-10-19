@@ -70,19 +70,23 @@ com.conjoon.cudgets.settings.listener.DefaultContainerListener.prototype = {
         settingsContainer.mon(ec, 'entryselect',         this.onEntrySelect, this);
         settingsContainer.mon(ec, 'entrydeselect',       this.onEntryDeselect, this);
 
-        settingsContainer.mon(
-            settingsContainer.getRemoveEntryButton(),
-            'click',
-            this.onRemoveEntryButtonClick,
-            this
-        );
+        if (settingsContainer.getRemoveEntryButton()) {
+            settingsContainer.mon(
+                settingsContainer.getRemoveEntryButton(),
+                'click',
+                this.onRemoveEntryButtonClick,
+                this
+            );
+        }
 
-        settingsContainer.mon(
-            settingsContainer.getAddEntryButton(),
-            'click',
-            this.onAddEntryButtonClick,
-            this
-        );
+        if (settingsContainer.getAddEntryButton()) {
+            settingsContainer.mon(
+                settingsContainer.getAddEntryButton(),
+                'click',
+                this.onAddEntryButtonClick,
+                this
+            );
+        }
 
         settingsContainer.mon(
             settingsContainer.storeSync.store, 'update', this.onStoreUpdate, this
@@ -224,7 +228,10 @@ com.conjoon.cudgets.settings.listener.DefaultContainerListener.prototype = {
     {
         var settingsContainer = this.settingsContainer;
 
-        settingsContainer.removeEntryButton.setDisabled(false);
+        if (settingsContainer.removeEntryButton) {
+            settingsContainer.removeEntryButton.setDisabled(false);
+        }
+
         settingsContainer.mainContainer.getLayout().setActiveItem(settingsContainer.formContainer);
 
         if (!settingsContainer.formContainer.getActiveTab()) {
@@ -255,7 +262,10 @@ com.conjoon.cudgets.settings.listener.DefaultContainerListener.prototype = {
             this.saveEntry(record);
         }
 
-        settingsContainer.removeEntryButton.setDisabled(true);
+        if(settingsContainer.removeEntryButton) {
+            settingsContainer.removeEntryButton.setDisabled(true);
+        }
+
         settingsContainer.mainContainer.getLayout().setActiveItem(settingsContainer.introductionCard);
     },
 
