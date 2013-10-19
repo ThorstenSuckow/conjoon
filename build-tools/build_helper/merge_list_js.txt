@@ -148,6 +148,10 @@ src/corelib/js/source/groupware/email/PendingNodeUI.js
 src/corelib/js/source/groupware/email/LatestEmailsPanel.js
 src/corelib/js/source/groupware/email/Letterman.js
 src/corelib/js/source/groupware/email/LatestEmailsGridListener.js
+src/corelib/js/source/groupware/email/options/ReadingOptionsCard.js
+src/corelib/js/source/groupware/email/options/ContainerUi.js
+src/corelib/js/source/groupware/email/options/DialogListener.js
+src/corelib/js/source/groupware/email/EmailOptionsDialog.js
 src/corelib/js/source/service/Provider.js
 src/corelib/js/source/service/twitter/OptionsDialog.js
 src/corelib/js/source/service/twitter/optionsDialog/ContainerUi.js

@@ -42,9 +42,15 @@ com.conjoon.groupware.workbench.Menubar = function(){
         _emailMenu = new Ext.Toolbar.Button({
             text : com.conjoon.Gettext.gettext("Email"),
             menu : [{
-                text    : com.conjoon.Gettext.gettext("Add account"),
+                text    : com.conjoon.Gettext.gettext("Add account..."),
                 handler : function() {
                     var w = new com.conjoon.groupware.email.EmailAccountWizard();
+                    w.show();
+                }
+            },{
+                text    : com.conjoon.Gettext.gettext("Options..."),
+                handler : function() {
+                    var w = new com.conjoon.groupware.email.EmailOptionsDialog();
                     w.show();
                 }
             }, '-', {
