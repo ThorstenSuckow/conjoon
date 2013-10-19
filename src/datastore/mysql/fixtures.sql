@@ -45,8 +45,14 @@ INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
 (12, 'environment', 9);
 INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
 (13, 'applicationCache', 4);
-
-
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
+('14', 'modules', '8');
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
+('15', 'email', '14');
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
+('16', 'options', '15');
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
+('17', 'reading', '16');
 
 
 -- --
@@ -68,3 +74,7 @@ INSERT INTO `{DATABASE.TABLE.PREFIX}registry_values` (`registry_id`, `user_id`, 
 (13, 0, 'cache-stylesheets', '0', 'BOOLEAN', 1);
 INSERT INTO `{DATABASE.TABLE.PREFIX}registry_values` (`registry_id`, `user_id`, `name`, `value`, `type`, `is_editable`) VALUES
 (13, 0, 'last-changed', '0', 'FLOAT', 1);
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry_values` (`registry_id`, `user_id`, `name`, `value`, `type`, `is_editable`) VALUES
+('17', '0', 'preferred_format', 'plain', 'STRING', '1');
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry_values` (`registry_id`, `user_id`, `name`, `value`, `type`, `is_editable`) VALUES
+('17', '0', 'allow_externals', '0', 'BOOLEAN', '1');
