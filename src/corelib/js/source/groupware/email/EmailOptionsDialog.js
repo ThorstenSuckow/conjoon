@@ -15,7 +15,8 @@
 Ext.namespace('com.conjoon.groupware.email');
 
 /**
- *
+ * Default Email Options Dialog
+ * 
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  * @class com.conjoon.groupware.email.EmailOptionsDialog
  * @extends com.conjoon.cudgets.settings.Dialog
