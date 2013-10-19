@@ -253,7 +253,7 @@ com.conjoon.cudgets.settings.Container = Ext.extend(Ext.Container, {
 
                 this.formContainer.setActiveTab(info.card);
 
-                return;
+                return false;
             }
 
             this.saveFormDataToEntry(rec);
