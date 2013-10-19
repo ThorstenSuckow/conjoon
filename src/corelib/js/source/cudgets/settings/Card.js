@@ -162,6 +162,7 @@ com.conjoon.cudgets.settings.Card = Ext.extend(Ext.FormPanel, {
                 this.mun(field, 'keyup',    this.processStartEditTrigger, this);
                 this.mun(field, 'keypress', this.processStartEditTrigger, this);
                 this.mun(field, 'check',    this.processStartEditTrigger, this);
+                this.mun(field, 'change',   this.processStartEditTrigger, this);
             }, this);
         } else {
             this.form.items.each(function(field) {
@@ -182,6 +183,11 @@ com.conjoon.cudgets.settings.Card = Ext.extend(Ext.FormPanel, {
                         this.mon(field, 'keydown',  this.processStartEditTrigger, this);
                         this.mon(field, 'keyup',    this.processStartEditTrigger, this);
                         this.mon(field, 'keypress', this.processStartEditTrigger, this);
+                    break;
+
+                    // radiogroup
+                    case (field instanceof Ext.form.RadioGroup):
+                        this.mon(field, 'change', this.processStartEditTrigger, this);
                     break;
 
                     // checkbox/radio
