@@ -3,13 +3,13 @@
  * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
- * $Author: T. Suckow $
- * $Id: SettingsCard.js 1457 2012-10-28 18:55:17Z T. Suckow $
- * $Date: 2012-10-28 19:55:17 +0100 (So, 28 Okt 2012) $
- * $Revision: 1457 $
- * $LastChangedDate: 2012-10-28 19:55:17 +0100 (So, 28 Okt 2012) $
- * $LastChangedBy: T. Suckow $
- * $URL: http://svn.conjoon.org/trunk/src/corelib/js/source/service/twitter/optionsDialog/SettingsCard.js $
+ * $Author$
+ * $Id$
+ * $Date$
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$
  */
 
 Ext.namespace('com.conjoon.groupware.email.options');

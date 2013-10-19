@@ -3,13 +3,13 @@
  * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
- * $Author: T. Suckow $
- * $Id: ContainerUi.js 1495 2012-11-02 19:30:57Z T. Suckow $
- * $Date: 2012-11-02 20:30:57 +0100 (Fr, 02 Nov 2012) $
- * $Revision: 1495 $
- * $LastChangedDate: 2012-11-02 20:30:57 +0100 (Fr, 02 Nov 2012) $
- * $LastChangedBy: T. Suckow $
- * $URL: http://svn.conjoon.org/trunk/src/corelib/js/source/service/twitter/optionsDialog/ContainerUi.js $
+ * $Author$
+ * $Id$
+ * $Date$
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$
  */
 
 Ext.namespace('com.conjoon.groupware.email.options');
