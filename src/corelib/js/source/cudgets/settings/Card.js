@@ -107,7 +107,7 @@ com.conjoon.cudgets.settings.Card = Ext.extend(Ext.FormPanel, {
         this.on('hide', this.onCardHide, this);
 
         if (this.enableStartEditEvent) {
-            this.on('render', function() {
+            this.on('afterrender', function() {
                 this.installStartEditListener();
             }, this, {single : true});
         }
