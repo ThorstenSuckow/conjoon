@@ -52,13 +52,26 @@ require_once 'Doctrine/ORM/Mapping/Driver/YamlDriver.php';
  */
 abstract class DatabaseTestCaseDefault extends \PHPUnit_Extensions_Database_TestCase {
 
+    protected $myDConn = null;
+
     protected function setUp()
     {
         parent::setUp();
     }
 
+    protected function tearDown()
+    {
+        parent::tearDown();
+        $this->myDConn = null;
+    }
+
+
     public function getConnection()
     {
+        if ($this->myDConn) {
+            return $this->myDConn;
+        }
+
         $dbTestSettings = parse_ini_file(
             dirname(__FILE__) . '/../dbunit.test.properties'
         );
@@ -114,9 +127,11 @@ abstract class DatabaseTestCaseDefault extends \PHPUnit_Extensions_Database_Test
             $dbTestSettings['user'], $dbTestSettings['password']
         );
 
-        return $this->createDefaultDBConnection(
-            $pdo,$dbTestSettings['database']
+        $this->myDConn = $this->createDefaultDBConnection(
+            $pdo, $dbTestSettings['database']
         );
+
+        return $this->myDConn;
     }
 
 }
