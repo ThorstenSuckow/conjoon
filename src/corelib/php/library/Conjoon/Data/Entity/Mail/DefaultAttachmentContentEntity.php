@@ -67,4 +67,12 @@ class DefaultAttachmentContentEntity implements AttachmentContentEntity {
         return $this->content;
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function __toString()
+    {
+        return get_class($this) . '@' . spl_object_hash($this);
+    }
+
 }

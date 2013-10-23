@@ -153,4 +153,12 @@ class DefaultMessageFlagEntity implements MessageFlagEntity {
         return $this->groupwareEmailItems;
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function __toString()
+    {
+        return get_class($this) . '@' . spl_object_hash($this);
+    }
+
 }

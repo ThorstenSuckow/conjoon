@@ -207,4 +207,13 @@ class DefaultAttachmentEntity implements AttachmentEntity {
         return $this->message;
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function __toString()
+    {
+        return get_class($this) . '@' . spl_object_hash($this);
+    }
+
+
 }

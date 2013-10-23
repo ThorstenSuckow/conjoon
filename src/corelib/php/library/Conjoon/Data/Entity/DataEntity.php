@@ -26,4 +26,11 @@ namespace Conjoon\Data\Entity;
  */
 interface DataEntity  {
 
+    /**
+     * Returns a string representation of this object.
+     *
+     * @return string
+     */
+    public function __toString();
+
 }

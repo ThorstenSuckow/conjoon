@@ -382,10 +382,12 @@ abstract class AbstractMessageEntity implements MessageEntity {
         return $this->attachments;
     }
 
-    public function __toString() {
-
-        return "message";
-
+    /**
+     * @inheritdoc
+     */
+    public function __toString()
+    {
+        return get_class($this) . '@' . spl_object_hash($this);
     }
 
 

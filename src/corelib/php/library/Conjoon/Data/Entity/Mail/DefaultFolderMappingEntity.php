@@ -115,4 +115,13 @@ class DefaultFolderMappingEntity implements FolderMappingEntity {
         return $this->mailAccount;
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function __toString()
+    {
+        return get_class($this) . '@' . spl_object_hash($this);
+    }
+
+
 }

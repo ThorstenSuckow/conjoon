@@ -45,9 +45,4 @@ class SimpleUser implements \Conjoon\User\User {
 
     public function getUserName(){}
 
-    public function __toString()
-    {
-        return "" . $this->userId;
-    }
-
 }

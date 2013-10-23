@@ -31,4 +31,13 @@ require_once 'Conjoon/Data/Entity/DataEntity.php';
  */
 class SimpleDataEntity implements DataEntity  {
 
+    /**
+     * @inheritdoc
+     */
+    public function __toString()
+    {
+        return get_class($this) . '@' . spl_object_hash($this);
+    }
+
+
 }

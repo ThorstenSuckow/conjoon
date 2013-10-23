@@ -30,7 +30,13 @@ class SimpleDataEntityTest extends \PHPUnit_Framework_TestCase {
 
     public function testOk()
     {
-        new SimpleDataEntity();
+        $sd = new SimpleDataEntity();
+
+        $val = $sd->__toString();
+
+        $this->assertFalse(empty($val));
+
+        $this->assertTrue(is_string($val));
     }
 
 }

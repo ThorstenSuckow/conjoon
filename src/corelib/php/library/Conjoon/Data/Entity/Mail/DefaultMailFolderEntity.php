@@ -243,4 +243,12 @@ class DefaultMailFolderEntity implements MailFolderEntity {
         return $this->mailAccounts;
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function __toString()
+    {
+        return get_class($this) . '@' . spl_object_hash($this);
+    }
+
 }

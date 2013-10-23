@@ -594,5 +594,12 @@ class DefaultMailAccountEntity implements MailAccountEntity {
         return $this->folderMappings;
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function __toString()
+    {
+        return get_class($this) . '@' . spl_object_hash($this);
+    }
 
 }
