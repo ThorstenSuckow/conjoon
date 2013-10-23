@@ -23,7 +23,7 @@ require_once 'Conjoon/Data/Repository/Mail/ImapAttachmentRepository.php';
 /**
  * @see \Conjoon\Data\EntityCreator\Mail\SimpleAttachmentEntityCreator
  */
-require_once dirname(__FILE__) . '/../../EntityCreator/Mail/SimpleMessageAttachmentEntityCreator.php';
+require_once dirname(__FILE__) . '/../../EntityCreator/Mail/SimpleAttachmentEntityCreator.php';
 
 /**
  * @package    Conjoon/Tests
@@ -62,7 +62,7 @@ class ImapAttachmentRepositoryTest extends \PHPUnit_Framework_TestCase {
                     '\Conjoon\Data\Repository\Remote\DefaultImapConnection',
                 'imapAdapteeClassName' =>
                     '\Conjoon\Data\Repository\Remote\SimpleImapAdaptee',
-                'messageAttachmentEntityCreatorClassName' => '\Conjoon\Data\EntityCreator\Mail\SimpleMessageAttachmentEntityCreator'
+                'attachmentEntityCreatorClassName' => '\Conjoon\Data\EntityCreator\Mail\SimpleAttachmentEntityCreator'
             )
         );
     }
@@ -73,7 +73,7 @@ class ImapAttachmentRepositoryTest extends \PHPUnit_Framework_TestCase {
     public function testGetEntityClassName_Ok()
     {
         $this->assertSame(
-            '\Conjoon\Data\Entity\Mail\DefaultMessageAttachmentEntity',
+            '\Conjoon\Data\Entity\Mail\DefaultAttachmentEntity',
             $this->repository->getEntityClassName()
         );
    }
@@ -84,7 +84,7 @@ class ImapAttachmentRepositoryTest extends \PHPUnit_Framework_TestCase {
     public function testPersist_Exception()
     {
         // use mail account as entity, this is okay for now
-        $this->repository->persist($this->mailAccount);
+        $this->repository->register($this->mailAccount);
     }
 
     /**
@@ -109,7 +109,7 @@ class ImapAttachmentRepositoryTest extends \PHPUnit_Framework_TestCase {
      */
     public function testFlush_Exception()
     {
-        $this->repository->flush();
+        $this->repository->flush($this->mailAccount);
     }
 
     /**

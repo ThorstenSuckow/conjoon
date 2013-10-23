@@ -16,22 +16,22 @@
 namespace Conjoon\Data\EntityCreator\Mail;
 
 /**
- * @see Conjoon\Data\EntityCreator\Mail\MessageAttachmentEntityCreator
+ * @see Conjoon\Data\EntityCreator\Mail\AttachmentEntityCreator
  */
-require_once 'Conjoon/Data/EntityCreator/Mail/MessageAttachmentEntityCreator.php';
+require_once 'Conjoon/Data/EntityCreator/Mail/AttachmentEntityCreator.php';
 
 /**
  * @package    Conjoon/Tests
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class SimpleMessageAttachmentEntityCreator implements MessageAttachmentEntityCreator {
+class SimpleAttachmentEntityCreator implements AttachmentEntityCreator {
 
     public function createListFrom(\Conjoon\Mail\Message\RawMessage $message)
     {
         return array(
-            new \Conjoon\Data\Entity\Mail\DefaultMessageAttachmentEntity(),
-            new \Conjoon\Data\Entity\Mail\DefaultMessageAttachmentEntity()
+            new \Conjoon\Data\Entity\Mail\DefaultAttachmentEntity(),
+            new \Conjoon\Data\Entity\Mail\DefaultAttachmentEntity()
         );
     }
 

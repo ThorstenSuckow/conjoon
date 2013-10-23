@@ -21,6 +21,16 @@ namespace Conjoon\Data\Entity\Mail;
 require_once 'Conjoon/Data/Entity/Mail/DefaultMessageEntity.php';
 
 /**
+ * @see Conjoon\Data\Entity\Mail\DefaultMailFolderEntity
+ */
+require_once 'Conjoon/Data/Entity/Mail/DefaultMailFolderEntity.php';
+
+/**
+ * @see Conjoon\Data\Entity\Mail\DefaultAttachmentEntity
+ */
+require_once 'Conjoon/Data/Entity/Mail/DefaultAttachmentEntity.php';
+
+/**
  * @package    Conjoon/Tests
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
@@ -31,8 +41,15 @@ class DefaultMessageEntityTest extends \PHPUnit_Framework_TestCase {
 
     protected function setUp()
     {
+        $attachment1 = new \Conjoon\Data\Entity\Mail\DefaultAttachmentEntity;
+        $attachment1->setKey('key1');
+
+        $attachment2 = new \Conjoon\Data\Entity\Mail\DefaultAttachmentEntity;
+        $attachment2->setKey('key2');
+
         $this->input = array(
             'groupwareEmailFolders' => new \Conjoon\Data\Entity\Mail\DefaultMailFolderEntity,
+            'attachment'            => array($attachment1, $attachment2),
             'date'                  => new \DateTime,
             'subject'               => "subject",
             'from'                  => "from",
@@ -54,14 +71,48 @@ class DefaultMessageEntityTest extends \PHPUnit_Framework_TestCase {
      */
     public function testOk()
     {
-        $user = new DefaultMessageEntity();
+        $message = new DefaultMessageEntity();
 
         foreach ($this->input as $field => $value) {
-            $methodSet = "set" . ucfirst($field);
-            $methodGet = "get" . ucfirst($field);
-            $user->$methodSet($value);
 
-            $this->assertSame($value, $user->$methodGet());
+            if (is_array($value)) {
+
+                $methodAdd = "add" . ucfirst($field);
+                $methodGet = "get" . ucfirst($field) . 's';
+                $methodRemove = "remove" . ucfirst($field);
+                foreach ($value as $singleEntity) {
+                    $message->$methodAdd($singleEntity);
+                }
+
+                $results = $message->$methodGet();
+                $i = 0;
+                foreach ($results as $singleResult) {
+                    $this->assertSame($value[$i], $singleResult);
+                    $i++;
+
+                    $beforeRemove = $message->$methodGet();
+                    $beforeRemoveCount = count($beforeRemove);
+
+                    $message->$methodRemove($singleResult);
+
+                    $afterRemove = $message->$methodGet();
+                    $afterRemoveCount = count($afterRemove);
+
+                    $this->assertEquals($beforeRemoveCount - 1, $afterRemoveCount);
+                }
+
+                $results = $message->$methodGet();
+                $this->assertEquals(0, count($results));
+
+            } else {
+                $methodSet = "set" . ucfirst($field);
+                $methodGet = "get" . ucfirst($field);
+                $message->$methodSet($value);
+
+                $this->assertSame($value, $message->$methodGet());
+            }
+
+
         }
     }
 }

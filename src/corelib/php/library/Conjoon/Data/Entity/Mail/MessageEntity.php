@@ -232,4 +232,26 @@ interface MessageEntity extends \Conjoon\Data\Entity\DataEntity {
      */
     public function getSender();
 
+    /**
+     * Add attachments
+     *
+     * @param Conjoon\Data\Entity\Mail\AttachmentEntity $attachments
+     * @return DefaultMessageEntity
+     */
+    public function addAttachment(\Conjoon\Data\Entity\Mail\AttachmentEntity $attachments);
+
+    /**
+     * Remove attachments
+     *
+     * @param Conjoon\Data\Entity\Mail\AttachmentEntity $attachments
+     */
+    public function removeAttachment(\Conjoon\Data\Entity\Mail\AttachmentEntity $attachments);
+
+    /**
+     * Get attachments
+     *
+     * @return Doctrine\Common\Collections\Collection
+     */
+    public function getAttachments();
+
 }

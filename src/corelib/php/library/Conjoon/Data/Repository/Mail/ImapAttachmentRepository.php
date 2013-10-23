@@ -65,7 +65,7 @@ class ImapAttachmentRepository extends DefaultImapRepository
      * @var string
      */
     protected $entityCreatorClassName =
-        '\Conjoon\Data\EntityCreator\Mail\DefaultMessageAttachmentEntityCreator';
+        '\Conjoon\Data\EntityCreator\Mail\DefaultAttachmentEntityCreator';
 
     /**
      * @var string
@@ -78,9 +78,9 @@ class ImapAttachmentRepository extends DefaultImapRepository
      * @param \Conjoon\Data\Entity\Mail\DefaultMailAccountEntity $account
      * @param array $options Addiotonal set of options this repository gets
      *             configured with
-     *              - imapMessageAttachmentEntityCreatorClassName: a class name pointing to
+     *              - imapAttachmentEntityCreatorClassName: a class name pointing to
      *                an implementation of
-     *                \Conjoon\Data\EntityCreator\Mail\ImapMessageAttachmentEntityCreator.
+     *                \Conjoon\Data\EntityCreator\Mail\ImapAttachmentEntityCreator.
      *
      * @throws \Conjoon\Argument\InvalidArgumentException
      * @throws \Conjoon\Data\Repository\Mail\MailRepositoryException
@@ -95,27 +95,27 @@ class ImapAttachmentRepository extends DefaultImapRepository
         $this->account = $account;
 
         ArgumentCheck::check(array(
-            'imapMessageAttachmentEntityCreatorClassName' => array(
+            'imapAttachmentEntityCreatorClassName' => array(
                 'type'       => 'string',
                 'allowEmpty' => false,
                 'mandatory'  => false
             )
         ), $options);
 
-        $options['imapMessageAttachmentEntityCreatorClassName'] =
-            isset($options['imapMessageAttachmentEntityCreatorClassName'])
-            ? $options['imapMessageAttachmentEntityCreatorClassName']
+        $options['imapAttachmentEntityCreatorClassName'] =
+            isset($options['imapAttachmentEntityCreatorClassName'])
+            ? $options['imapAttachmentEntityCreatorClassName']
             : $this->entityCreatorClassName;
 
-        $className = $options['imapMessageAttachmentEntityCreatorClassName'];
+        $className = $options['imapAttachmentEntityCreatorClassName'];
         $this->classLoader->loadClass($className);
 
         $this->entityCreator = new $className;
 
         if (!($this->entityCreator instanceof
-            \Conjoon\Data\EntityCreator\Mail\MessageAttachmentEntityCreator)) {
+            \Conjoon\Data\EntityCreator\Mail\AttachmentEntityCreator)) {
             throw new InvalidArgumentException(
-                "entity creator must be of type \"MessageAttachmentEntityCreator\""
+                "entity creator must be of type \"AttachmentEntityCreator\""
             );
         }
 
@@ -176,7 +176,7 @@ class ImapAttachmentRepository extends DefaultImapRepository
      */
     public static function getEntityClassName()
     {
-        return '\Conjoon\Data\Entity\Mail\DefaultMessageAttachmentEntity';
+        return '\Conjoon\Data\Entity\Mail\DefaultAttachmentEntity';
     }
 
 }

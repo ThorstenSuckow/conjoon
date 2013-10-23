@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<dataset>
+    <table name="mail_attachment_content">
+        <column>id</column>
+        <column>content</column>
+        <row>
+            <value>1</value>
+            <value>BLOB3</value>
+        </row>
+        <row>
+            <value>2</value>
+            <value>BLOB2</value>
+        </row>
+    </table>
+</dataset>

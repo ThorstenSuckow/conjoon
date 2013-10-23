@@ -12,7 +12,6 @@ require_once 'Conjoon/Data/Entity/EntityProxy.php';
  */
 class DefaultMessageEntity extends \Conjoon\Data\Entity\Mail\DefaultMessageEntity
     implements \Doctrine\ORM\Proxy\Proxy, \Conjoon\Data\Entity\EntityProxy
-
 {
     private $_entityPersister;
     private $_identifier;
@@ -48,6 +47,37 @@ class DefaultMessageEntity extends \Conjoon\Data\Entity\Mail\DefaultMessageEntit
         return $this->__isInitialized__;
     }
 
+
+    public function addGroupwareEmailItemsFlag(\Conjoon\Data\Entity\Mail\MessageFlagEntity $groupwareEmailItemsFlags)
+    {
+        $this->__load();
+        return parent::addGroupwareEmailItemsFlag($groupwareEmailItemsFlags);
+    }
+
+    public function removeGroupwareEmailItemsFlag(\Conjoon\Data\Entity\Mail\MessageFlagEntity $groupwareEmailItemsFlags)
+    {
+        $this->__load();
+        return parent::removeGroupwareEmailItemsFlag($groupwareEmailItemsFlags);
+    }
+
+    public function getGroupwareEmailItemsFlags()
+    {
+        $this->__load();
+        return parent::getGroupwareEmailItemsFlags();
+    }
+
+    public function setGroupwareEmailFolders(\Conjoon\Data\Entity\Mail\MailFolderEntity $groupwareEmailFolders = NULL)
+    {
+        $this->__load();
+        return parent::setGroupwareEmailFolders($groupwareEmailFolders);
+    }
+
+    public function getGroupwareEmailFolders()
+    {
+        $this->__load();
+        return parent::getGroupwareEmailFolders();
+    }
+
     public function getId()
     {
         if ($this->__isInitialized__ === false) {
@@ -57,178 +87,16 @@ class DefaultMessageEntity extends \Conjoon\Data\Entity\Mail\DefaultMessageEntit
         return parent::getId();
     }
 
+    public function setDate($date)
+    {
+        $this->__load();
+        return parent::setDate($date);
+    }
+
     public function getDate()
     {
         $this->__load();
         return parent::getDate();
-    }
-
-    public function getSubject()
-    {
-        $this->__load();
-        return parent::getSubject();
-    }
-
-    public function getFrom()
-    {
-        $this->__load();
-        return parent::getFrom();
-    }
-
-    public function getReplyTo()
-    {
-        $this->__load();
-        return parent::getReplyTo();
-    }
-
-    public function getTo()
-    {
-        $this->__load();
-        return parent::getTo();
-    }
-
-    public function getCc()
-    {
-        $this->__load();
-        return parent::getCc();
-    }
-
-    public function getBcc()
-    {
-        $this->__load();
-        return parent::getBcc();
-    }
-
-    public function getInReplyTo()
-    {
-        $this->__load();
-        return parent::getInReplyTo();
-    }
-
-    public function getReferences()
-    {
-        $this->__load();
-        return parent::getReferences();
-    }
-
-    public function getContentTextPlain()
-    {
-        $this->__load();
-        return parent::getContentTextPlain();
-    }
-
-    public function getContentTextHtml()
-    {
-        $this->__load();
-        return parent::getContentTextHtml();
-    }
-
-    public function getRecipients()
-    {
-        $this->__load();
-        return parent::getRecipients();
-    }
-
-    public function getSender()
-    {
-        $this->__load();
-        return parent::getSender();
-    }
-
-    public function getGroupwareEmailItemsFlags()
-    {
-        $this->__load();
-        return parent::getGroupwareEmailItemsFlags();
-    }
-
-    public function getGroupwareEmailFolders()
-    {
-        $this->__load();
-        return parent::getGroupwareEmailFolders();
-    }
-
-    public function setGroupwareEmailFolders(\Conjoon\Data\Entity\Mail\MailFolderEntity $groupwareEmailFolders = null)
-    {
-        $this->__load();
-        return parent::setGroupwareEmailFolders($groupwareEmailFolders);
-    }
-
-    public function removeGroupwareEmailItemsFlag(\Conjoon\Data\Entity\Mail\MessageFlagEntity $groupwareEmailItemsFlags)
-    {
-        $this->__load();
-        return parent::removeGroupwareEmailItemsFlag($groupwareEmailItemsFlags);
-    }
-
-    public function addGroupwareEmailItemsFlag(\Conjoon\Data\Entity\Mail\MessageFlagEntity $groupwareEmailItemsFlags)
-    {
-        $this->__load();
-        return parent::addGroupwareEmailItemsFlag($groupwareEmailItemsFlags);
-    }
-
-    public function setSender($sender)
-    {
-        $this->__load();
-        return parent::setSender($sender);
-    }
-
-    public function setRecipients($recipients)
-    {
-        $this->__load();
-        return parent::setRecipients($recipients);
-    }
-
-    public function setContentTextHtml($contentTextHtml)
-    {
-        $this->__load();
-        return parent::setContentTextHtml($contentTextHtml);
-    }
-
-    public function setContentTextPlain($contentTextPlain)
-    {
-        $this->__load();
-        return parent::setContentTextPlain($contentTextPlain);
-    }
-
-    public function setReferences($references)
-    {
-        $this->__load();
-        return parent::setReferences($references);
-    }
-
-    public function setInReplyTo($inReplyTo)
-    {
-        $this->__load();
-        return parent::setInReplyTo($inReplyTo);
-    }
-
-    public function setBcc($bcc)
-    {
-        $this->__load();
-        return parent::setBcc($bcc);
-    }
-
-    public function setCc($cc)
-    {
-        $this->__load();
-        return parent::setCc($cc);
-    }
-
-    public function setTo($to)
-    {
-        $this->__load();
-        return parent::setTo($to);
-    }
-
-    public function setReplyTo($replyTo)
-    {
-        $this->__load();
-        return parent::setReplyTo($replyTo);
-    }
-
-    public function setFrom($from)
-    {
-        $this->__load();
-        return parent::setFrom($from);
     }
 
     public function setSubject($subject)
@@ -237,16 +105,168 @@ class DefaultMessageEntity extends \Conjoon\Data\Entity\Mail\DefaultMessageEntit
         return parent::setSubject($subject);
     }
 
-    public function setDate($date)
+    public function getSubject()
     {
         $this->__load();
-        return parent::setDate($date);
+        return parent::getSubject();
     }
+
+    public function setFrom($from)
+    {
+        $this->__load();
+        return parent::setFrom($from);
+    }
+
+    public function getFrom()
+    {
+        $this->__load();
+        return parent::getFrom();
+    }
+
+    public function setReplyTo($replyTo)
+    {
+        $this->__load();
+        return parent::setReplyTo($replyTo);
+    }
+
+    public function getReplyTo()
+    {
+        $this->__load();
+        return parent::getReplyTo();
+    }
+
+    public function setTo($to)
+    {
+        $this->__load();
+        return parent::setTo($to);
+    }
+
+    public function getTo()
+    {
+        $this->__load();
+        return parent::getTo();
+    }
+
+    public function setCc($cc)
+    {
+        $this->__load();
+        return parent::setCc($cc);
+    }
+
+    public function getCc()
+    {
+        $this->__load();
+        return parent::getCc();
+    }
+
+    public function setBcc($bcc)
+    {
+        $this->__load();
+        return parent::setBcc($bcc);
+    }
+
+    public function getBcc()
+    {
+        $this->__load();
+        return parent::getBcc();
+    }
+
+    public function setInReplyTo($inReplyTo)
+    {
+        $this->__load();
+        return parent::setInReplyTo($inReplyTo);
+    }
+
+    public function getInReplyTo()
+    {
+        $this->__load();
+        return parent::getInReplyTo();
+    }
+
+    public function setReferences($references)
+    {
+        $this->__load();
+        return parent::setReferences($references);
+    }
+
+    public function getReferences()
+    {
+        $this->__load();
+        return parent::getReferences();
+    }
+
+    public function setContentTextPlain($contentTextPlain)
+    {
+        $this->__load();
+        return parent::setContentTextPlain($contentTextPlain);
+    }
+
+    public function getContentTextPlain()
+    {
+        $this->__load();
+        return parent::getContentTextPlain();
+    }
+
+    public function setContentTextHtml($contentTextHtml)
+    {
+        $this->__load();
+        return parent::setContentTextHtml($contentTextHtml);
+    }
+
+    public function getContentTextHtml()
+    {
+        $this->__load();
+        return parent::getContentTextHtml();
+    }
+
+    public function setRecipients($recipients)
+    {
+        $this->__load();
+        return parent::setRecipients($recipients);
+    }
+
+    public function getRecipients()
+    {
+        $this->__load();
+        return parent::getRecipients();
+    }
+
+    public function setSender($sender)
+    {
+        $this->__load();
+        return parent::setSender($sender);
+    }
+
+    public function getSender()
+    {
+        $this->__load();
+        return parent::getSender();
+    }
+
+    public function addAttachment(\Conjoon\Data\Entity\Mail\AttachmentEntity $attachments)
+    {
+        $this->__load();
+        return parent::addAttachment($attachments);
+    }
+
+    public function removeAttachment(\Conjoon\Data\Entity\Mail\AttachmentEntity $attachments)
+    {
+        $this->__load();
+        return parent::removeAttachment($attachments);
+    }
+
+    public function getAttachments()
+    {
+        $this->__load();
+        return parent::getAttachments();
+    }
+
 
     public function __sleep()
     {
         return array(
-            '__isInitialized__', 'id',
+            '__isInitialized__',
+            'id',
             'date',
             'subject',
             'from',
@@ -260,6 +280,7 @@ class DefaultMessageEntity extends \Conjoon\Data\Entity\Mail\DefaultMessageEntit
             'contentTextHtml',
             'recipients',
             'sender',
+            'attachments',
             'groupwareEmailItemsFlags',
             'groupwareEmailFolders'
         );

@@ -120,15 +120,15 @@ class DoctrineFolderMappingRepositoryTest extends \Conjoon\DatabaseTestCaseDefau
         $account->addFolderMapping($mapping);
 
         $mapping->setMailAccount($account);
-        $this->repository->persist($mapping);
-        $this->accountRepository->persist($account);
+        $this->repository->register($mapping);
+        $this->accountRepository->register($account);
 
         $this->assertEquals(3,
             $this->getConnection()->getRowCount('groupware_email_imap_mapping'),
             "Post-Condition"
         );
 
-        $this->accountRepository->flush();
+        $this->accountRepository->flush($account);
 
         $this->assertEquals(4,
             $this->getConnection()->getRowCount('groupware_email_imap_mapping'),
@@ -148,14 +148,14 @@ class DoctrineFolderMappingRepositoryTest extends \Conjoon\DatabaseTestCaseDefau
         $mapping->setGlobalName('INBOX/Sent');
 
         $mapping->setMailAccount($account);
-        $this->repository->persist($mapping);
+        $this->repository->register($mapping);
 
         $this->assertEquals(3,
             $this->getConnection()->getRowCount('groupware_email_imap_mapping'),
             "Post-Condition"
         );
 
-        $this->repository->flush();
+        $this->repository->flush($mapping);
 
         $this->assertEquals(4,
             $this->getConnection()->getRowCount('groupware_email_imap_mapping'),

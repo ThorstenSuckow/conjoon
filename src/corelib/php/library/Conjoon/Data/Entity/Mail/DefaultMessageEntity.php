@@ -45,6 +45,8 @@ class DefaultMessageEntity extends AbstractMessageEntity {
      */
     public function __construct()
     {
+        parent::__construct();
+
         $this->groupwareEmailItemsFlags =
             new \Doctrine\Common\Collections\ArrayCollection();
     }

@@ -28,8 +28,8 @@ interface DataRepository {
 
 
     /**
-     * The method is bound to immediately send the changes to the connected
-     * backend.
+     * The method marks an entity as ready for being removed from the underlying data
+     * storage.
      *
      * @param  \Conjoon\Data\Entity\DataEntity
      *
@@ -40,18 +40,25 @@ interface DataRepository {
     public function remove(\Conjoon\Data\Entity\DataEntity $entity);
 
     /**
-     * The method is bound to immediately send the changes to the connected
-     * backend.
+     * The method marks an entity as ready for updating, i.e. any changes
+     * which were made to the entity should be written to the underlying data
+     * storage once flush() gets called.
      *
      * @param  \Conjoon\Data\Entity\DataEntity
      *
      * @return \Conjoon\Data\Entity\DataEntity|null
      *
      * @throws \Conjoon\Argument\InvalidArgumentException
+     *
+     * @see flush()
      */
-    public function persist(\Conjoon\Data\Entity\DataEntity $entity);
+    public function register(\Conjoon\Data\Entity\DataEntity $entity);
 
     /**
+     * Returns the entity based on the specified id.
+     * Implementing classes are advised to return one and the same
+     * instance for the specified id.
+     *
      * @param mixed $id
      *
      * @return \Conjoon\Data\Entity\DataEntity
@@ -61,10 +68,11 @@ interface DataRepository {
     public function findById($id);
 
     /**
-     * Synchronizes the entity with the underlying data storage.
+     * Synchronizes the registered entities with the underlying data storage.
      * Implementations should take care of rolling entities back to a previous
      * state if anything fails.
-     *
+     * Registered entities will be kept available for further flush operations
+     * and don't have to be re-registered.
      */
     public function flush();
 

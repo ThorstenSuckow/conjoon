@@ -90,7 +90,7 @@ class SimpleProtocolAdaptee implements ProtocolAdaptee {
     {
         if ($this->alwaysSucceed) {
             return new \Conjoon\Mail\Server\Protocol\DefaultResult\GetAttachmentResult(
-                new \Conjoon\Data\Entity\Mail\DefaultMessageAttachmentEntity(),
+                new \Conjoon\Data\Entity\Mail\DefaultAttachmentEntity(),
                     new \Conjoon\Mail\Client\Message\DefaultAttachmentLocation(
                      new \Conjoon\Mail\Client\Message\DefaultMessageLocation(
                     new \Conjoon\Mail\Client\Folder\Folder(

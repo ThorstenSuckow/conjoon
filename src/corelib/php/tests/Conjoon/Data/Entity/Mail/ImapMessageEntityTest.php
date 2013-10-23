@@ -84,7 +84,7 @@ class ImapMessageEntityTest extends \PHPUnit_Framework_TestCase {
                 for ($i = 0, $len = count($value); $i < $len; $i++) {
                     $attData =& $value[$i];
 
-                    $attachment = new \Conjoon\Data\Entity\Mail\DefaultMessageAttachmentEntity();
+                    $attachment = new \Conjoon\Data\Entity\Mail\DefaultAttachmentEntity();
 
                     $attachment->setKey($attData['key']);
                     $attachment->setFileName($attData['fileName']);
@@ -97,13 +97,13 @@ class ImapMessageEntityTest extends \PHPUnit_Framework_TestCase {
 
                     $attachment->setAttachmentContent($mailAttachmentContent);
 
-                    $message->addMessageAttachments($attachment);
+                    $message->addAttachment($attachment);
                 }
 
-                $this->assertSame(2, count($message->getMessageAttachments()));
+                $this->assertSame(2, count($message->getAttachments()));
 
                 for ($i = 0, $len = 2; $i < 2; $i++) {
-                    $attachment = $message->getMessageAttachments();
+                    $attachment = $message->getAttachments();
                     $attachment = $attachment[$i];
 
                     $attData =& $value[$i];

@@ -99,9 +99,17 @@ abstract class AbstractMessageEntity implements MessageEntity {
      */
     protected $sender;
 
+    /**
+     * @var \Doctrine\Common\Collections\ArrayCollection
+     */
+    protected $attachments;
+
+    /**
+     * Constructor
+     */
     public function __construct()
     {
-
+        $this->attachments = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -345,5 +353,40 @@ abstract class AbstractMessageEntity implements MessageEntity {
     {
         return $this->sender;
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function addAttachment(\Conjoon\Data\Entity\Mail\AttachmentEntity $attachments)
+    {
+        $attachments->setMessage($this);
+
+        $this->attachments[] = $attachments;
+
+        return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function removeAttachment(\Conjoon\Data\Entity\Mail\AttachmentEntity $attachments)
+    {
+        $this->attachments->removeElement($attachments);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getAttachments()
+    {
+        return $this->attachments;
+    }
+
+    public function __toString() {
+
+        return "message";
+
+    }
+
 
 }

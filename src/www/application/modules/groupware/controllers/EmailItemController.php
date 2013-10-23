@@ -759,9 +759,9 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
 
         $facade = Conjoon_Modules_Groupware_Email_Folder_Facade::getInstance();
 
-        if ($facade->isRemoteFolder($pathInfo['rootId'])) {
+     ///   if ($facade->isRemoteFolder($pathInfo['rootId'])) {
             return $this->getMessageFromRemoteServer($_POST['id'], $path);
-        }
+     //   }
 
 
         /**
@@ -823,11 +823,14 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
             $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMailAccountEntity');
         $mailFolderRepository =
             $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
-        $mesageFlagRepository =
+        $messageFlagRepository =
             $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMessageFlagEntity');
+        $localMessageRepository =
+            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMessageEntity');
 
         $protocolAdaptee = new \Conjoon\Mail\Server\Protocol\DefaultProtocolAdaptee(
-            $mailFolderRepository, $mesageFlagRepository, $mailAccountRepository
+            $mailFolderRepository, $messageFlagRepository, $mailAccountRepository,
+            $localMessageRepository
         );
 
         /**

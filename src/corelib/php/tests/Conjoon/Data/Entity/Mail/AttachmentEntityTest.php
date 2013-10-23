@@ -16,16 +16,16 @@
 namespace Conjoon\Data\Entity\Mail;
 
 /**
- * @see Conjoon\Data\Entity\Mail\MessageAttachmentEntity
+ * @see Conjoon\Data\Entity\Mail\AttachmentEntity
  */
-require_once 'Conjoon/Data/Entity/Mail/MessageAttachmentEntity.php';
+require_once 'Conjoon/Data/Entity/Mail/AttachmentEntity.php';
 
 /**
  * @package    Conjoon/Tests
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class MessageAttachmentEntityTest extends \PHPUnit_Framework_TestCase {
+class AttachmentEntityTest extends \PHPUnit_Framework_TestCase {
 
 
     public function testDummy()

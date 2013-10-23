@@ -213,7 +213,7 @@ class DoctrineMailAccountRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
         $entity->setUser($user);
 
         // PERSIST
-        $this->repository->persist($entity);
+        $this->repository->register($entity);
 
         $this->assertEquals(3,
             $this->getConnection()->getRowCount('groupware_email_accounts'),
@@ -238,7 +238,7 @@ class DoctrineMailAccountRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
 
         $entity->setName("testchange");
 
-        $this->repository->persist($entity);
+        $this->repository->register($entity);
 
         $this->assertEquals(
             3,

@@ -57,17 +57,21 @@ Conjoon\Data\Entity\Mail\DefaultMessageEntity:
         sender:
             type: text
             nullable: false
-
     oneToMany:
         groupwareEmailItemsFlags:
             targetEntity: Conjoon\Data\Entity\Mail\DefaultMessageFlagEntity
             mappedBy: groupwareEmailItems
             indexBy: groupwareEmailItemsFlags
             orphanRemoval: true
+        attachments:
+            orphanRemoval: true
+            targetEntity: Conjoon\Data\Entity\Mail\DefaultAttachmentEntity
+            mappedBy: message
+            cascade:
+              - persist
     manyToOne:
         groupwareEmailFolders:
             targetEntity: Conjoon\Data\Entity\Mail\DefaultMailFolderEntity
-            cascade: {}
             mappedBy: null
             inversedBy: null
             joinColumns:

@@ -77,4 +77,19 @@
         <column>is_spam</column>
         <column>is_deleted</column>
     </table>
+    <table name="groupware_email_items_attachments">
+        <column>id</column>
+        <column>key</column>
+        <column>groupware_email_items_id</column>
+        <column>file_name</column>
+        <column>mime_type</column>
+        <column>encoding</column>
+        <column>content</column>
+        <column>content_id</column>
+        <column>mail_attachment_content_id</column>
+    </table>
+    <table name="mail_attachment_content">
+        <column>id</column>
+        <column>content</column>
+    </table>
 </dataset>

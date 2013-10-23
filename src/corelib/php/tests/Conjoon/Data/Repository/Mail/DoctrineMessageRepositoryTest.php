@@ -120,8 +120,10 @@ class DoctrineMessageRepositoryTest extends \Conjoon\DatabaseTestCaseDefault {
     /**
      * Ensures everything works as expected.
      */
-    public function testPersistCreate()
+    public function testRegisterCreate()
     {
+        $this->getConnection();
+
         $folderRepository = $this->_entityManager->getRepository(
             '\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
 
@@ -157,7 +159,7 @@ class DoctrineMessageRepositoryTest extends \Conjoon\DatabaseTestCaseDefault {
         $message->setRecipients("Recipients2");
         $message->setSender("Sender2");
 
-        $repository->persist($message);
+        $repository->register($message);
 
         $this->assertEquals(
             1,
@@ -165,7 +167,7 @@ class DoctrineMessageRepositoryTest extends \Conjoon\DatabaseTestCaseDefault {
             "Pre-Condition"
         );
 
-        $repository->flush();
+        $repository->flush($message);
 
         $this->assertEquals(
             2,
@@ -181,13 +183,12 @@ class DoctrineMessageRepositoryTest extends \Conjoon\DatabaseTestCaseDefault {
         )->getTable("groupware_email_items");
         $this->assertTablesEqual($expectedTable, $queryTable);
 
-
     }
 
     /**
      * Ensures everything works as expected.
      */
-    public function testPersistUpdate()
+    public function testRegisteUpdate()
     {
         $repository = $this->_entityManager->getRepository(
             '\Conjoon\Data\Entity\Mail\DefaultMessageEntity');
@@ -206,7 +207,7 @@ class DoctrineMessageRepositoryTest extends \Conjoon\DatabaseTestCaseDefault {
 
         $message->setSubject("New Subject");
 
-        $repository->persist($message);
+        $repository->register($message);
 
         $this->assertEquals(
             1,
@@ -223,7 +224,7 @@ class DoctrineMessageRepositoryTest extends \Conjoon\DatabaseTestCaseDefault {
         $this->assertTablesEqual($expectedTable, $queryTable);
 
 
-        $repository->flush();
+        $repository->flush($message);
 
         $this->assertEquals(
             1,
@@ -259,7 +260,6 @@ class DoctrineMessageRepositoryTest extends \Conjoon\DatabaseTestCaseDefault {
         );
 
         $message = $repository->findById(1);
-
         $repository->remove($message);
 
         $this->assertEquals(
@@ -271,17 +271,31 @@ class DoctrineMessageRepositoryTest extends \Conjoon\DatabaseTestCaseDefault {
         $queryTable = $this->getConnection()->createQueryTable(
             'groupware_email_items', 'SELECT * FROM groupware_email_items'
         );
+        $queryTableAttachments = $this->getConnection()->createQueryTable(
+            'groupware_email_items_attachments',
+            'SELECT * FROM groupware_email_items_attachments'
+        );
+
         $expectedTable = $this->createXmlDataSet(
             dirname(__FILE__) . '/fixtures/mysql/message.xml'
         )->getTable("groupware_email_items");
+        $expectedTableAttachments = $this->createXmlDataSet(
+            dirname(__FILE__) . '/fixtures/mysql/message.xml'
+        )->getTable("groupware_email_items_attachments");
+
         $this->assertTablesEqual($expectedTable, $queryTable);
+        $this->assertTablesEqual($expectedTableAttachments, $queryTableAttachments);
 
-
-        $repository->flush();
+        $repository->flush($message);
 
         $this->assertEquals(
             0,
             $this->getConnection()->getRowCount('groupware_email_items'),
+            "Pre-Condition"
+        );
+        $this->assertEquals(
+            0,
+            $this->getConnection()->getRowCount('groupware_email_items_attachments'),
             "Pre-Condition"
         );
 
@@ -301,6 +315,13 @@ class DoctrineMessageRepositoryTest extends \Conjoon\DatabaseTestCaseDefault {
         )->getTable("groupware_email_items_flags");
         $this->assertTablesEqual($expectedTable, $queryTable);
 
+        $queryTable = $this->getConnection()->createQueryTable(
+            'groupware_email_items_attachments', 'SELECT * FROM groupware_email_items_attachments'
+        );
+        $expectedTable = $this->createXmlDataSet(
+            dirname(__FILE__) . '/fixtures/mysql/message.remove.result.xml'
+        )->getTable("groupware_email_items_attachments");
+        $this->assertTablesEqual($expectedTable, $queryTable);
 
     }
 

@@ -95,7 +95,7 @@ class DoctrineUserRepositoryTest extends \Conjoon\DatabaseTestCaseDefault {
         $entity->setAuthToken("AuthToken");
         $entity->setLastLogin(3);
 
-        $this->repository->persist($entity);
+        $this->repository->register($entity);
 
         $queryTable = $this->getConnection()->createQueryTable(
             'users', 'SELECT * FROM users'
@@ -105,7 +105,7 @@ class DoctrineUserRepositoryTest extends \Conjoon\DatabaseTestCaseDefault {
         )->getTable("users");
         $this->assertTablesEqual($expectedTable, $queryTable);
 
-        $this->repository->flush();
+        $this->repository->flush($entity);
 
         $queryTable = $this->getConnection()->createQueryTable(
             'users', 'SELECT * FROM users'
@@ -126,7 +126,7 @@ class DoctrineUserRepositoryTest extends \Conjoon\DatabaseTestCaseDefault {
 
         $user->setFirstname("Firstname 2");
 
-        $this->repository->persist($user);
+        $this->repository->register($user);
 
         $queryTable = $this->getConnection()->createQueryTable(
             'users', 'SELECT * FROM users'
@@ -136,7 +136,7 @@ class DoctrineUserRepositoryTest extends \Conjoon\DatabaseTestCaseDefault {
         )->getTable("users");
         $this->assertTablesEqual($expectedTable, $queryTable);
 
-        $this->repository->flush();
+        $this->repository->flush($user);
 
         $queryTable = $this->getConnection()->createQueryTable(
             'users', 'SELECT * FROM users'
@@ -166,7 +166,7 @@ class DoctrineUserRepositoryTest extends \Conjoon\DatabaseTestCaseDefault {
         $this->assertTablesEqual($expectedTable, $queryTable);
 
         // FLUSH
-        $this->repository->flush();
+        $this->repository->flush($entity);
 
         $queryTable = $this->getConnection()->createQueryTable(
             'users', 'SELECT * FROM users'

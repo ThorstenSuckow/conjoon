@@ -40,9 +40,43 @@
             <value>1</value>
             <value>1</value>
             <value>2007-01-01 00:00:01</value>
-            <value>Subject</value>
+            <value>weg</value>
             <value>From</value>
             <value>Reply_to</value>
+            <value>To</value>
+            <value>Cc</value>
+            <value>Bcc</value>
+            <value>In_reply_to</value>
+            <value>References</value>
+            <value>Content_text_plain</value>
+            <value>Content_text_html</value>
+            <value>Recipients</value>
+            <value>Sender</value>
+        </row>
+        <row>
+            <value>2</value>
+            <value>1</value>
+            <value>2007-01-01 00:00:02</value>
+            <value>Subject2</value>
+            <value>From2</value>
+            <value>Reply_to2</value>
+            <value>To2</value>
+            <value>Cc2</value>
+            <value>Bcc2</value>
+            <value>In_reply_to2</value>
+            <value>References2</value>
+            <value>Content_text_plain2</value>
+            <value>Content_text_html2</value>
+            <value>Recipients2</value>
+            <value>Sender2</value>
+        </row>
+        <row>
+            <value>3</value>
+            <value>1</value>
+            <value>2007-01-01 00:00:01</value>
+            <value>Subject3</value>
+            <value>From3</value>
+            <value>Reply_to3</value>
             <value>To</value>
             <value>Cc</value>
             <value>Bcc</value>
@@ -86,17 +120,6 @@
             <value>AuthToken</value>
             <value>3</value>
         </row>
-        <row>
-            <value>3</value>
-            <value>Firstname</value>
-            <value>Lastname</value>
-            <value>EmailAddress</value>
-            <value>UserName3</value>
-            <value>Password</value>
-            <value>0</value>
-            <value>AuthToken</value>
-            <value>3</value>
-        </row>
     </table>
     <table name="groupware_email_items_flags">
         <column>groupware_email_items_id</column>
@@ -110,6 +133,58 @@
             <value>0</value>
             <value>0</value>
             <value>0</value>
+        </row>
+        <row>
+            <value>1</value>
+            <value>2</value>
+            <value>1</value>
+            <value>1</value>
+            <value>1</value>
+        </row>
+    </table>
+    <table name="groupware_email_items_attachments">
+        <column>id</column>
+        <column>key</column>
+        <column>groupware_email_items_id</column>
+        <column>file_name</column>
+        <column>mime_type</column>
+        <column>encoding</column>
+        <column>content</column>
+        <column>content_id</column>
+        <column>mail_attachment_content_id</column>
+        <row>
+            <value>1</value>
+            <value>key1</value>
+            <value>1</value>
+            <value>filename</value>
+            <value>mimetype</value>
+            <value>encoding</value>
+            <value>content</value>
+            <value>contentid</value>
+            <value>1</value>
+        </row>
+        <row>
+            <value>2</value>
+            <value>key2</value>
+            <value>1</value>
+            <value>filename</value>
+            <value>mimetype</value>
+            <value>encoding</value>
+            <value>content</value>
+            <value>contentid</value>
+            <value>2</value>
+        </row>
+    </table>
+    <table name="mail_attachment_content">
+        <column>id</column>
+        <column>content</column>
+        <row>
+            <value>1</value>
+            <value>BLOB1</value>
+        </row>
+        <row>
+            <value>2</value>
+            <value>BLOB2</value>
         </row>
     </table>
 </dataset>

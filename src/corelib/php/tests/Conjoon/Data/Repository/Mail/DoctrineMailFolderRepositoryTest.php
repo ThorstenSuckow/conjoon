@@ -158,7 +158,7 @@ class DoctrineMailFolderRepositoryTest extends \Conjoon\DatabaseTestCaseDefault 
         $entity->setIsDeleted(0);
 
         // PERSIST
-        $repository->persist($entity);
+        $repository->register($entity);
         $this->assertEquals(
             3,
             $this->getConnection()->getRowCount('groupware_email_folders'),
@@ -204,7 +204,7 @@ class DoctrineMailFolderRepositoryTest extends \Conjoon\DatabaseTestCaseDefault 
 
         $entity->setName("testchange");
 
-        $repository->persist($entity);
+        $repository->register($entity);
 
         $this->assertEquals(
             3,
@@ -252,7 +252,6 @@ class DoctrineMailFolderRepositoryTest extends \Conjoon\DatabaseTestCaseDefault 
             $this->getConnection()->getRowCount('groupware_email_folders'),
             "Pre-Condition"
         );
-
         // FLUSH
         $repository->flush();
         $queryTable = $this->getConnection()->createQueryTable(
@@ -267,6 +266,16 @@ class DoctrineMailFolderRepositoryTest extends \Conjoon\DatabaseTestCaseDefault 
 
         $repository->remove($entity);
         $repository->flush();
+
+        $queryTable = $this->getConnection()->createQueryTable(
+            'groupware_email_items', 'SELECT * FROM groupware_email_items'
+        );
+        $expectedTable = $this->createXmlDataSet(
+            dirname(__FILE__) . '/fixtures/mysql/mail_folder.remove.result.xml'
+        )->getTable("groupware_email_items");
+        $this->assertTablesEqual($expectedTable, $queryTable);
+
+
         $this->assertEquals(
             0,
             $this->getConnection()->getRowCount('groupware_email_folders'),

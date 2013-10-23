@@ -16,10 +16,6 @@
 
 namespace Conjoon\Data\Repository\Mail;
 
-use Conjoon\Argument\ArgumentCheck,
-    Conjoon\Argument\InvalidArgumentException,
-    Conjoon\Data\Repository\Mail\MailRepositoryException;
-
 /**
  * @see Conjoon\Argument\ArgumentCheck
  */
@@ -49,6 +45,10 @@ require_once 'Conjoon/Data/Repository/Mail/DefaultImapRepository.php';
  * @see \Conjoon\Mail\Message\DefaultRawMessage
  */
 require_once 'Conjoon/Mail/Message/DefaultRawMessage.php';
+
+use Conjoon\Argument\ArgumentCheck,
+    Conjoon\Argument\InvalidArgumentException,
+    Conjoon\Data\Repository\Mail\MailRepositoryException;
 
 /**
  * A data repository connected to an imap server.

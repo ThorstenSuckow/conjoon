@@ -43,7 +43,7 @@ require_once 'Conjoon/Data/EntityCreator/Mail/ImapMessageEntityCreator.php';
 class DefaultImapMessageEntityCreator implements ImapMessageEntityCreator {
 
     /**
-     * @var \Conjoon\Data\EntityCreator\Mail\MessageAttachmentEntityCreator
+     * @var \Conjoon\Data\EntityCreator\Mail\AttachmentEntityCreator
      */
     protected $attachmentCreator;
 
@@ -96,12 +96,12 @@ class DefaultImapMessageEntityCreator implements ImapMessageEntityCreator {
 
         if (!$this->attachmentCreator) {
             /**
-             * @see \Conjoon\Data\EntityCreator\Mail\DefaultMessageAttachmentEntityCreator
+             * @see \Conjoon\Data\EntityCreator\Mail\DefaultAttachmentEntityCreator
              */
-            require_once 'Conjoon/Data/EntityCreator/Mail/DefaultMessageAttachmentEntityCreator.php';
+            require_once 'Conjoon/Data/EntityCreator/Mail/DefaultAttachmentEntityCreator.php';
 
             $this->attachmentCreator =
-                new \Conjoon\Data\EntityCreator\Mail\DefaultMessageAttachmentEntityCreator();
+                new \Conjoon\Data\EntityCreator\Mail\DefaultAttachmentEntityCreator();
         }
 
         for ($i = 0, $len = count($parsedMessage['attachments']); $i < $len; $i++) {
@@ -109,7 +109,7 @@ class DefaultImapMessageEntityCreator implements ImapMessageEntityCreator {
 
             $attachmentEntity = $this->attachmentCreator->createFrom($attachment);
 
-            $message->addMessageAttachments($attachmentEntity);
+            $message->addAttachment($attachmentEntity);
         }
 
     }

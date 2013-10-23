@@ -144,7 +144,7 @@ class ImapMessageFlagRepositoryTest extends \PHPUnit_Framework_TestCase {
     public function testPersist_Exception()
     {
         // use mail account as entity, this is okay for now
-        $this->repository->persist($this->mailAccount);
+        $this->repository->register($this->mailAccount);
     }
 
     /**
@@ -169,7 +169,7 @@ class ImapMessageFlagRepositoryTest extends \PHPUnit_Framework_TestCase {
      */
     public function testFlush_Exception()
     {
-        $this->repository->flush();
+        $this->repository->flush($this->mailAccount);
     }
 
 }

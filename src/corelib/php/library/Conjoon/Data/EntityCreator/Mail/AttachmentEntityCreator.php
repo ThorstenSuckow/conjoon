@@ -17,16 +17,16 @@
 namespace Conjoon\Data\EntityCreator\Mail;
 
 /**
- * Interface all MessageAttachmentEntityCreator classes have to implement.
+ * Interface all AttachmentEntityCreator classes have to implement.
  *
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-interface MessageAttachmentEntityCreator {
+interface AttachmentEntityCreator {
 
 
     /**
-     * Returns an instance of \Conjoon\Data\Entity\Mail\MessageAttachmentEntity.
+     * Returns an instance of \Conjoon\Data\Entity\Mail\AttachmentEntity.
      * This method must generate a key accordingly.
      *
      * @param array $options An array with the following key/value pairs:
@@ -36,7 +36,7 @@ interface MessageAttachmentEntityCreator {
      *              - content
      *              - contentId
      *
-     * @return \Conjoon\Data\Entity\Mail\MessageAttachmentEntity
+     * @return \Conjoon\Data\Entity\Mail\AttachmentEntity
      *
      * @throws MailEntityCreatorException
      */
@@ -49,7 +49,7 @@ interface MessageAttachmentEntityCreator {
      * @param \Conjoon\Mail\Message\RawMessage
      *
      * @return array an array with instances of
-     * \Conjoon\Data\Entity\Mail\MessageAttachmentEntity
+     * \Conjoon\Data\Entity\Mail\AttachmentEntity
      *
      * @throws MailEntityCreatorException
      */

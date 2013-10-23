@@ -22,13 +22,13 @@ namespace Conjoon\Data\Repository\Mail;
 require_once 'Conjoon/Data/Repository/DataRepository.php';
 
 /**
- * Interface all MessageRepositories have to implement.
+ * Interface all AttachmentContentRepositories have to implement.
  *
  * @category   Conjoon_Data
  * @package    Repository
  *
  * @author Thorsten-Suckow-Homberg <tsuckow@conjoon.org>
  */
-interface MessageRepository extends \Conjoon\Data\Repository\DataRepository {
+interface AttachmentContentRepository extends \Conjoon\Data\Repository\DataRepository {
 
 }

@@ -16,21 +16,21 @@
 namespace Conjoon\Data\Entity\Mail;
 
 /**
- * @see Conjoon\Data\Entity\Mail\DefaultMessageAttachmentEntity
+ * @see Conjoon\Data\Entity\Mail\DefaultAttachmentEntity
  */
-require_once 'Conjoon/Data/Entity/Mail/DefaultMessageAttachmentEntity.php';
+require_once 'Conjoon/Data/Entity/Mail/DefaultAttachmentEntity.php';
 
 /**
  * @package    Conjoon/Tests
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class DefaultMessageAttachmentEntityTest extends \PHPUnit_Framework_TestCase {
+class DefaultAttachmentEntityTest extends \PHPUnit_Framework_TestCase {
 
 
     public function testOk()
     {
-        $entity  = new DefaultMessageAttachmentEntity();
+        $entity  = new DefaultAttachmentEntity();
         $content = new DefaultAttachmentContentEntity();
 
         $this->assertNull($entity->getId());

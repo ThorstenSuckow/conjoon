@@ -24,7 +24,6 @@ Conjoon\Data\Entity\Mail\DefaultMessageFlagEntity:
     manyToOne:
         groupwareEmailItems:
             targetEntity: Conjoon\Data\Entity\Mail\DefaultMessageEntity
-            cascade: {  }
             mappedBy: null
             inversedBy: null
             joinColumns:
@@ -33,7 +32,6 @@ Conjoon\Data\Entity\Mail\DefaultMessageFlagEntity:
             orphanRemoval: false
         users:
             targetEntity: Conjoon\Data\Entity\User\DefaultUserEntity
-            cascade: {  }
             mappedBy: null
             inversedBy: null
             joinColumns:

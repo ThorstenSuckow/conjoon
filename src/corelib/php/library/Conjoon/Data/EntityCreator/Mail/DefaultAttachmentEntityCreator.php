@@ -19,9 +19,9 @@ namespace Conjoon\Data\EntityCreator\Mail;
 use Conjoon\Argument\ArgumentCheck;
 
 /**
- * @see \Conjoon\Data\EntityCreator\Mail\MessageAttachmentEntityCreator
+ * @see \Conjoon\Data\EntityCreator\Mail\AttachmentEntityCreator
  */
-require_once 'Conjoon/Data/EntityCreator/Mail/MessageAttachmentEntityCreator.php';
+require_once 'Conjoon/Data/EntityCreator/Mail/AttachmentEntityCreator.php';
 
 /**
  * @see \Conjoon\Data\EntityCreator\Mail\MailEntityCreatorException
@@ -29,9 +29,9 @@ require_once 'Conjoon/Data/EntityCreator/Mail/MessageAttachmentEntityCreator.php
 require_once 'Conjoon/Data/EntityCreator/Mail/MailEntityCreatorException.php';
 
 /**
- *@see \Conjoon\Data\Entity\Mail\DefaultMessageAttachmentEntity
+ *@see \Conjoon\Data\Entity\Mail\DefaultAttachmentEntity
  */
-require_once 'Conjoon/Data/Entity/Mail/DefaultMessageAttachmentEntity.php';
+require_once 'Conjoon/Data/Entity/Mail/DefaultAttachmentEntity.php';
 
 /**
  *@see \Conjoon\Data\Entity\Mail\DefaultAttachmentContentEntity
@@ -39,12 +39,12 @@ require_once 'Conjoon/Data/Entity/Mail/DefaultMessageAttachmentEntity.php';
 require_once 'Conjoon/Data/Entity/Mail/DefaultAttachmentContentEntity.php';
 
 /**
- * Interface all MessageAttachmentEntityCreator classes have to implement.
+ * Interface all AttachmentEntityCreator classes have to implement.
  *
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class DefaultMessageAttachmentEntityCreator implements MessageAttachmentEntityCreator {
+class DefaultAttachmentEntityCreator implements AttachmentEntityCreator {
 
     /**
      * @inheritdoc
@@ -106,7 +106,7 @@ class DefaultMessageAttachmentEntityCreator implements MessageAttachmentEntityCr
             ), $options);
 
             $attachmentEntity  =
-                new \Conjoon\Data\Entity\Mail\DefaultMessageAttachmentEntity();
+                new \Conjoon\Data\Entity\Mail\DefaultAttachmentEntity();
             $attachmentContent =
                 new \Conjoon\Data\Entity\Mail\DefaultAttachmentContentEntity();
 

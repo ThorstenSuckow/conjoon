@@ -1,5 +1,22 @@
 <?xml version="1.0" ?>
 <dataset>
+    <table name="groupware_email_items">
+        <column>id</column>
+        <column>groupware_email_folders_id</column>
+        <column>date</column>
+        <column>subject</column>
+        <column>from</column>
+        <column>reply_to</column>
+        <column>to</column>
+        <column>cc</column>
+        <column>bcc</column>
+        <column>in_reply_to</column>
+        <column>references</column>
+        <column>content_text_plain</column>
+        <column>content_text_html</column>
+        <column>recipients</column>
+        <column>sender</column>
+    </table>
     <table name="groupware_email_folders">
         <column>id</column>
         <column>name</column>

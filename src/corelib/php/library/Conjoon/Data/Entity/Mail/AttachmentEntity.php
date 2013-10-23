@@ -22,14 +22,14 @@ namespace Conjoon\Data\Entity\Mail;
 require_once 'Conjoon/Data/Entity/DataEntity.php';
 
 /**
- * Interface all Message Attachment entities have to implement.
+ * Interface all Attachment entities have to implement.
  *
  * @category   Conjoon_Data
  * @package    Entity
  *
  * @author Thorsten-Suckow-Homberg <tsuckow@conjoon.org>
  */
-interface MessageAttachmentEntity extends \Conjoon\Data\Entity\DataEntity {
+interface AttachmentEntity extends \Conjoon\Data\Entity\DataEntity {
 
     /**
      * Get id
@@ -42,7 +42,7 @@ interface MessageAttachmentEntity extends \Conjoon\Data\Entity\DataEntity {
      * Set key
      *
      * @param string $key
-     * @return MessageAttachmentEntity
+     * @return AttachmentEntity
      */
     public function setKey($key);
 
@@ -57,7 +57,7 @@ interface MessageAttachmentEntity extends \Conjoon\Data\Entity\DataEntity {
      * Set filename
      *
      * @param string $fileName
-     * @return MessageAttachmentEntity
+     * @return AttachmentEntity
      */
     public function setFileName($fileName);
 
@@ -79,7 +79,7 @@ interface MessageAttachmentEntity extends \Conjoon\Data\Entity\DataEntity {
      * Set mimetype
      *
      * @param string $mimeType
-     * @return MessageAttachmentEntity
+     * @return AttachmentEntity
      */
     public function setMimeType($mimeType);
 
@@ -94,7 +94,7 @@ interface MessageAttachmentEntity extends \Conjoon\Data\Entity\DataEntity {
      * Set encoding
      *
      * @param string $encoding
-     * @return MessageAttachmentEntity
+     * @return AttachmentEntity
      */
     public function setEncoding($encoding);
 
@@ -109,7 +109,7 @@ interface MessageAttachmentEntity extends \Conjoon\Data\Entity\DataEntity {
      * Set contentid
      *
      * @param string $contentId
-     * @return MessageAttachmentEntity
+     * @return AttachmentEntity
      */
     public function setContentId($contentId);
 
@@ -124,11 +124,24 @@ interface MessageAttachmentEntity extends \Conjoon\Data\Entity\DataEntity {
      * Set attachmentcontent
      *
      * @param \Conjoon\Data\Entity\Mail\AttachmentContentEntity $attachmentContent
-     * @return MessageAttachmentEntity
+     * @return AttachmentEntity
      */
     public function setAttachmentContent(
         \Conjoon\Data\Entity\Mail\AttachmentContentEntity $attachmentContent);
 
+    /**
+     * Set message
+     *
+     * @param Conjoon\Data\Entity\Mail\MessageEntity $message
+     * @return DefaultAttachmentEntity
+     */
+    public function setMessage(\Conjoon\Data\Entity\Mail\MessageEntity $message);
 
+    /**
+     * Get message
+     *
+     * @return Conjoon\Data\Entity\Mail\MessageEntity
+     */
+    public function getMessage();
 
 }

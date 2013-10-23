@@ -654,3 +654,15 @@ UNSIGNED NULL DEFAULT NULL;
 ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_references` DROP PRIMARY KEY ,
 ADD PRIMARY KEY ( `groupware_email_items_id` , `user_id` , `reference_items_id` ,
 `reference_type` );
+
+-- CN-743
+CREATE TABLE IF NOT EXISTS `{DATABASE.TABLE.PREFIX}mail_attachment_content` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `content` blob NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=1;
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments`
+ADD `mail_attachment_content_id` BIGINT NOT NULL ,
+ADD INDEX ( `mail_attachment_content_id` );
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments`
+CHANGE `content` `content` BLOB NULL DEFAULT NULL ;

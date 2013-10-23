@@ -1,0 +1,55 @@
+Conjoon\Data\Entity\Mail\DefaultAttachmentEntity:
+    type: entity
+    repositoryClass: Conjoon\Data\Repository\Mail\DoctrineAttachmentRepository
+    table: groupware_email_items_attachments
+    fields:
+        id:
+            id: true
+            type: integer
+            unsigned: true
+            nullable: false
+            generator:
+                strategy: IDENTITY
+        key:
+            type: text
+            nullable: false
+            column: `key`
+        fileName:
+            type: text
+            nullable: false
+            column: `file_name`
+        mimeType:
+            type: text
+            nullable: false
+            column: `mime_type`
+        encoding:
+            type: text
+            nullable: false
+            column: `encoding`
+        contentId:
+            type: text
+            nullable: false
+            column: `content_id`
+    manyToOne:
+      message:
+        targetEntity: Conjoon\Data\Entity\Mail\DefaultMessageEntity
+        inversedBy: attachments
+        joinColumns:
+          groupware_email_items_id:
+            referencedColumnName: id
+            nullable: false
+        orphanRemoval: false
+    oneToOne:
+      attachmentContent:
+        orphanRemoval: true
+        targetEntity: Conjoon\Data\Entity\Mail\DefaultAttachmentContentEntity
+        inversedBy: null
+        mappedBy: null
+        cascade:
+          - persist
+        joinColumns:
+          mail_attachment_content_id:
+            referencedColumnName: id
+            nullable: false
+            unique: true
+    lifecycleCallbacks: {  }

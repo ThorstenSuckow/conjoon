@@ -17,9 +17,9 @@
 namespace Conjoon\Data\Entity\Mail;
 
 /**
- * @see \Conjoon\Data\Entity\Mail\MessageAttachmentEntity
+ * @see \Conjoon\Data\Entity\Mail\AttachmentEntity
  */
-require_once 'Conjoon/Data/Entity/Mail/MessageAttachmentEntity.php';
+require_once 'Conjoon/Data/Entity/Mail/AttachmentEntity.php';
 
 /**
  * Default message attachment entity.
@@ -29,7 +29,7 @@ require_once 'Conjoon/Data/Entity/Mail/MessageAttachmentEntity.php';
  *
  * @author Thorsten-Suckow-Homberg <tsuckow@conjoon.org>
  */
-class DefaultMessageAttachmentEntity implements MessageAttachmentEntity {
+class DefaultAttachmentEntity implements AttachmentEntity {
 
     /**
      * @var string
@@ -66,6 +66,10 @@ class DefaultMessageAttachmentEntity implements MessageAttachmentEntity {
      */
     protected $attachmentContent;
 
+    /**
+     * @var \Conjoon\Data\Entity\Mail\MessageEntity
+     */
+    protected $message;
 
     /**
      * @inheritdoc
@@ -183,6 +187,24 @@ class DefaultMessageAttachmentEntity implements MessageAttachmentEntity {
         $this->attachmentContent = $attachmentContent;
 
         return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setMessage(\Conjoon\Data\Entity\Mail\MessageEntity $message)
+    {
+        $this->message = $message;
+
+        return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getMessage()
+    {
+        return $this->message;
     }
 
 }

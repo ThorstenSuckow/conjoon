@@ -1,0 +1,17 @@
+Conjoon\Data\Entity\Mail\DefaultAttachmentContentEntity:
+    type: entity
+    repositoryClass: Conjoon\Data\Repository\Mail\DoctrineAttachmentContentRepository
+    table: mail_attachment_content
+    fields:
+        id:
+            id: true
+            type: integer
+            unsigned: true
+            nullable: false
+            generator:
+                strategy: IDENTITY
+        content:
+            type: blob
+            nullable: false
+            column: `content`
+    lifecycleCallbacks: {  }

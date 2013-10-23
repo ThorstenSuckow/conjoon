@@ -60,7 +60,9 @@ class DoctrineMessageFlagRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
         $expectedTable = $this->createXmlDataSet(
             dirname(__FILE__) . '/fixtures/mysql/' . $fileName
         )->getTable("groupware_email_items_flags");
+
         $this->assertTablesEqual($expectedTable, $queryTable);
+
     }
 
     protected function buildFolderFlagCollection()
@@ -186,9 +188,8 @@ class DoctrineMessageFlagRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
             "Pre-Condition"
         );
 
-        $this->repository->persist($flag);
-
-        $this->messageRepository->persist($message);
+        //$this->repository->register($flag);
+        $this->messageRepository->register($message);
 
         $this->assertEquals(
             2,
@@ -213,6 +214,7 @@ class DoctrineMessageFlagRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
     public function testPersistCreateByAddingToMessage()
     {
         $message = $this->messageRepository->findById(1);
+        $this->messageRepository->register($message);
         $user    = $this->userRepository->findById(3);
 
         $flag = new \Conjoon\Data\Entity\Mail\DefaultMessageFlagEntity();
@@ -227,7 +229,7 @@ class DoctrineMessageFlagRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
             "Pre-Condition"
         );
 
-        $this->repository->persist($flag);
+
 
         $this->assertEquals(
             2,
@@ -235,7 +237,7 @@ class DoctrineMessageFlagRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
             "Pre-Condition"
         );
 
-        $this->repository->flush();
+        $this->messageRepository->flush();
 
         $this->assertEquals(
             3,
@@ -265,7 +267,7 @@ class DoctrineMessageFlagRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
             "Pre-Condition"
         );
 
-        $this->repository->persist($flag);
+        $this->repository->register($flag);
 
         $this->assertEquals(
             2,
@@ -302,7 +304,7 @@ class DoctrineMessageFlagRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
             "Pre-Condition"
         );
 
-        $this->repository->persist($flag);
+        $this->repository->register($flag);
 
         $this->checkForSameDataSet('messageflag.xml');
 
@@ -323,7 +325,6 @@ class DoctrineMessageFlagRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
     public function testPersistUpdateByUsingMessageRepository()
     {
         $message = $this->messageRepository->findById(1);
-
         $flags = $message->getGroupwareEmailItemsFlags();
 
         $flag = null;
@@ -342,7 +343,7 @@ class DoctrineMessageFlagRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
         $flag->setIsRead(false);
         $flag->setIsDeleted(false);
 
-        $this->messageRepository->persist($message);
+        $this->messageRepository->register($message);
         $this->messageRepository->flush();
 
         $this->checkForSameDataSet('messageflag.update.result.xml');
@@ -404,7 +405,7 @@ class DoctrineMessageFlagRepositoryTest extends \Conjoon\DatabaseTestCaseDefault
 
         $message->removeGroupwareEmailItemsFlag($flag);
 
-        $this->messageRepository->persist($message);
+        $this->messageRepository->register($message);
         $this->messageRepository->flush();
 
         $this->assertSame(

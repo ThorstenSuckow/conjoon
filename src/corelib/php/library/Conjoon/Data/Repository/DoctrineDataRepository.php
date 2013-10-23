@@ -16,14 +16,15 @@
 
 namespace Conjoon\Data\Repository;
 
-use Conjoon\Argument\ArgumentCheck;
-
-use Conjoon\Argument\InvalidArgumentException;
-
 /**
  * @see \Conjoon\Data\Repository\DataRepository
  */
 require_once 'Conjoon/Data/Repository/DataRepository.php';
+
+/**
+ * @see \Conjoon\Data\Repository\RepositoryException
+ */
+require_once 'Conjoon/Data/Repository/RepositoryException.php';
 
 /**
  * @see Conjoon\Argument\InvalidArgumentException
@@ -40,6 +41,14 @@ require_once 'Conjoon/Argument/ArgumentCheck.php';
  */
 require_once 'Doctrine/ORM/EntityRepository.php';
 
+/**
+ * @see Doctrine\ORM\Mapping\ClassMetadata
+ */
+require_once 'Doctrine/ORM/Mapping/ClassMetadata.php';
+
+use Conjoon\Argument\ArgumentCheck,
+    Conjoon\Argument\InvalidArgumentException,
+    Conjoon\Data\Repository\RepositoryException;
 
 /**
  * A data repository based upon a doctrine repository.
@@ -54,6 +63,16 @@ abstract class DoctrineDataRepository
     implements DataRepository{
 
     /**
+     * @var array maps all objects that where marked for removing.
+     */
+    protected $removeMap = array();
+
+    /**
+     * @var array
+     */
+    protected $flushMap = array();
+
+    /**
      * @inheritdoc
      */
     public function remove(\Conjoon\Data\Entity\DataEntity $entity)
@@ -66,14 +85,20 @@ abstract class DoctrineDataRepository
             );
         }
 
-        $this->_em->remove($entity);
+        if (isset($this->flushMap[spl_object_hash($entity)])) {
+            $this->gatherAssociations($entity, $this->flushMap, false);
+            unset($this->flushMap[spl_object_hash($entity)]);
+        }
+
+        $this->removeMap[spl_object_hash($entity)] = $entity;
+
         return true;
     }
 
     /**
      * @inheritdoc
      */
-    public function persist(\Conjoon\Data\Entity\DataEntity $entity)
+    public function register(\Conjoon\Data\Entity\DataEntity $entity)
     {
         $className = static::getEntityClassName();
 
@@ -83,9 +108,74 @@ abstract class DoctrineDataRepository
             );
         }
 
-        $this->_em->persist($entity);
+        if (isset($this->removeMap[spl_object_hash($entity)])) {
+            throw new RepositoryException(
+                "entity is scheduled for deletion"
+            );
+        }
+
+        $this->flushMap[spl_object_hash($entity)] = $entity;
 
         return $entity;
+    }
+
+    /**
+     * This method helps to gather all associations of which
+     * $entity is the owner to consider their changes when flushing
+     * changes of the entity to the underlying datastore.
+     *
+     * @param Conjoon\Data\Entity\DataEntity $entity The data entity of
+     *        which all associations should be gathered
+     * @param array $flushMap An array of already collected associations#
+     * @param boolean $include whether entities should be included or removed from
+     * $flushMap. Defaults to true.
+     *
+     *
+     */
+    protected function gatherAssociations(
+        \Conjoon\Data\Entity\DataEntity $entity, array &$flushMap,
+        $include = true) {
+
+        if ($include === true && isset($flushMap[spl_object_hash($entity)])) {
+            return;
+        }
+
+        if ($include === true) {
+            $flushMap[spl_object_hash($entity)] = $entity;
+            $this->_em->persist($entity);
+        } else {
+            if (isset($flushMap[spl_object_hash($entity)])) {
+                unset($flushMap[spl_object_hash($entity)]);
+            }
+        }
+
+        $classMetaData = $this->_em->getClassMetadata(get_class($entity));
+
+        $fields = $classMetaData->getAssociationNames();
+
+        foreach ($fields as $name) {
+
+            if (!$classMetaData->isAssociationInverseSide($name)) {
+                continue;
+            }
+
+            $getter = 'get' . ucfirst($name);
+            if (method_exists($entity, $getter)) {
+
+                $d = $entity->$getter();
+                if (is_object($d) &&
+                    (($d instanceof \Doctrine\ORM\PersistentCollection) ||
+                    ($d instanceof \Doctrine\Common\Collections\ArrayCollection))
+                ) {
+                    foreach ($d as $newV) {
+                        $this->gatherAssociations($newV, $flushMap, $include);
+                    }
+                } else if (is_object($d)
+                    && ($d instanceof \Conjoon\Data\Entity\DataEntity )) {
+                    $this->gatherAssociations($d, $flushMap, $include);
+                }
+            }
+        }
     }
 
     /**
@@ -103,7 +193,8 @@ abstract class DoctrineDataRepository
             )
         ), $data);
 
-        $entity = $this->find($id);
+
+        $entity = $this->_em->find(static::getEntityClassName(), $data['id']);
 
         if ($entity === null) {
             return null;
@@ -125,7 +216,69 @@ abstract class DoctrineDataRepository
      */
     public function flush()
     {
-        $this->_em->transactional(function(){});
+        $className = static::getEntityClassName();
+
+        // remove
+        $oldEm = $this->_em;
+        $em = $this->_em->create(
+            $this->_em->getConnection(), $this->_em->getConfiguration()
+        );
+        $this->_em = $em;
+        foreach ($this->removeMap as $hash => $remEnt) {
+
+            $classMetaData = $this->_em->getClassMetadata($className);
+            $idValues = $classMetaData->getIdentifierValues($remEnt);
+
+            $query = array();
+
+            foreach ($idValues as $name => $value) {
+                $lookupId = $value;
+                if (is_object($value)) {
+                    $cmD = $this->_em->getClassMetadata(get_class($value));
+                    $iVs = $cmD->identifier;//($value);
+                    $vGetter = 'get' . ucfirst($iVs[0]);
+                    $lookupId = $value->$vGetter();
+                }
+                $query[$name] = $lookupId;
+            }
+
+            $queryStr = array();
+
+            foreach ($query as $name => $value) {
+                $queryStr[] = 'entity.' . $name . ' = :' .$name;
+            }
+
+            $queryStr = implode(' AND ', $queryStr);
+
+            $docQuery = $this->_em->createQuery(
+                "SELECT entity FROM " .$className. " entity WHERE " . $queryStr
+            );
+            foreach ($query as $name => $value) {
+                $docQuery->setParameter($name, $value);
+            }
+
+            $removeMe = $docQuery->getSingleResult();
+            $this->_em->remove($removeMe);
+            // wait for exc. if none occures, reset map!
+            unset($this->removeMap[$hash]);
+        }
+        $this->_em->flush();
+        $this->_em = $oldEm;
+
+        $flushMap = array_values($this->flushMap);
+
+        if (empty($flushMap)) {
+            return;
+        }
+
+        $finalMap = array();
+        foreach ($flushMap as $entity) {
+            $this->gatherAssociations($entity, $finalMap);
+        }
+
+        $this->_em->flush($finalMap);
+
+        $this->flushMap = array();
     }
 
 }

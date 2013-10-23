@@ -27,6 +27,19 @@ require_once 'Conjoon/Data/Repository/DoctrineDataRepository.php';
 require_once 'Conjoon/Data/Repository/Mail/MessageRepository.php';
 
 /**
+ * @see Conjoon\Argument\ArgumentCheck
+ */
+require_once 'Conjoon/Argument/ArgumentCheck.php';
+
+/**
+ * @see Conjoon\Argument\InvalidArgumentException
+ */
+require_once 'Conjoon/Argument/InvalidArgumentException.php';
+
+use Conjoon\Argument\ArgumentCheck,
+    Conjoon\Argument\InvalidArgumentException;
+
+/**
  * The default implementation for the Doctrine Nessage Repository.
  *
  * @category   Conjoon_Data
@@ -46,4 +59,34 @@ class DoctrineMessageRepository
         return '\Conjoon\Data\Entity\Mail\DefaultMessageEntity';
     }
 
+
+    /**
+     * Returns an entity identified by the passed $id. The $id
+     * in this case must be of type \Conjoon\Mail\Client\Message\MessageLocation
+     * representing the location of the message or the raw id of the data
+     * as managed by teh udnerlying data storage..
+     *
+     * @param \Conjoon\Mail\Client\Message\MessageLocation $id
+     *
+     * @return \Conjoon\Data\Entity\DataEntity
+     *
+     * @throws \Conjoon\Argument\InvalidArgumentException
+     */
+    public function findById($id) {
+
+        if (is_object($id)) {
+            $data = array('messageLocation' => $id);
+
+            ArgumentCheck::check(array(
+                'messageLocation' => array(
+                    'type'  => 'instanceof',
+                    'class' => '\Conjoon\Mail\Client\Message\MessageLocation'
+                )
+            ), $data);
+
+            $id = $id->getUId();
+        }
+
+        return parent::findById($id);
+    }
 }

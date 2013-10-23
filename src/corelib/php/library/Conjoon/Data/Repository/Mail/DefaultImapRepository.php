@@ -176,7 +176,7 @@ abstract class DefaultImapRepository extends ImapRepository {
     /**
      * @inheritdoc
      */
-    public function persist(\Conjoon\Data\Entity\DataEntity $entity)
+    public function register(\Conjoon\Data\Entity\DataEntity $entity)
     {
         throw new \RuntimeException("Not yet supported.");
     }
