@@ -262,6 +262,10 @@ Ext.ux.layout.flexAccord.Layout = Ext.extend(Ext.layout.ContainerLayout, {
             this._orgHeights[c.getId()] = c.height;
         }
 
+        if (c.collapsed) {
+            c.height = 0;
+        }
+
         c.header.addClass('x-accordion-hd');
 
         // during drag and drop, the item might get re-rendered
