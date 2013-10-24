@@ -118,6 +118,23 @@ class DoctrineMessageRepositoryTest extends \Conjoon\DatabaseTestCaseDefault {
     }
 
     /**
+     * @expectedException Doctrine\ORM\ORMInvalidArgumentException
+     */
+    public function testRegisterCreateMailFolderException()
+    {
+        $repository = $this->_entityManager->getRepository(
+            '\Conjoon\Data\Entity\Mail\DefaultMessageEntity');
+
+        $message = new \Conjoon\Data\Entity\Mail\DefaultMessageEntity();
+        $folder = new \Conjoon\Data\Entity\Mail\DefaultMailFolderEntity();
+
+        $message->setGroupwareEmailFolders($folder);
+
+        $repository->register($message);
+        $repository->flush();
+    }
+
+    /**
      * Ensures everything works as expected.
      */
     public function testRegisterCreate()
@@ -167,7 +184,7 @@ class DoctrineMessageRepositoryTest extends \Conjoon\DatabaseTestCaseDefault {
             "Pre-Condition"
         );
 
-        $repository->flush($message);
+        $repository->flush();
 
         $this->assertEquals(
             2,
@@ -286,7 +303,7 @@ class DoctrineMessageRepositoryTest extends \Conjoon\DatabaseTestCaseDefault {
         $this->assertTablesEqual($expectedTable, $queryTable);
         $this->assertTablesEqual($expectedTableAttachments, $queryTableAttachments);
 
-        $repository->flush($message);
+        $repository->flush();
 
         $this->assertEquals(
             0,
@@ -321,6 +338,15 @@ class DoctrineMessageRepositoryTest extends \Conjoon\DatabaseTestCaseDefault {
         $expectedTable = $this->createXmlDataSet(
             dirname(__FILE__) . '/fixtures/mysql/message.remove.result.xml'
         )->getTable("groupware_email_items_attachments");
+        $this->assertTablesEqual($expectedTable, $queryTable);
+
+        // groupware email folders
+        $queryTable = $this->getConnection()->createQueryTable(
+            'groupware_email_folders', 'SELECT * FROM groupware_email_folders'
+        );
+        $expectedTable = $this->createXmlDataSet(
+            dirname(__FILE__) . '/fixtures/mysql/message.remove.result.xml'
+        )->getTable("groupware_email_folders");
         $this->assertTablesEqual($expectedTable, $queryTable);
 
     }
