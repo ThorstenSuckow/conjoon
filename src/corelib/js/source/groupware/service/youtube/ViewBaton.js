@@ -189,9 +189,12 @@ com.conjoon.groupware.service.youtube.ViewBaton = function() {
     /**
      * Returns an instance of {Ext.ux.util.FlashControl} used by this class.
      *
+     * @param {com.conjoon.groupware.Workbench} workbench The worbench the
+     * control should be using for mediating with the flash panel
+     *
      * @return {Ext.ux.utilFlashControl}
      */
-    var buildFlashControl = function()
+    var buildFlashControl = function(workbench)
     {
         return new Ext.ux.util.FlashControl({
             flashComponent    : player,
@@ -201,12 +204,8 @@ com.conjoon.groupware.service.youtube.ViewBaton = function() {
                 var featurePanel = com.conjoon.groupware.service.youtube.ViewBaton.getFeaturePanel();
                 var quickPanel   = com.conjoon.groupware.QuickEditPanel.getComponent();
 
-                var westPanel = com.conjoon.util.Registry.get(
-                    'com.conjoon.groupware.Workbench'
-                ).getWestPanel();
-                var eastPanel = com.conjoon.util.Registry.get(
-                    'com.conjoon.groupware.Workbench'
-                ).getEastPanel();
+                var westPanel = workbench.getWestPanel();
+                var eastPanel = workbench.getEastPanel();
 
                 var itemsWest = westPanel.items.items;
                 var itemsEast = eastPanel.items.items;
@@ -338,9 +337,12 @@ com.conjoon.groupware.service.youtube.ViewBaton = function() {
          * specified, or if the basePanel for the player and its control was not
          * built yet.
          *
+         * @param {com.conjoon.groupware.Workbench} workbench The worbench the
+         * control should be using for mediating with the flash panel
+         *
          * @return {Ext.ux.util.FlashControl}
          */
-        getFlashControl : function()
+        getFlashControl : function(workbench)
         {
             if (flashControl) {
                 return flashControl;
@@ -350,7 +352,7 @@ com.conjoon.groupware.service.youtube.ViewBaton = function() {
                 return null;
             }
 
-            flashControl = buildFlashControl();
+            flashControl = buildFlashControl(workbench);
 
             return flashControl;
         },
@@ -373,9 +375,12 @@ com.conjoon.groupware.service.youtube.ViewBaton = function() {
          * This method does automaically build the flashControl if its not available
          * yet.
          *
+         * @param {com.conjoon.groupware.Workbench} workbench The worbench the
+         * control should be using for mediating with the flash panel
+         *
          * @return {Ext.Panel}
          */
-        getBasePanel : function()
+        getBasePanel : function(workbench)
         {
             if (basePanel) {
                 return basePanel;
@@ -388,7 +393,7 @@ com.conjoon.groupware.service.youtube.ViewBaton = function() {
             }
 
             basePanel = buildBasePanel();
-            this.getFlashControl();
+            this.getFlashControl(workbench);
 
             return basePanel;
         },

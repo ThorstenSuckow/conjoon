@@ -38,7 +38,9 @@ com.conjoon.groupware.QuickEditPanel = function(){
                 com.conjoon.groupware.forms.QuickEmailForm.getComponent()
             ];
 
-            var youtubeBasePanel = com.conjoon.groupware.service.youtube.ViewBaton.getBasePanel();
+            var youtubeBasePanel = com.conjoon.groupware.service.youtube.ViewBaton.getBasePanel(
+                config.workbench
+            );
             if (youtubeBasePanel) {
                 items.push(youtubeBasePanel);
             }
@@ -48,7 +50,6 @@ com.conjoon.groupware.QuickEditPanel = function(){
                 activeTab    : 0,
                 bodyStyle    : 'background:#DFE8F6;',
                 resizable    : false,
-                collapsed    : false,
                 title        : com.conjoon.Gettext.gettext("Quickpanel"),
                 height       : 205,
                 cls          : 'com-conjoon-groupware-QuickPanel-editPanel',

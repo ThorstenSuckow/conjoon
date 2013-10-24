@@ -300,7 +300,7 @@ com.conjoon.groupware.Workbench = Ext.extend(Ext.Viewport, {
     },
 
     /**
-     *´
+     *ï¿½
      * @return {Ext.Panel}
      *
      * @protected
@@ -361,8 +361,11 @@ com.conjoon.groupware.Workbench = Ext.extend(Ext.Viewport, {
      */
     _getEastPanel   : function()
     {
+        var me = this;
+        
         var quickPanel = com.conjoon.groupware.QuickEditPanel.getComponent({
-            draggable : com.conjoon.groupware.workbench.PanelDragSource.getConfig()
+            draggable : com.conjoon.groupware.workbench.PanelDragSource.getConfig(),
+            workbench : me
         });
 
         var feedGrid = new com.conjoon.groupware.feeds.FeedGrid({
