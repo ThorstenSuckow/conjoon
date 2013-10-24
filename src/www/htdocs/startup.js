@@ -23,6 +23,10 @@ com.conjoon.cudgets.localCache.Api.setAdapter(
 
 Ext.onReady(function(){
 
+    com.conjoon.groupware.Registry = new com.conjoon.cudgets.direct.Registry({
+        directProvider : com.conjoon.defaultProvider.registry
+    });
+
     var preLoader           = com.conjoon.util.PreLoader
     var groupware           = com.conjoon.groupware;
     var emailAccountStore   = groupware.email.AccountStore.getInstance();
