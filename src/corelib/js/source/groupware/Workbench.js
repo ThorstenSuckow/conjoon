@@ -58,11 +58,16 @@ com.conjoon.groupware.Workbench = Ext.extend(Ext.Viewport, {
     _focusTimeoutId : null,
 
     /**
+     * @type {Object} widgets
+     */
+    widgets : null,
+
+    /**
      * Inits this component.
      */
     initComponent : function()
     {
-       Ext.apply(this, {
+        Ext.apply(this, {
             layout : 'border',
             border : false,
             items  : this._getItems()
@@ -111,8 +116,8 @@ com.conjoon.groupware.Workbench = Ext.extend(Ext.Viewport, {
      * Listener for the focus event of the workbench.
      *
      * @param {Ext.Viewport}
-     * @param {HtmlElement}
-     */
+        * @param {HtmlElement}
+        */
     _onBlur : function(viewport, lastActiveElement)
     {
         window.clearTimeout(this._focusTimeoutId);
@@ -151,8 +156,8 @@ com.conjoon.groupware.Workbench = Ext.extend(Ext.Viewport, {
      * Listener for the focus event of the workbench.
      *
      * @param {Ext.Viewport}
-     * @param {HtmlElement}
-     */
+        * @param {HtmlElement}
+        */
     _onFocus : function(viewport, lastActiveElement)
     {
         if (lastActiveElement != this._focusLayer) {
@@ -300,7 +305,7 @@ com.conjoon.groupware.Workbench = Ext.extend(Ext.Viewport, {
     },
 
     /**
-     *�
+     *
      * @return {Ext.Panel}
      *
      * @protected
@@ -325,17 +330,123 @@ com.conjoon.groupware.Workbench = Ext.extend(Ext.Viewport, {
 
     /**
      *
+     * @return {Array}
+     * @private
+     */
+    getWidgets : function() {
+
+        var me = this,
+            stateIdentifiers = com.conjoon.state.Identifiers.workbench.widgets;
+
+        if (me.widgets) {
+            return me.widgets;
+        }
+
+        var defaults = {
+            stateful : true,
+            stateEvents : ['collapse', 'expand', 'show', 'hide', 'resize'],
+            getState : function() {
+                var state = {
+                    collapsed : this.collapsed,
+                    hidden    : !this.isVisible()
+                };
+
+                if (!this.collapsed && this.resizable !== false) {
+                    state.height = this.getHeight();
+                }
+
+                return state;
+            }
+        };
+
+        var quickPanel = com.conjoon.groupware.QuickEditPanel.getComponent({
+            workbench : me,
+            draggable : com.conjoon.groupware.workbench.PanelDragSource.getConfig(),
+            stateId : stateIdentifiers.quickPanelWidget,
+            id : 'widgetQuickPanel',
+            stateful : true,
+            stateEvents : ['collapse', 'expand', 'show', 'hide', 'resize', 'tabchange'],
+            getState : function() {
+                var state = {
+                    collapsed : this.collapsed,
+                    hidden    : !this.isVisible(),
+                    activeTab : this.items.indexOf(this.getActiveTab())
+                };
+
+                return state;
+            }
+        });
+
+        var feedGrid = new com.conjoon.groupware.feeds.FeedGrid(Ext.apply({
+            draggable : com.conjoon.groupware.workbench.PanelDragSource.getConfig(),
+            stateId : stateIdentifiers.feedWidget,
+            id : 'widgetFeedPanel'
+        }, defaults));
+
+        var emailsPanel = new com.conjoon.groupware.email.LatestEmailsPanel(Ext.apply({
+            collapsed : true,
+            draggable : com.conjoon.groupware.workbench.PanelDragSource.getConfig(),
+            stateId : stateIdentifiers.emailWidget,
+            id : 'widgetEmailPanel'
+        }, defaults));
+
+        var twitterPanel = new com.conjoon.groupware.service.TwitterPanel(Ext.apply({
+            draggable : com.conjoon.groupware.workbench.PanelDragSource.getConfig(),
+            itemTitle : com.conjoon.Gettext.gettext("Twitter"),
+            stateId : stateIdentifiers.twitterWidget,
+            id : 'widgetTwitterPanel'
+        }, defaults));
+
+        quickPanel.on('show', this._onInfoPanelVisibilityChange, this);
+        quickPanel.on('hide', this._onInfoPanelVisibilityChange, this);
+
+        feedGrid.on('show', this._onInfoPanelVisibilityChange, this);
+        feedGrid.on('hide', this._onInfoPanelVisibilityChange, this);
+
+        emailsPanel.on('show', this._onInfoPanelVisibilityChange, this);
+        emailsPanel.on('hide', this._onInfoPanelVisibilityChange, this);
+
+        twitterPanel.on('show', this._onInfoPanelVisibilityChange, this);
+        twitterPanel.on('hide', this._onInfoPanelVisibilityChange, this);
+
+        me.widgets = {
+            widgetQuickPanel : quickPanel,
+            widgetFeedPanel : feedGrid,
+            widgetEmailPanel : emailsPanel,
+            widgetTwitterPanel : twitterPanel
+        };
+
+        return me.widgets;
+    },
+
+    /**
+     *
      * @return {Ext.Panel}
      *
      * @protected
      */
     _getWestPanel : function()
     {
+        var me = this,
+            stateIdentifiers = com.conjoon.state.Identifiers.workbench.panels;
+
         return new Ext.ux.layout.flexAccord.DropPanel({
             region       : 'west',
             layoutConfig : {
                 animate : true
             },
+            stateful     : true,
+            stateId      : stateIdentifiers.westPanel,
+            getState     : function() {
+                return me.getDockingPanelStates(
+                    this, me.getEastPanel()
+                );
+            },
+            applyState   : function(state) {
+                Ext.ux.layout.flexAccord.DropPanel.prototype.applyState.call(this, state);
+                me.applyDockingPanelState(state, this);
+            },
+            stateEvents  : ['add', 'remove', 'show', 'hide', 'resize'],
             id           : 'com-conjoon-groupware-QuickPanel-itemPanel-west',
             split        : true,
             minSize      : 0,
@@ -343,6 +454,7 @@ com.conjoon.groupware.Workbench = Ext.extend(Ext.Viewport, {
             width        : 225,
             hidden       : true,
             maxSize      : 600,
+            items        : [],
             border       : false,
             cls          : 'com-conjoon-groupware-QuickPanel-itemPanel west',
             listeners    : {
@@ -361,43 +473,38 @@ com.conjoon.groupware.Workbench = Ext.extend(Ext.Viewport, {
      */
     _getEastPanel   : function()
     {
-        var me = this;
-        
-        var quickPanel = com.conjoon.groupware.QuickEditPanel.getComponent({
-            draggable : com.conjoon.groupware.workbench.PanelDragSource.getConfig(),
-            workbench : me
-        });
+        var me = this,
+            items = [], widgets,
+            stateIdentifiers = com.conjoon.state.Identifiers.workbench.panels;
 
-        var feedGrid = new com.conjoon.groupware.feeds.FeedGrid({
-            draggable : com.conjoon.groupware.workbench.PanelDragSource.getConfig()
-        });
+        if (!Ext.state.Manager.get(stateIdentifiers.eastPanel) &&
+            !Ext.state.Manager.get(stateIdentifiers.westPanel)) {
+            widgets = me.getWidgets();
 
-        var emailsPanel = new com.conjoon.groupware.email.LatestEmailsPanel({
-            collapsed : true,
-            draggable : com.conjoon.groupware.workbench.PanelDragSource.getConfig()
-        });
-
-        var twitterPanel = new com.conjoon.groupware.service.TwitterPanel({
-            draggable : com.conjoon.groupware.workbench.PanelDragSource.getConfig(),
-            itemTitle : com.conjoon.Gettext.gettext("Twitter")
-        });
-
-        quickPanel.on('show', this._onInfoPanelVisibilityChange, this);
-        quickPanel.on('hide', this._onInfoPanelVisibilityChange, this);
-
-        feedGrid.on('show', this._onInfoPanelVisibilityChange, this);
-        feedGrid.on('hide', this._onInfoPanelVisibilityChange, this);
-
-        emailsPanel.on('show', this._onInfoPanelVisibilityChange, this);
-        emailsPanel.on('hide', this._onInfoPanelVisibilityChange, this);
-
-        twitterPanel.on('show', this._onInfoPanelVisibilityChange, this);
-        twitterPanel.on('hide', this._onInfoPanelVisibilityChange, this);
+            items = [
+                widgets.widgetQuickPanel,
+                widgets.widgetFeedPanel,
+                widgets.widgetEmailPanel,
+                widgets.widgetTwitterPanel
+            ];
+        }
 
         return new Ext.ux.layout.flexAccord.DropPanel({
             layoutConfig : {
                 animate : true
             },
+            stateful     : true,
+            stateId      : stateIdentifiers.eastPanel,
+            getState     : function() {
+                return me.getDockingPanelStates(
+                    me.getWestPanel(), this
+                );
+            },
+            applyState   : function(state) {
+                Ext.ux.layout.flexAccord.DropPanel.prototype.applyState.call(this, state);
+                me.applyDockingPanelState(state, this);
+            },
+            stateEvents  : ['add', 'remove', 'show', 'hide', 'resize'],
             id           : 'com-conjoon-groupware-QuickPanel-itemPanel-east',
             region       : 'east',
             split        : true,
@@ -407,19 +514,97 @@ com.conjoon.groupware.Workbench = Ext.extend(Ext.Viewport, {
             border       : false,
             margins      : '64 0 0 0',
             cls          : 'com-conjoon-groupware-QuickPanel-itemPanel east',
-            items : [
-                quickPanel,
-                emailsPanel,
-                feedGrid,
-                twitterPanel
-            ],
+            items        : items,
             listeners : {
                 show  : this._onQuickPanelVisibilityChange,
                 hide  : this._onQuickPanelVisibilityChange,
                 scope : this
             }
         });
+    },
 
+    /**
+     * Returns the docking panel states
+     *
+     * @param {Ext.panel.Panel} dockingPanelWest
+     * @param {Ext.panel.Panel} dockingPanelEast
+     *
+     * @return {Object}
+     */
+    getDockingPanelStates : function(dockingPanelWest, dockingPanelEast) {
+
+        var panels = [dockingPanelWest, dockingPanelEast],
+            state = {};
+
+        for (var a = 0, lena = 2; a < lena; a++) {
+
+            var items = panels[a].items.items, i, len, obj = [];
+
+            for (i = 0, len = items.length; i < len; i++) {
+                obj.push({
+                    id : items[i].id
+                });
+            }
+
+            state[panels[a].region] = {
+                widgets : obj,
+                visible : panels[a].isVisible(),
+                width : panels[a].getWidth()
+            };
+        }
+
+        return state;
+
+    },
+
+    /**
+     * Applies the state for the docking panels.
+     *
+     * @param {Object} state
+     */
+    applyDockingPanelState : function(state, dockingPanel) {
+
+        var me = this,
+            region = dockingPanel.region,
+            eastWidth = state && state.east && state.east.width
+                ? state.east.width : false,
+            westWidth = state && state.west && state.west.width
+                ? state.west.width : false,
+            westVisible = state && state.west && state.west.visible
+                ? state.west.visible : false,
+            eastVisible = state && state.east && state.east.visible
+                ? state.east.visible : false,
+            westWidgets = state && state.west && state.east.widgets
+                ? state.west.widgets : [],
+            eastWidgets = state && state.east && state.east.widgets
+                ? state.east.widgets : [],
+            widgets = me.getWidgets();
+
+        if (eastWidgets.length == 0 && westWidgets.length == 0 && region == 'east') {
+            dockingPanel.add(widgets.widgetQuickPanel);
+            dockingPanel.add(widgets.widgetFeedPanel);
+            dockingPanel.add(widgets.widgetEmailPanel);
+            dockingPanel.add(widgets.widgetTwitterPanel);
+            return;
+        }
+
+        if (region == 'east') {
+            if (eastWidth) {
+                dockingPanel.width = eastWidth;
+            }
+            dockingPanel.hidden = !eastVisible;
+            for (var i = 0, len = eastWidgets.length; i < len; i++) {
+                dockingPanel.add(widgets[eastWidgets[i].id]);
+            }
+        } else {
+            if (westWidth) {
+                dockingPanel.width = westWidth;
+            }
+            dockingPanel.hidden = !westVisible;
+            for (var i = 0, len = westWidgets.length; i < len; i++) {
+                dockingPanel.add(widgets[westWidgets[i].id]);
+            }
+        }
 
     },
 
@@ -457,7 +642,7 @@ com.conjoon.groupware.Workbench = Ext.extend(Ext.Viewport, {
         var owner  = panel.ownerCt;
 
         if (!this.checkIfCollapsible(owner)) {
-           // owner.getLayout().fitPanels();
+            // owner.getLayout().fitPanels();
             owner.doLayout();
         }
     },
@@ -497,5 +682,3 @@ com.conjoon.groupware.Workbench = Ext.extend(Ext.Viewport, {
     }
 
 });
-
-

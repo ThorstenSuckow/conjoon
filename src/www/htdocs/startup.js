@@ -27,6 +27,8 @@ Ext.onReady(function(){
         directProvider : com.conjoon.defaultProvider.registry
     });
 
+    Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
+
     var preLoader           = com.conjoon.util.PreLoader
     var groupware           = com.conjoon.groupware;
     var emailAccountStore   = groupware.email.AccountStore.getInstance();
