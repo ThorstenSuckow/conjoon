@@ -250,7 +250,7 @@ Ext.onReady(function(){
                 .fadeOut({
                     endOpacity : 0, //can be any value between 0 and 1 (e.g. .5)
                     easing     : 'easeOut',
-                    duration   : .5,
+                    duration   : 1.0,
                     remove     : true,
                     useDisplay : false
             });
