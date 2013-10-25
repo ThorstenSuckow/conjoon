@@ -35,6 +35,9 @@
 
 Ext.onReady(function(){
 
+    com.conjoon.groupware.Registry = new com.conjoon.cudgets.direct.Registry({
+        directProvider : com.conjoon.defaultProvider.registry
+    });
 
     com.conjoon.groupware.Registry.load({
         fn : function() {
