@@ -4,6 +4,7 @@ src/corelib/js/source/Overrides.js
 src/corelib/js/source/Gettext.js
 src/corelib/js/source/SystemMessage.js
 src/corelib/js/source/SystemMessageManager.js
+src/corelib/js/source/app/state/Identifiers.js
 src/corelib/js/source/util/Format.js
 src/corelib/js/source/util/Record.js
 src/corelib/js/source/util/Dom.js
