@@ -29,7 +29,7 @@ fwrite(STDOUT, "\n"
                ."| for Application Cache manifest files.        |\n"
                ."+----------------------------------------------+\n\n"
                ."Usage: resource-lister.php [BUILD_TYPE]        \n"
-               ."[BUILD_TYPE] may equal to either\"dev\" or \"build\"\n");
+               ."[BUILD_TYPE] may equal to either \"dev\" or \"build\"\n");
 
 $buildType = isset($argv[1]) ? $argv[1] : null;
 
