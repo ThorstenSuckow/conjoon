@@ -50,6 +50,59 @@ class Conjoon_Modules_Default_User_Model_User
     protected $_primary = 'id';
 
     /**
+     * Removes all session fragments for the specified user
+     * related to auto login information from the user table.
+     *
+     * @param integer $id The id for the user to process
+     */
+    public function clearAutoLoginInformationForUserId($id) {
+
+        $userId = (int) trim((string)$id);
+
+        if ($userId <= 0) {
+            return null;
+        }
+
+        $where = $this->getAdapter()->quoteInto('id = ?', $userId);
+
+        $updData = array(
+            'remember_me_token' => NULL
+        );
+
+        return $this->update($updData, $where);
+    }
+
+    /**
+     * Returs the row that matches both the md5ed username and the token.
+     *
+     * @param string md5ed $userName
+     * @param string $password
+     *
+     * @return Zend_Db_Table_Row
+     */
+    public function getUserForHashedUsernameAndRememberMeToken($userName, $token) {
+
+        $userName = strtolower(trim((string)$userName));
+        $token = trim((string)$token);
+
+        if ($userName == "" || $token == "") {
+            return null;
+        }
+
+        /**
+         * @todo make sure username and password is a unique index
+         */
+        $select = $this->select()
+            ->from($this)
+            ->where('MD5(user_name) = ?', $userName)
+            ->where('remember_me_token=?', $token);
+
+        $row = $this->fetchRow($select);
+
+        return $row;
+    }
+
+    /**
      * Returs the row that matches both the username and the password.
      *
      * @param string $userName
@@ -84,10 +137,11 @@ class Conjoon_Modules_Default_User_Model_User
      * in case the index on the user_name field is missing.
      *
      * @param string $userName
+     * @param boolean $md5ed whether the username should is hashed
      *
      * @return integer
      */
-    public function getUserNameCount($userName)
+    public function getUserNameCount($userName, $md5ed = false)
     {
         $userName = strtolower(trim((string)$userName));
 
@@ -98,11 +152,14 @@ class Conjoon_Modules_Default_User_Model_User
         /**
          * @todo make sure comparison uses lowercase even in db field
          */
+        $query = $md5ed === true
+                 ? 'MD5(user_name) = ?'
+                 : 'user_name = ?';
         $select = $this->select()
                   ->from($this, array(
                     'COUNT(id) as count_id'
                   ))
-                  ->where('user_name = ?', $userName);
+                  ->where($query, $userName);
 
         $row = $this->fetchRow($select);
 
@@ -147,7 +204,8 @@ class Conjoon_Modules_Default_User_Model_User
     {
         return array(
             'getUser',
-            'getUserForUserNameCredentials'
+            'getUserForUserNameCredentials',
+            'getUserForHashedUsernameAndRememberMeToken'
         );
     }
 

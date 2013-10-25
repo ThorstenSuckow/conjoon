@@ -76,6 +76,36 @@ class Conjoon_Controller_Plugin_Auth extends Zend_Controller_Plugin_Abstract {
     public function dispatchLoopStartup(Zend_Controller_Request_Abstract $request)
     {
         // check here if the user's authentity is already set
+
+        if (!$this->auth->hasIdentity()) {
+
+            /**
+             * @see Conjoon_Keys
+             */
+            require_once 'Conjoon/Keys.php';
+
+
+            if (isset($_COOKIE[Conjoon_Keys::COOKIE_REMEMBERME_UNAME])
+                && isset($_COOKIE[Conjoon_Keys::COOKIE_REMEMBERME_TOKEN])) {
+                /**
+                 * @see Conjoon_Auth_Adapter_Db
+                 */
+                require_once 'Conjoon/Auth/Adapter/Db.php';
+
+                $authAdapter = new Conjoon_Auth_Adapter_Db(array(
+                    'cookie' => array(
+                        'name'              => $_COOKIE[Conjoon_Keys::COOKIE_REMEMBERME_UNAME],
+                        'remember_me_token' => $_COOKIE[Conjoon_Keys::COOKIE_REMEMBERME_TOKEN]
+                    )
+                ));
+
+                // if the result is valid, the return value of the adapter will
+                // be stored automatically in the supplied storage object
+                // from the auth object
+                $this->auth->authenticate($authAdapter);
+            }
+        }
+
         if ($this->auth->hasIdentity()) {
 
             // identity is set. Now check for auth token equality

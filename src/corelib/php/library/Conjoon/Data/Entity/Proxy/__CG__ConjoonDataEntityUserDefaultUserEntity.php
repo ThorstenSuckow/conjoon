@@ -100,6 +100,12 @@ class DefaultUserEntity extends \Conjoon\Data\Entity\User\DefaultUserEntity
         return parent::getAuthToken();
     }
 
+    public function getRememberMeToken()
+    {
+        $this->__load();
+        return parent::getRememberMeToken();
+    }
+
     public function getLastLogin()
     {
         $this->__load();
@@ -148,6 +154,12 @@ class DefaultUserEntity extends \Conjoon\Data\Entity\User\DefaultUserEntity
         return parent::setAuthToken($authToken);
     }
 
+    public function setRememberMeToken($rememberMeToken)
+    {
+        $this->__load();
+        return parent::setRememberMeToken($rememberMeToken);
+    }
+
     public function setLastLogin($lastLogin)
     {
         $this->__load();
@@ -158,7 +170,7 @@ class DefaultUserEntity extends \Conjoon\Data\Entity\User\DefaultUserEntity
     {
         return array('__isInitialized__', 'id', 'firstname', 'lastname',
             'emailAddress', 'userName', 'password', 'isRoot', 'authToken',
-            'lastLogin');
+            'lastLogin', 'rememberMeToken');
     }
 
     public function __clone()

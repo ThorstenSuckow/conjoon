@@ -666,3 +666,10 @@ ADD `mail_attachment_content_id` BIGINT NOT NULL ,
 ADD INDEX ( `mail_attachment_content_id` );
 ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments`
 CHANGE `content` `content` BLOB NULL DEFAULT NULL ;
+
+-- CN-754
+ALTER TABLE `{DATABASE.TABLE.PREFIX}users` ADD `remember_me_token` VARCHAR( 32 )
+NULL DEFAULT NULL;
+ALTER TABLE `{DATABASE.TABLE.PREFIX}users` ADD UNIQUE `remember_me_token`
+(`remember_me_token`);
+UPDATE `{DATABASE.TABLE.PREFIX}users` SET `remember_me_token` = NULL;

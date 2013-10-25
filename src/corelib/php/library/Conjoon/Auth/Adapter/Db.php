@@ -45,16 +45,52 @@ class Conjoon_Auth_Adapter_Db implements Zend_Auth_Adapter_Interface {
 
     private $password;
 
+    private $rememberMe = false;
+
+    private $cookieName = null;
+
+    private $cookieRememberMe = null;
+
     /**
      * Constructor.
      *
-     * @param string $userName The username to lookup in the database.
-     * @param string $password The password to lookup in the database.
+     * @param array $config a configuration array with the following key/value
+     *                      combinations:
+     * - username string $userName The username to lookup in the database.
+     * - password string  $password The password to lookup in the database.
+     * - remember_me boolean $rememberMe Whether auto login should be used the next
+     * - cookie -> name string md5 hash of the username
+     * - cookie -> remember_me_token string
+     *
+     * if any of the "cookie" keys can befound, those values will be used instead
+     * of username/passwrod
+     *
+     * @throws InvalidArgumentException in case values where missing
      */
-    public function __construct($userName, $password)
+    public function __construct(array $config)
     {
-        $this->userName = $userName;
-        $this->password = $password;
+        if (isset($config['cookie'])) {
+            if (!is_array($config['cookie']) || (!isset($config['cookie']['name']) ||
+                !isset($config['cookie']['remember_me_token']))) {
+                throw new InvalidArgumentException("missing values for cookies!");
+            }
+
+            $this->cookieName       = $config['cookie']['name'];
+            $this->cookieRememberMe = $config['cookie']['remember_me_token'];
+
+            return;
+        }
+
+        if (!isset($config['username']) || !isset($config['password'])) {
+            throw new InvalidArgumentException("missing values for username/password!");
+        }
+
+        $this->userName   = $config['username'];
+        $this->password   = $config['password'];
+
+        $this->rememberMe = isset($config['remember_me'])
+                            ? (bool) $config['remember_me']
+                            : false;
     }
 
     /**
@@ -75,12 +111,18 @@ class Conjoon_Auth_Adapter_Db implements Zend_Auth_Adapter_Interface {
      */
     public function authenticate()
     {
-        $userName = $this->userName;
-        $password = $this->password;
+        $cookieName      = $this->cookieName;
+        $rememberMeToken = $this->cookieRememberMe;
 
-        // return a general failure if either username or password
-        // equal to <code>null</code>
-        if (trim($userName) == null || trim($password) == null) {
+        $userName   = $this->userName;
+        $password   = $this->password;
+        $rememberMe = $this->rememberMe;
+
+        if ($cookieName == "" && $rememberMeToken == "" &&
+            (trim($userName) == null || trim($password) == null)) {
+
+            // return a general failure if either username or password
+            // equal to <code>null</code>
             return new Zend_Auth_Result(
                 Zend_Auth_Result::FAILURE,
                 $userName,
@@ -95,7 +137,12 @@ class Conjoon_Auth_Adapter_Db implements Zend_Auth_Adapter_Interface {
         $userTable = new Conjoon_Modules_Default_User_Model_User();
 
         // check here if the username exists
-        $count = $userTable->getUserNameCount($userName);
+        if ($cookieName != "" && $rememberMeToken != "") {
+            $count = $userTable->getUserNameCount($cookieName, true);
+        } else {
+            $count = $userTable->getUserNameCount($userName);
+        }
+
 
         // rowset! check count()... if this is > 1, 1..n users share the same
         // username, which is a bad thing
@@ -118,8 +165,14 @@ class Conjoon_Auth_Adapter_Db implements Zend_Auth_Adapter_Interface {
          */
         require_once 'Conjoon/BeanContext/Decorator.php';
         $decorator = new Conjoon_BeanContext_Decorator($userTable);
-        $user = $decorator->getUserForUserNameCredentialsAsEntity($userName, md5($password));
 
+        if ($cookieName != "" && $rememberMeToken != "") {
+            $user = $decorator->getUserForHashedUsernameAndRememberMeTokenAsEntity(
+                $cookieName, $rememberMeToken
+            );
+        } else {
+            $user = $decorator->getUserForUserNameCredentialsAsEntity($userName, md5($password));
+        }
         // <code>null</code> means, that no user was found with the
         // username/ password combination
         if ($user === null) {
@@ -132,12 +185,24 @@ class Conjoon_Auth_Adapter_Db implements Zend_Auth_Adapter_Interface {
 
         // we have a match - generate a token and store it into the database
         $token = md5(uniqid(rand(), true));
+
         $where = $userTable->getAdapter()->quoteInto('id = ?', $user->getId());
         $time = time();
-        $userTable->update(array(
+
+        $updData = array(
             'auth_token' => $token,
             'last_login' => $time
-        ), $where);
+        );
+
+        if ($cookieName == "" && $rememberMeToken == "") {
+            $rememberMeToken = $rememberMe === true
+                               ? md5(uniqid(rand(), true))
+                               : null;
+            $updData['remember_me_token'] = $rememberMeToken;
+            $user->setRememberMeToken($rememberMeToken);
+        }
+
+        $userTable->update($updData, $where);
 
         if (!$user->getLastLogin()) {
             $user->setLastLogin(-1);

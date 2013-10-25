@@ -41,6 +41,7 @@ class Conjoon_Modules_Default_User implements Conjoon_BeanContext, Serializable 
     private $isRoot;
     private $authToken;
     private $lastLogin;
+    private $rememberMeToken;
 
 
     /**
@@ -63,6 +64,7 @@ class Conjoon_Modules_Default_User implements Conjoon_BeanContext, Serializable 
     public function getAuthToken(){return $this->authToken;}
     public function getlastLogin(){return $this->lastLogin;}
     public function isRoot(){return $this->isRoot;}
+    public function getRememberMeToken(){return $this->rememberMeToken;}
 
     public function setId($id){$this->id = $id;}
     public function setAuthToken($token){$this->authToken = $token;}
@@ -73,6 +75,7 @@ class Conjoon_Modules_Default_User implements Conjoon_BeanContext, Serializable 
     public function setUserName($userName){$this->userName = $userName;}
     public function setLastLogin($lastLogin){$this->lastLogin = $lastLogin;}
     public function setRoot($isRoot){$this->isRoot = $isRoot;}
+    public function setRememberMeToken($rememberMeToken){$this->rememberMeToken = $rememberMeToken;}
 
 // -------- helper
     /**
@@ -84,14 +87,15 @@ class Conjoon_Modules_Default_User implements Conjoon_BeanContext, Serializable 
     public function toArray()
     {
         return array(
-            'id'           => $this->id,
-            'firstname'    => $this->firstname,
-            'lastname'     => $this->lastname,
-            'userName'     => $this->userName,
-            'isRoot'       => $this->isRoot,
-            'emailAddress' => $this->emailAddress,
-            'lastLogin'    => $this->lastLogin,
-            'authToken'    => $this->authToken
+            'id'              => $this->id,
+            'firstname'       => $this->firstname,
+            'lastname'        => $this->lastname,
+            'userName'        => $this->userName,
+            'isRoot'          => $this->isRoot,
+            'emailAddress'    => $this->emailAddress,
+            'lastLogin'       => $this->lastLogin,
+            'authToken'       => $this->authToken,
+            'rememberMeToken' => $this->rememberMeToken
         );
     }
 

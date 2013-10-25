@@ -108,11 +108,26 @@ abstract class UserEntity implements \Conjoon\Data\Entity\DataEntity,
     abstract public function setAuthToken($authToken);
 
     /**
+     * Set rememberMeToken
+     *
+     * @param string $rememberMeToken
+     * @return Users
+     */
+    abstract public function setRememberMeToken($rememberMeToken);
+
+    /**
      * Get authToken
      *
      * @return string
      */
     abstract public function getAuthToken();
+
+    /**
+     * Get rememberMeToken
+     *
+     * @return string
+     */
+    abstract public function getRememberMeToken();
 
     /**
      * Set lastLogin

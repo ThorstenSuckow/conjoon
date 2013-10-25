@@ -343,8 +343,9 @@ com.conjoon.groupware.Reception = function() {
     var _login = function()
     {
         _buildLoginWindow({
-            loginUrl : './default/reception/process/format/json',
-            modal    : _applicationStarted
+            loginUrl         : './default/reception/process/format/json',
+            modal            : _applicationStarted,
+            rememberMeCookie : true
         });
 
         loginWindow.setFormIntroLabel(

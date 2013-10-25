@@ -100,6 +100,8 @@ class ReceptionController extends Zend_Controller_Action {
         require_once 'Zend/Session/Namespace.php';
         require_once 'Conjoon/Keys.php';
 
+        $this->clearInformationForAutoLogin();
+
         $receptionControllerNs = new Zend_Session_Namespace(
             Conjoon_Keys::SESSION_CONTROLLER_RECEPTION
         );
@@ -303,6 +305,8 @@ class ReceptionController extends Zend_Controller_Action {
      */
     public function logoutAction()
     {
+        $this->clearInformationForAutoLogin();
+
         Zend_Session::destroy(true, true);
 
         $this->view->success = true;
@@ -318,6 +322,7 @@ class ReceptionController extends Zend_Controller_Action {
          */
         $username        = $this->_getParam('username');
         $password        = $this->_getParam('password');
+        $rememberMe      = (bool) $this->_getParam('rememberMe');
         $lastUserRequest = (int)$this->_getParam('lastUserRequest');
 
         // Special case - the app was started and the user wants to re-login
@@ -374,7 +379,12 @@ class ReceptionController extends Zend_Controller_Action {
         }
 
         $auth        = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
-        $authAdapter = new Conjoon_Auth_Adapter_Db($username, $password);
+        $authAdapter = new Conjoon_Auth_Adapter_Db(array(
+            'username'    => $username,
+            'password'    => $password,
+            'remember_me' => $rememberMe
+        ));
+
 
         // if the result is valid, the return value of the adapter will
         // be stored automatically in the supplied storage object
@@ -382,11 +392,81 @@ class ReceptionController extends Zend_Controller_Action {
         $result = $auth->authenticate($authAdapter);
 
         if ($result->isValid()) {
+
+            $user = $result->getIdentity();
+
+            if ($rememberMe && $user->getRememberMeToken() != null) {
+                $this->setAutoLoginCookies(
+                    md5($user->getUserName()), $user->getRememberMeToken(), time() + 2592000
+                );
+            }
+
             $this->view->success = true;
        } else {
             $this->view->error   = $result->getMessages();
             $this->view->success = false;
         }
+    }
+
+    /**
+     * Helper function for setting the auto login cookies.
+     *
+     * @param string $name md5 hashed user name
+     * @param string $token the remember_me_token
+     * @param int    $expires time (in unix timestamp) when the cookies expire.
+     *                        use previous time to usnet cookies
+     */
+    protected function setAutoLoginCookies($name, $token, $expires) {
+
+        $host = $_SERVER['HTTP_HOST'];
+
+        /**
+         * @see Conjoon_Keys
+         */
+        require_once 'Conjoon/Keys.php';
+
+        setcookie(
+            Conjoon_Keys::COOKIE_REMEMBERME_UNAME, $name,
+            $expires, '/', $host
+        );
+        setcookie(
+            Conjoon_Keys::COOKIE_REMEMBERME_TOKEN, $token,
+            $expires, '/', $host
+        );
+    }
+
+    /**
+     * Helper function to clear related auto login information
+     * for the currently signed in user.
+     * ;ust be called before session gets invalidated.
+     */
+    protected function clearInformationForAutoLogin() {
+
+        /**
+         * @see Zend_Registry
+         */
+        require_once 'Zend/Registry.php';
+
+        /**
+         * @see Conjoon_Keys
+         */
+        require_once 'Conjoon/Keys.php';
+
+        // send the current logged in username with the response
+        $auth = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
+        if ($auth->getIdentity() && $auth->getIdentity()->getDto()) {
+            $user = $auth->getIdentity()->getDto();
+
+            /**
+             * @see Conjoon_Modules_Default_User_Model_User
+             */
+            require_once 'Conjoon/Modules/Default/User/Model/User.php';
+
+            $userTable = new Conjoon_Modules_Default_User_Model_User();
+            $userTable->clearAutoLoginInformationForUserId($user->id);
+        }
+
+        $this->setAutoLoginCookies("", "", time() - 3600);
     }
 
 }

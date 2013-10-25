@@ -78,6 +78,7 @@ class DoctrineUserRepositoryTest extends \Conjoon\DatabaseTestCaseDefault {
         $this->assertSame(1, $entity->getId());
         $this->assertSame('Firstname', $entity->getFirstname());
         $this->assertSame('Password', $entity->getPassword());
+        $this->assertSame('rememberMeToken1', $entity->getRememberMeToken());
     }
 
     /**
@@ -94,6 +95,7 @@ class DoctrineUserRepositoryTest extends \Conjoon\DatabaseTestCaseDefault {
         $entity->setPassword("Password");
         $entity->setAuthToken("AuthToken");
         $entity->setLastLogin(3);
+        $entity->setRememberMeToken('rememberMeToken3');
 
         $this->repository->register($entity);
 
@@ -105,7 +107,7 @@ class DoctrineUserRepositoryTest extends \Conjoon\DatabaseTestCaseDefault {
         )->getTable("users");
         $this->assertTablesEqual($expectedTable, $queryTable);
 
-        $this->repository->flush($entity);
+        $this->repository->flush();
 
         $queryTable = $this->getConnection()->createQueryTable(
             'users', 'SELECT * FROM users'

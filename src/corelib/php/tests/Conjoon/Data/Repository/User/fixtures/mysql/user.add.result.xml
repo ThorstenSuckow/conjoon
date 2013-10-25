@@ -10,6 +10,7 @@
         <column>is_root</column>
         <column>auth_token</column>
         <column>last_login</column>
+        <column>remember_me_token</column>
         <row>
             <value>1</value>
             <value>Firstname</value>
@@ -20,6 +21,7 @@
             <value>1</value>
             <value>AuthToken</value>
             <value>2</value>
+            <value>rememberMeToken1</value>
         </row>
         <row>
             <value>2</value>
@@ -31,6 +33,7 @@
             <value>0</value>
             <value>AuthToken</value>
             <value>3</value>
+            <value>rememberMeToken2</value>
         </row>
         <row>
             <value>3</value>
@@ -42,6 +45,7 @@
             <value>0</value>
             <value>AuthToken</value>
             <value>3</value>
+            <value>rememberMeToken3</value>
         </row>
     </table>
 </dataset>

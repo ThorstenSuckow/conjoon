@@ -52,4 +52,11 @@ Conjoon\Data\Entity\User\DefaultUserEntity:
             unsigned: true
             nullable: true
             column: last_login
+        rememberMeToken:
+            type: string
+            length: 32
+            fixed: false
+            nullable: true
+            unique: true
+            column: remember_me_token
     lifecycleCallbacks: {  }

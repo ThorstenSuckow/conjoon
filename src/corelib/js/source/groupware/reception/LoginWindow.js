@@ -53,6 +53,14 @@ com.conjoon.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
      */
 
     /**
+     * @cfg {Boolean} rememberMeCookie
+     * Whether a checkbox should be rendered that allows the user to choose
+     * if he wishes conjoon to remember the login on this current
+     * client's machine. Defaults to false.
+     */
+    rememberMeCookie : false,
+
+    /**
      * @cfg {String} softwareLabel The label to render in the upper left of
      * the window
      */
@@ -107,6 +115,13 @@ com.conjoon.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
     _passwordField : null,
 
     /**
+     * @param {Ext.form.Checkbox} A checkbox representing the "remember my login"
+     * option
+     * @private
+     */
+    rememberMeCheckbox : null,
+
+    /**
      * @param {com.conjoon.groupware.util.FormIntro} The form intro for the
      * form panel.
      */
@@ -136,11 +151,16 @@ com.conjoon.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
 
         this._passwordField = this._createPasswordField();
 
+        if (this.rememberMeCookie === true) {
+            this.rememberMeCheckbox = this.createRememberMeCheckbox();
+        }
+
         this._formIntro = this._createFormIntro();
 
         this._formPanel = this._createFormPanel(
             this._usernameField,
-            this._passwordField
+            this._passwordField,
+            this.rememberMeCheckbox
         );
 
         Ext.applyIf(this, {
@@ -570,6 +590,22 @@ com.conjoon.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
     },
 
     /**
+     * Creates the checkbox for choosing whether the login shoudl be remebered.
+     *
+     * @return {Ext.form.Checkbox}
+     *
+     * @protected
+     */
+    createRememberMeCheckbox : function()
+    {
+        return new Ext.form.Checkbox({
+            name       : 'rememberMe',
+            inputValue : true,
+            boxLabel   : com.conjoon.Gettext.gettext("Remember my login")
+        });
+    },
+
+    /**
      * Creates the form field for entering the password.
      *
      * @return {Ext.form.TextField}
@@ -612,15 +648,24 @@ com.conjoon.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
      *
      * @param {Ext.form.TextField} usernameField The field for entering the username.
      * @param {Ext.form.TextField} passwordField The field for entering the password.
-     * @param {com.conjoon.groupware.util.FormIntro} formIntro The form intro
-     * with the label and introduction text.
+     * @param {Ext.form.Checkbox} remembermeCheckbox The checkbox for the "remember my
+     * login", if any
      *
      * @return {Ext.form.FormPanel}
      *
      * @protected
      */
-    _createFormPanel : function(usernameField, passwordField, formIntro)
+    _createFormPanel : function(usernameField, passwordField, rememberMeCheckbox)
     {
+        var items = [
+            usernameField,
+            passwordField
+        ];
+
+        if (rememberMeCheckbox) {
+            items.push(rememberMeCheckbox);
+        }
+
         return new Ext.form.FormPanel({
             monitorValid : true,
             url          : this.loginUrl,
@@ -633,10 +678,7 @@ com.conjoon.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
                 labelStyle : 'width:75px;font-size:11px;'
             },
             border   : false,
-            items    : [
-                usernameField,
-                passwordField
-            ],
+            items    : items,
             listeners : {
                 clientvalidation : {
                     fn    : this._onClientValidation,

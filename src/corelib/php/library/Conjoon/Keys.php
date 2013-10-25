@@ -73,4 +73,13 @@ interface Conjoon_Keys {
 
 // -------- cache twitter accounts
     const CACHE_TWITTER_ACCOUNTS = 'com.conjoon.cache.twitter.accounts';
+
+// -------- cookies
+
+    // -- auto login username
+    const COOKIE_REMEMBERME_UNAME = 'cn_cookie_uname';
+
+    // -- auto login remember me token
+    const COOKIE_REMEMBERME_TOKEN = 'cn_cookie_rmToken';
+
 }

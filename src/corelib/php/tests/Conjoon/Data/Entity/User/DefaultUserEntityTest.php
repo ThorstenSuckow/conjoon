@@ -32,14 +32,15 @@ class DefaultUserEntityTest extends \PHPUnit_Framework_TestCase {
     protected function setUp()
     {
         $this->input = array(
-            'firstname'    => "name",
-            'lastname'     => "Lastname",
-            'emailAddress' => "emailAddress",
-            'userName'     => "UserName1",
-            'password'     => "password",
-            'isRoot'       => 1,
-            'authToken'    => "authToken",
-            'lastLogin'    => 2
+            'firstname'       => "name",
+            'lastname'        => "Lastname",
+            'emailAddress'    => "emailAddress",
+            'userName'        => "UserName1",
+            'password'        => "password",
+            'isRoot'          => 1,
+            'authToken'       => "authToken",
+            'lastLogin'       => 2,
+            'rememberMeToken' => 'rememberMeToken'
         );
     }
 

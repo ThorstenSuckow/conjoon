@@ -82,6 +82,10 @@ class DefaultUserEntity extends UserEntity {
      */
     private $lastLogin;
 
+    /**
+     * @var string $rememberMeToken
+     */
+    private $rememberMeToken;
 
     /**
      * Creates a new instance of this entity.
@@ -221,9 +225,27 @@ class DefaultUserEntity extends UserEntity {
     /**
      * @inheritdoc
      */
+    public function setRememberMeToken($rememberMeToken)
+    {
+        $this->rememberMeToken = $rememberMeToken;
+
+        return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getAuthToken()
     {
         return $this->authToken;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getRememberMeToken()
+    {
+        return $this->rememberMeToken;
     }
 
     /**
