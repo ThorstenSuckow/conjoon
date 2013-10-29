@@ -45,7 +45,7 @@ class Groupware_EmailFolderController extends Zend_Controller_Action {
         $this->_helper->filterRequestData()
                       ->registerFilter('Groupware_EmailFolderController::rename.folder')
                       ->registerFilter('Groupware_EmailFolderController::move.folder')
-                      ->registerFilter('Groupware_EmailFolderController::get.folder')
+                      ->registerFilter('Groupware_EmailFolderController::get.folder', true)
                       ->registerFilter('Groupware_EmailFolderController::add.folder');
     }
 

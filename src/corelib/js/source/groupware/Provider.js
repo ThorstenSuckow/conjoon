@@ -31,6 +31,10 @@ Ext.Direct.addProvider({
             name   : 'getEmailAccounts',
             len    : 0
         }],
+        emailFolder : [{
+            name   : 'getFolder',
+            len    : 1
+        }],
         emailFolderMapping : [{
             name   : 'getMappings',
             len    : 0

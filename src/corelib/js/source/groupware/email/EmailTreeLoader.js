@@ -11,41 +11,20 @@
  * $LastChangedBy$
  * $URL$
  */
-
 Ext.namespace('com.conjoon.groupware.email');
 
 /**
- * Overrides TreeLoader to read out response.value from the responded JSON
- * and apply custom look & feel to the nodes.
+ * Tree loader for email folder.
  */
+com.conjoon.groupware.email.EmailTreeLoader = Ext.extend(com.conjoon.cudgets.tree.data.ProxyTreeLoader, {
 
-com.conjoon.groupware.email.EmailTreeLoader = function(config){
-
-    Ext.apply(this, config);
-
-    this.addEvents({
-        /**
-         * Event gets fired when a node successfully was loaded.
-         * The specified listener gets called with the following arguments:
-         * @param {Ext.tree.TreeNode} The parent node to which the new node was
-         *                            appended after load
-         * @param {Ext.tree.TreeNode} The node that was loaded itself.
-         *
-         */
-        'nodeloaded' : true
-    });
-
-
-    com.conjoon.groupware.email.EmailTreeLoader.superclass.constructor.call(this);
-
-    this.on('loadexception', this.onLoadException, this);
-    this.on('beforeload', this.onBeforeLoad, this);
-};
-
-
-Ext.extend(com.conjoon.groupware.email.EmailTreeLoader, Ext.tree.TreeLoader, {
-
-    loadingNode : null,
+    /**
+     * @inheritdoc
+     */
+    constructor :  function(config) {
+        com.conjoon.groupware.email.EmailTreeLoader.superclass.constructor.call(this, config);
+        this.on('loadexception', this.onLoadException, this);
+    },
 
     /**
      * We get the children count via the attribute "childs" after the request
@@ -145,96 +124,16 @@ Ext.extend(com.conjoon.groupware.email.EmailTreeLoader, Ext.tree.TreeLoader, {
            attr.uiProvider = this.uiProviders[attr.uiProvider] || eval(attr.uiProvider);
         }
 
-
-        return(attr.childCount > 0 ? new com.conjoon.cudgets.tree.AsyncTreeNode(attr) :
-                                 new com.conjoon.cudgets.tree.TreeNode(attr));
+        return com.conjoon.groupware.email.EmailTreeLoader.superclass.createNode.call(this, attr);
     },
 
     /**
-     * We need to take care of the format of the returned json encoded responseText
-     * and look for the response.value attribute therin, which will contain
-     * all treenodes to render based on the request.
+     * Exception handler for proper fallback if loading threw an exception.
      *
-     * While appending nodes, the events of the tree will be suspended. This
-     * is because the onbefore event checks if a folder is being appended to the
-     * trash. If any node gets read out of the db, the loading of the nodes would
-     * trigger the beforeevent and prompt the user if he really want to append
-     * the node to a trash-bins node.
+     * @param treeLoader
+     * @param node
+     * @param response
      */
-    processResponse : function(response, node, callback)
-    {
-        var json = response.responseText;
-
-        try {
-            var o = eval("("+json+")");
-            /**
-             * This line is compliant to the conjoon's json encoded
-             *responseText
-             */
-            o = o.items;
-            node.beginUpdate();
-            for(var i = 0, len = o.length; i < len; i++){
-                var n = this.createNode(o[i]);
-                if(n){
-                    node.appendChild(n);
-                    this.fireEvent('nodeloaded', node, n);
-                }
-            }
-            node.endUpdate();
-            if(typeof callback == "function"){
-                callback(this, node);
-            }
-        }catch(e){
-            this.handleFailure(response);
-        }
-    },
-
-    /**
-     * Overrides parent implementation by adding the path to the
-     * params list.
-     *
-     */
-    getParams: function(node)
-    {
-        if(this.directFn){
-            throw(
-                "com.conjoon.groupware.email.EmailTreeLoader.getParams() - "
-                +"directFn not supported yet"
-            );
-        }else{
-            o = com.conjoon.groupware.email.EmailTreeLoader.superclass.getParams.call(this, node);
-            o.id   = o.node;
-            delete o.node;
-            o.path = node.getPathAsJson('idForPath');
-            return o;
-        }
-    },
-
-
-
-    onBeforeLoad : function(treeLoader, node, callback)
-    {
-        this.abort();
-        this.loadingNode = node;
-    },
-
-    abort : function()
-    {
-        if(this.isLoading()){
-            if (this.loadingNode) {
-                this.loadingNode.childrenRendered = false;
-                this.loadingNode.loaded           = false;
-                this.loadingNode.loading          = false;
-                if (this.loadingNode.getUI().showProcessing) {
-                    this.loadingNode.getUI().showProcessing(false);
-                }
-            }
-            this.loadingNode = null;
-        }
-        com.conjoon.groupware.email.EmailTreeLoader.superclass.abort.call(this);
-    },
-
-
     onLoadException : function(treeLoader, node, response)
     {
         com.conjoon.groupware.ResponseInspector.handleFailure(response, {
@@ -246,7 +145,7 @@ Ext.extend(com.conjoon.groupware.email.EmailTreeLoader, Ext.tree.TreeLoader, {
             }
         });
 
-        if (node.getUI().showProcessing) {
+        if (node && node.getUI() && node.getUI().showProcessing) {
             node.getUI().showProcessing(false);
         }
     }

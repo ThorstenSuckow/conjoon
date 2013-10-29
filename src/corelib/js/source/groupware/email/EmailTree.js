@@ -310,9 +310,21 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
      */
     pendingItemStore : null,
 
+    /**
+     * @type {Boolean}
+     */
+    stateful : true,
+
+    /**
+     * @type {String}
+     */
+    stateId : com.conjoon.state.Identifiers.emailModule.contentPanel.folderTree,
+
     initComponent : function()
     {
         this.contextMenu = com.conjoon.groupware.email.NodeContextMenu;
+
+        this.stateEvents = ['expandnode', 'collapsenode', 'drop', 'append', 'remove'];
 
         this.root = new com.conjoon.cudgets.tree.AsyncTreeNode({
             id            : 'root',
@@ -344,7 +356,8 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
          * Events will be captured by the onNodeLoaded method.
          */
         this.treeLoader = new com.conjoon.groupware.email.EmailTreeLoader({
-            dataUrl   : './groupware/email.folder/get.folder/format/json',
+            //dataUrl   : './groupware/email.folder/get.folder/format/json',
+            directFn : com.conjoon.groupware.provider.emailFolder.getFolder,
             baseAttrs : {
                 uiProvider : com.conjoon.groupware.email.PendingNodeUI
             }
@@ -419,6 +432,30 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
         this.on('beforenodedrop', this.onBeforeNodeDrop, this);
 
         this.on('destroy', function(){this.pendingItemStore.destroy();}, this);
+
+        this.mon(this.getSelectionModel(), 'beforeselect', function(selModel, newNode, oldNode) {
+
+            if (this.treeLoader.isProxyLoading()) {
+                return false;
+            }
+
+            if (newNode instanceof com.conjoon.cudgets.tree.data.ProxyTreeNode &&
+                newNode.isProxyNode()) {
+
+                newNode.loadAndSelectProxyNode({
+                    cb : function() {
+                        selModel.select(newNode);
+                        this.clkNode = newNode;
+                    },
+                    scope : this
+                });
+
+                return false;
+            }
+
+
+
+        }, this);
 
         this.mon(this.pendingItemStore, 'update', this.updatePendingNodes, this);
     },
@@ -1366,8 +1403,8 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
     /**
      * Callback for the mousedown event.
      * This listener allows for a more appealing visual feedback of selecting nodes
-     * in the tree, as the node gtes selected when the mousedown occurs.
-     * Note, thet while this listener selects the node, all events of the node get
+     * in the tree, as the node gets selected when the mousedown occurs.
+     * Note, that while this listener selects the node, all events of the node get
      * suspended, until the selection has finished.
      *
      * @param {Ext.tree.TreeNode}
@@ -1382,8 +1419,10 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
 
         if (node && !node.isSelected()) {
             node.suspendEvents();
-            node.select();
-            this.clkNode = node;
+            if (!node.isProxy) {
+                node.select();
+                this.clkNode = node;
+            }
             node.resumeEvents();
         }
 
@@ -1673,6 +1712,122 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
                 + "could not add folder for new account"
             );
         }
+    },
+
+
+// -------- state related
+
+    /**
+     *
+     * @return {Object}
+     */
+    getState : function() {
+        var state, nodes = this.getRootNode().childNodes,
+            paths = {}, node;
+
+        var extractAttributes = function(node) {
+
+            return {
+                id : node.attributes.id,
+                idForPath : node.attributes.idForPath,
+                name : node.attributes.text,
+                isChildAllowed : node.attributes.isChildAllowed,
+                isLocked : node.attributes.isLocked,
+                type : node.attributes.type,
+                childCount : node.attributes.childCount,
+                pendingCount : node.attributes.pendingCount,
+                isSelectable : node.attributes.isSelectable ? 1 : 0
+            };
+        };
+
+        var getPaths = function(nodes, ignoreExpand) {
+
+            var node = null, map = {};
+
+            for (var i = 0, len = nodes.length; i < len; i++) {
+                node = nodes[i];
+
+                if (ignoreExpand === true || (node.isExpanded() && node.childNodes.length != 0)) {
+
+                    var childNodes = node.childNodes, children = {}, cn;
+                    for (var u = 0, lenu = childNodes.length; u < lenu; u++) {
+
+                        cn = extractAttributes(childNodes[u]);
+                        if (childNodes[u].isExpanded()) {
+                            cn.children = getPaths(childNodes[u].childNodes, true);
+                            cn.isProxy = true;
+                        }
+                        children[cn.id] = cn;
+                    }
+
+                    map[node.id] = extractAttributes(node);
+                    map[node.id].children = children;
+                }
+            }
+
+            return map;
+        };
+
+        state = {
+            proxyNodes : Ext.util.JSON.encode(getPaths(nodes))
+        };
+
+        return state;
+    },
+
+
+    /**
+     *
+     * @param state
+     */
+    applyState : function(state) {
+
+        var me = this,
+            proxyNodes = state && state.proxyNodes
+                ? Ext.util.JSON.decode(state.proxyNodes)
+                : {};
+
+        me.root.on('expand', function() {
+
+            var initProxyNodes = function(nodes, proxyNodes) {
+
+                for (var i in nodes) {
+
+                    var node = nodes[i];
+
+                    if (proxyNodes[node.id] && proxyNodes[node.id].children) {
+
+                        var cn = proxyNodes[node.id].children;
+
+                        node.beginUpdate();
+                        for(var a in cn){
+                            var newNode = node.appendChild(me.treeLoader.createNode(cn[a]));
+                        }
+
+                        node.endUpdate();
+                        if (node.attributes.childCount) {
+                            node.isProxy = true;
+                        }
+                        node.loaded = true;
+                        node.suspendEvents();
+                        node.expand(false, false);
+                        node.resumeEvents();
+
+                        initProxyNodes(node.childNodes, proxyNodes[node.id].children);
+
+                    }
+                }
+            };
+
+            var nodes = me.getRootNode().childNodes, tmp = {};
+            for (var i = 0, len = nodes.length; i < len; i++) {
+                tmp[nodes[i].id] = nodes[i];
+            }
+
+            initProxyNodes(tmp, proxyNodes);
+
+        }, this);
+
     }
 
 
