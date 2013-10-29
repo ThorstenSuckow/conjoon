@@ -53,6 +53,18 @@ INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
 ('16', 'options', '15');
 INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
 ('17', 'reading', '16');
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
+('20', 'state', '5');
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
+('21', 'workbench', '20');
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
+('22', 'widgets', '21');
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
+('23', 'panels', '21');
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
+('24', 'emailModule', '20');
+ INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
+('25', 'contentPanel', '24');
 
 
 -- --
@@ -78,3 +90,19 @@ INSERT INTO `{DATABASE.TABLE.PREFIX}registry_values` (`registry_id`, `user_id`, 
 ('17', '0', 'preferred_format', 'plain', 'STRING', '1');
 INSERT INTO `{DATABASE.TABLE.PREFIX}registry_values` (`registry_id`, `user_id`, `name`, `value`, `type`, `is_editable`) VALUES
 ('17', '0', 'allow_externals', '0', 'BOOLEAN', '1');
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry_values` (`registry_id`, `user_id`, `name`, `value`, `type`, `is_editable`) VALUES
+('22', '0', 'quickPanelWidget', '', 'STRING', '1');
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry_values` (`registry_id`, `user_id`, `name`, `value`, `type`, `is_editable`) VALUES
+('22', '0', 'twitterWidget', '', 'STRING', '1');
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry_values` (`registry_id`, `user_id`, `name`, `value`, `type`, `is_editable`) VALUES
+('22', '0', 'emailWidget', '', 'STRING', '1');
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry_values` (`registry_id`, `user_id`, `name`, `value`, `type`, `is_editable`) VALUES
+('22', '0', 'feedWidget', '', 'STRING', '1');
+ INSERT INTO `{DATABASE.TABLE.PREFIX}registry_values` (`registry_id`, `user_id`, `name`, `value`, `type`, `is_editable`) VALUES
+('23', '0', 'eastPanel', '', 'STRING', '1');
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry_values` (`registry_id`, `user_id`, `name`, `value`, `type`, `is_editable`) VALUES
+('23', '0', 'westPanel', '', 'STRING', '1');
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry_values` (`registry_id`, `user_id`, `name`, `value`, `type`, `is_editable`) VALUES
+('25', '0', 'folderTree', '', 'STRING', '1');
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry_values` (`registry_id`, `user_id`, `name`, `value`, `type`, `is_editable`) VALUES
+('23', '0', 'contentPanel', '', 'STRING', '1');

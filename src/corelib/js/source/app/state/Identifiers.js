@@ -22,6 +22,14 @@ Ext.namespace('com.conjoon.state');
  */
 com.conjoon.state.Identifiers = {
 
+    emailModule : {
+
+        contentPanel : {
+            folderTree : '/emailModule/contentPanel/folderTree'
+        }
+
+    },
+
     workbench : {
 
         widgets   : {
@@ -32,8 +40,9 @@ com.conjoon.state.Identifiers = {
         },
 
         panels : {
-            eastPanel : '/workbench/panels/eastPanel',
-            westPanel : '/workbench/panels/westPanel'
+            eastPanel    : '/workbench/panels/eastPanel',
+            westPanel    : '/workbench/panels/westPanel',
+            contentPanel : '/workbench/panels/contentPanel'
         }
 
     }
