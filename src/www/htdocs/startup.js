@@ -27,7 +27,10 @@ Ext.onReady(function(){
         directProvider : com.conjoon.defaultProvider.registry
     });
 
-    Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
+    Ext.state.Manager.setProvider(new com.conjoon.cudgets.state.RegistryProvider({
+        path     : '/client/system/state/',
+        registry : com.conjoon.groupware.Registry
+    }));
 
     var preLoader           = com.conjoon.util.PreLoader
     var groupware           = com.conjoon.groupware;

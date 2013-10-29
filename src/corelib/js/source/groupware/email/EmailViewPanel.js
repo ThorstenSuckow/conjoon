@@ -79,6 +79,11 @@ com.conjoon.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
 
     initComponent : function()
     {
+        var me = this;
+
+        me.id = 'cn_emailViewPanel_' +
+                (me.emailItem && me.emailItem.id ? me.emailItem.id : Ext.id());
+
         this.addEvents(
             /**
              * Gets fired before the ajax request for this panel gets started.
@@ -131,6 +136,25 @@ com.conjoon.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
         this.on('destroy', this.abortRequest, this, {single : true});
 
         com.conjoon.groupware.email.EmailViewPanel.superclass.initComponent.call(this);
+    },
+
+    /**
+     * @inheritdoc
+     */
+    getState : function() {
+
+        var me = this;
+
+        if (!me.emailItem) {
+            return null;
+        }
+
+        return {
+            title     : (me.emailItem.data.subject || '&#160;'),
+            iconCls   : me._orgIconCls,
+            emailItem : me.emailItem.data
+        };
+
     },
 
     getView : function()

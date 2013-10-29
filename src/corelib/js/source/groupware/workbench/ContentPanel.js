@@ -75,6 +75,54 @@ com.conjoon.groupware.workbench.ContentPanel = Ext.extend(Ext.TabPanel, {
         Ext.apply(this, {
             id              : 'DOM:com.conjoon.groupware.ContentPanel',
             region          : 'center',
+            stateful : true,
+            stateId : com.conjoon.state.Identifiers.workbench.panels.contentPanel,
+            stateEvents : ['drop', 'tabchange'],
+            getState : function() {
+                var tab = this.getActiveTab()
+
+                var state = {
+                    activeTabId : tab.id,
+                    emailViewPanelStates : []
+                };
+
+                for (var i = 0, items = this.items.items, len = items.length; i< len; i++) {
+                    if (items[i]  instanceof com.conjoon.groupware.email.EmailViewPanel) {
+                        state.emailViewPanelStates.push(items[i].getState());
+                    }
+                }
+
+                return state;
+            },
+            applyState : function(state) {
+
+                if (!state || !state.activeTabId) {
+                    return;
+                }
+                var id = state.activeTabId,
+                    tab,
+                    emailViewPanelStates = state.emailViewPanelStates || [],
+                    panel;
+
+                for (var i = 0, len = emailViewPanelStates.length; i < len; i++) {
+                    panel = com.conjoon.groupware.email.EmailViewBaton.showEmail(
+                        new com.conjoon.groupware.email.EmailItemRecord(
+                            emailViewPanelStates[i].emailItem,
+                            emailViewPanelStates[i].emailItem.id
+                        )
+                    );
+                    delete emailViewPanelStates[i].emailItem;
+
+                    panel.applyState(emailViewPanelStates[i]);
+                }
+
+                tab = this.getComponent(id);
+
+                if (tab) {
+                    this.setActiveTab(tab);
+                }
+
+            },
             activeTab       : 0,
             resizeTabs      : true,
             minTabWidth     : 115,

@@ -53,6 +53,7 @@ src/corelib/js/source/cudgets/settings/listener/DefaultContainerListener.js
 src/corelib/js/source/cudgets/settings/ui/DefaultDialogUi.js
 src/corelib/js/source/cudgets/settings/listener/DefaultDialogListener.js
 src/corelib/js/source/cudgets/data/StoreSync.js
+src/corelib/js/source/cudgets/state/RegistryProvider.js
 src/corelib/js/source/groupware/DefaultProvider.js
 src/corelib/js/source/groupware/Provider.js
 src/corelib/js/source/groupware/localCache/Html5Adapter.js
