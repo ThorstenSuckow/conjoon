@@ -249,6 +249,13 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
 
     },
 
+    /**
+     * The current node that triggered a subtree sync, if any.
+     * This node gets selected as soon as syncing a subtree against the
+     * backend was successfull
+     * @type {com.conjoon.cudgets.tree.TreeNode}|{com.conjoon.cudgets.tree.data.AsyncTreeNode}
+     */
+    subtreeSyncTriggerNode : null,
 
     /**
      * A simple storage for nodes which are being edited. This is needed for
@@ -411,10 +418,12 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
         com.conjoon.groupware.email.EmailTree.superclass.initEvents.call(this);
 
         // register the listeners
-        this.mon(this.treeLoader, 'nodeloaded', this.onNodeLoaded, this);
-        this.treeLoader.on('loadexception',     this._onTreeLoaderException,  this);
-        this.treeLoader.on('beforeload',        this._onTreeLoaderBeforeLoad, this);
-        this.treeLoader.on('load',              this._onTreeLoaderLoad,       this);
+        this.mon(this.treeLoader, 'nodeloaded',          this.onNodeLoaded,            this);
+        this.mon(this.treeLoader, 'loadexception',       this._onTreeLoaderException,  this);
+        this.mon(this.treeLoader, 'beforeload',          this._onTreeLoaderBeforeLoad, this);
+        this.mon(this.treeLoader, 'load',                this._onTreeLoaderLoad,       this);
+        this.mon(this.treeLoader, 'subtreesync',         this.onSubTreeSync,           this);
+        this.mon(this.treeLoader, 'beforesubtreesync',   this.onBeforeSubTreeSync,     this);
 
         this.mon(this.contextMenu.getMenu(), 'itemclick', this.contextMenuItemClicked, this);
         this.on('contextmenu', this.onContextMenu, this);
@@ -433,29 +442,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
 
         this.on('destroy', function(){this.pendingItemStore.destroy();}, this);
 
-        this.mon(this.getSelectionModel(), 'beforeselect', function(selModel, newNode, oldNode) {
-
-            if (this.treeLoader.isProxyLoading()) {
-                return false;
-            }
-
-            if (newNode instanceof com.conjoon.cudgets.tree.data.ProxyTreeNode &&
-                newNode.isProxyNode()) {
-
-                newNode.loadAndSelectProxyNode({
-                    cb : function() {
-                        selModel.select(newNode);
-                        this.clkNode = newNode;
-                    },
-                    scope : this
-                });
-
-                return false;
-            }
-
-
-
-        }, this);
+        this.mon(this.getSelectionModel(), 'beforeselect', this.onBeforeNodeSelect, this);
 
         this.mon(this.pendingItemStore, 'update', this.updatePendingNodes, this);
     },
@@ -1401,6 +1388,45 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
     },
 
     /**
+     * Listener for a nodes beforeselect event. Returns falls and cancels the select
+     * event if the node is a proxy node which was not fully loaded yet.
+     *
+     * @param selModel
+     * @param newNode
+     * @param oldNode
+     *
+     * @return {Boolean}
+     */
+    onBeforeNodeSelect : function(selModel, newNode, oldNode) {
+
+        if (this.treeLoader.isProxyLoading()) {
+            return false;
+        }
+
+        console.log(newNode);
+
+        var ProxyTreeNode = com.conjoon.cudgets.tree.data.ProxyTreeNode,
+            parentNode  = newNode.parentNode,
+            isParentProxy = parentNode
+                          ? (parentNode instanceof ProxyTreeNode) && parentNode.isProxyNode()
+                          : false,
+            isNodeProxy = (newNode instanceof ProxyTreeNode) &&
+                          newNode.isProxyNode(),
+            node = isNodeProxy
+                   ? newNode
+                   : (isParentProxy
+                      ? parentNode
+                      : null);
+
+        if (node) {
+            this.subtreeSyncTriggerNode = newNode;
+            node.loadProxyNode();
+            return false;
+        }
+
+    },
+
+/**
      * Callback for the mousedown event.
      * This listener allows for a more appealing visual feedback of selecting nodes
      * in the tree, as the node gets selected when the mousedown occurs.
@@ -1417,12 +1443,13 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
             return false;
         }
 
-        if (node && !node.isSelected()) {
+        var isProxy = (node instanceof com.conjoon.cudgets.tree.data.ProxyTreeNode) &&
+                      node.isProxyNode();
+
+        if (node && !node.isSelected() && !isProxy) {
             node.suspendEvents();
-            if (!node.isProxy) {
-                node.select();
-                this.clkNode = node;
-            }
+            node.select();
+            this.clkNode = node;
             node.resumeEvents();
         }
 
@@ -1558,6 +1585,49 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
         }
 
     },
+
+    /**
+     *
+     * @param treeLoader
+     * @param node
+     * @param wasDirty
+     */
+    onBeforeSubTreeSync : function(treeLoader, node, wasDirty) {
+
+        if (this.subtreeSyncTriggerNode) {
+            this.subtreeSyncTriggerNode.disable();
+        }
+
+    },
+
+    /**
+     *
+     * @param treeLoader
+     * @param node
+     * @param wasDirty
+     */
+    onSubTreeSync : function(treeLoader, node, wasDirty) {
+
+        if (wasDirty === true) {
+            if (node) {
+                node.enable();
+                node.select();
+            }
+            this.subtreeSyncTriggerNode = null;
+            return;
+        }
+
+        if (this.subtreeSyncTriggerNode) {
+            this.subtreeSyncTriggerNode.enable();
+            this.subtreeSyncTriggerNode.select();
+
+            this.subtreeSyncTriggerNode = null;
+        }
+
+
+
+    },
+
 
     /**
      * Similiar to the emptyText config in a GridPanel, this method will show
@@ -1761,6 +1831,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
                     }
 
                     map[node.id] = extractAttributes(node);
+                    map[node.id].isProxy = lenu > 0;
                     map[node.id].children = children;
                 }
             }
@@ -1785,9 +1856,18 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
         var me = this,
             proxyNodes = state && state.proxyNodes
                 ? Ext.util.JSON.decode(state.proxyNodes)
-                : {};
+                : {},
+            func = function(treeLoader, config, parentNode) {
+                if (proxyNodes[config.id]) {
+                    config.isProxy = true;
+                }
+            };
+
+        this.treeLoader.on('beforecreatenode', func);
 
         me.root.on('expand', function() {
+
+            this.treeLoader.un('beforecreatenode', func);
 
             var initProxyNodes = function(nodes, proxyNodes) {
 
@@ -1805,6 +1885,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
                         }
 
                         node.endUpdate();
+
                         if (node.attributes.childCount) {
                             node.isProxy = true;
                         }

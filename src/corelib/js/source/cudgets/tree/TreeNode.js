@@ -61,6 +61,34 @@ com.conjoon.cudgets.tree.TreeNode = Ext.extend(Ext.tree.TreeNode, {
     getPathAsJson : function(attr)
     {
         return Ext.util.JSON.encode(this.getPathAsArray(attr));
+    },
+
+    /**
+     * Returns true if the passed object equals to this instance based
+     * on the available attributes.
+     *
+     * @param {*} obj
+     *
+     * return {Boolean}
+     */
+    equalsTo : function(obj) {
+
+        var myAttributes = this.attributes,
+            targetAttributes = obj.attributes || obj;
+
+        if (myAttributes.text !== targetAttributes.text) {
+            return false;
+        }
+
+        if (myAttributes.id !== targetAttributes.id) {
+            return false;
+        }
+
+        if (parseInt(myAttributes.childCount, 10) !== parseInt(targetAttributes.childCount, 10)) {
+            return false;
+        }
+
+        return true;
     }
 
 

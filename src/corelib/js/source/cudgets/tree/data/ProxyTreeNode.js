@@ -40,22 +40,29 @@ com.conjoon.cudgets.tree.data.ProxyTreeNode = Ext.extend(com.conjoon.cudgets.tre
 
     /**
      *
-     * @param {Object} config config object with:
-     *  - cb: callback function
-     *  - scope: scope of callback function
-     *
      */
-    loadAndSelectProxyNode : function(config) {
+    loadProxyNode : function() {
 
         if (!this.isProxyNode()) {
             return;
         }
 
-        var loader = this.loader || this.attributes.loader || this.getOwnerTree().getLoader();
+        var loader = this.loader || this.attributes.loader ||
+            this.getOwnerTree().getLoader();
 
-        loader.loadAndSelectProxyNode(this, function(nodes){
-            this.isProxyLoaded = true;
+        loader.loadProxyNode(this, function(items) {
+
+            this.onProxyNodeLoad(items)
+
         }, this);
+    },
+
+    /**
+     *
+     * @param items
+     */
+    onProxyNodeLoad : function(children) {
+        this.isProxyLoaded = true;
     },
 
     /**
@@ -67,6 +74,9 @@ com.conjoon.cudgets.tree.data.ProxyTreeNode = Ext.extend(com.conjoon.cudgets.tre
     compareProxyChildrenWithLoadedItems : function(proxyChilds, items) {
 
         if (proxyChilds.length !== items.length) {
+            console.log("length");
+            console.log(proxyChilds.length, items.length);
+            console.log(items);
             return false;
         }
 
@@ -77,12 +87,15 @@ com.conjoon.cudgets.tree.data.ProxyTreeNode = Ext.extend(com.conjoon.cudgets.tre
             item = items[i];
 
             if (attributes.text !== item.name) {
+                console.log("text");
                 return false;
             }
             if (attributes.id !== item.id) {
+                console.log("id");
                 return false;
             }
-            if (attributes.childCount !== item.childCount) {
+            if (attributes.childCount !== parseInt(item.childCount, 10)) {
+                console.log("childCount");
                 return false;
             }
         }

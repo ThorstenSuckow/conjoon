@@ -19,14 +19,6 @@ Ext.namespace('com.conjoon.groupware.email');
 com.conjoon.groupware.email.EmailTreeLoader = Ext.extend(com.conjoon.cudgets.tree.data.ProxyTreeLoader, {
 
     /**
-     * @inheritdoc
-     */
-    constructor :  function(config) {
-        com.conjoon.groupware.email.EmailTreeLoader.superclass.constructor.call(this, config);
-        this.on('loadexception', this.onLoadException, this);
-    },
-
-    /**
      * We get the children count via the attribute "childs" after the request
      * finishes and the json encoded responseText has been eval'd.
      * Every node thats child count equals to 0 is a folder and not a leaf, but
@@ -136,6 +128,8 @@ com.conjoon.groupware.email.EmailTreeLoader = Ext.extend(com.conjoon.cudgets.tre
      */
     onLoadException : function(treeLoader, node, response)
     {
+        com.conjoon.groupware.email.EmailTreeLoader.superclass.onLoadException.apply(this, arguments);
+
         com.conjoon.groupware.ResponseInspector.handleFailure(response, {
             onLogin: {
                 fn : function(){
@@ -148,6 +142,27 @@ com.conjoon.groupware.email.EmailTreeLoader = Ext.extend(com.conjoon.cudgets.tre
         if (node && node.getUI() && node.getUI().showProcessing) {
             node.getUI().showProcessing(false);
         }
+    },
+
+    /**
+     * Overriden to adjust UI of node when aborting all ongoing requests.
+     *
+     *
+     */
+    abort : function() {
+
+        if (this.loadingNodes) {
+            for (var i in this.loadingNodes) {
+                this.loadingNodes[i].childrenRendered = false;
+                this.loadingNodes[i].loaded           = false;
+                this.loadingNodes[i].loading          = false;
+                if (this.loadingNodes[i].getUI().showProcessing) {
+                    this.loadingNodes[i].getUI().showProcessing(false);
+                }
+            }
+        }
+
+        com.conjoon.groupware.email.EmailTreeLoader.superclass.abort.apply(this, arguments);
     }
 
 });
