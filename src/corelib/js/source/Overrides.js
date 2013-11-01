@@ -122,6 +122,8 @@ Ext.apply(Ext, {
 
             delete obj.extend;
 
+            obj.$className = className;
+
             cs = Ext.conjoonCreateNs(className);
             cs[parts[parts.length-1]] = Ext.extend(baseCs, obj);
 
@@ -130,13 +132,35 @@ Ext.apply(Ext, {
             cs = Ext.conjoonCreateNs(className);
 
             cs[parts[parts.length-1]] = function() {
-                return this.constructor.apply(this, arguments) || null;
+                return this.constructor.apply(this, arguments);
             };
+
+            obj.$className = className;
 
             cs[parts[parts.length-1]].prototype = obj;
         }
 
         Ext.__myClassStack__[className] = cs[parts[parts.length-1]];
+    },
+
+    /**
+     * Mimics functionality of ExtJS4's Ext.getClassName().
+     *
+     * @param {Object} obj
+     *
+     * @return {String
+     *
+     * @throws {String} throws an error if the className for this obejct is
+     * not available
+     */
+    getClassName : function(obj) {
+
+        if (obj.$className !== undefined) {
+            return obj.$className
+        }
+
+        throw("getClassName() for " + obj + " not successfull");
+
     }
 
 
