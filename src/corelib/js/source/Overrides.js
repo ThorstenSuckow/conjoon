@@ -18,11 +18,129 @@ if (Ext.version != '3.4.0') {
 }
 /*@REMOVE@*/
 
+
 /**
  * Provides common overwrite functionality for Ext components to match
  * behavior as wished.
  */
 
+/**
+ * In preparation for ExtJS4 migration, these overrides mimic behavior of
+ * Ext.create() and Ext.define()
+ */
+Ext.apply(Ext, {
+
+    /**
+     * Cache for
+     */
+    __myClassStack__ : {},
+
+    /**
+     * Helper function to create chained objects specified as string in classname
+     *
+     * @param className
+     * @param all
+     * @param strict
+     * @return {Object}
+     */
+    conjoonCreateNs : function(className, all, strict) {
+
+        var classNameParts = className.split('.'),
+            stack = window,
+            j = all === true ? 0 : 1;
+
+        for (var i = 0, len = classNameParts.length - j; i < len; i++) {
+            var part = classNameParts[i];
+
+            if (typeof part != 'string') {
+                stack = part;
+            } else {
+                if (!stack[part]) {
+                    if (strict === true) {
+                        throw("part not found in create for " + className);
+                    } else {
+                        stack[part] = {};
+                    }
+
+                }
+
+                stack = stack[part];
+            }
+        }
+
+        return stack
+    },
+
+    /**
+     * Mimics ExtJS4 "Ext.create()"
+     *
+     * @param className
+     * @param obj
+     *
+     * @return {Object}
+     */
+    createInstance : function(className, obj) {
+
+        var cs = Ext.conjoonCreateNs(className, true, true);
+
+        if (cs && !Ext.__myClassStack__[className]) {
+            Ext.__myClassStack__[className] = cs;
+        }
+
+        if (!cs && !Ext.__myClassStack__[className]) {
+            throw("className not defined: " + className);
+        }
+
+        return new Ext.__myClassStack__[className](obj);
+
+    },
+
+    /**
+     * Mimics ExtJS4 "Ext.define()"
+     *
+     * @param className
+     * @param obj
+     *
+     */
+    defineClass : function(className, obj) {
+
+        if (Ext.__myClassStack__[className]) {
+            throw("class " + className + " already defined");
+        }
+
+        Ext.conjoonCreateNs(className);
+
+        var cs,
+            parts = className.split('.'),
+            baseClass,
+            baseCs;
+
+        if (obj.extend) {
+
+            baseClass = obj.extend;
+            baseCs    = Ext.conjoonCreateNs(baseClass, true);
+
+            delete obj.extend;
+
+            cs = Ext.conjoonCreateNs(className);
+            cs[parts[parts.length-1]] = Ext.extend(baseCs, obj);
+
+        } else {
+
+            cs = Ext.conjoonCreateNs(className);
+
+            cs[parts[parts.length-1]] = function() {
+                return this.constructor.apply(this, arguments) || null;
+            };
+
+            cs[parts[parts.length-1]].prototype = obj;
+        }
+
+        Ext.__myClassStack__[className] = cs[parts[parts.length-1]];
+    }
+
+
+});
 
 // **********************
 /**
