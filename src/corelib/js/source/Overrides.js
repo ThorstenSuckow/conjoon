@@ -132,7 +132,7 @@ Ext.apply(Ext, {
             cs = Ext.conjoonCreateNs(className);
 
             cs[parts[parts.length-1]] = function() {
-                return this.constructor.apply(this, arguments);
+                return cs[parts[parts.length-1]].prototype.constructor.apply(this, arguments);
             };
 
             obj.$className = className;
