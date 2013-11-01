@@ -50,9 +50,9 @@ com.conjoon.cudgets.tree.data.ProxyTreeNode = Ext.extend(com.conjoon.cudgets.tre
         var loader = this.loader || this.attributes.loader ||
             this.getOwnerTree().getLoader();
 
-        loader.loadProxyNode(this, function(items) {
+        loader.loadProxyNode(this, function(items, validSate) {
 
-            this.onProxyNodeLoad(items)
+            this.onProxyNodeLoad(items, validState)
 
         }, this);
     },
@@ -60,48 +60,13 @@ com.conjoon.cudgets.tree.data.ProxyTreeNode = Ext.extend(com.conjoon.cudgets.tre
     /**
      *
      * @param items
-     */
-    onProxyNodeLoad : function(children) {
-        this.isProxyLoaded = true;
-    },
-
-    /**
      *
-     * @param proxyChilds
-     * @param items
-     * @return {Boolean}
+     * @private
      */
-    compareProxyChildrenWithLoadedItems : function(proxyChilds, items) {
-
-        if (proxyChilds.length !== items.length) {
-            console.log("length");
-            console.log(proxyChilds.length, items.length);
-            console.log(items);
-            return false;
-        }
-
-        var proxyNode, item, attributes;
-        for (var i = 0, len = proxyChilds.length; i < len; i++) {
-            proxyNode = proxyChilds[i];
-            attributes = proxyNode.attributes
-            item = items[i];
-
-            if (attributes.text !== item.name) {
-                console.log("text");
-                return false;
-            }
-            if (attributes.id !== item.id) {
-                console.log("id");
-                return false;
-            }
-            if (attributes.childCount !== parseInt(item.childCount, 10)) {
-                console.log("childCount");
-                return false;
-            }
-        }
-
-        return true;
+    onProxyNodeLoad : function(children, validState) {
+        this.isProxyLoaded = true;
     }
+
 
 
 });

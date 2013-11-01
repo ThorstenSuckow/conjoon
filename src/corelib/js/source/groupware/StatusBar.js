@@ -140,7 +140,7 @@ com.conjoon.groupware.StatusBar = function(){
     var _onRequestComplete = function()
     {
         _activeRequestCount = Math.max(0, --_activeRequestCount);
-        
+
         if (_activeRequestCount <= 0) {
             _progressBar.clearTimer();
             _progressBar.updateProgress(1, "", true);
@@ -170,6 +170,25 @@ com.conjoon.groupware.StatusBar = function(){
     var _transceive = function(subject, message)
     {
         switch (subject) {
+
+            case 'conjoon.mail.MailFolder.beforeproxynodeload':
+                _statusBar.setStatus({
+                    text : com.conjoon.Gettext.gettext("Synchronizing mail folder...")
+                });
+                break;
+            case 'conjoon.mail.MailFolder.proxynodeloadfailure':
+                _statusBar.setStatus({
+                    text : com.conjoon.Gettext.gettext("Synchronizing failed."),
+                    clear : true
+                });
+                break;
+            case 'conjoon.mail.MailFolder.proxynodeload':
+                _statusBar.setStatus({
+                    text  : com.conjoon.Gettext.gettext("Mail folder synchronized!"),
+                    clear : true
+                });
+                break;
+
             case 'com.conjoon.groupware.email.Letterman.beforeload':
                 _statusBar.setStatus({
                     text : com.conjoon.Gettext.gettext("Checking for new emails...")
@@ -219,6 +238,8 @@ com.conjoon.groupware.StatusBar = function(){
         DownloadManager.on('cancel',  _onRequestComplete);
 
         _messageBroadcaster.subscribe('com.conjoon.groupware.email.Letterman.beforeload', _transceive);
+        _messageBroadcaster.subscribe('conjoon.mail.MailFolder.beforeproxynodeload', _transceive);
+        _messageBroadcaster.subscribe('conjoon.mail.MailFolder.proxynodeload', _transceive);
         _messageBroadcaster.subscribe('com.conjoon.groupware.email.Letterman.load', _transceive);
         _messageBroadcaster.subscribe('com.conjoon.groupware.email.Letterman.loadexception', _transceive);
 

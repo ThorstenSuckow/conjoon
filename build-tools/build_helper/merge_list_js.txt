@@ -24,6 +24,9 @@ vendor/ext-ux-wiz/src/Header.js
 vendor/ext-ux-wiz/src/Card.js
 vendor/ext-ux-grid-gridviewmenuplugin/src/GridViewMenuPlugin.js
 vendor/ext-ux-livegrid/build/livegrid-all-debug.js
+src/corelib/js/source/cudgets/base/Exception.js
+src/corelib/js/source/cudgets/base/InvalidPropertyException.js
+src/corelib/js/source/cudgets/base/RuntimeException.js
 src/corelib/js/source/cudgets/util/Registry.js
 src/corelib/js/source/cudgets/util/MimeIconFactory.js
 src/corelib/js/source/cudgets/data/Download.js
@@ -56,6 +59,7 @@ src/corelib/js/source/cudgets/settings/ui/DefaultDialogUi.js
 src/corelib/js/source/cudgets/settings/listener/DefaultDialogListener.js
 src/corelib/js/source/cudgets/data/StoreSync.js
 src/corelib/js/source/cudgets/state/RegistryProvider.js
+src/corelib/js/source/cudgets/state/MissingStateIdException.js
 src/corelib/js/source/groupware/DefaultProvider.js
 src/corelib/js/source/groupware/Provider.js
 src/corelib/js/source/groupware/localCache/Html5Adapter.js
@@ -190,5 +194,9 @@ src/corelib/js/source/groupware/service/youtube/ViewBaton.js
 src/corelib/js/source/groupware/service/youtube/VideoDirector.js
 src/corelib/js/source/groupware/service/youtube/FeaturePanel.js
 src/corelib/js/source/groupware/SystemSoundManager.js
+src/corelib/js/source/app/base/Exception.js
+src/corelib/js/source/app/state/MissingStateIdException.js
+src/corelib/js/source/mail/ui/folderPanel/listener/ProxyTreeLoaderListener.js
+src/corelib/js/source/mail/ui/folderPanel/StatefulFolderPanel.js
 vendor/soundmanager/script/soundmanager2.js
 src/www/htdocs/startup.js

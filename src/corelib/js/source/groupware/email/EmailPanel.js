@@ -52,8 +52,9 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
          * The tree panel that holds the tree representing the folder structure
          * of the user.
          */
-        this.treePanel = new com.conjoon.groupware.email.EmailTree({
+        this.treePanel = Ext.createInstance('conjoon.mail.ui.folderPanel.StatefulFolderPanel', {
             region            : 'west',
+            stateId           : com.conjoon.state.Identifiers.emailModule.contentPanel.folderTree,
             anonymousNodeText : com.conjoon.Gettext.gettext("New folder"),
             width             : 200,
             split             : true,
@@ -1741,13 +1742,15 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
 
     onNodeRemove : function(tree, parent, node)
     {
-        this.clkNodeId = null;
-        this.gridPanel.loadMask.hide();
-        var proxy = this.gridPanel.store.proxy;
-        if (proxy.activeRequest[Ext.data.Api.actions.read]) {
-            proxy.getConnection().abort(proxy.activeRequest[Ext.data.Api.actions.read]);
+        if (node.id == this.clkNodeId) {
+            this.clkNodeId = null;
+            this.gridPanel.loadMask.hide();
+            var proxy = this.gridPanel.store.proxy;
+            if (proxy.activeRequest[Ext.data.Api.actions.read]) {
+                proxy.getConnection().abort(proxy.activeRequest[Ext.data.Api.actions.read]);
+            }
+            this.gridPanel.store.removeAll();
         }
-        this.gridPanel.store.removeAll();
     },
 
     onMoveNode : function()

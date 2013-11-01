@@ -250,14 +250,6 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
     },
 
     /**
-     * The current node that triggered a subtree sync, if any.
-     * This node gets selected as soon as syncing a subtree against the
-     * backend was successfull
-     * @type {com.conjoon.cudgets.tree.TreeNode}|{com.conjoon.cudgets.tree.data.AsyncTreeNode}
-     */
-    subtreeSyncTriggerNode : null,
-
-    /**
      * A simple storage for nodes which are being edited. This is needed for
      * newly created nodes, since a new node will be written in to the database
      * _after_ the editing process has finished. Multiple requests may pend
@@ -317,16 +309,6 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
      */
     pendingItemStore : null,
 
-    /**
-     * @type {Boolean}
-     */
-    stateful : true,
-
-    /**
-     * @type {String}
-     */
-    stateId : com.conjoon.state.Identifiers.emailModule.contentPanel.folderTree,
-
     initComponent : function()
     {
         this.contextMenu = com.conjoon.groupware.email.NodeContextMenu;
@@ -357,18 +339,6 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
             this._onAccountAdded,
             this
         );
-
-        /**
-         * The loader responsible for loading nodes into the tree.
-         * Events will be captured by the onNodeLoaded method.
-         */
-        this.treeLoader = new com.conjoon.groupware.email.EmailTreeLoader({
-            //dataUrl   : './groupware/email.folder/get.folder/format/json',
-            directFn : com.conjoon.groupware.provider.emailFolder.getFolder,
-            baseAttrs : {
-                uiProvider : com.conjoon.groupware.email.PendingNodeUI
-            }
-        });
 
         /**
          * The top toolbar for the tree panel
@@ -422,8 +392,14 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
         this.mon(this.treeLoader, 'loadexception',       this._onTreeLoaderException,  this);
         this.mon(this.treeLoader, 'beforeload',          this._onTreeLoaderBeforeLoad, this);
         this.mon(this.treeLoader, 'load',                this._onTreeLoaderLoad,       this);
-        this.mon(this.treeLoader, 'subtreesync',         this.onSubTreeSync,           this);
-        this.mon(this.treeLoader, 'beforesubtreesync',   this.onBeforeSubTreeSync,     this);
+
+
+
+        Ext.ux.util.MessageBus.subscribe(
+            'com.conjoon.groupware.email.account.added',
+            this._onAccountAdded,
+            this
+        );
 
         this.mon(this.contextMenu.getMenu(), 'itemclick', this.contextMenuItemClicked, this);
         this.on('contextmenu', this.onContextMenu, this);
@@ -1399,12 +1375,6 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
      */
     onBeforeNodeSelect : function(selModel, newNode, oldNode) {
 
-        if (this.treeLoader.isProxyLoading()) {
-            return false;
-        }
-
-        console.log(newNode);
-
         var ProxyTreeNode = com.conjoon.cudgets.tree.data.ProxyTreeNode,
             parentNode  = newNode.parentNode,
             isParentProxy = parentNode
@@ -1419,9 +1389,8 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
                       : null);
 
         if (node) {
-            this.subtreeSyncTriggerNode = newNode;
             node.loadProxyNode();
-            return false;
+            //return false;
         }
 
     },
@@ -1587,49 +1556,6 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
     },
 
     /**
-     *
-     * @param treeLoader
-     * @param node
-     * @param wasDirty
-     */
-    onBeforeSubTreeSync : function(treeLoader, node, wasDirty) {
-
-        if (this.subtreeSyncTriggerNode) {
-            this.subtreeSyncTriggerNode.disable();
-        }
-
-    },
-
-    /**
-     *
-     * @param treeLoader
-     * @param node
-     * @param wasDirty
-     */
-    onSubTreeSync : function(treeLoader, node, wasDirty) {
-
-        if (wasDirty === true) {
-            if (node) {
-                node.enable();
-                node.select();
-            }
-            this.subtreeSyncTriggerNode = null;
-            return;
-        }
-
-        if (this.subtreeSyncTriggerNode) {
-            this.subtreeSyncTriggerNode.enable();
-            this.subtreeSyncTriggerNode.select();
-
-            this.subtreeSyncTriggerNode = null;
-        }
-
-
-
-    },
-
-
-    /**
      * Similiar to the emptyText config in a GridPanel, this method will show
      * an information message in the treepanel.
      *
@@ -1782,138 +1708,6 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
                 + "could not add folder for new account"
             );
         }
-    },
-
-
-// -------- state related
-
-    /**
-     *
-     * @return {Object}
-     */
-    getState : function() {
-        var state, nodes = this.getRootNode().childNodes,
-            paths = {}, node;
-
-        var extractAttributes = function(node) {
-
-            return {
-                id : node.attributes.id,
-                idForPath : node.attributes.idForPath,
-                name : node.attributes.text,
-                isChildAllowed : node.attributes.isChildAllowed,
-                isLocked : node.attributes.isLocked,
-                type : node.attributes.type,
-                childCount : node.attributes.childCount,
-                pendingCount : node.attributes.pendingCount,
-                isSelectable : node.attributes.isSelectable ? 1 : 0
-            };
-        };
-
-        var getPaths = function(nodes, ignoreExpand) {
-
-            var node = null, map = {};
-
-            for (var i = 0, len = nodes.length; i < len; i++) {
-                node = nodes[i];
-
-                if (ignoreExpand === true || (node.isExpanded() && node.childNodes.length != 0)) {
-
-                    var childNodes = node.childNodes, children = {}, cn;
-                    for (var u = 0, lenu = childNodes.length; u < lenu; u++) {
-
-                        cn = extractAttributes(childNodes[u]);
-                        if (childNodes[u].isExpanded()) {
-                            cn.children = getPaths(childNodes[u].childNodes, true);
-                            cn.isProxy = true;
-                        }
-                        children[cn.id] = cn;
-                    }
-
-                    map[node.id] = extractAttributes(node);
-                    map[node.id].isProxy = lenu > 0;
-                    map[node.id].children = children;
-                }
-            }
-
-            return map;
-        };
-
-        state = {
-            proxyNodes : Ext.util.JSON.encode(getPaths(nodes))
-        };
-
-        return state;
-    },
-
-
-    /**
-     *
-     * @param state
-     */
-    applyState : function(state) {
-
-        var me = this,
-            proxyNodes = state && state.proxyNodes
-                ? Ext.util.JSON.decode(state.proxyNodes)
-                : {},
-            func = function(treeLoader, config, parentNode) {
-                if (proxyNodes[config.id]) {
-                    config.isProxy = true;
-                }
-            };
-
-        this.treeLoader.on('beforecreatenode', func);
-
-        me.root.on('expand', function() {
-
-            this.treeLoader.un('beforecreatenode', func);
-
-            var initProxyNodes = function(nodes, proxyNodes) {
-
-                for (var i in nodes) {
-
-                    var node = nodes[i];
-
-                    if (proxyNodes[node.id] && proxyNodes[node.id].children) {
-
-                        var cn = proxyNodes[node.id].children;
-
-                        node.beginUpdate();
-                        for(var a in cn){
-                            var newNode = node.appendChild(me.treeLoader.createNode(cn[a]));
-                        }
-
-                        node.endUpdate();
-
-                        if (node.attributes.childCount) {
-                            node.isProxy = true;
-                        }
-                        node.loaded = true;
-                        node.suspendEvents();
-                        node.expand(false, false);
-                        node.resumeEvents();
-
-                        initProxyNodes(node.childNodes, proxyNodes[node.id].children);
-
-                    }
-                }
-            };
-
-            var nodes = me.getRootNode().childNodes, tmp = {};
-            for (var i = 0, len = nodes.length; i < len; i++) {
-                tmp[nodes[i].id] = nodes[i];
-            }
-
-            initProxyNodes(tmp, proxyNodes);
-
-        }, this);
-
     }
 
-
-
 });
-
-
-

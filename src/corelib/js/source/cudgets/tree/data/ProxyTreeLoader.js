@@ -71,31 +71,6 @@ com.conjoon.cudgets.tree.data.ProxyTreeLoader = function(config) {
         'proxynodeloadfailure' : true,
 
         /**
-         * This event gets fired before a complete subtree was synced
-         * against the backend.
-         * Return false to cancel syncing a subtree.
-         * The passed arguments to the listeners are:
-         *
-         * @param {com.conjoon.cudgets.tree.data.ProxyTreeLoader} this
-         * @param {com.conjoon.cudgets.tree.data.ProxyTreeNode} The node that
-         * triggered syncing the subtree with the backend
-         */
-        'beforesubtreesync' : true,
-
-        /**
-         * This event gets fired once a complete subtree was synced
-         * against the backend.
-         * The passed arguments to the listeners are:
-         *
-         * @param {com.conjoon.cudgets.tree.data.ProxyTreeLoader} this
-         * @param {com.conjoon.cudgets.tree.data.ProxyTreeNode} The node that
-         * triggered syncing the subtree with the backend
-         * @param {Boolean} tree changed set to true if any nodes of the tree
-         * were not in sync with the backend
-         */
-        'subtreesync' : true,
-
-        /**
          * Event gets fired before a node gets created.
          *
          * @param {com.conjoon.cudgets.tree.data.ProxyTreeLoader} this
@@ -103,7 +78,27 @@ com.conjoon.cudgets.tree.data.ProxyTreeLoader = function(config) {
          * @param {Ext.tree.TreeNode} The parent node of the node that is about
          * to get created
          */
-        'beforecreatenode' : true
+        'beforecreatenode' : true,
+
+        /**
+         * Event gets fired before the treeloader detects a dirty state
+         * and re-attaches child nodes.
+         * Return false to cancel this event.
+         *
+         * @param {com.conjoon.cudgets.tree.data.ProxyTreeLoader} this
+         * @param {Ext.tree.TreeNode} proxyNode the proxy which children were synced
+         * @param {Array} The new child nodes which are about to be synced into the proxyNode
+         */
+        'beforenodesync' : true,
+
+        /**
+         * Event gets fired as soon as the nodes children have been synced into the
+         * proxyNode.
+         *
+         * @param {com.conjoon.cudgets.tree.data.ProxyTreeLoader} this
+         * @param {Ext.tree.TreeNode} proxyNode the proxy which children were synced
+         */
+        'nodesync' : true
     });
 
 
@@ -251,16 +246,9 @@ Ext.extend(com.conjoon.cudgets.tree.data.ProxyTreeLoader, Ext.tree.TreeLoader, {
             return;
         }
 
-       /* if (this.fireEvent('beforesubtreesync', this, node) === false) {
-            return;
-        };*/
-
         requestId = this.requestData(node, function(items) {
 
             var parentNode = node.parentNode;
-
-
-            nodeCallback.call(scope, items);
 
             this.fireEvent('proxynodeload', this, node);
 
@@ -280,32 +268,30 @@ Ext.extend(com.conjoon.cudgets.tree.data.ProxyTreeLoader, Ext.tree.TreeLoader, {
                 }
             }
 
+            nodeCallback.call(scope, items, validState);
+
+
             if (!validState) {
-                node.collapse(false, false);
-                while(node.firstChild){
-                    node.removeChild(node.firstChild).destroy();
-                }
-                node.beginUpdate();
-                for(var i = 0, len = items.length; i < len; i++){
-                    var n = this.createNode(items[i]);
-                    if(n){
-                        node.appendChild(n);
-                        this.fireEvent('nodeloaded', node, n);
+
+                if (this.fireEvent('beforenodesync', this, node, items) !== false) {
+                    node.collapse(false, false);
+                    while(node.firstChild){
+                        node.removeChild(node.firstChild).destroy();
                     }
+                    node.beginUpdate();
+                    for(var i = 0, len = items.length; i < len; i++){
+                        var n = this.createNode(items[i]);
+                        if(n){
+                            node.appendChild(n);
+                            this.fireEvent('nodeloaded', node, n);
+                        }
+                    }
+                    node.endUpdate();
+                    node.expand(false, false);
+
+                    this.fireEvent('nodesync', this, node);
                 }
-                node.endUpdate();
-                node.expand(false, false);
             }
-
-            /*if ((node.parentNode instanceof ProxyTreeNode) && node.parentNode.isProxyNode()) {
-
-                node.parentNode.loadProxyNode();
-
-            } else {
-
-                this.fireEvent('subtreesync', this, this.treeSyncTriggerNode, this.subtreeDirty);
-
-            }*/
 
         }, this, proxyConfig);
 
