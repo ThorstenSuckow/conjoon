@@ -32,7 +32,7 @@ require_once 'Conjoon/Mail/Server/Protocol/SuccessResult.php';
 class GetAttachmentResult implements \Conjoon\Mail\Server\Protocol\SuccessResult {
 
     /**
-     * @var \Conjoon\Data\Entity\Mail\MessageAttachmentEntity
+     * @var \Conjoon\Data\Entity\Mail\AttachmentEntity
      */
     protected $entity;
 
@@ -44,11 +44,11 @@ class GetAttachmentResult implements \Conjoon\Mail\Server\Protocol\SuccessResult
     /**
      * Creates a new instance of this class.
      *
-     * @param \Conjoon\Data\Entity\Mail\MessageAttachmentEntity $entity
+     * @param \Conjoon\Data\Entity\Mail\AttachmentEntity $entity
      * @param \Conjoon\Mail\Message\AttachmentLocation $attachmentLocation
      */
     public function __construct(
-        \Conjoon\Data\Entity\Mail\MessageAttachmentEntity $entity,
+        \Conjoon\Data\Entity\Mail\AttachmentEntity $entity,
         \Conjoon\Mail\Client\Message\AttachmentLocation $attachmentLocation)
     {
         $this->entity = $entity;

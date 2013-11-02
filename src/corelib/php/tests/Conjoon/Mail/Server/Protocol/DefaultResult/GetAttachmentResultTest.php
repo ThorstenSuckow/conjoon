@@ -39,7 +39,7 @@ class GetAttachmentResultTest extends \PHPUnit_Framework_TestCase {
      */
     public function testOk()
     {
-        $entity = new \Conjoon\Data\Entity\Mail\DefaultMessageAttachmentEntity();
+        $entity = new \Conjoon\Data\Entity\Mail\DefaultAttachmentEntity();
 
         $entity->setMimeType('text/html');
         $entity->setFileName('fileName');

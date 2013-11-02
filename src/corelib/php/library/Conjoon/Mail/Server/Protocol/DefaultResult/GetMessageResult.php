@@ -71,7 +71,7 @@ class GetMessageResult implements \Conjoon\Mail\Server\Protocol\SuccessResult {
     {
         $attachments = array();
 
-        $attEntities = $this->entity->getMessageAttachments();
+        $attEntities = $this->entity->getAttachments();
 
         for ($i = 0, $len = count($attEntities); $i < $len; $i++) {
 
