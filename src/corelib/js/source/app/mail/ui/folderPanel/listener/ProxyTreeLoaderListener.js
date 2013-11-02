@@ -17,9 +17,9 @@
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  *
- * @class conjoon.mail.ui.folderPanel.listener.ProxyTreeLoaderListener
+ * @class conjoon.mail.comp.folderPanel.listener.ProxyTreeLoaderListener
  */
-Ext.defineClass('conjoon.mail.ui.folderPanel.listener.ProxyTreeLoaderListener', {
+Ext.defineClass('conjoon.mail.comp.folderPanel.listener.ProxyTreeLoaderListener', {
 
     /**
      * Creates a new instance.
@@ -31,7 +31,7 @@ Ext.defineClass('conjoon.mail.ui.folderPanel.listener.ProxyTreeLoaderListener', 
     },
 
     /**
-     * @type {conjoon.mail.ui.StatefulFolderPanel} mailFolderPanel
+     * @type {conjoon.mail.comp.folderPanel.StatefulFolderPanel} mailFolderPanel
      */
     mailFolderPanel : null,
 

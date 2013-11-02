@@ -151,7 +151,6 @@ src/corelib/js/source/groupware/email/view/EmailGridRowRenderer.js
 src/corelib/js/source/groupware/email/EmailGrid.js
 src/corelib/js/source/groupware/email/EmailTree.js
 src/corelib/js/source/groupware/email/EmailPreview.js
-src/corelib/js/source/groupware/email/NodeContextMenu.js
 src/corelib/js/source/groupware/email/NodeEditor.js
 src/corelib/js/source/groupware/email/PendingNodeItemRecord.js
 src/corelib/js/source/groupware/email/PendingNodeUI.js
@@ -199,7 +198,10 @@ src/corelib/js/source/groupware/SystemSoundManager.js
 src/corelib/js/source/app/base/Exception.js
 src/corelib/js/source/app/state/MissingStateIdException.js
 src/corelib/js/source/mail/data/mailFolder/SynchronizationQueue.js
+src/corelib/js/source/mail/ui/folderPanel/compModel/FolderService.js
 src/corelib/js/source/mail/ui/folderPanel/listener/ProxyTreeLoaderListener.js
+src/corelib/js/source/mail/ui/folderPanel/listener/FolderMenuListener.js
 src/corelib/js/source/mail/ui/folderPanel/StatefulFolderPanel.js
+src/corelib/js/source/mail/ui/folderPanel/FolderMenu.js
 vendor/soundmanager/script/soundmanager2.js
 src/www/htdocs/startup.js

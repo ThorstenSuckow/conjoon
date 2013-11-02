@@ -14,14 +14,14 @@
 
 /**
  *
- * @class {conjoon.mail.ui.folderPanel.StatefulFolderPanel}
+ * @class {conjoon.mail.comp.folderPanel.StatefulFolderPanel}
  */
-Ext.defineClass('conjoon.mail.ui.folderPanel.StatefulFolderPanel', {
+Ext.defineClass('conjoon.mail.comp.folderPanel.StatefulFolderPanel', {
 
     extend : 'com.conjoon.groupware.email.EmailTree',
 
     /**
-     * @type {conjoon.mail.ui.folderPanel.listener.ProxyTreeLoaderListener}
+     * @type {conjoon.mail.comp.folderPanel.listener.ProxyTreeLoaderListener}
      */
     proxyTreeLoaderListener : null,
 
@@ -66,7 +66,7 @@ Ext.defineClass('conjoon.mail.ui.folderPanel.StatefulFolderPanel', {
             proxyTreeLoader : me.treeLoader
         });
 
-        conjoon.mail.ui.folderPanel.StatefulFolderPanel.superclass.initComponent.call(this);
+        conjoon.mail.comp.folderPanel.StatefulFolderPanel.superclass.initComponent.call(this);
     },
 
     /**
@@ -76,9 +76,26 @@ Ext.defineClass('conjoon.mail.ui.folderPanel.StatefulFolderPanel', {
 
         var me = this;
 
-        conjoon.mail.ui.folderPanel.StatefulFolderPanel.superclass.initEvents.call(me);
+        conjoon.mail.comp.folderPanel.StatefulFolderPanel.superclass.initEvents.call(me);
 
         me.installListeners();
+    },
+
+    /**
+     * @inheritdoc
+     */
+    getFolderMenu : function() {
+
+        var me = this;
+
+        if (!me.contextMenu) {
+            me.contextMenu = Ext.createInstance('conjoon.mail.comp.folderPanel.FolderMenu', {
+                folderService : me.getFolderService()
+            });
+        }
+
+        return me.contextMenu;
+
     },
 
     /**
@@ -90,7 +107,8 @@ Ext.defineClass('conjoon.mail.ui.folderPanel.StatefulFolderPanel', {
             clkNode = this.clkNode;
         }
 
-        var clkPath = clkNode.getPathAsArray('idForPath'),
+        var me = this,
+            clkPath = clkNode.getPathAsArray('idForPath'),
             currP = clkPath[1],
             trashId = this.findPathFor(currP, 'trash'),
             rootNode = this.getNodeById(currP),
@@ -101,8 +119,7 @@ Ext.defineClass('conjoon.mail.ui.folderPanel.StatefulFolderPanel', {
 
             var to = this.getNodeForPath('/' + trashId.join('/'));
 
-            if ((to instanceof cudgets.tree.data.ProxyTreeNode) &&
-                to.isProxyNode()) {
+            if (me.folderService.isProxy(to)) {
 
                 // trashNode is still a proxy. reload it first
                 this.folderSyncQueue.addJobForNodeAndEvent(
@@ -145,14 +162,12 @@ Ext.defineClass('conjoon.mail.ui.folderPanel.StatefulFolderPanel', {
         } else {
 
             // load proxyNode first if node itself or parentnode is a proxy
-            if ((clkNode instanceof cudgets.tree.data.ProxyTreeNode) &&
-                clkNode.isProxyNode()) {
+            if (me.folderService.isProxy(clkNode)) {
                 proxyToCheck = clkNode;
             }
 
             if (!proxyToCheck) {
-                if (parentNode && (parentNode instanceof cudgets.tree.data.ProxyTreeNode) &&
-                    parentNode.isProxyNode()) {
+                if (parentNode && me.folderService.isProxy(parentNode)) {
                     proxyToCheck = parentNode;
                 }
             }
@@ -179,8 +194,7 @@ Ext.defineClass('conjoon.mail.ui.folderPanel.StatefulFolderPanel', {
             if (!trashId) {
 
                 // check here if the root is a proxy node which needs to be loaded first
-                if ((rootNode instanceof cudgets.tree.data.ProxyTreeNode) &&
-                    rootNode.isProxyNode()) {
+                if (me.folderService.isProxy(rootNode)) {
 
                     this.folderSyncQueue.addJobForNodeAndEvent(
                         rootNode.id, 'proxynodeload', {
@@ -221,8 +235,7 @@ Ext.defineClass('conjoon.mail.ui.folderPanel.StatefulFolderPanel', {
 
             var to = this.getNodeForPath('/' + trashId.join('/'));
 
-            if ((to instanceof cudgets.tree.data.ProxyTreeNode) &&
-                to.isProxyNode()) {
+            if (me.folderService.isProxy(to)) {
 
                 // trashNode is still a proxy. reload it first
                 this.folderSyncQueue.addJobForNodeAndEvent(
@@ -287,7 +300,7 @@ Ext.defineClass('conjoon.mail.ui.folderPanel.StatefulFolderPanel', {
     /**
      * Returns the instance for the treeloader listener used for this panel.
      *
-     * @return {conjoon.mail.ui.folderPanel.listener.ProxyTreeLoaderListener}
+     * @return {conjoon.mail.comp.folderPanel.listener.ProxyTreeLoaderListener}
      */
     getProxyTreeLoaderListener : function() {
 
@@ -298,7 +311,7 @@ Ext.defineClass('conjoon.mail.ui.folderPanel.StatefulFolderPanel', {
         }
 
         me.proxyTreeLoaderListener = Ext.createInstance(
-            'conjoon.mail.ui.folderPanel.listener.ProxyTreeLoaderListener', {
+            'conjoon.mail.comp.folderPanel.listener.ProxyTreeLoaderListener', {
             mailFolderPanel : me
         });
 

@@ -22,6 +22,11 @@ Ext.namespace('com.conjoon.groupware.email');
 com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
 
     /**
+     * @type {conjoon.mail.comp.folderPanel.compModel.FolderService}
+     */
+    folderService : null,
+
+    /**
      * Shorthands for the none-editable folders. They get assigned in the
      * <tt>onNodeLoaded</tt>-method.
      */
@@ -250,6 +255,11 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
     },
 
     /**
+     * @type {Object}
+     */
+    taskQueue : null,
+
+    /**
      * A simple storage for nodes which are being edited. This is needed for
      * newly created nodes, since a new node will be written in to the database
      * _after_ the editing process has finished. Multiple requests may pend
@@ -311,7 +321,13 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
 
     initComponent : function()
     {
-        this.contextMenu = com.conjoon.groupware.email.NodeContextMenu;
+        var me = this;
+
+        this.contextMenu = this.getFolderMenu();
+
+        this.taskQueue = {};
+
+        me.folderService = me.getFolderService();
 
         this.root = new com.conjoon.cudgets.tree.AsyncTreeNode({
             id            : 'root',
@@ -381,6 +397,13 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
         com.conjoon.groupware.email.EmailTree.superclass.initComponent.call(this);
     },
 
+    /**
+     * Retuns the context menu used for this folder panel's folders.
+     */
+    getFolderMenu : function() {
+        throw("getFolderMenu is abstract and needs to be overridden");
+    },
+
     initEvents : function()
     {
         com.conjoon.groupware.email.EmailTree.superclass.initEvents.call(this);
@@ -399,7 +422,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
             this
         );
 
-        this.mon(this.contextMenu.getMenu(), 'itemclick', this.contextMenuItemClicked, this);
+        this.mon(this.getFolderMenu(), 'itemclick', this.contextMenuItemClicked, this);
         this.on('contextmenu', this.onContextMenu, this);
         this.on('mousedown',   this.onMouseDown, this);
         this.on('click',       this.onPanelClick, this);
@@ -438,6 +461,26 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
     {
         this.nodeEditor.triggerEdit(this.clkNode, mode);
         this.nodeEditor.field.selectText();
+    },
+
+    /**
+     * Returns the folder service used with this panel.
+     *
+     * @return {conjoon.mail.comp.folderPanel.compModel.FolderService}
+     */
+    getFolderService : function() {
+        var me = this;
+
+        if (!me.folderService) {
+
+            me.folderService = Ext.createInstance(
+                'conjoon.mail.comp.folderPanel.compModel.FolderService', {
+                folderPanel : me
+            });
+
+        }
+
+        return me.folderService;
     },
 
 
@@ -910,7 +953,6 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
      * reverted. As soon as the editor hides, the state for the failed component
      * will be undone.
      */
-    taskQueue : {},
     onRequestFailure : function(response, parameters)
     {
         if (this.nodeEditor.isVisible() && !this.taskQueue[parameters.params.id]) {
@@ -1375,7 +1417,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
      * Callback fo the oncontextmenu event.
      * Selects the passed node <tt>node</tt> while suspending all its events,
      * then shows the contextmenu (@link {com.conjoon.groupware.email.NodeContextMenu})
-     * for the node.
+     * for the node. The menu will not be shown if the selected node is the root node.
      *
      * @param {Ext.tree.TreeNode}
      * @param {Ext.EventObject}
@@ -1388,10 +1430,14 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
             return false;
         }
 
+        if (node.isRoot) {
+            return;
+        }
+
         node.suspendEvents();
         node.select();
         this.clkNode = node;
-        this.contextMenu.show(node, eventObject);
+        this.contextMenu.showForFolderAt(node, eventObject.getXY());
         node.resumeEvents();
     },
 
