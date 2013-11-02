@@ -268,6 +268,34 @@ com.conjoon.SystemMessageManager = function() {
         },
 
         /**
+         * Shows a dialog indicating a warning
+         *
+         * @param message
+         * @param options
+         */
+        warn : function(message, options) {
+
+            var msg = Ext.MessageBox;
+
+            var c = {};
+
+            Ext.apply(c, message);
+
+            c.msg = c.text;
+            delete c.text;
+
+            Ext.apply(c, {
+                buttons : msg.OK,
+                icon    : msg.WARNING,
+                cls     : 'com-conjoon-msgbox-warning',
+                width   : 375
+            });
+
+            Ext.apply(c, options);
+            this.show(c);
+        },
+
+        /**
          * Shows a dialog indicating an error happened.
          *
          * @param {com.conjoon.SystemMessage} message
@@ -319,3 +347,6 @@ com.conjoon.SystemMessageManager = function() {
         }
     };
 }();
+
+Ext.namespace('conjoon');
+conjoon.SystemMessage = com.conjoon.SystemMessageManager;
