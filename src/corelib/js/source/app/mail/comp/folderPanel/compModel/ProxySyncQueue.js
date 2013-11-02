@@ -18,9 +18,9 @@
  * Queue is a FiFo implementation.
  *
  *
- * @class {conjoon.mail.data.mailFolder.SynchronizationQueue}
+ * @class {conjoon.mail.comp.folderPanel.compModel.ProxySyncQueue}
  */
-Ext.defineClass('conjoon.mail.data.mailFolder.SynchronizationQueue', {
+Ext.defineClass('conjoon.mail.comp.folderPanel.compModel.ProxySyncQueue', {
 
     /**
      * The queue holding the jobs.

@@ -26,7 +26,7 @@ Ext.defineClass('conjoon.mail.comp.folderPanel.StatefulFolderPanel', {
     proxyTreeLoaderListener : null,
 
     /**
-     * @type {conjoon.mail.data.mailFolder.SynchronizationQueue}
+     * @type {conjoon.mail.comp.folderPanel.compModel.ProxySyncQueue}
      */
     folderSyncQueue : null,
 
@@ -62,7 +62,7 @@ Ext.defineClass('conjoon.mail.comp.folderPanel.StatefulFolderPanel', {
             }
         });
 
-        me.folderSyncQueue = Ext.createInstance('conjoon.mail.data.mailFolder.SynchronizationQueue', {
+        me.folderSyncQueue = Ext.createInstance('conjoon.mail.comp.folderPanel.compModel.ProxySyncQueue', {
             proxyTreeLoader : me.treeLoader
         });
 
