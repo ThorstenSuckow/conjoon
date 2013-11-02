@@ -313,8 +313,6 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
     {
         this.contextMenu = com.conjoon.groupware.email.NodeContextMenu;
 
-        this.stateEvents = ['expandnode', 'collapsenode', 'drop', 'append', 'remove'];
-
         this.root = new com.conjoon.cudgets.tree.AsyncTreeNode({
             id            : 'root',
             idForPath     : 'root',
@@ -442,6 +440,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
         this.nodeEditor.field.selectText();
     },
 
+
     /**
      * Moves the selected folder into the trash bin as a direct child of it.
      * If the folder is already a child of the trashbin, the node gets removed
@@ -451,68 +450,13 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
      * handle this operation as a none-critical one and depend on a later restore when
      * the tree get's reloaded.
      *
+     * @param {Object} The folder to delete. If not specified, the clkNode property will
+     * will be used.
+     *
+     * @abstract
      */
-    deleteFolder : function()
-    {
-        var clkNode = this.clkNode;
-
-        if (clkNode.getPath('type').indexOf('/trash') != -1) {
-            var nodeId   = clkNode.id,
-                nodePath = clkNode.getPathAsJson('idForPath');
-            clkNode.remove();
-            this.clkNode = null;
-
-            Ext.Ajax.request({
-                url    : './groupware/email.folder/delete.folder/format/json',
-                params : {
-                    path : nodePath,
-                    id   : nodeId
-                },
-                disableCaching : true
-            });
-
-        } else {
-
-            var currP = clkNode.getPathAsArray('idForPath')[1];
-
-            var trashId = this.findPathFor(currP, 'trash');
-
-            var msg = Ext.MessageBox;
-
-            if (!trashId) {
-
-                msg.show({
-                    title   : com.conjoon.Gettext.gettext("No trashbin found"),
-                    msg     : com.conjoon.Gettext.gettext("No trashbin for the current account found. Have you configured the account's folder mappings?"),
-                    buttons : msg.OK,
-                    icon    : msg.WARNING,
-                    scope   : this,
-                    cls     :'com-conjoon-msgbox-warning',
-                    width   : 400
-                });
-
-                return;
-            }
-
-            var to   = this.getNodeForPath('/' + trashId.join('/'));
-
-            if (!to) {
-                msg.show({
-                    title   : com.conjoon.Gettext.gettext("No trashbin found"),
-                    msg     : com.conjoon.Gettext.gettext("No trashbin for the current account found. Maybe it is not expanded?"),
-                    buttons : msg.OK,
-                    icon    : msg.WARNING,
-                    scope   : this,
-                    cls     :'com-conjoon-msgbox-warning',
-                    width   : 400
-                });
-
-                return;
-            }
-
-            clkNode.attributes.tmpPath = clkNode.getPathAsJson('idForPath');
-            this.moveFolderToTrash(this, to, clkNode);
-        }
+    deleteFolder : function(folder) {
+        throw("deleteFolder() in EmailTree is abstract");
     },
 
     /**
@@ -1375,7 +1319,8 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
      */
     onBeforeNodeSelect : function(selModel, newNode, oldNode) {
 
-        var ProxyTreeNode = com.conjoon.cudgets.tree.data.ProxyTreeNode,
+        var me = this,
+            ProxyTreeNode = com.conjoon.cudgets.tree.data.ProxyTreeNode,
             parentNode  = newNode.parentNode,
             isParentProxy = parentNode
                           ? (parentNode instanceof ProxyTreeNode) && parentNode.isProxyNode()
@@ -1390,7 +1335,6 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
 
         if (node) {
             node.loadProxyNode();
-            //return false;
         }
 
     },
@@ -1646,7 +1590,13 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
             }
         }
 
+        // remove any found record first, since nodeload event
+        // can be triggered more than one time
 
+        var oldInd = this.pendingItemStore.findExact('id', node.getPath('idForPath'));
+        if (oldInd !== -1) {
+            this.pendingItemStore.removeAt(oldInd);
+        }
         this.pendingItemStore.add(new com.conjoon.groupware.email.PendingNodeItemRecord({
             pending : parseInt(attr.pendingCount)
         }, node.getPath('idForPath')));

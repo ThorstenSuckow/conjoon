@@ -27,6 +27,8 @@ vendor/ext-ux-livegrid/build/livegrid-all-debug.js
 src/corelib/js/source/cudgets/base/Exception.js
 src/corelib/js/source/cudgets/base/InvalidPropertyException.js
 src/corelib/js/source/cudgets/base/RuntimeException.js
+src/corelib/js/source/cudgets/base/InvalidArgumentException.js
+src/corelib/js/source/cudgets/base/MissingPropertyException.js
 src/corelib/js/source/cudgets/util/Registry.js
 src/corelib/js/source/cudgets/util/MimeIconFactory.js
 src/corelib/js/source/cudgets/data/Download.js
@@ -196,6 +198,7 @@ src/corelib/js/source/groupware/service/youtube/FeaturePanel.js
 src/corelib/js/source/groupware/SystemSoundManager.js
 src/corelib/js/source/app/base/Exception.js
 src/corelib/js/source/app/state/MissingStateIdException.js
+src/corelib/js/source/mail/data/mailFolder/SynchronizationQueue.js
 src/corelib/js/source/mail/ui/folderPanel/listener/ProxyTreeLoaderListener.js
 src/corelib/js/source/mail/ui/folderPanel/StatefulFolderPanel.js
 vendor/soundmanager/script/soundmanager2.js

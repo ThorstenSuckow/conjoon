@@ -52,11 +52,17 @@ com.conjoon.cudgets.tree.data.ProxyTreeLoader = function(config) {
         'beforeproxynodeload' : true,
 
         /**
-         * Event gets fired once a proxy node was loaded
+         * Event gets fired once a proxy node was loaded. The event will get triggered
+         * after a node has or has not been synced. You can cancel syncing by listening
+         * to beforenodesync.
          *
          * @param {com.conjoon.cudgets.tree.data.ProxyTreeLoader} this
          * @param {com.conjoon.cudgets.tree.data.ProxyTreeNode} The node that was
          * loaded
+         * @param {Boolean} validState Whether the node was in a valid state
+         * @param {Boolean} synced Whether the nodes children where synced with their current
+         * values, if, and only if vaidState equaled to false.
+         *
          */
         'proxynodeload' : true,
 
@@ -229,11 +235,40 @@ Ext.extend(com.conjoon.cudgets.tree.data.ProxyTreeLoader, Ext.tree.TreeLoader, {
     },
 
     /**
+     * Creates a node from the passed configuration and appends it to the specified
+     * proxy node.
+     *
+     * @param proxyNode
+     * @param childConfig
+     *
+     * @return {Ext.tree.TreeNode} The newly created tree node
+     *
+     * @throws {cudgets.base.InvalidArgumentException}
+     */
+    appendToProxyNode : function(proxyNode, childConfig) {
+
+        var me = this;
+
+        if (!(proxyNode instanceof cudgets.tree.data.ProxyTreeNode) ||
+            !proxyNode.isProxyNode()) {
+            throw new cudgets.base.InvalidArgumentException("no valid proxy node " + proxyNode);
+        }
+
+        var node = proxyNode.appendChild(me.createNode(childConfig));
+
+        if (node) {
+            me.fireEvent('nodeloaded', proxyNode, node);
+        }
+    },
+
+    /**
      * The callback as specified by the node which should be loaded.
      *
      * @param node
      * @param nodeCallback
      * @param scope
+     *
+     * @return {Object} the node if the request was triggered, otherwise null
      */
     loadProxyNode : function(node, nodeCallback, scope) {
 
@@ -243,18 +278,17 @@ Ext.extend(com.conjoon.cudgets.tree.data.ProxyTreeLoader, Ext.tree.TreeLoader, {
 
 
         if (this.fireEvent('beforeproxynodeload', this, node) === false) {
-            return;
+            return null;
         }
 
         requestId = this.requestData(node, function(items) {
 
             var parentNode = node.parentNode;
 
-            this.fireEvent('proxynodeload', this, node);
-
             var childNodes = node.childNodes;
                 obj = {},
-                validState = true;
+                validState = true,
+                synced = false;
 
             for (var i = 0, len = childNodes.length; i < len; i ++) {
 
@@ -267,9 +301,6 @@ Ext.extend(com.conjoon.cudgets.tree.data.ProxyTreeLoader, Ext.tree.TreeLoader, {
                     break;
                 }
             }
-
-            nodeCallback.call(scope, items, validState);
-
 
             if (!validState) {
 
@@ -290,8 +321,13 @@ Ext.extend(com.conjoon.cudgets.tree.data.ProxyTreeLoader, Ext.tree.TreeLoader, {
                     node.expand(false, false);
 
                     this.fireEvent('nodesync', this, node);
+                    synced = true;
                 }
             }
+
+            nodeCallback.call(scope, items, validState, synced);
+            this.fireEvent('proxynodeload', this, node, validState, synced);
+
 
         }, this, proxyConfig);
 
@@ -301,6 +337,7 @@ Ext.extend(com.conjoon.cudgets.tree.data.ProxyTreeLoader, Ext.tree.TreeLoader, {
 
         this.proxyLoading[requestId] = node;
 
+        return node;
 
     },
 

@@ -79,6 +79,20 @@ Ext.extend(com.conjoon.groupware.email.PendingNodeUI, Ext.tree.TreeNodeUI, {
     },
 
     /**
+     * Applies ui to this node to indicate that this node is a proxy node.
+     *
+     * @param {Boolean}
+     */
+    showProxy : function(isProxy)
+    {
+        if (isProxy) {
+            Ext.fly(this.anchor).addClass('proxyNode');
+        } else {
+            Ext.fly(this.anchor).removeClass('proxyNode');
+        }
+    },
+
+    /**
      * Renders the node either selectable or not selectable.
      *
      * @param {Boolean} selectable
@@ -127,6 +141,11 @@ Ext.extend(com.conjoon.groupware.email.PendingNodeUI, Ext.tree.TreeNodeUI, {
         if (cls != "") {
             Ext.fly(this.anchor).addClass(cls);
         }
+
+        if (a.isProxy) {
+            Ext.fly(this.anchor).addClass('proxyNode');
+        }
+
     },
 
     /**

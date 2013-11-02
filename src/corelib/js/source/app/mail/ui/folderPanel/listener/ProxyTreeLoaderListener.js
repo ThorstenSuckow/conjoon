@@ -63,9 +63,12 @@ Ext.defineClass('conjoon.mail.ui.folderPanel.listener.ProxyTreeLoaderListener', 
 
     /**
      * Listener for the beforeproxynodeload event.
-     * Publish this event to teh Messagebus.
+     * Publish this event to the Messagebus.
+     *
+     * @param treeLoader
+     * @param node
      */
-    onBeforeProxyNodeLoad : function() {
+    onBeforeProxyNodeLoad : function(treeLoader, node) {
 
         Ext.ux.util.MessageBus.publish('conjoon.mail.MailFolder.beforeproxynodeload', {});
 
@@ -73,17 +76,44 @@ Ext.defineClass('conjoon.mail.ui.folderPanel.listener.ProxyTreeLoaderListener', 
 
     /**
      * Listener for the proxynodeload event.
-     * Publish this event to teh Messagebus.
+     * Publish this event to the Messagebus.
+     *
+     * @param treeLoader
+     * @param node
+     * @param validState
+     * @param synced
      */
-    onProxyNodeLoad : function() {
+    onProxyNodeLoad : function(treeLoader, node, validState, synced) {
 
         Ext.ux.util.MessageBus.publish('conjoon.mail.MailFolder.proxynodeload', {});
+
+        if (validState || (!validState && synced)) {
+            node.getUI().showProxy(false);
+        }
+
+        var me = this,
+            parentNode = node.parentNode,
+            isProxy = parentNode
+                      ? (parentNode instanceof cudgets.tree.data.ProxyTreeNode) &&
+                        parentNode.isProxyNode()
+                        ? true
+                        : false
+                       : false;
+
+        if (isProxy) {
+            parentNode.loadProxyNode();
+        }
 
     },
 
     /**
      * Listener for the proxynodeloadfailure event.
-     * Publish this event to teh Messagebus.
+     * Publish this event to the Messagebus.
+     *
+     * @param treeLoader
+     * @param node
+     * @param {Object} response
+     *
      */
     onProxyNodeLoadFailure : function() {
 
