@@ -198,10 +198,10 @@ src/corelib/js/source/groupware/SystemSoundManager.js
 src/corelib/js/source/app/base/Exception.js
 src/corelib/js/source/app/state/MissingStateIdException.js
 src/corelib/js/source/mail/data/mailFolder/SynchronizationQueue.js
-src/corelib/js/source/mail/ui/folderPanel/compModel/FolderService.js
-src/corelib/js/source/mail/ui/folderPanel/listener/ProxyTreeLoaderListener.js
-src/corelib/js/source/mail/ui/folderPanel/listener/FolderMenuListener.js
-src/corelib/js/source/mail/ui/folderPanel/StatefulFolderPanel.js
-src/corelib/js/source/mail/ui/folderPanel/FolderMenu.js
+src/corelib/js/source/mail/comp/folderPanel/compModel/FolderService.js
+src/corelib/js/source/mail/comp/folderPanel/listener/ProxyTreeLoaderListener.js
+src/corelib/js/source/mail/comp/folderPanel/listener/FolderMenuListener.js
+src/corelib/js/source/mail/comp/folderPanel/StatefulFolderPanel.js
+src/corelib/js/source/mail/comp/folderPanel/FolderMenu.js
 vendor/soundmanager/script/soundmanager2.js
 src/www/htdocs/startup.js
