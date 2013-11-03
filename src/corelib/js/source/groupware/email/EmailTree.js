@@ -323,6 +323,19 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
     {
         var me = this;
 
+
+        me.addEvents(
+            /**
+             * @event beforedragstart
+             * Fires before a node in this tree is being dragged. Return false to cancel
+             * dragging the node.
+             * @param {Tree} tree The owner tree
+             * @param {Object} data The drag data
+             * @param {Event} The Event object
+             */
+            'beforedragstart'
+        );
+
         this.contextMenu = this.getFolderMenu();
 
         this.taskQueue = {};
@@ -406,53 +419,58 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
 
     initEvents : function()
     {
-        com.conjoon.groupware.email.EmailTree.superclass.initEvents.call(this);
+        var me = this;
+
+        com.conjoon.groupware.email.EmailTree.superclass.initEvents.call(me);
 
         // register the listeners
-        this.mon(this.treeLoader, 'nodeloaded',          this.onNodeLoaded,            this);
-        this.mon(this.treeLoader, 'loadexception',       this._onTreeLoaderException,  this);
-        this.mon(this.treeLoader, 'beforeload',          this._onTreeLoaderBeforeLoad, this);
-        this.mon(this.treeLoader, 'load',                this._onTreeLoaderLoad,       this);
+        me.mon(me.treeLoader, 'nodeloaded', me.onNodeLoaded, me);
+        me.mon(me.treeLoader, 'loadexception', me._onTreeLoaderException, me);
+        me.mon(me.treeLoader, 'beforeload', me._onTreeLoaderBeforeLoad, me);
+        me.mon(me.treeLoader, 'load', me._onTreeLoaderLoad, me);
 
 
 
         Ext.ux.util.MessageBus.subscribe(
             'com.conjoon.groupware.email.account.added',
-            this._onAccountAdded,
-            this
+            me._onAccountAdded,
+            me
         );
 
-        this.mon(this.getFolderMenu(), 'itemclick', this.contextMenuItemClicked, this);
-        this.on('contextmenu', this.onContextMenu, this);
-        this.on('mousedown',   this.onMouseDown, this);
-        this.on('click',       this.onPanelClick, this);
+        me.mon(me.getFolderMenu(), 'itemclick', me.contextMenuItemClicked, me);
+        me.on('contextmenu', me.onContextMenu, me);
+        me.on('mousedown', me.onMouseDown, me);
+        me.on('click', me.onPanelClick, me);
 
-        this.on('beforecollapsenode', this.onBeforeCollapseNode, this);
-        this.on('beforeexpandnode',   this.onBeforeExpandNode,   this);
+        me.on('beforecollapsenode', me.onBeforeCollapseNode, me);
+        me.on('beforeexpandnode', me.onBeforeExpandNode, me);
 
-        this.on('beforemovenode',  this.onBeforeFolderMove, this);
-        this.on('beforeappend',    this.onBeforeFolderAppend,   this);
-        this.on('movenode',        this.onFolderMove, this);
+        me.on('beforemovenode', me.onBeforeFolderMove, me);
+        me.on('beforeappend', me.onBeforeFolderAppend, me);
+        me.on('movenode', me.onFolderMove, me);
 
-        this.on('nodedragover',   this.onNodeDragOver, this);
-        this.on('beforenodedrop', this.onBeforeNodeDrop, this);
+        me.on('nodedragover', me.onNodeDragOver, me);
+        me.on('beforenodedrop', me.onBeforeNodeDrop, me);
+        me.on('beforedragstart', me.onBeforeDragStart, me);
 
-        this.on('destroy', function(){this.pendingItemStore.destroy();}, this);
+        // override dragZone BUT! only once we have called the original
+        // Tree.initEvents()
+        if (!me.dragZone) {
+            throw new cudgets.base.RuntimeException("No dragZone available");
+        }
+        me.dragZone.onBeforeDrag = function(data, e) {
+            return me.fireEvent('beforedragstart', me, data, e);
+        };
 
-        this.mon(this.getSelectionModel(), 'beforeselect', this.onBeforeNodeSelect, this);
+        me.on('destroy', function(){this.pendingItemStore.destroy();}, me);
 
-        this.mon(this.pendingItemStore, 'update', this.updatePendingNodes, this);
+        me.mon(me.getSelectionModel(), 'beforeselect', me.onBeforeNodeSelect, me);
+
+        me.mon(me.pendingItemStore, 'update', me.updatePendingNodes, me);
     },
 
 
 //------------------------- Node related methods -------------------------------
-    /**
-     * Opens the node that is currently selected.
-     */
-    openNode : function()
-    {
-
-    },
 
     /**
      * Starts editing the node that is currently selected.
@@ -791,6 +809,29 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
 
 // ----------------------------- Listeners -------------------------------------
 
+    /**
+     * Listener for the tree's beforedragstart event.
+     * Returns false if the node is part of a proxy subtree.
+     * Otherwise, drag allowed/disallowed will be handled by the
+     * node's attributes "draggable"/"dragAllowed" which will be set in the
+     * TreeLoader.
+     *
+     * @param {Tree} tree the owner tree
+     * @param {Object} data
+     * @param {Event} e
+     */
+    onBeforeDragStart : function(tree, data, e) {
+
+        var me = this;
+
+        return me.folderService.isPartOfProxySubtree(data.node) === false;
+    },
+
+    /**
+     *
+     * @param dropEvent
+     * @return {Boolean}
+     */
     onBeforeNodeDrop : function(dropEvent)
     {
         if (dropEvent.target.disabled) {
@@ -824,11 +865,17 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
      */
     onNodeDragOver : function(dragOverEvent)
     {
+        var me = this;
+
+        if (me.folderService.isPartOfProxySubtree(dragOverEvent.target)) {
+            return false;
+        }
+
         if (dragOverEvent.target.disabled) {
             return false;
         }
 
-        var     source = dragOverEvent.source,
+        var source = dragOverEvent.source,
             targetPath = dragOverEvent.target.getPathAsArray('idForPath'),
             sourcePath;
 
@@ -1267,10 +1314,6 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
         var id = item.id;
 
         switch (id) {
-            case 'com.conjoon.groupware.email.EmailTree.nodeContextMenu.openItem':
-                this.contextMenu.hide();
-                this.openNode();
-            break;
 
             case 'com.conjoon.groupware.email.EmailTree.nodeContextMenu.deleteItem':
                 this.contextMenu.hide();
