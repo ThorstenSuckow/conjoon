@@ -71,6 +71,8 @@ Ext.extend(com.conjoon.groupware.email.NodeEditor, Ext.tree.TreeEditor, {
      */
     editMode : this.NONE,
 
+    isWarning : false,
+
 
 // ----------------------------- Methods ---------------------------------------
 
@@ -165,11 +167,8 @@ Ext.extend(com.conjoon.groupware.email.NodeEditor, Ext.tree.TreeEditor, {
      * @param mixed value
      * @param mixed startValue
      */
-    isWarning : false,
     onBeforeEditingComplete : function(editor, value, startValue)
     {
-        var msg = Ext.MessageBox;
-
         if (this.isWarning) {
             return false;
         }

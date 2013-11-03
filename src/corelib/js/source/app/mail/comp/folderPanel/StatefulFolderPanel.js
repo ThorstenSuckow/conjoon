@@ -103,12 +103,17 @@ Ext.defineClass('conjoon.mail.comp.folderPanel.StatefulFolderPanel', {
      */
     deleteFolder : function(clkNode)
     {
+        var me = this;
+
         if (!clkNode) {
-            clkNode = this.clkNode;
+            clkNode = me.clkNode;
         }
 
-        var me = this,
-            clkPath = clkNode.getPathAsArray('idForPath'),
+        if (me.folderService.isPartOfProxySubtree(clkNode)) {
+            return;
+        }
+
+        var clkPath = clkNode.getPathAsArray('idForPath'),
             currP = clkPath[1],
             trashId = this.findPathFor(currP, 'trash'),
             rootNode = this.getNodeById(currP),

@@ -474,9 +474,18 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
 
     /**
      * Starts editing the node that is currently selected.
+     *
+     * This method will do nothing if the currently selected node is part
+     * of a proxy subtree.
      */
     startNodeEdit : function(mode)
     {
+        var me = this;
+
+        if (me.folderService.isPartOfProxySubtree(me.clkNode)) {
+            return;
+        }
+
         this.nodeEditor.triggerEdit(this.clkNode, mode);
         this.nodeEditor.field.selectText();
     },
@@ -511,6 +520,8 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
      * handle this operation as a none-critical one and depend on a later restore when
      * the tree get's reloaded.
      *
+     * This method will do nothing if the selected node is part of a proxy subtree.
+     *
      * @param {Object} The folder to delete. If not specified, the clkNode property will
      * will be used.
      *
@@ -533,10 +544,17 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
      * stopped when the node expands, leaving the editor at the currently being
      * edited node.
      *
+     * This emthod will do nothign is the selected node is part of a proxy subtree.
+     *
      */
     prepareAppend : function()
     {
-        var node = this.clkNode;
+        var me = this,
+            node = this.clkNode;
+
+        if (me.folderService.isPartOfProxySubtree(node)) {
+            return;
+        }
 
         if (this.clkNode.isExpanded()) {
             this.appendAnonymouseNode(this.clkNode);
