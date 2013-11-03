@@ -50,6 +50,35 @@ Ext.defineClass('conjoon.mail.comp.folderPanel.compModel.FolderService', {
     },
 
     /**
+     * Inits loadProxyNode() on the next available parentNode which is a proxy in the
+     * subtree of the specified node.
+     *
+     * WARNING! If the method returns null, it is possible that the requested node was
+     * part of a proxy subtree AND that there was already a loadProxyNode() initiated
+     * on this or any other node in this subtree, which is still prcessing.
+     * If the method returns null it is no indicator for the case that no proxyNode is
+     * available in the folder subtree.
+     *
+     * @param folder
+     *
+     * @return {*} Returns the node which triggered a proxy load, or null if none was found
+     */
+    loadNextParentProxyNode : function(folder) {
+
+        var me = this;
+
+        while (folder) {
+            if (me.isProxy(folder)) {
+                return folder.loadProxyNode();
+            }
+
+            folder = folder.parentNode;
+        }
+
+        return null;
+    },
+
+    /**
      * Returns true if the specified folder belongs to a subtree which consists
      * of at least one proxied parent node
      *

@@ -65,11 +65,12 @@ com.conjoon.cudgets.tree.data.ProxyTreeNode = Ext.extend(com.conjoon.cudgets.tre
     loadProxyNode : function(config) {
 
         if (!this.isProxyNode() || this.isProxyNodeLoading()) {
-            return;
+            return null;
         }
 
         var loader = this.loader || this.attributes.loader ||
-            this.getOwnerTree().getLoader();
+            this.getOwnerTree().getLoader(),
+            retVal = null;
 
         this.isProxyLoading = loader.loadProxyNode(this, function(items, validSate, synced) {
 
@@ -88,10 +89,13 @@ com.conjoon.cudgets.tree.data.ProxyTreeNode = Ext.extend(com.conjoon.cudgets.tre
 
         }, this);
 
+        retVal = this.isProxyLoading || null;
+
         this.isProxyLoading === null
                                 ? false
                                 : this.isProxyLoading;
 
+        return retVal;
     },
 
     /**

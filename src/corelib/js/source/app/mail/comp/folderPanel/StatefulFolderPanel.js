@@ -467,6 +467,10 @@ Ext.defineClass('conjoon.mail.comp.folderPanel.StatefulFolderPanel', {
                 nodeToSelect = me.getNodeById(state.selectedNodeId);
                 if (nodeToSelect) {
                     me.getSelectionModel().select(nodeToSelect);
+                    // set clkNode manually since this does not happen
+                    // when a node is selected (only if mousedown!)
+                    me.clkNode = nodeToSelect;
+                    console.lock(me.clkNode);
                 }
             }
 

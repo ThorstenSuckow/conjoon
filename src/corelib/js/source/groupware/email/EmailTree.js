@@ -883,9 +883,12 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
      */
     onNodeDragOver : function(dragOverEvent)
     {
-        var me = this;
+        var me = this,
+            source = dragOverEvent.source;
 
         if (me.folderService.isPartOfProxySubtree(dragOverEvent.target)) {
+            me.folderService.loadNextParentProxyNode(dragOverEvent.target);
+
             return false;
         }
 
@@ -893,15 +896,25 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
             return false;
         }
 
-        var source = dragOverEvent.source,
-            targetPath = dragOverEvent.target.getPathAsArray('idForPath'),
+        var targetPath = dragOverEvent.target.getPathAsArray('idForPath'),
             sourcePath;
 
 
         if (source instanceof Ext.ux.grid.livegrid.DragZone) {
 
-            sourcePath = dragOverEvent.data.grid.controller.treePanel
-                         .clkNode.getPathAsArray('idForPath');
+            var sourceNode = dragOverEvent.data.grid.controller.treePanel.clkNode;
+
+            // this should not happen except for very slow connections
+            // where it takes some time to get the response from the server
+            // i.e. by the time the grid was loaded a "select" should
+            // also have triggered the load of the proxy node which might
+            // not be available yet
+            if (me.folderService.isPartOfProxySubtree(sourceNode)) {
+                me.folderService.loadNextParentProxyNode(sourceNode);
+                return false;
+            }
+
+            sourcePath = sourceNode.getPathAsArray('idForPath');
 
             if (sourcePath[1] != targetPath[1]) {
                 return false;
