@@ -50,6 +50,32 @@ Ext.defineClass('conjoon.mail.comp.folderPanel.compModel.FolderService', {
     },
 
     /**
+     * Returns true if any of the specified node's parentNode is currently
+     * being synchronized as a proxy node, i.e. isProxyNodeLoading() returns true.
+     *
+     * Please be aware that this method should not be used to check whether the
+     * specified node is part of a proxy subtree.
+     *
+     * @param folder
+     *
+     * @return {*} The first node found being loaded, or false if none found
+     */
+    isAnyParentProxyNodeLoading : function (folder) {
+
+        var me = this;
+
+        while (folder) {
+            if (me.isProxy(folder) && folder.isProxyNodeLoading()) {
+                return folder;
+            }
+
+            folder = folder.parentNode;
+        }
+
+        return false;
+    },
+
+    /**
      * Inits loadProxyNode() on the next available parentNode which is a proxy in the
      * subtree of the specified node.
      *

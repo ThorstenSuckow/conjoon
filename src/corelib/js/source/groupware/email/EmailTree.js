@@ -36,8 +36,21 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
     folderSpam   : null,
     folderTrash  : null,
 
+    /**
+     *
+     *
+     * @param {Array} path
+     *
+     * @return {String}
+     *
+     * @throws {cudget.base.InvalidArgumentException}
+     */
     assemblePath : function(path)
     {
+        if ((Object.prototype.toString.call(path)).toLowerCase() !== '[object array]') {
+            throw new cudgets.base.InvalidArgumentException("path is not of type Array");
+        }
+
         var res = "";
 
         if (path[0] == 'root') {
@@ -49,8 +62,23 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
         return res;
     },
 
+    /**
+     *
+     * @param {Array|String}
+     * @return {*}
+     *
+     * @throws {cudget.base.InvalidArgumentException}
+     */
     getNodeForPath :function(path)
     {
+        var me = this;
+
+        if ((Object.prototype.toString.call(path)).toLowerCase() === '[object array]') {
+            path = me.assemblePath(path);
+        } else if ((typeof path).toLowerCase() !== 'string') {
+            throw new cudgets.base.InvalidArgumentException("path must be an array or a string");
+        }
+
         var node = this.root.findChildBy(function(node) {
             if (node.getPath('idForPath') == path) {
                 return true;

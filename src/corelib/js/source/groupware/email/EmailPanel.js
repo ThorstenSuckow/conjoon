@@ -440,13 +440,38 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
     /**
      * Moves the specified records either to the trashbin or deletes them, if they
      * are already in the trashbin.
+     *
+     * Triggers a message if the trashbin is still part of a proxy subtree.
+     *
+     * @thrws {conjoon.mail.folder.base.FolderNotFoundException} if the folder
+     * representing the trash bin was not found
+     *
      */
     deleteEmails : function(records)
     {
+        var me = this,
+            treePanel = me.treePanel,
+            trashNode = null,
+            currentNode = me.clkNodeId ? treePanel.getNodeById(me.clkNodeId) : null,
+            currentPath = null;
 
-        if (this.clkNodeId
-            && this.treePanel.getNodeById(this.clkNodeId)
-            .getPath('type').indexOf('trash') != -1) {
+        if (currentNode && currentNode.getPath('type').indexOf('trash') != -1) {
+
+            currentPath = currentNode.getPathAsArray('idForPath');
+            trashNode = treePanel.getNodeForPath(treePanel.findPathFor(
+                currentPath[1], 'trash'
+            ));
+
+            if (!trashNode) {
+                throw new conjoon.mail.folder.base.FolderNotFoundException(
+                    "Folder representing the trash bin was not found!"
+                );
+            }
+
+            if (me.showInfoAboutTrashIsProxy(treePanel, trashNode)) {
+                return;
+            }
+
             var unread = 0;
 
             var max_i = records.length
@@ -491,21 +516,25 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
             var trashId = this.treePanel.findPathFor(currP, 'trash');
 
             if (!trashId) {
-                var msg = Ext.MessageBox;
-
-                msg.show({
-                    title   : com.conjoon.Gettext.gettext("No trashbin found"),
-                    msg     : com.conjoon.Gettext.gettext("No trashbin for the current account found. Have you configured the account's folder mappings?"),
-                    buttons : msg.OK,
-                    icon    : msg.WARNING,
-                    scope   : this,
-                    cls     :'com-conjoon-msgbox-warning',
-                    width   : 400
+                conjoon.SystemMessage.warn({
+                    title : com.conjoon.Gettext.gettext("No trashbin found"),
+                    text : com.conjoon.Gettext.gettext("No trashbin for the current account found. Have you configured the account's folder mappings?")
                 });
 
                 return;
             }
 
+            // if trashId available, we have a loaded node OR a mapping
+            // if the trashNode is not found, the trash was not loaded yet,
+            // which is okay if the folder maps a remote mailbox
+            var trashNode = treePanel.getNodeForPath(trashId);
+            if (trashNode) {
+                // if available in the tree, i.e. rendered, check if proxy,
+                // / show message and exit!
+                if (me.showInfoAboutTrashIsProxy(treePanel, trashNode)) {
+                    return;
+                }
+            }
 
             this.moveEmails(records, trashId);
         }
@@ -513,16 +542,36 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
 
     /**
      * Moves the number of specified records virtually into the folder with
-     * the specified fodler-id. If allowNodePendingUpdate returns false, the total
+     * the specified folder-id. If allowNodePendingUpdate returns false, the total
      * number of records will be subtracted from the specified pending node, not just
      * the records that were unread.
+     *
+     * This methode does nothing if the specified folder is part of a proxy subtree.
+     *
+     * @throws {conjoon.mail.folder.base.FolderNotFoundException} if the folder
+     * represented by folderId was not found
      */
     moveEmails : function(records, folderId)
     {
-        var tp = this.treePanel;
+        var me = this,
+            tp = me.treePanel,
+            folderNode = null;
 
         if ((typeof folderId).toLowerCase() != "object") {
+            folderNode = tp.getNodeById(folderId);
             folderId = tp.getNodeById(folderId).getPathAsArray('idForPath');
+        } else {
+            folderNode = tp.getNodeForPath(folderId);
+        }
+
+        if (!folderNode) {
+            throw new conjoon.mail.folder.base.FolderNotFoundException(
+                "Folder with ID " + folderId + "was not found"
+            );
+        }
+
+        if (tp.getFolderService().isPartOfProxySubtree(folderNode)) {
+            return;
         }
 
         var currFolderId  = this.clkNodeId;
@@ -576,6 +625,48 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
             pendingRecord.set('pending', pendingRecord.data.pending -
                 (allowPendingUpdate ? unread : updatePendingCount));
         }
+    },
+
+    /**
+     * Shows an informal message if the specified node - which is assumed to be
+     * the folder representing the trash bin - is part of a proxy subtree
+     *
+     * @param {Ext.tree.TreePanel} treePanel The owning treepanel of the node
+     * @param {Ext.tree.TreeNode} trashNode the node itself
+     *
+     * @return {Boolean} true if any info was shown, otherwise false
+     *
+     * @protected
+     */
+    showInfoAboutTrashIsProxy : function(treePanel, trashNode) {
+
+        var me = this;
+
+        if (treePanel.getFolderService().isPartOfProxySubtree(trashNode)) {
+
+            if (treePanel.getFolderService().isAnyParentProxyNodeLoading(trashNode)) {
+                conjoon.SystemMessage.info({
+                    title : com.conjoon.Gettext.gettext("Synchronizing..."),
+                    text  : com.conjoon.Gettext.gettext("The mail folders are currently being synchronized. Please wait until this operation has finished.")
+                });
+            } else {
+                conjoon.SystemMessage.confirm({
+                    title : com.conjoon.Gettext.gettext("Trash Bin not synchronized yet"),
+                    text  : com.conjoon.Gettext.gettext("Before you can delete messages you need to synchronize the trash bin. Do you want to do so now?")
+                }, {
+                    fn : function(btn) {
+                        if (btn === 'yes') {
+                            treePanel.getFolderService().loadNextParentProxyNode(trashNode);
+                        }
+                    },
+                    scope : me
+                });
+            }
+
+            return true;
+        }
+
+        return false;
     },
 
     /**
