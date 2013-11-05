@@ -283,8 +283,7 @@ Ext.defineClass('conjoon.mail.comp.folderPanel.StatefulFolderPanel', {
         var me = this;
 
         me.stateEvents = [
-            'expandnode', 'collapsenode', 'drop', 'append', 'remove', 'resize',
-            'collapse', 'expand'
+            'expandnode', 'collapsenode', 'resize', 'collapse', 'expand'
         ];
 
         me.mon(me.body, 'scroll', me.saveState, me, {delay : 1000});
@@ -470,7 +469,6 @@ Ext.defineClass('conjoon.mail.comp.folderPanel.StatefulFolderPanel', {
                     // set clkNode manually since this does not happen
                     // when a node is selected (only if mousedown!)
                     me.clkNode = nodeToSelect;
-                    console.lock(me.clkNode);
                 }
             }
 
