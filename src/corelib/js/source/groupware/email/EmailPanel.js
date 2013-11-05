@@ -112,6 +112,7 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
                 id        : 'com-conjoon-groupware-email-bottomPreview',
                 layout    : 'fit',
                 items     : this.preview,
+               stateful : false,
                 hideMode  : 'offsets',
                 split     : true,
                 region    : 'south',
