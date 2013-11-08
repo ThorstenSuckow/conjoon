@@ -47,8 +47,18 @@ Ext.defineClass('conjoon.mail.comp.folderPanel.StatefulFolderPanel', {
             throw new conjoon.state.MissingStateIdException("Missing stateId");
         }
 
-        // state events gets initialiued once roo was loaded
-        // see applyState
+        me.addEvents(
+            /**
+             * @event folderstructurechange
+             * Event to determine if the internal structure of the tree representing the
+             * folders has changed successfully.
+             * @param {StatefulFolderPanel} folderPanel The folderpnel which triggered the event
+             */
+            'folderstructurechange'
+        );
+
+        // state events gets initialized once root was loaded
+        // see installStateEvents
         me.stateEvents = [];
 
         /**
@@ -99,6 +109,22 @@ Ext.defineClass('conjoon.mail.comp.folderPanel.StatefulFolderPanel', {
     },
 
     /**
+     * @inheritdoc
+     */
+    onNodeAddSuccess : function(response, parameters)
+    {
+        var me = this,
+            StatefulFolderPanel = conjoon.mail.comp.folderPanel.StatefulFolderPanel;
+
+        if (StatefulFolderPanel.superclass.onNodeAddSuccess.apply(me, arguments) === true) {
+            me.fireEvent('folderstructurechange', me);
+            return true;
+        }
+
+        return false;
+    },
+
+        /**
      * @inheritdoc
      */
     deleteFolder : function(clkNode)
@@ -283,11 +309,16 @@ Ext.defineClass('conjoon.mail.comp.folderPanel.StatefulFolderPanel', {
         var me = this;
 
         me.stateEvents = [
-            'expandnode', 'collapsenode', 'resize', 'collapse', 'expand'
+            'expandnode',
+            'collapsenode',
+            'resize',
+            'collapse',
+            'expand',
+            'folderstructurechange'
         ];
 
         me.mon(me.body, 'scroll', me.saveState, me, {delay : 1000});
-        me.mon(me.getSelectionModel(), 'selectionchange', me.saveState, me, {delay : 100});
+        me.mon(me.getSelectionModel(), 'selectionchange', me.saveState, me, {delay : 1000});
         me.initStateEvents();
     },
 

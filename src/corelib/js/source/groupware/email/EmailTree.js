@@ -1153,23 +1153,28 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
      * Called when a request to add a node to a parent node was sucessfull.
      * The method expects the json-response to be an object with a property
      * "id", which denotes the id of the newly added data.
+     *
+     * @return {Boolean} true if the node was saved successful, otherwise false
      */
     onNodeAddSuccess : function(response, parameters)
     {
         // shorthands
-        var json = com.conjoon.util.Json;
-        var msg  = Ext.MessageBox;
-
-        var responseText = response.responseText;
+        var me = this,
+            json = com.conjoon.util.Json,
+            msg  = Ext.MessageBox,
+            values,
+            responseText = response.responseText;
 
         if (json.isError(responseText)) {
-            this.onRequestFailure(response, parameters);
-            return;
+            me.onRequestFailure(response, parameters);
+            return false;
         }
 
-        var values = json.getResponseValues(responseText);
+        values = json.getResponseValues(responseText);
 
-        this.resetState(parameters.params.id, false, values.folder);
+        me.resetState(parameters.params.id, false, values.folder);
+
+        return true;
     },
 
     /**
@@ -1256,7 +1261,8 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
 
     /**
      * Changes all node attributes based on the specified arguments.
-     * Does also re-create an entry in pendingItemStore.
+     * Does also re-create an entry in pendingItemStore and update the child node
+     * count of the parent node target attributes.
      *
      * @param {Ext.tree.Node} node
      * @param {String} oldId
@@ -1264,36 +1270,58 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
      * @param {String} idForPath
      * @param {Number} pendingCount
      * @param {Number} isSelectable
+     *
+     * @throws {conjoon.mail.folder.base.ParentFolderNotFoundException} if no
+     * parentfolder for the specified folder was found.
      */
     changeNodeAttributes : function(
         node, oldId, newId, idForPath, pendingCount, isSelectable
-    )
-    {
-        if (oldId != newId) {
-            Ext.fly(node.getUI().elNode).set({'ext:tree-node-id' : newId});
-            Ext.fly(node.getUI().elNode).set({'id'               : newId});
-            node.id = newId;
-            node.attributes.idForPath    = idForPath;
-            node.attributes.isSelectable = isSelectable;
+    ) {
+        if (oldId == newId) {
+           return;
+        }
 
-            node.getUI().setSelectable(isSelectable);
+        var parentNode = node.parentNode;
 
-            var tmp = this.nodeHash[oldId];
-            this.nodeHash[newId] = tmp;
-            delete this.nodeHash[oldId];
-
-            var oldRec = this.pendingItemStore.getById(oldId);
-
-            if (oldRec) {
-                this.pendingItemStore.remove(oldRec);
-            }
-
-            this.pendingItemStore.add(
-                new com.conjoon.groupware.email.PendingNodeItemRecord({
-                    pending : pendingCount
-                }, node.getPath('idForPath'))
+        if (!parentNode) {
+            throw new conjoon.mail.folder.base.ParentFolderNotFoundException(
+                "Expected parent folder was not found"
             );
         }
+
+        parentNode.attributes.childCount = parentNode.childNodes.length;
+
+        Ext.fly(node.getUI().elNode).set({'ext:tree-node-id' : newId});
+        Ext.fly(node.getUI().elNode).set({'id'               : newId});
+        node.id = newId;
+
+        Ext.apply(node.attributes, {
+            idForPath : idForPath,
+            id : newId,
+            isSelectable : isSelectable,
+            isChildAllowed : 1,
+            isLocked : false,
+            type : 'folder'
+        });
+
+        node.getUI().setSelectable(isSelectable);
+
+        var tmp = this.nodeHash[oldId];
+        this.nodeHash[newId] = tmp;
+        delete this.nodeHash[oldId];
+
+        var oldRec = this.pendingItemStore.getById(oldId);
+
+        if (oldRec) {
+            this.pendingItemStore.remove(oldRec);
+        }
+
+        this.pendingItemStore.add(
+            new com.conjoon.groupware.email.PendingNodeItemRecord({
+                pending : pendingCount
+            }, node.getPath('idForPath'))
+        );
+
     },
 
     /**

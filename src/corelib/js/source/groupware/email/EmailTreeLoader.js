@@ -46,12 +46,12 @@ com.conjoon.groupware.email.EmailTreeLoader = Ext.extend(com.conjoon.cudgets.tre
     createNode : function(attr)
     {
         Ext.apply(attr, {
-            allowChildren : parseInt(attr.isChildAllowed),
-            pendingCount  : parseInt(attr.pendingCount),
-            childCount    : parseInt(attr.childCount),
-            isLocked      : parseInt(attr.isLocked) ? true : false,
+            allowChildren : parseInt(attr.isChildAllowed, 10),
+            pendingCount  : parseInt(attr.pendingCount, 10),
+            childCount    : parseInt(attr.childCount, 10),
+            isLocked      : parseInt(attr.isLocked, 10) ? true : false,
             text          : attr.name,
-            isSelectable  : parseInt(attr.isSelectable) ? true : false
+            isSelectable  : parseInt(attr.isSelectable, 10) ? true : false
         });
 
         delete attr.name;
