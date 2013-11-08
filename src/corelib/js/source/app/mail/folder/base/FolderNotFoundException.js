@@ -13,7 +13,7 @@
  */
 
 /**
- * Base exception class when for a given value no folder was found.
+ * Base exception class when an expected folder was not found.
  *
  * @class {conjoon.mail.folder.base.FolderNotFoundException}
  */
