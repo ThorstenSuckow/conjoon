@@ -288,15 +288,26 @@ Ext.extend(com.conjoon.cudgets.tree.data.ProxyTreeLoader, Ext.tree.TreeLoader, {
             var childNodes = node.childNodes;
                 obj = {},
                 validState = true,
-                synced = false;
+                synced = false,
+                lookupItem = null;
+
 
             for (var i = 0, len = childNodes.length; i < len; i ++) {
 
-                obj = items[i]
-                      ? Ext.apply({text : items[i].name}, items[i])
+                lookupItem = null;
+
+                for (var a = 0, lena = items.length; a < lena; a++) {
+                    if (items[a].id == childNodes[i].id) {
+                        lookupItem = items[a];
+                    }
+                }
+
+                obj = lookupItem
+                      ? Ext.apply({text : lookupItem.name}, lookupItem)
                       : {};
 
-                if (!items[i] || !childNodes[i].equalsTo(obj)) {
+                if (!lookupItem || !childNodes[i].equalsTo(obj)) {
+                    console.log("NO MATCH", childNodes[i], obj);
                     validState = false;
                     break;
                 }
