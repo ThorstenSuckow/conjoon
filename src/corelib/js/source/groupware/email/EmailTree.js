@@ -1130,23 +1130,27 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
     /**
      * Called when a request to rename a node was sucessfull.
      *
+     * @return {Boolean} true if editing succeeded, otherwise false
      */
     onNodeEditSuccess : function(response, parameters)
     {
         // shorthands
-        var json = com.conjoon.util.Json;
-        var msg  = Ext.MessageBox;
+        var me = this,
+            json = com.conjoon.util.Json,
+            msg  = Ext.MessageBox;
 
         // the method on the server is intended to always return true on success,
         // and an error if anything failed.
         if (json.isError(response.responseText)) {
-            this.onRequestFailure(response, parameters);
-            return;
+            me.onRequestFailure(response, parameters);
+            return false;
         }
 
         var values = json.getResponseValues(response.responseText);
 
-        this.resetState(parameters.params.id, false, values.folder);
+        me.resetState(parameters.params.id, false, values.folder);
+
+        return true;
     },
 
     /**
