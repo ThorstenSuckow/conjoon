@@ -1070,8 +1070,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
      */
     public function getImapFoldersForPath(
         Conjoon_Modules_Groupware_Email_Account_Dto $account, Array $pathParts
-    )
-    {
+    ) {
         $this->_checkParam($account, 'checkForImap');
 
         /**
@@ -1265,12 +1264,36 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
             }
         }
 
+        $childCount = 0;
+
+        if (!$folder->isLeaf()) {
+
+            $protocol = Conjoon_Modules_Groupware_Email_ImapHelper::reuseImapProtocolForAccount(
+                $account
+            );
+
+            /**
+             * @see Zend_Mail_Storage_Imap
+             */
+            require_once 'Zend/Mail/Storage/Imap.php';
+
+            $imap = new Zend_Mail_Storage_Imap($protocol);
+
+            $iFolders = $imap->getFolders($globalName)->getChildren();
+
+            foreach ($iFolders as $tmpFolder) {
+                $childCount++;
+            }
+        }
+
+
         return Conjoon_Modules_Groupware_Email_ImapHelper::transformToFolderDto(
             $folder, $isRootLevel, array(
             'id'           => $account->id.'_'.$globalName,
             'idForPath'    => $path,
             'pendingCount' => $pendingCount,
-            'type'         => $type
+            'type'         => $type,
+            'childCount'   => $childCount
         ));
     }
 

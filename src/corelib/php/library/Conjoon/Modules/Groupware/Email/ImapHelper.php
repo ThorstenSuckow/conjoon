@@ -235,12 +235,17 @@ class Conjoon_Modules_Groupware_Email_ImapHelper {
             $tmpFolder->pendingCount = $config['pendingCount'];
         }
 
+        $childCount = 0;
+        if (isset($config['childCount'])) {
+            $childCount = $config['childCount'];
+        }
+
         $tmpFolder->type           = $config['type'];
         $tmpFolder->name           = $folder->getLocalName();
         $tmpFolder->isChildAllowed = 1;
         $tmpFolder->isLocked       = 0;
         //hasChildren doesnt seem to work
-        $tmpFolder->childCount     = $folder->isLeaf() ? 0 : 1;
+        $tmpFolder->childCount     = $childCount;
         $tmpFolder->isSelectable   = $folder->isSelectable() ? 1 : 0;
 
         return $tmpFolder;
