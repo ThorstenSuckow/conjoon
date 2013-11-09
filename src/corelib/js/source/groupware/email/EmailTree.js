@@ -1106,25 +1106,30 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
     },
 
     /**
-     * Called when a request to rename a node was sucessfull.
+     * Called when a request to move node was sucessfull.
      *
+     * @return {Boolean} true if moving succeeded, otherwise false
      */
     onNodeMoveSuccess : function(response, parameters)
     {
         // shorthands
-        var json = com.conjoon.util.Json;
-        var msg  = Ext.MessageBox;
+        var me = this,
+            json = com.conjoon.util.Json,
+            msg  = Ext.MessageBox,
+            values;
 
         // the method on the server is intended to always return true on success,
         // and an error if anything failed.
         if (json.isError(response.responseText)) {
-            this.onRequestFailure(response, parameters);
-            return;
+            me.onRequestFailure(response, parameters);
+            return false;
         }
 
-        var values = json.getResponseValues(response.responseText);
+        values = json.getResponseValues(response.responseText);
 
-        this.resetState(parameters.params.id, false, values.folder);
+        me.resetState(parameters.params.id, false, values.folder);
+
+        return true;
     },
 
     /**
@@ -1137,7 +1142,8 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
         // shorthands
         var me = this,
             json = com.conjoon.util.Json,
-            msg  = Ext.MessageBox;
+            msg  = Ext.MessageBox,
+            values;
 
         // the method on the server is intended to always return true on success,
         // and an error if anything failed.
@@ -1146,7 +1152,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
             return false;
         }
 
-        var values = json.getResponseValues(response.responseText);
+        values = json.getResponseValues(response.responseText);
 
         me.resetState(parameters.params.id, false, values.folder);
 
@@ -1281,9 +1287,6 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
     changeNodeAttributes : function(
         node, oldId, newId, idForPath, pendingCount, isSelectable
     ) {
-        if (oldId == newId) {
-           return;
-        }
 
         var parentNode = node.parentNode;
 
@@ -1295,9 +1298,12 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
 
         parentNode.attributes.childCount = parentNode.childNodes.length;
 
-        Ext.fly(node.getUI().elNode).set({'ext:tree-node-id' : newId});
-        Ext.fly(node.getUI().elNode).set({'id'               : newId});
-        node.id = newId;
+        // folder move or (remote)folder renamed
+        if (oldId != newId) {
+            Ext.fly(node.getUI().elNode).set({'ext:tree-node-id' : newId});
+            Ext.fly(node.getUI().elNode).set({'id'               : newId});
+            node.id = newId;
+        }
 
         Ext.apply(node.attributes, {
             idForPath : idForPath,
@@ -1310,22 +1316,23 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
 
         node.getUI().setSelectable(isSelectable);
 
-        var tmp = this.nodeHash[oldId];
-        this.nodeHash[newId] = tmp;
-        delete this.nodeHash[oldId];
+        if (oldId != newId) {
+            var tmp = this.nodeHash[oldId];
+            this.nodeHash[newId] = tmp;
+            delete this.nodeHash[oldId];
 
-        var oldRec = this.pendingItemStore.getById(oldId);
+            var oldRec = this.pendingItemStore.getById(oldId);
 
-        if (oldRec) {
-            this.pendingItemStore.remove(oldRec);
+            if (oldRec) {
+                this.pendingItemStore.remove(oldRec);
+            }
+
+            this.pendingItemStore.add(
+                new com.conjoon.groupware.email.PendingNodeItemRecord({
+                    pending : pendingCount
+                }, node.getPath('idForPath'))
+            );
         }
-
-        this.pendingItemStore.add(
-            new com.conjoon.groupware.email.PendingNodeItemRecord({
-                pending : pendingCount
-            }, node.getPath('idForPath'))
-        );
-
     },
 
     /**
