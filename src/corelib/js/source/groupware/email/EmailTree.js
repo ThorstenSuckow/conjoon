@@ -103,7 +103,6 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
 
                 for (var a = 0, lena = mappings.length; a < lena; a++) {
                     var mapping = mappings[a];
-                    //console.log(mapping.path[1], id, type, mapping.type.toLowerCase());
                     if (mapping.path[1] == id && type == mapping.type.toLowerCase()) {
                         return mapping.path;
                     }

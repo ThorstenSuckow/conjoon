@@ -300,6 +300,8 @@ Ext.defineClass('conjoon.mail.comp.folderPanel.StatefulFolderPanel', {
                         scope : this
                     });
 
+                to.loadProxyNode();
+
                 return;
             }
 
