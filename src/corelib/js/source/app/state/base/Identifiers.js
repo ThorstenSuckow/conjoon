@@ -12,15 +12,15 @@
  * $URL$
  */
 
-Ext.namespace('com.conjoon.state');
+Ext.namespace('conjoon.state.base');
 
 /**
  * An object which contains identifiers to be used as stateIds
  * for various components in conjoon.
  *
- * @Object com.conjoon.state.Identifiers
+ * @Object com.conjoon.state.base.Identifiers
  */
-com.conjoon.state.Identifiers = {
+conjoon.state.base.Identifiers = {
 
     emailModule : {
 

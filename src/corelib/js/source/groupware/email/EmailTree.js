@@ -22,7 +22,7 @@ Ext.namespace('com.conjoon.groupware.email');
 com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
 
     /**
-     * @type {conjoon.mail.comp.folderPanel.compModel.FolderService}
+     * @type {conjoon.mail.folder.data.FolderService}
      */
     folderService : null,
 
@@ -520,7 +520,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
     /**
      * Returns the folder service used with this panel.
      *
-     * @return {conjoon.mail.comp.folderPanel.compModel.FolderService}
+     * @return {conjoon.mail.folder.data.FolderService}
      */
     getFolderService : function() {
         var me = this;
@@ -528,7 +528,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
         if (!me.folderService) {
 
             me.folderService = Ext.createInstance(
-                'conjoon.mail.comp.folderPanel.compModel.FolderService', {
+                'conjoon.mail.folder.data.FolderService', {
                 folderPanel : me
             });
 

@@ -18,7 +18,7 @@
  *
  * @class {conjoon.state.MissingStateIdException}
  */
-Ext.defineClass('conjoon.state.MissingStateIdException', {
+Ext.defineClass('conjoon.state.base.MissingStateIdException', {
 
     extend : 'cudgets.state.MissingStateIdException'
 

@@ -52,9 +52,9 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
          * The tree panel that holds the tree representing the folder structure
          * of the user.
          */
-        this.treePanel = Ext.createInstance('conjoon.mail.comp.folderPanel.StatefulFolderPanel', {
+        this.treePanel = Ext.createInstance('conjoon.mail.folder.comp.StatefulFolderPanel', {
             region            : 'west',
-            stateId           : com.conjoon.state.Identifiers.emailModule.contentPanel.folderTree,
+            stateId           : conjoon.state.base.Identifiers.emailModule.contentPanel.folderTree,
             anonymousNodeText : com.conjoon.Gettext.gettext("New folder"),
             width             : 200,
             split             : true,

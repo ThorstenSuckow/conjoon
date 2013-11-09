@@ -336,7 +336,7 @@ com.conjoon.groupware.Workbench = Ext.extend(Ext.Viewport, {
     getWidgets : function() {
 
         var me = this,
-            stateIdentifiers = com.conjoon.state.Identifiers.workbench.widgets;
+            stateIdentifiers = conjoon.state.base.Identifiers.workbench.widgets;
 
         if (me.widgets) {
             return me.widgets;
@@ -428,7 +428,7 @@ com.conjoon.groupware.Workbench = Ext.extend(Ext.Viewport, {
     _getWestPanel : function()
     {
         var me = this,
-            stateIdentifiers = com.conjoon.state.Identifiers.workbench.panels;
+            stateIdentifiers = conjoon.state.base.Identifiers.workbench.panels;
 
         return new Ext.ux.layout.flexAccord.DropPanel({
             region       : 'west',
@@ -475,7 +475,7 @@ com.conjoon.groupware.Workbench = Ext.extend(Ext.Viewport, {
     {
         var me = this,
             items = [], widgets,
-            stateIdentifiers = com.conjoon.state.Identifiers.workbench.panels;
+            stateIdentifiers = conjoon.state.base.Identifiers.workbench.panels;
 
         if (!Ext.state.Manager.get(stateIdentifiers.eastPanel) &&
             !Ext.state.Manager.get(stateIdentifiers.westPanel)) {

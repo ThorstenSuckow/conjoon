@@ -76,7 +76,7 @@ com.conjoon.groupware.workbench.ContentPanel = Ext.extend(Ext.TabPanel, {
             id              : 'DOM:com.conjoon.groupware.ContentPanel',
             region          : 'center',
             stateful : true,
-            stateId : com.conjoon.state.Identifiers.workbench.panels.contentPanel,
+            stateId : conjoon.state.base.Identifiers.workbench.panels.contentPanel,
             stateEvents : ['drop', 'tabchange'],
             getState : function() {
                 var tab = this.getActiveTab()
