@@ -155,8 +155,11 @@ Ext.defineClass('conjoon.mail.comp.folderPanel.StatefulFolderPanel', {
         return false;
     },
 
-        /**
+    /**
      * @inheritdoc
+     *
+     * @throws {conjoon.mail.folder.base.FolderNotFoundException} if a parent folder of
+     * a folder to delete was not found
      */
     deleteFolder : function(clkNode)
     {
@@ -208,7 +211,15 @@ Ext.defineClass('conjoon.mail.comp.folderPanel.StatefulFolderPanel', {
             }
 
             var nodeId   = clkNode.id,
-                nodePath = clkNode.getPathAsJson('idForPath');
+                nodePath = clkNode.getPathAsJson('idForPath'),
+                respParentNode = clkNode.parentNode;
+
+            if (!respParentNode) {
+                throw new conjoon.mail.folder.base.ParentFolderNotFoundException(
+                    "parent folder of folder to remove was not found"
+                );
+            }
+
             clkNode.remove();
             this.clkNode = null;
 
@@ -218,7 +229,17 @@ Ext.defineClass('conjoon.mail.comp.folderPanel.StatefulFolderPanel', {
                     path : nodePath,
                     id   : nodeId
                 },
-                disableCaching : true
+                disableCaching : true,
+                success : function() {
+                    if (!respParentNode) {
+                        throw new conjoon.mail.folder.base.ParentFolderNotFoundException(
+                            "parent folder of folder to remove was not found when response was processed"
+                        );
+                    }
+
+                    respParentNode.attributes.childCount = respParentNode.childNodes.length;
+                    me.fireEvent('folderstructurechange', me);
+                }
             });
 
         } else {

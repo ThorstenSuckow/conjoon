@@ -553,6 +553,9 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
      * @param {Object} The folder to delete. If not specified, the clkNode property will
      * will be used.
      *
+     * @throws {conjoon.mail.folder.base.FolderNotFoundException} if any requested folder
+     * to operate on was not found
+     *
      * @abstract
      */
     deleteFolder : function(folder) {
