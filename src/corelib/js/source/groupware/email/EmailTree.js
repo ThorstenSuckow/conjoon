@@ -652,28 +652,28 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
      */
     saveNode : function(nodeConfig)
     {
-        var node = this.getNodeById(nodeConfig.child.id);
+        var me = this,
+            node = this.getNodeById(nodeConfig.child.id),
+            params    = {},
+            url       = "";
+
         node.getUI().showProcessing(true);
         node.disable();
 
-        if (!this.editingNodesStorage) {
-            this.editingNodesStorage = {};
-        } else if (this.editingNodesStorage[nodeConfig.child.id]) {
+        if (!me.editingNodesStorage) {
+            me.editingNodesStorage = {};
+        } else if (me.editingNodesStorage[nodeConfig.child.id]) {
             throw("com.conjoon.groupware.email.EmailTree::saveNode - cannot "+
                   "execute request since the editing node was already in the queue.")
         }
 
-        this.editingNodesStorage[nodeConfig.child.id] = {
+        me.editingNodesStorage[nodeConfig.child.id] = {
             mode       : nodeConfig.mode,
             parent     : nodeConfig.parent,
             newParent  : nodeConfig.newParent,
             value      : nodeConfig.child.value,
             startValue : nodeConfig.child.startValue
         };
-
-        var params    = {};
-        var url       = "";
-        var successFn = null;
 
         switch (nodeConfig.mode) {
             case 'move':
@@ -682,10 +682,10 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
                     parentId   : nodeConfig.newParent,
                     parentPath : nodeConfig.newParentPath,
                     id         : nodeConfig.child.id,
+                    mode       : nodeConfig.mode,
                     path       : node.attributes.tmpPath
                 };
                 delete node.attributes.tmpPath;
-                successFn = this.onNodeMoveSuccess;
             break;
 
             case 'edit':
@@ -694,9 +694,9 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
                     parentId : nodeConfig.parent,
                     id       : nodeConfig.child.id,
                     name     : nodeConfig.child.value,
+                    mode       : nodeConfig.mode,
                     path     : node.getPathAsJson('idForPath')
                 };
-                successFn = this.onNodeEditSuccess;
             break;
 
             case 'add':
@@ -705,25 +705,23 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
                     parentId : nodeConfig.parent,
                     // this property is actually needed if we need to
                     // restore a previously state, so do not remove it!
-                    id       : nodeConfig.child.id,
-                    name     : nodeConfig.child.value,
-                    path     : node.getPathAsJson('idForPath')
+                    id   : nodeConfig.child.id,
+                    name : nodeConfig.child.value,
+                    mode : nodeConfig.mode,
+                    path : node.getPathAsJson('idForPath')
                 };
-                successFn = this.onNodeAddSuccess;
             break;
         }
 
         Ext.Ajax.request({
             url            : url,
             params         : params,
-            success        : successFn,
-            failure        : this.onRequestFailure,
-            scope          : this,
+            success        : me.onTreeEditSuccess,
+            failure        : me.onRequestFailure,
+            scope          : me,
             disableCaching : true
         });
     },
-
-
 
     /**
      * Checks wether a node name is available and compares the node's requested
@@ -1109,12 +1107,15 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
     },
 
     /**
-     * Called when a request to move node was sucessfull.
+     * Callback for a server request to either move, add or edit a folder.
+     *
+     * @param response
+     * @param parameters
      *
      * @return {Boolean} true if moving succeeded, otherwise false
      */
-    onNodeMoveSuccess : function(response, parameters)
-    {
+    onTreeEditSuccess : function(response, parameters) {
+
         // shorthands
         var me = this,
             json = com.conjoon.util.Json,
@@ -1129,61 +1130,6 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
         }
 
         values = json.getResponseValues(response.responseText);
-
-        me.resetState(parameters.params.id, false, values.folder);
-
-        return true;
-    },
-
-    /**
-     * Called when a request to rename a node was sucessfull.
-     *
-     * @return {Boolean} true if editing succeeded, otherwise false
-     */
-    onNodeEditSuccess : function(response, parameters)
-    {
-        // shorthands
-        var me = this,
-            json = com.conjoon.util.Json,
-            msg  = Ext.MessageBox,
-            values;
-
-        // the method on the server is intended to always return true on success,
-        // and an error if anything failed.
-        if (json.isError(response.responseText)) {
-            me.onRequestFailure(response, parameters);
-            return false;
-        }
-
-        values = json.getResponseValues(response.responseText);
-
-        me.resetState(parameters.params.id, false, values.folder);
-
-        return true;
-    },
-
-    /**
-     * Called when a request to add a node to a parent node was sucessfull.
-     * The method expects the json-response to be an object with a property
-     * "id", which denotes the id of the newly added data.
-     *
-     * @return {Boolean} true if the node was saved successful, otherwise false
-     */
-    onNodeAddSuccess : function(response, parameters)
-    {
-        // shorthands
-        var me = this,
-            json = com.conjoon.util.Json,
-            msg  = Ext.MessageBox,
-            values,
-            responseText = response.responseText;
-
-        if (json.isError(responseText)) {
-            me.onRequestFailure(response, parameters);
-            return false;
-        }
-
-        values = json.getResponseValues(responseText);
 
         me.resetState(parameters.params.id, false, values.folder);
 
@@ -1196,10 +1142,21 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
      */
     resetState : function(nodeId, failure, newId)
     {
-        var mode     = this.editingNodesStorage[nodeId].mode;
-        var parentId = this.editingNodesStorage[nodeId].parent;
+        var me = this,
+            mode = this.editingNodesStorage[nodeId].mode,
+            parentId = this.editingNodesStorage[nodeId].parent,
+            node = this.getNodeById(nodeId),
+            conf = failure ? null : {
+                mode : mode,
+                oldParentId : parentId,
+                node : node,
+                nodeId : nodeId,
+                newId : newId.id,
+                idForPath : newId.idForPath,
+                pendingCount : newId.pendingCount,
+                isSelectable : newId.isSelectable
+            };
 
-        var node = this.getNodeById(nodeId);
         node.getUI().showProcessing(false);
         node.enable();
 
@@ -1216,12 +1173,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
                     this.resumeEvents();
                 } else {
                     if (Ext.isObject(newId)) {
-                        this.changeNodeAttributes(
-                            node, nodeId, newId.id,
-                            newId.idForPath,
-                            newId.pendingCount,
-                            newId.isSelectable
-                        );
+                        this.changeNodeAttributes(conf);
                     }
                 }
             break;
@@ -1234,12 +1186,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
                     node.resumeEvents();
                 } else {
                     if (Ext.isObject(newId)) {
-                        this.changeNodeAttributes(
-                            node, nodeId, newId.id,
-                            newId.idForPath,
-                            newId.pendingCount,
-                            newId.isSelectable
-                        );
+                        this.changeNodeAttributes(conf);
                     }
                 }
             break;
@@ -1255,12 +1202,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
                     this.resumeEvents();
                 } else {
                     if (Ext.isObject(newId)) {
-                        this.changeNodeAttributes(
-                            node, nodeId, newId.id,
-                            newId.idForPath,
-                            newId.pendingCount,
-                            newId.isSelectable
-                        );
+                        this.changeNodeAttributes(conf);
                     }
                 }
             break;
@@ -1277,21 +1219,43 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
      * Does also re-create an entry in pendingItemStore and update the child node
      * count of the parent node target attributes.
      *
-     * @param {Ext.tree.Node} node
-     * @param {String} oldId
-     * @param {String} newId
-     * @param {String} idForPath
-     * @param {Number} pendingCount
-     * @param {Number} isSelectable
+     * @param {Object} conf with the following properties:
+     *  - String} mode
+     *  - {String} oldParentId
+     *  - {Ext.tree.Node} node
+     *  - {String} oldId
+     *  - {String} newId
+     *  - {String} idForPath
+     *  - {Number} pendingCount
+     *  -{Number} isSelectable
      *
      * @throws {conjoon.mail.folder.base.ParentFolderNotFoundException} if no
      * parentfolder for the specified folder was found.
      */
-    changeNodeAttributes : function(
-        node, oldId, newId, idForPath, pendingCount, isSelectable
-    ) {
+    changeNodeAttributes : function(conf) {
 
-        var parentNode = node.parentNode;
+        var me = this,
+            node = conf.node,
+            parentNode = node.parentNode,
+            mode = conf.mode,
+            oldParentId = conf.oldParentId,
+            oldId = conf.nodeId,
+            newId = conf.newId,
+            idForPath = conf.idForPath,
+            pendingCount = conf.pendingCount,
+            isSelectable = conf.isSelectable,
+            oldParentNode = me.getNodeById(oldParentId);
+
+        // get old parentNode
+        if (mode != 'add') {
+            if (!oldParentNode) {
+                throw new conjoon.mail.folder.base.ParentFolderNotFoundException(
+                    "Expected old parent folder was not found"
+                );
+            }
+
+            oldParentNode.attributes.childCount = oldParentNode.childNodes.length;
+        }
 
         if (!parentNode) {
             throw new conjoon.mail.folder.base.ParentFolderNotFoundException(

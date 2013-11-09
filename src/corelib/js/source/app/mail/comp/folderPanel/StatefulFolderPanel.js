@@ -111,43 +111,12 @@ Ext.defineClass('conjoon.mail.comp.folderPanel.StatefulFolderPanel', {
     /**
      * @inheritdoc
      */
+    onTreeEditSuccess : function(response, parameters) {
 
-    onNodeEditSuccess : function(response, parameters) {
         var me = this,
             StatefulFolderPanel = conjoon.mail.comp.folderPanel.StatefulFolderPanel;
 
-        if (StatefulFolderPanel.superclass.onNodeEditSuccess.apply(me, arguments) === true) {
-            me.fireEvent('folderstructurechange', me);
-            return true;
-        }
-
-        return false;
-    },
-
-    /**
-     * @inheritdoc
-     */
-    onNodeMoveSuccess : function(response, parameters) {
-        var me = this,
-            StatefulFolderPanel = conjoon.mail.comp.folderPanel.StatefulFolderPanel;
-
-        if (StatefulFolderPanel.superclass.onNodeMoveSuccess.apply(me, arguments) === true) {
-            me.fireEvent('folderstructurechange', me);
-            return true;
-        }
-
-        return false;
-    },
-
-    /**
-     * @inheritdoc
-     */
-    onNodeAddSuccess : function(response, parameters)
-    {
-        var me = this,
-            StatefulFolderPanel = conjoon.mail.comp.folderPanel.StatefulFolderPanel;
-
-        if (StatefulFolderPanel.superclass.onNodeAddSuccess.apply(me, arguments) === true) {
+        if (StatefulFolderPanel.superclass.onTreeEditSuccess.apply(me, arguments) === true) {
             me.fireEvent('folderstructurechange', me);
             return true;
         }
