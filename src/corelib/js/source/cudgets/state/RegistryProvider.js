@@ -78,7 +78,8 @@ com.conjoon.cudgets.state.RegistryProvider = Ext.extend(Ext.state.Provider, {
      */
     set : function(name, value){
         this.registry.setValues({
-            values : [{key : this.getPathForName(name), value : Ext.util.JSON.encode(value)}]
+            values : [{key : this.getPathForName(name), value : Ext.util.JSON.encode(value)}],
+            buffer : true
         });
         this.fireEvent("statechange", this, name, value);
     },
