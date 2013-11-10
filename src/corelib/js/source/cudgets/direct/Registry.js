@@ -64,13 +64,32 @@ com.conjoon.cudgets.direct.Registry = function(config) {
      */
     this.pathCache = [];
 
+    /**
+     * @type {Array} requestQueue collects requests which should get send to the server.
+     * If buffering is true, the queue will not be emptied - send - to the server
+     * until the timeout runs out.
+     */
+    this.requestQueue = [];
 
+    /**
+     * The delay task which will be used to buffer value changes before a request to
+     * persist these changes is sent to the server.
+     * @type {Object}
+     */
+    this.bufferTask = null;
 
     Ext.apply(this, config);
 
 };
 
 com.conjoon.cudgets.direct.Registry.prototype = {
+
+    /**
+     * Timeout for buffering values before they get send to the server. In Milliseconds.
+     * Defaults to 1000.
+     * @cfg {Number} bufferTimeout
+     */
+    bufferTimeout : 1000,
 
     /**
      * Provider on which set/getEntries can be called directly.
@@ -517,6 +536,8 @@ com.conjoon.cudgets.direct.Registry.prototype = {
      * entries in the registry.
      *
      * @param {Object} config An object with the following key/value pairs:
+     * - buffer: boolean, set to true to buffer changes before they get send to the
+     *  server. Timeout for buffered changes can be found in @#bufferTimeout
      * - values: Array an array with key/value pairs
      * - beforewrite: function to be called before data gets send to the
      * server. You can return "false" with this callback - no data will be send
@@ -603,64 +624,124 @@ com.conjoon.cudgets.direct.Registry.prototype = {
 
         if (cfValues.length != 0) {
 
-            var scope = config.scope ? config.scope : window;
+            if (config.buffer === true) {
 
-            if (config.beforewrite) {
-                var send = config.beforewrite.call(scope, cfValues);
+                if (me.bufferTask) {
+                    me.requestQueue.push(cfValues);
+                } else {
+                    me.requestQueue.push(cfValues);
+                    me.bufferTask = new Ext.util.DelayedTask(function(config) {
 
-                if (send === false) {
-                    this.commit();
-                    return false;
-                }
-            }
+                        var me = this,
+                            vals = {},
+                            finVals = [],
+                            requestQueue = me.requestQueue,
+                            currOut, currIn, i, a, len, lena;
 
-            this.directProvider.setEntries(
-                cfValues,
-                function(provider, response) {
-
-                    var succ = !response || !response.result
-                               ? null
-                               : response && response.result
-                                 ? response.result.success
-                                 : null;
-
-                    if (succ === null) {
-                        me.reject();
-                        if (config.failure) {
-                            config.failure.call(scope, response, [], cfValues);
-                        }
-                    } else if (succ === false) {
-                        var failed = response.result.failed;
-                        var upd    = [];
-                        var ff     = [];
-
-                        me.commitWithout(failed);
-
-                        for (var i = 0, len = cfValues.length; i < len; i++) {
-                            if (ff.indexOf(cfValues[i]['key']) != -1) {
-                                ff.push(cfValues[i]);
-                            } else {
-                                upd.push(cfValues[i]);
+                        for (i = 0, len = requestQueue.length; i < len; i++) {
+                            currOut = requestQueue[i];
+                            for (a = 0, lena = currOut.length; a < lena; a++) {
+                                currIn = currOut[a];
+                                vals[currIn.key] = currIn.value;
                             }
                         }
-
-                        if (config.failure) {
-                            config.failure.call(scope, response, upd, ff);
+                        for (var i in vals) {
+                            finVals.push({
+                                key : i,
+                                value : vals[i]
+                            });
                         }
-                    } else {
-                        me.commit();
 
-                        if (config.success) {
-                            config.success.call(scope, response, cfValues, []);
-                        }
-                    }
+                        me.bufferTask = null;
+                        me.requestQueue = [];
+                        me.startRequest(finVals, config);
+
+                    }, me, [config]);
+                    me.bufferTask.delay(me.bufferTimeout);
                 }
-            );
 
+            } else {
+                me.startRequest(cfValues, config);
+            }
+
+            // state unaware! What happens with the task? Return true for now.
             return true;
+
         }
 
         return false;
+    },
+
+    /**
+     * Inits sending changed values of this regstry to the attached backend.
+     *
+     * @param {Object} cfValues
+     * @param {Object} config
+     *
+     * @return {Boolean}
+     *
+     * @protected
+     */
+    startRequest : function(cfValues, config) {
+
+        var me = this,
+            scope = config.scope
+                    ? config.scope
+                    : window;
+
+        if (config.beforewrite) {
+            var send = config.beforewrite.call(scope, cfValues);
+
+            if (send === false) {
+                me.commit();
+                return false;
+            }
+        }
+
+        me.directProvider.setEntries(
+            cfValues,
+            function(provider, response) {
+
+                var succ = !response || !response.result
+                    ? null
+                    : response && response.result
+                    ? response.result.success
+                    : null;
+
+                if (succ === null) {
+                    me.reject();
+                    if (config.failure) {
+                        config.failure.call(scope, response, [], cfValues);
+                    }
+                } else if (succ === false) {
+                    var failed = response.result.failed;
+                    var upd    = [];
+                    var ff     = [];
+
+                    me.commitWithout(failed);
+
+                    for (var i = 0, len = cfValues.length; i < len; i++) {
+                        if (ff.indexOf(cfValues[i]['key']) != -1) {
+                            ff.push(cfValues[i]);
+                        } else {
+                            upd.push(cfValues[i]);
+                        }
+                    }
+
+                    if (config.failure) {
+                        config.failure.call(scope, response, upd, ff);
+                    }
+                } else {
+                    me.commit();
+
+                    if (config.success) {
+                        config.success.call(scope, response, cfValues, []);
+                    }
+                }
+            }
+        );
+
+        return true;
     },
 
     /**
