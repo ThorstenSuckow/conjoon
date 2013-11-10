@@ -106,3 +106,9 @@ INSERT INTO `{DATABASE.TABLE.PREFIX}registry_values` (`registry_id`, `user_id`, 
 ('25', '0', 'folderTree', '', 'STRING', '1');
 INSERT INTO `{DATABASE.TABLE.PREFIX}registry_values` (`registry_id`, `user_id`, `name`, `value`, `type`, `is_editable`) VALUES
 ('23', '0', 'contentPanel', '', 'STRING', '1');
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry_values` (`registry_id`, `user_id`, `name`, `value`, `type`, `is_editable`) VALUES
+('25', '0', 'previewButton', '', 'STRING', '1');
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry_values` (`registry_id`, `user_id`, `name`, `value`, `type`, `is_editable`) VALUES
+('25', '0', 'rightPreview', '', 'STRING', '1');
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry_values` (`registry_id`, `user_id`, `name`, `value`, `type`, `is_editable`) VALUES
+('25', '0', 'bottomPreview', '', 'STRING', '1');

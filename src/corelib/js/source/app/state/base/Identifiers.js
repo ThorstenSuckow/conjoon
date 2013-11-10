@@ -25,6 +25,9 @@ conjoon.state.base.Identifiers = {
     emailModule : {
 
         contentPanel : {
+            previewButton : '/emailModule/contentPanel/previewButton',
+            rightPreview : '/emailModule/contentPanel/rightPreview',
+            bottomPreview  : '/emailModule/contentPanel/bottomPreview',
             folderTree : '/emailModule/contentPanel/folderTree'
         }
 

@@ -38,6 +38,7 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
 
     initComponent : function()
     {
+        var me = this;
 
         this.addEvents({
              /**
@@ -94,16 +95,36 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
                     id       : 'com-conjoon-groupware-email-rightPreview',
                     layout   : 'fit',
                     hideMode : 'offsets',
+                    stateful : true,
+                    stateId : conjoon.state.base.Identifiers.emailModule.contentPanel.rightPreview,
+                    stateEvents : ['show', 'hide', 'resize'],
+                    applyState : function(state) {
+                        Ext.Container.prototype.applyState.apply(this, arguments);
+
+                        if (state.hidden === false) {
+                            this.add(me.preview);
+                        }
+                    },
+                    getState : function() {
+                        return {
+                            width : this.getWidth(),
+                            hidden : !this.isVisible()
+                        };
+                    },
                     region   : 'east',
                     split    : true,
                     hidden   : true,
                     listeners : {
                         render : {
-                            fn : function() {
-                                var w = Math.round((this.centerPanel.el.getWidth()
-                                        - this.treePanel.el.getWidth())/2);
-                                Ext.getCmp('com-conjoon-groupware-email-rightPreview')
-                                    .width = w;
+                            fn : function(cont) {
+                                if (cont.width && cont.width <
+                                    this.centerPanel.el.getWidth() - this.treePanel.el.getWidth()) {
+                                    return;
+                                }
+
+                                var w = Math.round((this.centerPanel.el.getWidth() -
+                                        this.treePanel.el.getWidth())/2);
+                                cont.width = w;
                             }
                         },
                         scope : this
@@ -111,17 +132,40 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
             }), new Ext.Container({
                 id        : 'com-conjoon-groupware-email-bottomPreview',
                 layout    : 'fit',
-                items     : this.preview,
-               stateful : false,
+                stateful : true,
+                stateId : conjoon.state.base.Identifiers.emailModule.contentPanel.bottomPreview,
+                stateEvents : ['show', 'hide', 'resize'],
+                applyState : function(state) {
+                    Ext.Container.prototype.applyState.apply(this, arguments);
+
+                    // check for undefined here should make sure that the
+                    // preview is added to this container if no state information is
+                    // available.
+                    // there might be very rare cases when this breaks (state info for right preview
+                    // available, preview added there, right preview visible etc....),
+                    // but for now its okay
+                    if (state.hidden === false || state.hidden === undefined) {
+                        this.add(me.preview);
+                    }
+                },
+                getState : function() {
+                    return {
+                        height : this.getHeight(),
+                        hidden : !this.isVisible()
+                    };
+                },
                 hideMode  : 'offsets',
                 split     : true,
                 region    : 'south',
                 listeners : {
                     render : {
-                        fn : function() {
+                        fn : function(cont) {
+                            if (cont.height && cont.height < this.ownerCt.body.getHeight()) {
+                                return;
+
+                            }
                             var h = Math.round(this.ownerCt.body.getHeight()/2);
-                            Ext.getCmp('com-conjoon-groupware-email-bottomPreview')
-                                .height = h;
+                            cont.height = h;
                         }
                     },
                     scope : this
@@ -243,6 +287,46 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
             split        : true,
             enableToggle : true,
             hidden       : true,
+            stateId      : conjoon.state.base.Identifiers.emailModule.contentPanel.previewButton,
+            stateEvents  : ['toggle'],
+            stateful : true,
+            applyState : function(state) {
+                // hidePreview() will trigger the saveState for the button so the
+                // state of the menu items gets saved when they are clicked
+                // and hidePreview is invoked
+                var checkedMenuItemId = state.checkedMenuItemId,
+                    items = this.menu.items.items;
+                delete state.checkedMenuItemId;
+
+                Ext.Toolbar.SplitButton.prototype.applyState.apply(this, arguments);
+
+                for (var i = 0, len = items.length; i < len; i++) {
+                    items[i].checked = items[i].itemId == 'menuItemBottom' && !checkedMenuItemId
+                                       ? true
+                                       : false;
+                    if (items[i].itemId == checkedMenuItemId) {
+                        items[i].checked = true;
+                    }
+                }
+            },
+            getState : function() {
+
+                var items = this.menu.items.items,
+                    checkedItemId = null;
+
+
+                for (var i = 0, len = items.length; i < len; i++) {
+                    if (items[i].checked) {
+                        checkedItemId = items[i].itemId;
+                        break;
+                    }
+                }
+
+                return {
+                    pressed : this.pressed,
+                    checkedMenuItemId : checkedItemId
+                };
+            },
             pressed      : true,
             handler      : this.hidePreview,
             scope        : this,
@@ -253,20 +337,24 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
                 id    : 'com.conjoon.groupware.email.emailPreviewMenu',
                 cls   : 'com-conjoon-groupware-email-EmailPanel-toolbar-previewMenu',
                 items : [{
+                itemId       : 'menuItemBottom',
                 iconCls      : 'com-conjoon-groupware-email-EmailPanel-toolbar-previewBottomButton-icon',
                 text         : com.conjoon.Gettext.gettext("bottom"),
+                // is being reset in appylState of the owning splitbutton
                 checked      : true,
                 group        : 'com.conjoon.groupware.email.emailPreviewGroup',
                 checkHandler : this.hidePreview,
                 scope        : this
-              },{
+              }, {
+                itemId       : 'menuItemRight',
                 iconCls      : 'com-conjoon-groupware-email-EmailPanel-toolbar-previewRightButton-icon',
                 text         : com.conjoon.Gettext.gettext("right"),
                 checked      : false,
                 group        : 'com.conjoon.groupware.email.emailPreviewGroup',
                 checkHandler : this.hidePreview,
                 scope        : this
-              },{
+              }, {
+                itemId       : 'menuItemHide',
                 iconCls      : 'com-conjoon-groupware-email-EmailPanel-toolbar-previewHideButton-icon',
                 text         : com.conjoon.Gettext.gettext("hide"),
                 checked      : false,
@@ -939,6 +1027,9 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
         var right  = Ext.getCmp('com-conjoon-groupware-email-rightPreview');
         var bot    = Ext.getCmp('com-conjoon-groupware-email-bottomPreview');
         var button = this.previewButton;
+
+        // trigger state save for the button since it will take care of checked menu items
+        button.saveState();
 
         if (btn instanceof Ext.Toolbar.SplitButton) {
             if (btn.pressed) {
