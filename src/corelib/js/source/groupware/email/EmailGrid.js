@@ -21,9 +21,24 @@ com.conjoon.groupware.email.EmailGrid = Ext.extend(Ext.ux.grid.livegrid.GridPane
      */
     controller : null,
 
+    /**
+     * Saves the state of the nodes so that each folder has its own
+     * grid state.
+     * @type {Object}
+     */
+    folderStates : null,
+
+    /**
+     * The currently used node id for the state
+     * @type {Mixed}
+     */
+    stateNodeId : null,
+
     initComponent : function()
     {
+        var me = this;
 
+        me.folderStates = {};
 
     // ------------------------- set up buffered grid ------------------------------
 
@@ -135,6 +150,8 @@ com.conjoon.groupware.email.EmailGrid = Ext.extend(Ext.ux.grid.livegrid.GridPane
         this.colModel = new com.conjoon.groupware.email.data.DefaultColumnModel();
 
         Ext.apply(this, {
+            stateful : true,
+            stateId : conjoon.state.base.Identifiers.emailModule.contentPanel.mailItemsGrid,
             loadMask       : {msg: com.conjoon.Gettext.gettext("Loading...")},
             autoScroll     : true,
             plugins     : [
@@ -149,6 +166,59 @@ com.conjoon.groupware.email.EmailGrid = Ext.extend(Ext.ux.grid.livegrid.GridPane
         });
 
         com.conjoon.groupware.email.EmailGrid.superclass.initComponent.call(this);
+    },
+
+    /**
+     * Returns the state for the currently selected folder.
+     *
+     * @return {Object}
+     */
+    getState : function() {
+
+        var me = this,
+            clkNodeId = me.controller.clkNodeId;
+
+        if (me.stateNodeId != clkNodeId) {
+            return;
+        }
+
+        me.folderStates[clkNodeId] =
+            com.conjoon.groupware.email.EmailGrid.superclass.getState.apply(me);
+
+        return me.folderStates;
+
+    },
+
+    /**
+     * Applies the state for this grid based on the specified node id.
+     * If the node id is not submitted, the state will be assigned to this
+     * folderStates, which will then serve as the "state" container.
+     * This method gets called from outside whenever the selection in the
+     * folderTreePanel changes.
+     *
+     * @param {Object} state The state object to assign to this.folderStates, or
+     * to the grid representing the contents of the specified clkNodeId
+     * @param {String} clkNodeId The id of the tree node representing the mail folder
+     * currently being investigated
+     */
+    applyState : function(state, clkNodeId) {
+
+        var me = this;
+
+        if (!clkNodeId) {
+            me.folderStates = state;
+            return;
+        }
+
+        me.stateNodeId = clkNodeId;
+
+        state = state[clkNodeId];
+
+        if (!state) {
+            return;
+        }
+        com.conjoon.groupware.email.EmailGrid.superclass.applyState.call(me, state);
+
     },
 
     initEvents : function()

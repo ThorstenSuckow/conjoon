@@ -25,6 +25,7 @@ conjoon.state.base.Identifiers = {
     emailModule : {
 
         contentPanel : {
+            mailItemsGrid : '/emailModule/contentPanel/mailItemsGrid',
             previewButton : '/emailModule/contentPanel/previewButton',
             rightPreview : '/emailModule/contentPanel/rightPreview',
             bottomPreview  : '/emailModule/contentPanel/bottomPreview',

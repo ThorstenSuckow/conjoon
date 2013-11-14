@@ -1137,7 +1137,7 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
                   }
                   : {};
 
-        params = Ext.applyIf(params, obj);
+        Ext.applyIf(params, obj);
     },
 
     /**
@@ -1906,6 +1906,16 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
 
                 if (!attr.isSelectable && ar) {
                     this.gridPanel.loadMask.hide();
+                }
+
+                if (attr.isSelectable) {
+
+                    this.gridPanel.installStateEvents(false);
+                    this.gridPanel.applyState(
+                        Ext.state.Manager.get(this.gridPanel.stateId),
+                        this.clkNodeId
+                    );
+                    this.gridPanel.installStateEvents(true);
                 }
 
                 this.gridPanel.view.reset((attr.isSelectable ? true : false));
