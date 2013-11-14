@@ -1,6 +1,6 @@
 /**
  * Ext.ux.grid.livegrid.DragZone
- * Copyright (c) 2007-2012, http://www.siteartwork.de
+ * Copyright (c) 2007-2013, http://www.siteartwork.de
  *
  * Ext.ux.grid.livegrid.DragZone is licensed under the terms of the
  *                  GNU Open Source GPL 3.0

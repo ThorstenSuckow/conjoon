@@ -1,4 +1,9 @@
-﻿Version 0.7.1 (GPL)
+﻿Version 0.8 (GPL)
+14-November-2013
+ - enhancement: livegrid is now staful, thus able to restore selections and
+scroll position upon load
+
+Version 0.7.1 (GPL)
 09-December-2012
  - fixed: fixed an issue where references to selected records would get lost
 after reloading or sorting the store

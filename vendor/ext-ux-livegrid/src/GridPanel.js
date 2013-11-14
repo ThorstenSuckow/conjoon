@@ -1,6 +1,6 @@
 /**
  * Ext.ux.grid.livegrid.GridPanel
- * Copyright (c) 2007-2012, http://www.siteartwork.de
+ * Copyright (c) 2007-2013, http://www.siteartwork.de
  *
  * Ext.ux.grid.livegrid.GridPanel is licensed under the terms of the
  *                  GNU Open Source GPL 3.0
@@ -44,6 +44,125 @@ Ext.ux.grid.livegrid.GridPanel = Ext.extend(Ext.grid.GridPanel, {
         }
 
         Ext.ux.grid.livegrid.GridPanel.superclass.initComponent.call(this);
+    },
+
+    /**
+     * Overriden to make sure the events fired from the grid's view and store
+     * are considered state events.
+     *
+     * @inheritdoc
+     */
+    initStateEvents : function(){
+
+        var me = this;
+
+        Ext.ux.grid.livegrid.GridPanel.superclass.initStateEvents.call(me);
+
+        this.installStateEvents(true);
+    },
+
+    /**
+     * Removes all state events listener attached to this livegrid.
+     * The events removed are only those which are explicitely set
+     * for the livegrid's view, store and selectionmodel.
+     *
+     * @param {Boolean} install true to install the events, otherwise false
+     */
+    installStateEvents : function(install) {
+
+        var me = this;
+
+        if (install === false) {
+            me.mun(me.view, 'buffer', me.saveState, me);
+            me.mun(me.view, 'cursormove', me.saveState, me);
+            me.mun(me.store, 'remove', me.saveState, me);
+            me.mun(me.store, 'add', me.saveState, me);
+            me.mun(me.store, 'bulkremove', me.saveState);
+            me.mun(me.store, 'clear', me.saveState, me);
+            me.mun(me.selModel, 'selectionchange', me.saveState, me);
+        } else {
+            var opt = {delay : 100};
+            me.mon(me.view, 'buffer', me.saveState, me, opt);
+            me.mon(me.view, 'cursormove', me.saveState, me, opt);
+            me.mon(me.store, 'remove', me.saveState, me, opt);
+            me.mon(me.store, 'add', me.saveState, me, opt);
+            me.mon(me.store, 'bulkremove', me.saveState, me, opt);
+            me.mon(me.store, 'clear', me.saveState, me, opt);
+            me.mon(me.selModel, 'selectionchange', me.saveState, me, opt);
+        }
+
+    },
+
+    /**
+     * Overriden to make sure that rowIndex and buffer from the livegrid's view/store
+     * are considered when returning states.
+     *
+     * @inheritdoc
+     */
+    getState : function() {
+
+        var state = null,
+            me = this;
+
+        state = Ext.ux.grid.livegrid.GridPanel.superclass.getState.apply(me);
+
+        Ext.apply(state, {
+            bufferRange : me.store.bufferRange,
+            rowIndex : me.view.rowIndex,
+            lastScrollPos : me.view.lastScrollPos,
+            lastRowIndex : me.view.lastRowIndex,
+            lastIndex : me.view.lastIndex,
+            selections : me.selModel.getState()
+        });
+
+        return state;
+    },
+
+    /**
+     * Overridden to make sure that the store is properly loaded with the state
+     * values.
+     *
+     * @inheritdoc
+     */
+    applyState : function(state) {
+
+        var me = this,
+            selections = state.selections,
+            bufferRange = state.bufferRange
+                ? state.bufferRange[0]
+                : 0,
+            conf = {
+                rowIndex :  state.rowIndex,
+                lastScrollPos : state.lastScrollPos,
+                lastRowIndex : state.lastRowIndex,
+                lastIndex : state.lastIndex
+            };
+
+        var beforeLoadCallback = Ext.createDelegate(
+            function(store, options, conf, selections, bufferRange) {
+
+                Ext.apply(options, {
+                    forceStart : true,
+                    callback : function() {
+                        me.selModel.clearSelections(true);
+
+                        me.view.reset(conf);
+
+                        if (selections) {
+                            me.selModel.applyState(selections);
+                        }
+                    }
+                });
+
+                Ext.apply(options.params, {start : bufferRange});
+
+            }, me, [conf, selections, bufferRange], true
+        );
+
+        Ext.ux.grid.livegrid.GridPanel.superclass.applyState.apply(me, arguments);
+
+        me.store.on('beforeload', beforeLoadCallback, me, {single : true});
+
     },
 
     /**

@@ -1,6 +1,6 @@
 /**
  * Ext.ux.grid.livegrid.GridPanel
- * Copyright (c) 2007-2012, http://www.siteartwork.de
+ * Copyright (c) 2007-2013, http://www.siteartwork.de
  *
  * Ext.ux.grid.livegrid.GridPanel is licensed under the terms of the
  *                  GNU Open Source GPL 3.0
@@ -47,6 +47,125 @@ Ext.ux.grid.livegrid.GridPanel = Ext.extend(Ext.grid.GridPanel, {
     },
 
     /**
+     * Overriden to make sure the events fired from the grid's view and store
+     * are considered state events.
+     *
+     * @inheritdoc
+     */
+    initStateEvents : function(){
+
+        var me = this;
+
+        Ext.ux.grid.livegrid.GridPanel.superclass.initStateEvents.call(me);
+
+        this.installStateEvents(true);
+    },
+
+    /**
+     * Removes all state events listener attached to this livegrid.
+     * The events removed are only those which are explicitely set
+     * for the livegrid's view, store and selectionmodel.
+     *
+     * @param {Boolean} install true to install the events, otherwise false
+     */
+    installStateEvents : function(install) {
+
+        var me = this;
+
+        if (install === false) {
+            me.mun(me.view, 'buffer', me.saveState, me);
+            me.mun(me.view, 'cursormove', me.saveState, me);
+            me.mun(me.store, 'remove', me.saveState, me);
+            me.mun(me.store, 'add', me.saveState, me);
+            me.mun(me.store, 'bulkremove', me.saveState);
+            me.mun(me.store, 'clear', me.saveState, me);
+            me.mun(me.selModel, 'selectionchange', me.saveState, me);
+        } else {
+            var opt = {delay : 100};
+            me.mon(me.view, 'buffer', me.saveState, me, opt);
+            me.mon(me.view, 'cursormove', me.saveState, me, opt);
+            me.mon(me.store, 'remove', me.saveState, me, opt);
+            me.mon(me.store, 'add', me.saveState, me, opt);
+            me.mon(me.store, 'bulkremove', me.saveState, me, opt);
+            me.mon(me.store, 'clear', me.saveState, me, opt);
+            me.mon(me.selModel, 'selectionchange', me.saveState, me, opt);
+        }
+
+    },
+
+    /**
+     * Overriden to make sure that rowIndex and buffer from the livegrid's view/store
+     * are considered when returning states.
+     *
+     * @inheritdoc
+     */
+    getState : function() {
+
+        var state = null,
+            me = this;
+
+        state = Ext.ux.grid.livegrid.GridPanel.superclass.getState.apply(me);
+
+        Ext.apply(state, {
+            bufferRange : me.store.bufferRange,
+            rowIndex : me.view.rowIndex,
+            lastScrollPos : me.view.lastScrollPos,
+            lastRowIndex : me.view.lastRowIndex,
+            lastIndex : me.view.lastIndex,
+            selections : me.selModel.getState()
+        });
+
+        return state;
+    },
+
+    /**
+     * Overridden to make sure that the store is properly loaded with the state
+     * values.
+     *
+     * @inheritdoc
+     */
+    applyState : function(state) {
+
+        var me = this,
+            selections = state.selections,
+            bufferRange = state.bufferRange
+                ? state.bufferRange[0]
+                : 0,
+            conf = {
+                rowIndex :  state.rowIndex,
+                lastScrollPos : state.lastScrollPos,
+                lastRowIndex : state.lastRowIndex,
+                lastIndex : state.lastIndex
+            };
+
+        var beforeLoadCallback = Ext.createDelegate(
+            function(store, options, conf, selections, bufferRange) {
+
+                Ext.apply(options, {
+                    forceStart : true,
+                    callback : function() {
+                        me.selModel.clearSelections(true);
+
+                        me.view.reset(conf);
+
+                        if (selections) {
+                            me.selModel.applyState(selections);
+                        }
+                    }
+                });
+
+                Ext.apply(options.params, {start : bufferRange});
+
+            }, me, [conf, selections, bufferRange], true
+        );
+
+        Ext.ux.grid.livegrid.GridPanel.superclass.applyState.apply(me, arguments);
+
+        me.store.on('beforeload', beforeLoadCallback, me, {single : true});
+
+    },
+
+    /**
      * Overriden to make sure the attached store loads only when the
      * grid has been fully rendered if, and only if the store's
      * "autoLoad" property is set to true.
@@ -83,9 +202,10 @@ Ext.ux.grid.livegrid.GridPanel = Ext.extend(Ext.grid.GridPanel, {
         return ret;
     }
 
-});/**
+});
+/**
  * Ext.ux.grid.livegrid.GridView
- * Copyright (c) 2007-2012, http://www.siteartwork.de
+ * Copyright (c) 2007-2013, http://www.siteartwork.de
  *
  * Ext.ux.grid.livegrid.GridView is licensed under the terms of the
  *                  GNU Open Source GPL 3.0
@@ -232,12 +352,12 @@ Ext.ux.grid.livegrid.GridView = function(config) {
      */
     this.templates.master = new Ext.Template(
         '<div class="x-grid3" hidefocus="true"><div class="liveScroller"><div></div><div></div><div></div></div>',
-            '<div class="x-grid3-viewport"">',
-                '<div class="x-grid3-header"><div class="x-grid3-header-inner"><div class="x-grid3-header-offset" style="{ostyle}">{header}</div></div><div class="x-clear"></div></div>',
-                '<div class="x-grid3-scroller" style="overflow-y:hidden !important;"><div class="x-grid3-body" style="{bstyle}">{body}</div><a href="#" class="x-grid3-focus" tabIndex="-1"></a></div>',
-            "</div>",
-            '<div class="x-grid3-resize-marker">&#160;</div>',
-            '<div class="x-grid3-resize-proxy">&#160;</div>',
+        '<div class="x-grid3-viewport"">',
+        '<div class="x-grid3-header"><div class="x-grid3-header-inner"><div class="x-grid3-header-offset" style="{ostyle}">{header}</div></div><div class="x-clear"></div></div>',
+        '<div class="x-grid3-scroller" style="overflow-y:hidden !important;"><div class="x-grid3-body" style="{bstyle}">{body}</div><a href="#" class="x-grid3-focus" tabIndex="-1"></a></div>',
+        "</div>",
+        '<div class="x-grid3-resize-marker">&#160;</div>',
+        '<div class="x-grid3-resize-proxy">&#160;</div>',
         "</div>"
     );
 
@@ -257,14 +377,14 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
     /**
      * Stores the height of the header. Needed for recalculating scroller inset height.
      * @param {Number}
-     */
+        */
     hdHeight : 0,
 
     /**
      * Indicates wether the last row in the grid is clipped and thus not fully display.
      * 1 if clipped, otherwise 0.
      * @param {Number}
-     */
+        */
     rowClipped : 0,
 
 
@@ -272,7 +392,7 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
      * This is the actual y-scroller that does control sending request to the server
      * based upon the position of the scrolling cursor.
      * @param {Ext.Element}
-     */
+        */
     liveScroller : null,
 
     /**
@@ -282,7 +402,7 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
      * There is a total of 3 divs responsible for the scroll amount to prevent issues
      * with the max number of pxiels a div alone can grow in height.
      * @param {native HTMLObject}
-     */
+        */
     liveScrollerInsets : null,
 
     /**
@@ -291,65 +411,65 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
      * various calculations during the lifetime of the grid component, such as
      * the height of the scroller and the number of visible rows.
      * @param {Number}
-     */
+        */
     rowHeight : -1,
 
     /**
      * Stores the number of visible rows that have to be rendered.
      * @param {Number}
-     */
+        */
     visibleRows : 1,
 
     /**
      * Stores the last offset relative to a previously scroll action. This is
      * needed for deciding wether the user scrolls up or down.
      * @param {Number}
-     */
+        */
     lastIndex : -1,
 
     /**
      * Stores the last visible row at position "0" in the table view before
      * a new scroll event was created and fired.
      * @param {Number}
-     */
+        */
     lastRowIndex : 0,
 
     /**
      * Stores the value of the <tt>liveScroller</tt>'s <tt>scrollTop</tt> DOM
      * property.
      * @param {Number}
-     */
+        */
     lastScrollPos : 0,
 
     /**
      * The current index of the row in the model that is displayed as the first
      * visible row in the view.
      * @param {Number}
-     */
+        */
     rowIndex : 0,
 
     /**
-    * Set to <tt>true</tt> if the store is busy with loading new data.
-    * @param {Boolean}
-    */
+     * Set to <tt>true</tt> if the store is busy with loading new data.
+     * @param {Boolean}
+        */
     isBuffering : false,
 
-	/**
-	 * If a request for new data was made and the user scrolls to a new position
-	 * that lays not within the requested range of the new data, the queue will
-	 * hold the latest requested position. If the buffering succeeds and the value
-	 * of requestQueue is not within the range of the current buffer, data may be
-	 * re-requested.
-	 *
-	 * @param {Number}
-	 */
+    /**
+     * If a request for new data was made and the user scrolls to a new position
+     * that lays not within the requested range of the new data, the queue will
+     * hold the latest requested position. If the buffering succeeds and the value
+     * of requestQueue is not within the range of the current buffer, data may be
+     * re-requested.
+     *
+     * @param {Number}
+        */
     requestQueue : -1,
 
     /**
      * An {@Ext.LoadMask} config that will be shown when a request to data was made
      * and there are no rows in the buffer left to render.
      * @param {Object}
-     */
+        */
     loadMask : false,
 
     /**
@@ -364,7 +484,7 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
      * are still rows in the buffer that can be rendered before the request
      * finishes.
      * @param {Boolean}
-     */
+        */
     isPrebuffering : false,
 
     /**
@@ -385,7 +505,9 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
      * forceReload is set to true.
      *
      * @param {Boolean} forceReload <tt>true</tt> to reload the buffers contents,
-     *                              othwerwise <tt>false</tt>
+     *                              othwerwise <tt>false</tt> or an object configuration
+     *                              with which the data gets initialized. In this case "reset"
+     *                              behaves as if forceReload was set to false
      * @params {Object} addParams optional object of properties which get treated as
      *                            params added to the "options" argument for the
      *                            load() method if forceReload invokes a call
@@ -393,18 +515,23 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
      *
      * @return {Boolean} Whether the store loads after reset(true); returns false
      * if any of the attached beforeload listeners cancels the load-event
+     *
      */
     reset : function(forceReload, addParams)
     {
-        if (forceReload === false) {
+        if (forceReload === false || Ext.isObject(forceReload)) {
+            var conf = forceReload || {};
+
             this.ds.modified = [];
             //this.grid.selModel.clearSelections(true);
-            this.rowIndex      = 0;
-            this.lastScrollPos = 0;
-            this.lastRowIndex = 0;
-            this.lastIndex    = 0;
+
+            this.rowIndex      = conf.rowIndex !== undefined ? conf.rowIndex : 0;
+            this.lastScrollPos = conf.lastScrollPos !== undefined ? conf.lastScrollPos : 0;
+            this.lastRowIndex = conf.lastRowIndex !== undefined ? conf.lastRowIndex : 0;
+            this.lastIndex    = conf.lastIndex !== undefined ? conf.lastIndex : 0;
+
             this.adjustVisibleRows();
-            this.adjustScrollerPos(-this.liveScroller.dom.scrollTop, true);
+
             this.showLoadMask(false);
 
             var _ofn = this.processRows;
@@ -415,10 +542,16 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
             this.processRows = _ofn;
             this.processRows(0);
 
-            this.fireEvent('cursormove', this, 0,
-                           Math.min(this.ds.totalLength, this.visibleRows-this.rowClipped),
-                           this.ds.totalLength);
-            this.fireEvent('reset', this, forceReload);
+            this.adjustScrollerPos(-this.liveScroller.dom.scrollTop, true);
+            this.adjustScrollerPos(
+                this.rowIndex * this.rowHeight,
+                true
+            );
+
+            this.fireEvent('cursormove', this, this.rowIndex,
+                Math.min(this.ds.totalLength, this.visibleRows-this.rowClipped),
+                this.ds.totalLength);
+            this.fireEvent('reset', this, false);
             return false;
         } else {
             var params = Ext.apply({}, addParams),
@@ -427,8 +560,8 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
             var pn = this.ds.paramNames,
                 cp = {};
 
-                cp[pn.dir]  = sInfo.direction;
-                cp[pn.sort] = sInfo.field;
+            cp[pn.dir]  = sInfo.direction;
+            cp[pn.sort] = sInfo.field;
 
             if (sInfo) {
                 params = Ext.apply(params, cp);
@@ -516,7 +649,11 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
     // private
     renderBody : function()
     {
-        var markup = this.renderRows(0, this.visibleRows-1);
+        var markup = this.renderRows(
+            this.rowIndex - this.ds.bufferRange[0],
+            (this.rowIndex - this.ds.bufferRange[0]) +
+                (this.visibleRows-1)
+        );
         return this.templates.body.apply({rows: markup});
     },
 
@@ -547,9 +684,9 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
         var E = Ext.Element;
 
         var el = this.grid.getGridEl().dom.firstChild;
-	    var cs = el.childNodes;
+        var cs = el.childNodes;
 
-	    this.el = new E(el);
+        this.el = new E(el);
 
         this.mainWrap = new E(cs[1]);
 
@@ -564,11 +701,11 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
         this.liveScroller.on('scroll', this.onLiveScroll,  this, {buffer : this.scrollDelay});
 
         var thd = this.mainWrap.dom.firstChild;
-	    this.mainHd = new E(thd);
+        this.mainHd = new E(thd);
 
-	    this.hdHeight = thd.offsetHeight;
+        this.hdHeight = thd.offsetHeight;
 
-	    this.innerHd = this.mainHd.dom.firstChild;
+        this.innerHd = this.mainHd.dom.firstChild;
         this.scroller = new E(this.mainWrap.dom.childNodes[1]);
         if(this.forceFit){
             this.scroller.setStyle('overflow-x', 'hidden');
@@ -578,7 +715,7 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
         // addd the mousewheel event to the table's body
         this.mainBody.on('mousewheel', this.handleWheel,  this);
 
-	    this.focusEl = new E(this.scroller.dom.childNodes[1]);
+        this.focusEl = new E(this.scroller.dom.childNodes[1]);
         this.focusEl.swallowEvent("click", true);
 
         this.resizeMarker = new E(cs[2]);
@@ -586,17 +723,17 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
 
     },
 
-	/**
-	 * Layouts the grid's view taking the scroller into account. The height
-	 * of the scroller gets adjusted depending on the total width of the columns.
-	 * The width of the grid view will be adjusted so the header and the rows do
-	 * not overlap the scroller.
-	 * This method will also compute the row-height based on the first row this
-	 * grid displays and will adjust the number of visible rows if a resize
-	 * of the grid component happened.
-	 * This method overwrites the parents implementation.
-	 */
-	//private
+    /**
+     * Layouts the grid's view taking the scroller into account. The height
+     * of the scroller gets adjusted depending on the total width of the columns.
+     * The width of the grid view will be adjusted so the header and the rows do
+     * not overlap the scroller.
+     * This method will also compute the row-height based on the first row this
+     * grid displays and will adjust the number of visible rows if a resize
+     * of the grid component happened.
+     * This method overwrites the parents implementation.
+     */
+    //private
     layout : function()
     {
         if(!this.mainBody){
@@ -604,8 +741,8 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
         }
         var g = this.grid;
         var c = g.getGridEl(), cm = this.cm,
-                expandCol = g.autoExpandColumn,
-                gv = this;
+            expandCol = g.autoExpandColumn,
+            gv = this;
 
         var csize = c.getSize(true);
 
@@ -796,8 +933,8 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
             index  = removedData[i][1];
 
             viewIndex = (index != Number.MIN_VALUE && index != Number.MAX_VALUE)
-                      ? index + this.ds.bufferRange[0]
-                      : index;
+                ? index + this.ds.bufferRange[0]
+                : index;
 
             if (viewIndex < this.rowIndex) {
                 removedBefore++;
@@ -934,8 +1071,8 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
                 this.processRows(0, undefined, false);
                 // the cursor did virtually move
                 this.fireEvent('cursormove', this, this.rowIndex,
-                               Math.min(this.ds.totalLength, this.visibleRows-this.rowClipped),
-                               this.ds.totalLength);
+                    Math.min(this.ds.totalLength, this.visibleRows-this.rowClipped),
+                    this.ds.totalLength);
 
                 return;
             }
@@ -977,8 +1114,8 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
 
             if (this.lastRowIndex != this.rowIndex) {
                 this.fireEvent('cursormove', this, this.rowIndex,
-                               Math.min(this.ds.totalLength, this.visibleRows-this.rowClipped),
-                               this.ds.totalLength);
+                    Math.min(this.ds.totalLength, this.visibleRows-this.rowClipped),
+                    this.ds.totalLength);
             }
 
             this.adjustVisibleRows();
@@ -1002,8 +1139,8 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
             this.processRows(0, undefined, true);
 
             this.fireEvent('cursormove', this, this.rowIndex,
-                           Math.min(this.ds.totalLength, this.visibleRows-this.rowClipped),
-                           this.ds.totalLength);
+                Math.min(this.ds.totalLength, this.visibleRows-this.rowClipped),
+                this.ds.totalLength);
         }
 
 
@@ -1046,19 +1183,25 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
 
         var apply = Ext.apply;
 
-        apply(options, {
-            scope    : this,
-            callback : function(){
+        if (!options.callback) {
+            options.callback = function(){
                 this.reset(false);
-            },
-            suspendLoadEvent : false
-        });
+            };
+        }
+
+        if (!options.scope) {
+            options.scope = this;
+        }
+
+        options.suspendLoadEvent = false;
 
         var pn = store.paramNames,
             cp = {};
 
-            cp[pn.start] = 0;
-            cp[pn.limit] = this.ds.bufferSize;
+        cp[pn.start] = options.forceStart === true && options.params.start
+            ? options.params.start
+            : 0;
+        cp[pn.limit] = this.ds.bufferSize;
 
         apply(options.params, cp);
 
@@ -1302,8 +1445,8 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
         // compute the range of possible records which could be drawn into the view without
         // causing any spill
         var lastRenderRow = (firstRow == lastRow)
-                          ? lastRow
-                          : Math.min(lastRow,  (this.rowIndex-this.ds.bufferRange[0])+(this.visibleRows-1));
+            ? lastRow
+            : Math.min(lastRow,  (this.rowIndex-this.ds.bufferRange[0])+(this.visibleRows-1));
 
         var html = this.renderRows(firstRow, lastRenderRow);
 
@@ -1363,8 +1506,8 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
         var row = this.getRow(row);
 
         return row
-               ? row.getElementsByTagName('td')[col]
-               : null;
+            ? row.getElementsByTagName('td')[col]
+            : null;
     },
 
     /**
@@ -1377,10 +1520,10 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
         var xy = this.ensureVisible(row, col, hscroll);
 
         if (!xy) {
-        	return;
-		}
+            return;
+        }
 
-		this.focusEl.setXY(xy);
+        this.focusEl.setXY(xy);
 
         if(Ext.isGecko){
             this.focusEl.focus();
@@ -1489,10 +1632,10 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
     isInRange : function(rowIndex)
     {
         var lastRowIndex = Math.min(this.ds.totalLength-1,
-                                    rowIndex + (this.visibleRows-1));
+            rowIndex + (this.visibleRows-1));
 
         return (rowIndex     >= this.ds.bufferRange[0]) &&
-               (lastRowIndex <= this.ds.bufferRange[1]);
+            (lastRowIndex <= this.ds.bufferRange[1]);
     },
 
     /**
@@ -1547,9 +1690,9 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
             }
 
             this.fireEvent('cursormove', this, index,
-                           Math.min(this.ds.totalLength,
-                           this.visibleRows-this.rowClipped),
-                           this.ds.totalLength);
+                Math.min(this.ds.totalLength,
+                    this.visibleRows-this.rowClipped),
+                this.ds.totalLength);
 
             this.requestQueue = index;
             return;
@@ -1565,11 +1708,12 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
 
             // repaint the table's view
             this.replaceLiveRows(index, forceRepaint);
+
             // has to be called AFTER the rowIndex was recalculated
             this.fireEvent('cursormove', this, index,
-                       Math.min(this.ds.totalLength,
-                       this.visibleRows-this.rowClipped),
-                       this.ds.totalLength);
+                Math.min(this.ds.totalLength,
+                    this.visibleRows-this.rowClipped),
+                this.ds.totalLength);
             // lets decide if we can void this method or stay in here for
             // requesting a buffer update
             if (index > lastIndex) { // scrolling down
@@ -1591,7 +1735,6 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
                     return;
                 }
             } else if (index < lastIndex) { // scrolling up
-
                 down = false;
                 // We are scrolling up in the first buffer range we can ever get
                 // Re-buffering would only occur upon scrolling down.
@@ -1679,8 +1822,8 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
             maskMsg.center(this._loadMaskAnchor);
             // this lines will help IE8 to re-calculate the height of the loadmask
             if(Ext.isIE && !(Ext.isIE7 && Ext.isStrict) && this._loadMaskAnchor.getStyle('height') == 'auto'){
-	            mask.setSize(undefined, this._loadMaskAnchor.getHeight());
-	        }
+                mask.setSize(undefined, this._loadMaskAnchor.getHeight());
+            }
         } else {
             mask.setDisplayed(false);
             maskMsg.setDisplayed(false);
@@ -1765,10 +1908,10 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
 
 
     /**
-    * Adjusts the scroller height to make sure each row in the dataset will be
-    * can be displayed, no matter which value the current height of the grid
-    * component equals to.
-    */
+     * Adjusts the scroller height to make sure each row in the dataset will be
+     * can be displayed, no matter which value the current height of the grid
+     * component equals to.
+     */
     // protected
     adjustBufferInset : function()
     {
@@ -1781,8 +1924,8 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
         // displayed and for which a scrollbar needs to be
         // rendered. This does also take clipped rows into account
         var hiddenRows = (ds.totalLength == this.visibleRows-this.rowClipped)
-                       ? 0
-                       : Math.max(0, ds.totalLength-(this.visibleRows-this.rowClipped));
+            ? 0
+            : Math.max(0, ds.totalLength-(this.visibleRows-this.rowClipped));
 
         if (hiddenRows == 0) {
             this.scroller.setWidth(elWidth);
@@ -1797,10 +1940,10 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
 
         // adjust the height of the scrollbar
         var contHeight = liveScrollerDom.parentNode.offsetHeight +
-                         ((ds.totalLength > 0 && scrollbar)
-                         ? - this.horizontalScrollOffset
-                         : 0)
-                         - this.hdHeight;
+            ((ds.totalLength > 0 && scrollbar)
+                ? - this.horizontalScrollOffset
+                : 0)
+            - this.hdHeight;
 
         liveScrollerDom.style.height = Math.max(contHeight, this.horizontalScrollOffset*2)+"px";
 
@@ -1920,14 +2063,14 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
             scrollDom.scrollTop = scrollDom.scrollTop;
             liveScroller.on('scroll', this.onLiveScroll, this, {buffer : this.scrollDelay});
         }
-
     }
 
 
 
-});/**
+});
+/**
  * Ext.ux.grid.livegrid.JsonReader
- * Copyright (c) 2007-2012, http://www.siteartwork.de
+ * Copyright (c) 2007-2013, http://www.siteartwork.de
  *
  * Ext.ux.grid.livegrid.JsonReader is licensed under the terms of the
  *                  GNU Open Source GPL 3.0
@@ -2013,9 +2156,10 @@ Ext.extend(Ext.ux.grid.livegrid.JsonReader, Ext.data.JsonReader, {
         return intercept;
     }
 
-});/**
+});
+/**
  * Ext.ux.grid.livegrid.RowSelectionModel
- * Copyright (c) 2007-2012, http://www.siteartwork.de
+ * Copyright (c) 2007-2013, http://www.siteartwork.de
  *
  * Ext.ux.grid.livegrid.RowSelectionModel is licensed under the terms of the
  *                  GNU Open Source GPL 3.0
@@ -2075,7 +2219,7 @@ Ext.ux.grid.livegrid.RowSelectionModel = function(config) {
 Ext.extend(Ext.ux.grid.livegrid.RowSelectionModel, Ext.grid.RowSelectionModel, {
 
 
- // private
+    // private
     initEvents : function()
     {
         Ext.ux.grid.livegrid.RowSelectionModel.superclass.initEvents.call(this);
@@ -2177,7 +2321,7 @@ Ext.extend(Ext.ux.grid.livegrid.RowSelectionModel, Ext.grid.RowSelectionModel, {
                     this.shiftSelections(index, -1);
                     this.fireEvent('selectiondirty', this, index, 1);
                 }
-             }
+            }
 
         }
 
@@ -2436,10 +2580,10 @@ Ext.extend(Ext.ux.grid.livegrid.RowSelectionModel, Ext.grid.RowSelectionModel, {
     selectRow : function(index, keepExisting, preventViewNotify)
     {
         if(//this.last === index
-           //||
-           this.locked
-           || index < 0
-           || index >= this.grid.store.getTotalCount()) {
+        //||
+            this.locked
+                || index < 0
+                || index >= this.grid.store.getTotalCount()) {
             return;
         }
 
@@ -2537,6 +2681,48 @@ Ext.extend(Ext.ux.grid.livegrid.RowSelectionModel, Ext.grid.RowSelectionModel, {
 
     },
 
+    /**
+     * Returns state selection data.
+     *
+     * @return {Object}
+     */
+    getState : function() {
+
+        var me = this,
+            selections = me.selections,
+            selectedIds = [];
+
+        selections.each(function(r){
+            selectedIds.push(r.id);
+        }, this);
+
+        return {
+            selectedIds : selectedIds
+        };
+
+    },
+
+    /**
+     * Applies the state to this selection model.
+     *
+     * @param {Object} state
+     */
+    applyState : function(state) {
+
+        var me = this,
+            ds = me.grid.store,
+            ind;
+
+        if (state.selectedIds) {
+            for (var i = 0, len = state.selectedIds.length; i < len; i++) {
+                ind = ds.findExact('id', state.selectedIds[i]);
+                if (ind >= 0) {
+                    me.selectRow(ds.bufferRange[0] + ind, true);
+                }
+            }
+        }
+    },
+
     getPendingSelections : function(asRange)
     {
         var index         = 1;
@@ -2583,6 +2769,9 @@ Ext.extend(Ext.ux.grid.livegrid.RowSelectionModel, Ext.grid.RowSelectionModel, {
 
     /**
      * Clears all selections.
+     *
+     * @param {Boolean} fast true to reset the model's selection properties, i.e.
+     * not triggering an event
      */
     clearSelections : function(fast)
     {
@@ -2603,7 +2792,7 @@ Ext.extend(Ext.ux.grid.livegrid.RowSelectionModel, Ext.grid.RowSelectionModel, {
 
         }else{
             this.selections.clear();
-            this.pendingSelections    = {};
+            this.pendingSelections = {};
         }
         this.last = false;
         this.allSelected = false;
@@ -2674,14 +2863,10 @@ Ext.extend(Ext.ux.grid.livegrid.RowSelectionModel, Ext.grid.RowSelectionModel, {
         return this.excludes;
     }
 
-
-
 });
-
-
 /**
  * Ext.ux.grid.livegrid.Store
- * Copyright (c) 2007-2012, http://www.siteartwork.de
+ * Copyright (c) 2007-2013, http://www.siteartwork.de
  *
  * Ext.ux.grid.livegrid.Store is licensed under the terms of the
  *                  GNU Open Source GPL 3.0
@@ -3350,9 +3535,10 @@ Ext.extend(Ext.ux.grid.livegrid.Store, Ext.data.Store, {
     find : function(){},
     findBy : function(){}
 
-});/**
+});
+/**
  * Ext.ux.grid.livegrid.CheckboxSelectionModel
- * Copyright (c) 2007-2012, http://www.siteartwork.de
+ * Copyright (c) 2007-2013, http://www.siteartwork.de
  *
  * Ext.ux.grid.livegrid.CheckboxSelectionModel is licensed under the terms of the
  *                  GNU Open Source GPL 3.0
@@ -3520,9 +3706,10 @@ Ext.ux.grid.livegrid.CheckboxSelectionModel = Ext.extend(Ext.ux.grid.livegrid.Ro
     }
 
 
-});/**
+});
+/**
  * Ext.ux.grid.livegrid.Toolbar
- * Copyright (c) 2007-2012, http://www.siteartwork.de
+ * Copyright (c) 2007-2013, http://www.siteartwork.de
  *
  * Ext.ux.grid.livegrid.Toolbar is licensed under the terms of the
  *                  GNU Open Source GPL 3.0
@@ -3753,9 +3940,10 @@ Ext.ux.grid.livegrid.Toolbar = Ext.extend(Ext.Toolbar, {
             this.displayEl = Ext.fly(this.el.dom).createChild({cls:'x-paging-info'});
         }
     }
-});/**
+});
+/**
  * Ext.ux.grid.livegrid.DragZone
- * Copyright (c) 2007-2012, http://www.siteartwork.de
+ * Copyright (c) 2007-2013, http://www.siteartwork.de
  *
  * Ext.ux.grid.livegrid.DragZone is licensed under the terms of the
  *                  GNU Open Source GPL 3.0
@@ -3835,9 +4023,10 @@ Ext.extend(Ext.ux.grid.livegrid.DragZone, Ext.grid.GridDragZone, {
         this.ddel.innerHTML = this.grid.getDragDropText();
         Ext.fly(this.proxy.el.dom.firstChild).removeClass('ext-ux-livegrid-drop-waiting');
     }
-});/**
+});
+/**
  * Ext.ux.grid.livegrid.EditorGridPanel
- * Copyright (c) 2007-2012, http://www.siteartwork.de
+ * Copyright (c) 2007-2013, http://www.siteartwork.de
  *
  * Ext.ux.grid.livegrid.EditorGridPanel is licensed under the terms of the
  *                  GNU Open Source GPL 3.0

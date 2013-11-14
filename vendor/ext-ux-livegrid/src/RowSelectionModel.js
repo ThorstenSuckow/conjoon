@@ -1,6 +1,6 @@
 /**
  * Ext.ux.grid.livegrid.RowSelectionModel
- * Copyright (c) 2007-2012, http://www.siteartwork.de
+ * Copyright (c) 2007-2013, http://www.siteartwork.de
  *
  * Ext.ux.grid.livegrid.RowSelectionModel is licensed under the terms of the
  *                  GNU Open Source GPL 3.0
@@ -60,7 +60,7 @@ Ext.ux.grid.livegrid.RowSelectionModel = function(config) {
 Ext.extend(Ext.ux.grid.livegrid.RowSelectionModel, Ext.grid.RowSelectionModel, {
 
 
- // private
+    // private
     initEvents : function()
     {
         Ext.ux.grid.livegrid.RowSelectionModel.superclass.initEvents.call(this);
@@ -162,7 +162,7 @@ Ext.extend(Ext.ux.grid.livegrid.RowSelectionModel, Ext.grid.RowSelectionModel, {
                     this.shiftSelections(index, -1);
                     this.fireEvent('selectiondirty', this, index, 1);
                 }
-             }
+            }
 
         }
 
@@ -421,10 +421,10 @@ Ext.extend(Ext.ux.grid.livegrid.RowSelectionModel, Ext.grid.RowSelectionModel, {
     selectRow : function(index, keepExisting, preventViewNotify)
     {
         if(//this.last === index
-           //||
-           this.locked
-           || index < 0
-           || index >= this.grid.store.getTotalCount()) {
+        //||
+            this.locked
+                || index < 0
+                || index >= this.grid.store.getTotalCount()) {
             return;
         }
 
@@ -522,6 +522,48 @@ Ext.extend(Ext.ux.grid.livegrid.RowSelectionModel, Ext.grid.RowSelectionModel, {
 
     },
 
+    /**
+     * Returns state selection data.
+     *
+     * @return {Object}
+     */
+    getState : function() {
+
+        var me = this,
+            selections = me.selections,
+            selectedIds = [];
+
+        selections.each(function(r){
+            selectedIds.push(r.id);
+        }, this);
+
+        return {
+            selectedIds : selectedIds
+        };
+
+    },
+
+    /**
+     * Applies the state to this selection model.
+     *
+     * @param {Object} state
+     */
+    applyState : function(state) {
+
+        var me = this,
+            ds = me.grid.store,
+            ind;
+
+        if (state.selectedIds) {
+            for (var i = 0, len = state.selectedIds.length; i < len; i++) {
+                ind = ds.findExact('id', state.selectedIds[i]);
+                if (ind >= 0) {
+                    me.selectRow(ds.bufferRange[0] + ind, true);
+                }
+            }
+        }
+    },
+
     getPendingSelections : function(asRange)
     {
         var index         = 1;
@@ -568,6 +610,9 @@ Ext.extend(Ext.ux.grid.livegrid.RowSelectionModel, Ext.grid.RowSelectionModel, {
 
     /**
      * Clears all selections.
+     *
+     * @param {Boolean} fast true to reset the model's selection properties, i.e.
+     * not triggering an event
      */
     clearSelections : function(fast)
     {
@@ -588,7 +633,7 @@ Ext.extend(Ext.ux.grid.livegrid.RowSelectionModel, Ext.grid.RowSelectionModel, {
 
         }else{
             this.selections.clear();
-            this.pendingSelections    = {};
+            this.pendingSelections = {};
         }
         this.last = false;
         this.allSelected = false;
@@ -659,8 +704,4 @@ Ext.extend(Ext.ux.grid.livegrid.RowSelectionModel, Ext.grid.RowSelectionModel, {
         return this.excludes;
     }
 
-
-
 });
-
-
