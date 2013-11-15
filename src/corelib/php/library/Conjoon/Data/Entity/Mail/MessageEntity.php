@@ -44,7 +44,7 @@ interface MessageEntity extends \Conjoon\Data\Entity\DataEntity {
      * @param \DateTime $date
      * @return GroupwareEmailItems
      */
-    public function setDate($date);
+    public function setDate(\DateTime $date);
 
     /**
      * Get date

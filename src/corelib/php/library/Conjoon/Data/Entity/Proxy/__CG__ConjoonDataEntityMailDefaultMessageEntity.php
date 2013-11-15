@@ -87,7 +87,7 @@ class DefaultMessageEntity extends \Conjoon\Data\Entity\Mail\DefaultMessageEntit
         return parent::getId();
     }
 
-    public function setDate($date)
+    public function setDate(\DateTime $date)
     {
         $this->__load();
         return parent::setDate($date);

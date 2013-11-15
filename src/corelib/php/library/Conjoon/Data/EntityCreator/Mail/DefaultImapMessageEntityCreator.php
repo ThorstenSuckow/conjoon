@@ -178,8 +178,10 @@ class DefaultImapMessageEntityCreator implements ImapMessageEntityCreator {
              */
             require_once 'Conjoon/Date/Format.php';
 
-            $header['date'] = \Conjoon_Date_Format::toUtc(
-                $sanitizeDateTransformer->transform($header['date'])
+            $header['date'] = new \DateTime(
+                \Conjoon_Date_Format::toUtc(
+                    $sanitizeDateTransformer->transform($header['date'])
+                ), new \DateTimeZone('UTC')
             );
 
             /**

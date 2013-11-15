@@ -70,7 +70,10 @@ class ReadMessagePatron
              */
             require_once 'Conjoon/Date/Format.php';
 
-            $d['date'] = \Conjoon_Date_Format::utcToLocal($this->v('date', $d));
+            $date = $this->v('date', $d);
+            $date = $date ? $date->format('Y-m-d H:i:s') : null;
+
+            $d['date'] = \Conjoon_Date_Format::utcToLocal($date);
 
             $d['to']      = $this->createAddressList($this->v('to', $d));
             $d['cc']      = $this->createAddressList($this->v('cc', $d));

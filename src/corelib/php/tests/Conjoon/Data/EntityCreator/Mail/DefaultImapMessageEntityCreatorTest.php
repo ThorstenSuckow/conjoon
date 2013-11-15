@@ -71,6 +71,18 @@ class DefaultImapMessageEntityCreatorTest extends \PHPUnit_Framework_TestCase {
 
             foreach ($result as $key => $value) {
 
+                /**
+                 * @CN-785
+                 */
+                if ($key === 'date') {
+                    $date = $res->getDate();
+                    $this->assertTrue($date instanceof \DateTime);
+                    $this->assertSame($date->getTimeZone()->getName(), 'UTC');
+                    $this->assertSame($date->format('Y-m-d H:i:s'), '2012-11-19 12:01:38');
+
+                    continue;
+                }
+
                 $getter = 'get' . ucfirst($key);
 
                 $this->assertSame(
