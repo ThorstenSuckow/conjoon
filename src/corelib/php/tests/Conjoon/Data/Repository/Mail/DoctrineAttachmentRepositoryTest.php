@@ -124,6 +124,79 @@ class DoctrineAttachmentRepositoryTest extends \Conjoon\DatabaseTestCaseDefault 
     }
 
     /**
+     * Ensure everything works as expected.
+     */
+    public function testFindByIdAsAttachmentLocationNoResult() {
+
+        $attachmentLocation1 =
+            new \Conjoon\Mail\Client\Message\DefaultAttachmentLocation(
+                new \Conjoon\Mail\Client\Message\DefaultMessageLocation(
+                    new \Conjoon\Mail\Client\Folder\Folder(
+                        new \Conjoon\Mail\Client\Folder\DefaultFolderPath(
+                            '["root", "79", "INBOXtttt", "rfwe2", "New folder (7)"]'
+                        )
+                    ), "1"
+                ), "key11223"
+            );
+
+        $attachmentLocation2 =
+            new \Conjoon\Mail\Client\Message\DefaultAttachmentLocation(
+                new \Conjoon\Mail\Client\Message\DefaultMessageLocation(
+                    new \Conjoon\Mail\Client\Folder\Folder(
+                        new \Conjoon\Mail\Client\Folder\DefaultFolderPath(
+                            '["root", "79", "INBOXtttt", "rfwe2", "New folder (7)"]'
+                        )
+                    ), "123"
+                ), "key1"
+            );
+
+
+        $repository = $this->_entityManager->getRepository(
+            '\Conjoon\Data\Entity\Mail\DefaultAttachmentEntity');
+
+        $entity1 = $repository->findById($attachmentLocation1);
+
+        $this->assertNull($entity1);
+
+        $entity2 = $repository->findById($attachmentLocation2);
+
+        $this->assertNull($entity2);
+    }
+
+    /**
+     * Ensure everything works as expected
+     */
+    public function testFindByIdAsAttachmentLocation()
+    {
+        $attachmentLocation =
+            new \Conjoon\Mail\Client\Message\DefaultAttachmentLocation(
+                new \Conjoon\Mail\Client\Message\DefaultMessageLocation(
+                    new \Conjoon\Mail\Client\Folder\Folder(
+                        new \Conjoon\Mail\Client\Folder\DefaultFolderPath(
+                            '["root", "79", "INBOXtttt", "rfwe2", "New folder (7)"]'
+                        )
+                    ), "1"
+                ), "key1"
+            );
+
+
+        $repository = $this->_entityManager->getRepository(
+            '\Conjoon\Data\Entity\Mail\DefaultAttachmentEntity');
+
+        $entity = $repository->findById($attachmentLocation);
+
+        $this->assertSame(1, $entity->getId());
+        $this->assertSame("key1", $entity->getKey());
+        $this->assertSame("filename", $entity->getFileName());
+        $this->assertSame("mimetype", $entity->getMimeType());
+        $this->assertSame("encoding", $entity->getEncoding());
+        $this->assertSame("contentid", $entity->getContentId());
+
+        $content = $entity->getAttachmentContent();
+        $this->assertSame(1, $content->getId());
+    }
+
+    /**
      * Ensures everything works as expected.
      */
     public function testPersistCreateUsingAttachmentRepository()

@@ -48,6 +48,15 @@ class DefaultProtocolAdaptee implements ProtocolAdaptee {
      */
     protected $doctrineMailAccountRepository;
 
+    /**
+     * @var \Conjoon\Data\Repository\Mail\DoctrineMessageRepository
+     */
+    protected $doctrineMessageRepository;
+
+    /**
+     * @var \Conjoon\Data\Repository\Mail\DoctrineAttachmentRepository
+     */
+    protected $attachmentRepository;
 
     /**
      * @var array
@@ -56,17 +65,17 @@ class DefaultProtocolAdaptee implements ProtocolAdaptee {
         'folderSecurityService'
             => '\Conjoon\Mail\Client\Security\DefaultFolderSecurityService',
         'folderService'
-        => '\Conjoon\Mail\Client\Folder\DefaultFolderService',
+            => '\Conjoon\Mail\Client\Folder\DefaultFolderService',
         'mailFolderCommons'
-        => '\Conjoon\Mail\Client\Folder\DefaultFolderCommons',
+            => '\Conjoon\Mail\Client\Folder\DefaultFolderCommons',
         'imapMessageFlagRepository'
-        => '\Conjoon\Data\Repository\Mail\ImapMessageFlagRepository',
+            => '\Conjoon\Data\Repository\Mail\ImapMessageFlagRepository',
         'imapMessageRepository'
-        => '\Conjoon\Data\Repository\Mail\ImapMessageRepository',
+            => '\Conjoon\Data\Repository\Mail\ImapMessageRepository',
         'imapAttachmentRepository'
-        => '\Conjoon\Data\Repository\Mail\ImapAttachmentRepository',
+            => '\Conjoon\Data\Repository\Mail\ImapAttachmentRepository',
         'accountService'
-        => '\Conjoon\Mail\Client\Account\DefaultAccountService'
+            => '\Conjoon\Mail\Client\Account\DefaultAccountService'
 
     );
 
@@ -85,18 +94,22 @@ class DefaultProtocolAdaptee implements ProtocolAdaptee {
      * @param \Conjoon\Data\Repository\Mail\DoctrineMailFolderRepository $doctrineMailFolderRepository
      * @param \Conjoon\Data\Repository\Mail\DoctrineMessageFlagRepository $doctrineMessageFlagRepository
      * @param \Conjoon\Data\Repository\Mail\DoctrineMailAccountRepository $doctrineMailAccountRepository
-
+     * @param \Conjoon\Data\Repository\Mail\DoctrineMessageRepository $doctrineMessageRepository
+     * @param \Conjoon\Data\Repository\Mail\DoctrineAttachmentRepository $doctrineAttachmentRepository
      *
      */
     public function __construct(
         \Conjoon\Data\Repository\Mail\DoctrineMailFolderRepository $doctrineMailFolderRepository,
         \Conjoon\Data\Repository\Mail\DoctrineMessageFlagRepository $doctrineMessageFlagRepository,
-        \Conjoon\Data\Repository\Mail\DoctrineMailAccountRepository $doctrineMailAccountRepository)
+        \Conjoon\Data\Repository\Mail\DoctrineMailAccountRepository $doctrineMailAccountRepository,
+        \Conjoon\Data\Repository\Mail\DoctrineMessageRepository $doctrineMessageRepository,
+        \Conjoon\Data\Repository\Mail\DoctrineAttachmentRepository $doctrineAttachmentRepository)
     {
         $this->doctrineMailFolderRepository  = $doctrineMailFolderRepository;
         $this->doctrineMessageFlagRepository = $doctrineMessageFlagRepository;
         $this->doctrineMailAccountRepository = $doctrineMailAccountRepository;
-
+        $this->doctrineMessageRepository     = $doctrineMessageRepository;
+        $this->doctrineAttachmentRepository  = $doctrineAttachmentRepository;
     }
 
 
@@ -212,40 +225,42 @@ class DefaultProtocolAdaptee implements ProtocolAdaptee {
         }
 
         if (!$isRemoteMailbox) {
-            throw new \Conjoon\Mail\Server\Protocol\ProtocolException(
-                "No support for folders representing POP3 mailboxes"
-            );
-        }
 
-        try{
-            $account = $this->getAccountServiceForUser($user)
-                ->getMailAccountToAccessRemoteFolder($folder);
+            $entity = $this->doctrineMessageRepository->findById($messageLocation);
 
-            if ($account) {
+        } else {
+
+            try{
+                $account = $this->getAccountServiceForUser($user)
+                    ->getMailAccountToAccessRemoteFolder($folder);
+
+                if (!$account) {
+                    throw new \Conjoon\Mail\Server\Protocol\ProtocolException(
+                        "No mail account found for folder"
+                    );
+                }
+
                 $imapMessageRepository =
                     $this->defaultClassNames['imapMessageRepository'];
                 $imapRepository = new $imapMessageRepository($account);
 
                 $entity = $imapRepository->findById($messageLocation);
 
-                if ($entity == null) {
-                    throw new \Conjoon\Mail\Server\Protocol\ProtocolException(
-                        "Message not found"
-                    );
-                }
-
+            } catch (\Exception $e) {
+                throw new \Conjoon\Mail\Server\Protocol\ProtocolException(
+                    "Exception thrown by previous exception: "
+                        . $e->getMessage(), 0, $e
+                );
             }
-        } catch (\Exception $e) {
+        }
+
+        if ($entity == null) {
             throw new \Conjoon\Mail\Server\Protocol\ProtocolException(
-                "Exception thrown by previous exception: "
-                    . $e->getMessage(), 0, $e
+                "Message not found"
             );
         }
-        if (!$account) {
-            throw new \Conjoon\Mail\Server\Protocol\ProtocolException(
-                "No mail account found for folder"
-            );
-        }
+
+
         /**
          * @see \Conjoon\Mail\Server\Protocol\DefaultResult\GetMessageResult
          */
@@ -295,40 +310,43 @@ class DefaultProtocolAdaptee implements ProtocolAdaptee {
         }
 
         if (!$isRemoteMailbox) {
-            throw new \Conjoon\Mail\Server\Protocol\ProtocolException(
-                "No support for folders representing POP3 mailboxes"
-            );
-        }
 
-        try{
-            $account = $this->getAccountServiceForUser($user)
-                ->getMailAccountToAccessRemoteFolder($folder);
+            $entity = $this->doctrineAttachmentRepository->findById($attachmentLocation);
 
-            if ($account) {
-                $imapAttachmentRepository =
-                    $this->defaultClassNames['imapAttachmentRepository'];
-                $imapRepository = new $imapAttachmentRepository($account);
+        } else {
 
-                $entity = $imapRepository->findById($attachmentLocation);
+            try{
+                $account = $this->getAccountServiceForUser($user)
+                    ->getMailAccountToAccessRemoteFolder($folder);
 
-                if ($entity == null) {
-                    throw new \Conjoon\Mail\Server\Protocol\ProtocolException(
-                        "Message not found"
-                    );
+                if ($account) {
+                    $imapAttachmentRepository =
+                        $this->defaultClassNames['imapAttachmentRepository'];
+                    $imapRepository = new $imapAttachmentRepository($account);
+
+                    $entity = $imapRepository->findById($attachmentLocation);
+
+                    if ($entity == null) {
+                        throw new \Conjoon\Mail\Server\Protocol\ProtocolException(
+                            "Message not found"
+                        );
+                    }
+
                 }
-
+            } catch (\Exception $e) {
+                throw new \Conjoon\Mail\Server\Protocol\ProtocolException(
+                    "Exception thrown by previous exception: "
+                        . $e->getMessage(), 0, $e
+                );
             }
-        } catch (\Exception $e) {
-            throw new \Conjoon\Mail\Server\Protocol\ProtocolException(
-                "Exception thrown by previous exception: "
-                    . $e->getMessage(), 0, $e
-            );
+            if (!$account) {
+                throw new \Conjoon\Mail\Server\Protocol\ProtocolException(
+                    "No mail account found for folder"
+                );
+            }
+
         }
-        if (!$account) {
-            throw new \Conjoon\Mail\Server\Protocol\ProtocolException(
-                "No mail account found for folder"
-            );
-        }
+
         /**
          * @see \Conjoon\Mail\Server\Protocol\DefaultResult\GetMessageResult
          */

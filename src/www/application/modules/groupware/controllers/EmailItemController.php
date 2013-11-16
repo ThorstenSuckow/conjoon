@@ -678,9 +678,14 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
             $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMailAccountEntity');
         $mesageFlagRepository =
             $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMessageFlagEntity');
+        $messageRepository =
+            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMessageEntity');
+        $attachmentRepository =
+            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultAttachmentEntity');
 
         $protocolAdaptee = new \Conjoon\Mail\Server\Protocol\DefaultProtocolAdaptee(
-            $mailFolderRepository, $mesageFlagRepository, $mailAccountRepository
+            $mailFolderRepository, $mesageFlagRepository, $mailAccountRepository,
+            $messageRepository, $attachmentRepository
         );
 
         /**
@@ -720,7 +725,7 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
     /**
      * Returns an email for the specified id (POST).
      *
-     * @see getMessageFromRemoteServer
+     * @see getMessageHelper
      */
     public function getEmailAction()
     {
@@ -742,49 +747,7 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
 
         $path = $_POST['path'];
 
-        // check if folder is remote folder
-        /**
-         * @see Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser
-         */
-        require_once 'Conjoon/Text/Parser/Mail/MailboxFolderPathJsonParser.php';
-
-        $parser = new Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser();
-
-        $pathInfo = $parser->parse($path);
-
-        /**
-         * @see Conjoon_Modules_Groupware_Email_Folder_Facade
-         */
-        require_once 'Conjoon/Modules/Groupware/Email/Folder/Facade.php';
-
-        $facade = Conjoon_Modules_Groupware_Email_Folder_Facade::getInstance();
-
-     ///   if ($facade->isRemoteFolder($pathInfo['rootId'])) {
-            return $this->getMessageFromRemoteServer($_POST['id'], $path);
-     //   }
-
-
-        /**
-         * @see Conjoon_Modules_Groupware_Email_Message_Facade
-         */
-        require_once 'Conjoon/Modules/Groupware/Email/Message/Facade.php';
-
-        $message = Conjoon_Modules_Groupware_Email_Message_Facade::getInstance()
-                   ->getMessage(
-                        (int)$_POST['id'],
-                        $this->_helper->registryAccess()->getUserId()
-                   );
-
-        if (!$message) {
-            $this->view->success    = true;
-            $this->view->error      = null;
-            $this->view->item       = null;
-            return;
-        }
-
-        $this->view->success     = true;
-        $this->view->error       = null;
-        $this->view->item        = $message;
+        return $this->getMessageHelper($_POST['id'], $path);
     }
 
     /**
@@ -796,7 +759,7 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
      *
      *
      */
-    protected function getMessageFromRemoteServer($uId, $path)
+    protected function getMessageHelper($uId, $path)
     {
         /**
          * @see Zend_Registry
@@ -827,10 +790,12 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
             $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMessageFlagEntity');
         $localMessageRepository =
             $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMessageEntity');
+        $attachmentRepository =
+            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultAttachmentEntity');
 
         $protocolAdaptee = new \Conjoon\Mail\Server\Protocol\DefaultProtocolAdaptee(
             $mailFolderRepository, $messageFlagRepository, $mailAccountRepository,
-            $localMessageRepository
+            $localMessageRepository, $attachmentRepository
         );
 
         /**

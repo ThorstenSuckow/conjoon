@@ -1,27 +1,5 @@
 <?xml version="1.0" ?>
 <dataset>
-    <table name="groupware_email_items_attachments">
-        <column>id</column>
-        <column>key</column>
-        <column>groupware_email_items_id</column>
-        <column>file_name</column>
-        <column>mime_type</column>
-        <column>encoding</column>
-        <column>content</column>
-        <column>content_id</column>
-        <column>mail_attachment_content_id</column>
-        <row>
-            <value>2</value>
-            <value>key2</value>
-            <value>1</value>
-            <value>filename</value>
-            <value>mimetype</value>
-            <value>encoding</value>
-            <value>content</value>
-            <value>contentid</value>
-            <value>2</value>
-        </row>
-    </table>
     <table name="mail_attachment_content">
         <column>id</column>
         <column>content</column>
@@ -32,6 +10,26 @@
         <row>
             <value>3</value>
             <value>BLOB3</value>
+        </row>
+    </table>
+    <table name="groupware_email_items_attachments">
+        <column>id</column>
+        <column>key</column>
+        <column>groupware_email_items_id</column>
+        <column>file_name</column>
+        <column>mime_type</column>
+        <column>encoding</column>
+        <column>content_id</column>
+        <column>mail_attachment_content_id</column>
+        <row>
+            <value>2</value>
+            <value>key2</value>
+            <value>1</value>
+            <value>filename</value>
+            <value>mimetype</value>
+            <value>encoding</value>
+            <value>contentid</value>
+            <value>2</value>
         </row>
     </table>
 </dataset>

@@ -101,47 +101,7 @@ class Groupware_FileController extends Zend_Controller_Action {
 
         if ($type == 'emailAttachment') {
 
-            if ($path && $uId && $id <= 0) {
-
-                // check if folder is remote folder
-                /**
-                 * @see Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser
-                 */
-                require_once 'Conjoon/Text/Parser/Mail/MailboxFolderPathJsonParser.php';
-
-                $parser = new Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser();
-
-                $pathInfo = $parser->parse($path);
-
-                /**
-                 * @see Conjoon_Modules_Groupware_Email_Folder_Facade
-                 */
-                require_once 'Conjoon/Modules/Groupware/Email/Folder/Facade.php';
-
-                $facade = Conjoon_Modules_Groupware_Email_Folder_Facade::getInstance();
-
-                if ($facade->isRemoteFolder($pathInfo['rootId'])) {
-                    $data = $this->getAttachmentFromRemoteServer($key, $uId, $path);
-                }
-
-            } else {
-
-                /**
-                 * @see Conjoon_Modules_Groupware_Email_Attachment_Facade
-                 */
-                require_once 'Conjoon/Modules/Groupware/Email/Attachment/Facade.php';
-
-                $facade = Conjoon_Modules_Groupware_Email_Attachment_Facade::getInstance();
-
-                $data = $facade->getAttachmentDownloadDataForUserId(
-                    $key, $id, $userId
-                );
-
-                if ($data) {
-                    $data['resource'] = $data['content'];
-                }
-            }
-
+            $data = $this->getAttachmentFromServer($key, $uId, $path);
 
         } else {
             /**
@@ -283,14 +243,13 @@ class Groupware_FileController extends Zend_Controller_Action {
 
 // -------- helper
     /**
-     * Helper function for fetching a single attachment directly from a remote
-     * server.
+     * Helper function for fetching a single attachment
      *
      * @param string $key The key of the attachment
      * @param string $uId The message id of the message
      * @param string $path The json encoded path where the message can be found
      */
-    protected function getAttachmentFromRemoteServer($key, $uId, $path)
+    protected function getAttachmentFromServer($key, $uId, $path)
     {
         /**
          * @see Zend_Registry
@@ -319,9 +278,14 @@ class Groupware_FileController extends Zend_Controller_Action {
             $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMailAccountEntity');
         $messageFlagRepository =
             $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMessageFlagEntity');
+        $messageRepository =
+            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMessageEntity');
+        $attachmentRepository =
+            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultAttachmentEntity');
 
         $protocolAdaptee = new \Conjoon\Mail\Server\Protocol\DefaultProtocolAdaptee(
-            $mailFolderRepository, $messageFlagRepository, $mailAccountRepository
+            $mailFolderRepository, $messageFlagRepository,
+            $mailAccountRepository, $messageRepository, $attachmentRepository
         );
 
         /**

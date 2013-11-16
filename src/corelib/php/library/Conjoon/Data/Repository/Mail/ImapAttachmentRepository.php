@@ -122,7 +122,16 @@ class ImapAttachmentRepository extends DefaultImapRepository
     }
 
     /**
-     * @inheritdoc
+     * Returns an entity identified by the passed $id. The $id
+     * in this case must be of type \Conjoon\Mail\Client\Message\AttachmentLocation
+     * representing the location of the attachment.
+     *
+     * @param {mixed} $id
+     *
+     * @return \Conjoon\Data\Entity\DataEntity
+     *
+     * @throws \Conjoon\Argument\InvalidArgumentException,
+     *         \Conjoon\Data\Repository\Mail\MailRepositoryException
      */
     public function findById($id)
     {

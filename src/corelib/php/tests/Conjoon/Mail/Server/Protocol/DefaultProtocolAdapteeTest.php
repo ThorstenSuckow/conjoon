@@ -107,9 +107,14 @@ class DefaultProtocolAdapteeTest extends \Conjoon\DatabaseTestCaseDefault {
         $this->mailAccountRepository = $this->_entityManager->getRepository(
             '\Conjoon\Data\Entity\Mail\DefaultMailAccountEntity');
 
+        $messageRepository =
+            $this->_entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMessageEntity');
+        $attachmentRepository =
+            $this->_entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultAttachmentEntity');
+
         $this->protocolAdaptee = new DefaultProtocolAdaptee(
             $this->folderRepository, $this->messageFlagRepository,
-            $this->mailAccountRepository
+            $this->mailAccountRepository, $messageRepository, $attachmentRepository
 
         );
 

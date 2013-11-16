@@ -53,12 +53,17 @@ class DownloadAttachmentPatron
 
             $d =& $data;
 
+            $content = $this->v('content', $d);
+            $content = is_resource ($content)
+                       ? stream_get_contents($content)
+                       : $content;
+
             $d['name']    = $this->v('fileName', $d);
             $d['resource'] = $this->v('encoding', $d) == 'quoted-printable'
-                            ? quoted_printable_decode($this->v('content', $d))
+                            ? quoted_printable_decode($content)
                             : $d['encoding'] == 'base64'
-                              ? base64_decode($this->v('content', $d))
-                              : $this->v('content', $d);
+                              ? base64_decode($content)
+                              : $content;
             $d['mimeType'] = $this->v('mimeType', $d)
                              ? $data['mimeType'] : 'text/plain';
 

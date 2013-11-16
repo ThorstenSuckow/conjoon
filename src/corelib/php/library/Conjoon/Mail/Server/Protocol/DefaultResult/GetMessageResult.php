@@ -82,8 +82,7 @@ class GetMessageResult implements \Conjoon\Mail\Server\Protocol\SuccessResult {
                 'encoding'  => $att->getEncoding(),
                 'fileName'  => $att->getFileName(),
                 'contentId' => $att->getContentId(),
-                'key'       => $att->getKey(),
-                'content'   => $att->getAttachmentContent()->getContent()
+                'key'       => $att->getKey()
             );
 
         }
@@ -94,7 +93,12 @@ class GetMessageResult implements \Conjoon\Mail\Server\Protocol\SuccessResult {
                 array($this->messageLocation->getFolder()->getRootId()),
                 $this->messageLocation->getFolder()->getPath()
             ),
-            'messageId'  => $this->entity->getMessageId(),
+            /**
+             * @todo do we need to have this one in a local message as well?
+             */
+            'messageId'  => ($this->entity instanceof \Conjoon\Data\Entity\Mail\ImapMessageEntity)
+                            ? $this->entity->getMessageId()
+                            : null,
             'date'       => $this->entity->getDate(),
             'subject'    => $this->entity->getSubject(),
             'to'         => $this->entity->getTo(),

@@ -128,6 +128,8 @@ class DoctrineAttachmentContentRepositoryTest extends \Conjoon\DatabaseTestCaseD
 
     /**
      * Ensures everything works as expected.
+     *
+     * @expectedException \Doctrine\DBAL\DBALException
      */
     public function testRemove()
     {
@@ -139,14 +141,6 @@ class DoctrineAttachmentContentRepositoryTest extends \Conjoon\DatabaseTestCaseD
         $repository->remove($attachmentContent);
 
         $repository->flush();
-
-        $queryTable = $this->getConnection()->createQueryTable(
-            'mail_attachment_content', 'SELECT * FROM mail_attachment_content'
-        );
-        $expectedTable = $this->createXmlDataSet(
-            dirname(__FILE__) . '/fixtures/mysql/attachmentcontent.remove.result.xml'
-        )->getTable("mail_attachment_content");
-        $this->assertTablesEqual($expectedTable, $queryTable);
     }
 
     /**

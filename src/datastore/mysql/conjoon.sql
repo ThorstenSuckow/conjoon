@@ -664,8 +664,7 @@ CREATE TABLE IF NOT EXISTS `{DATABASE.TABLE.PREFIX}mail_attachment_content` (
 ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments`
 ADD `mail_attachment_content_id` BIGINT NOT NULL ,
 ADD INDEX ( `mail_attachment_content_id` );
-ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments`
-CHANGE `content` `content` BLOB NULL DEFAULT NULL ;
+ALTER TABLE `{DATABASE.TABLE.PREFIX}mail_attachment_content` CHANGE `content` `content` LONGBLOB NOT NULL;
 INSERT INTO `{DATABASE.TABLE.PREFIX}mail_attachment_content` (`id`, `content`)
 SELECT `id`, `content` FROM `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments`;
 UPDATE  `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments`
@@ -676,11 +675,11 @@ SET `mail_attachment_content_id` = (
   `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments`.`id` = `{DATABASE.TABLE.PREFIX}mail_attachment_content`.`id`
 );
 ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments` DROP `content`;
-ALTER TABLE `{DATABASE.TABLE.PREFIX}mail_attachment_content` ADD FOREIGN KEY ( `id` )
-REFERENCES `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments` (`mail_attachment_content_id`)
-ON DELETE CASCADE ON UPDATE CASCADE ;
 ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments` ADD FOREIGN KEY ( `mail_attachment_content_id` )
-REFERENCES `{DATABASE.TABLE.PREFIX}mail_attachment_content` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE ;
+REFERENCES `{DATABASE.TABLE.PREFIX}mail_attachment_content` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments` CHANGE `mail_attachment_content_id`
+`mail_attachment_content_id` BIGINT( 20 ) NULL;
+
 
 -- CN-754
 ALTER TABLE `{DATABASE.TABLE.PREFIX}users` ADD `remember_me_token` VARCHAR( 32 )

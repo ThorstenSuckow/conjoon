@@ -229,6 +229,23 @@ class Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment
             );
         }
 
+        // insert into attachment content
+        $statement = $db->prepare(
+            "INSERT INTO `".self::getTablePrefix() . "mail_attachment_content`
+              (`content`)
+              VALUES
+              (:content)"
+        );
+        $statement->bindParam(':content', $data['content'], PDO::PARAM_LOB);
+        $statement->execute();
+        $result = $statement->rowCount();
+        if ($result > 0) {
+            $mailAttachmentContentId = $db->lastInsertId();
+        } else {
+            return 0;
+        }
+
+
         $statement = $db->prepare(
             "INSERT INTO `".self::getTablePrefix() . "groupware_email_items_attachments`
               (
@@ -237,7 +254,7 @@ class Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment
               `file_name`,
               `mime_type`,
               `encoding`,
-              `content`,
+              `mail_attachment_content_id`,
               `content_id`
               )
               VALUES
@@ -247,7 +264,7 @@ class Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment
                 :file_name,
                 :mime_type,
                 :encoding,
-                :content,
+                :mail_attachment_content_id,
                 :content_id
             )"
         );
@@ -261,7 +278,7 @@ class Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment
         $statement->bindParam(':file_name',$data['file_name'], PDO::PARAM_STR);
         $statement->bindParam(':mime_type', $data['mime_type'], PDO::PARAM_STR);
         $statement->bindParam(':encoding', $data['encoding'], PDO::PARAM_STR);
-        $statement->bindParam(':content', $data['content'], PDO::PARAM_LOB);
+        $statement->bindParam(':mail_attachment_content_id', $mailAttachmentContentId, PDO::PARAM_STR);
         $statement->bindParam(':content_id', $data['content_id'], PDO::PARAM_STR);
 
         $statement->execute();
@@ -467,7 +484,23 @@ class Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment
             return array();
         }
 
-        return $row->toArray();
+        $d = $row->toArray();
+
+        $attachmentContentId = $row['mail_attachment_content_id'];
+
+        $select = $this->select()
+            ->from('mail_attachment_content_id')
+            ->where('`id`=?', $attachmentContentId);
+
+        $row = $this->fetchRow($select);
+
+        if (!$row) {
+            return array();
+        }
+
+        $d['content'] = $row->content;
+
+        return $d;
     }
 
     /**

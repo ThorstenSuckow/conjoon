@@ -7,7 +7,6 @@
         <column>file_name</column>
         <column>mime_type</column>
         <column>encoding</column>
-        <column>content</column>
         <column>content_id</column>
         <column>mail_attachment_content_id</column>
         <row>
@@ -17,7 +16,6 @@
             <value>filename</value>
             <value>mimetype</value>
             <value>encoding</value>
-            <value>content</value>
             <value>contentid</value>
             <value>1</value>
         </row>
@@ -28,7 +26,6 @@
             <value>filename</value>
             <value>mimetype</value>
             <value>encoding</value>
-            <value>content</value>
             <value>contentid</value>
             <value>2</value>
         </row>
