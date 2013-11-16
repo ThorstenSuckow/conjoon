@@ -676,6 +676,11 @@ SET `mail_attachment_content_id` = (
   `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments`.`id` = `{DATABASE.TABLE.PREFIX}mail_attachment_content`.`id`
 );
 ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments` DROP `content`;
+ALTER TABLE `{DATABASE.TABLE.PREFIX}mail_attachment_content` ADD FOREIGN KEY ( `id` )
+REFERENCES `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments` (`mail_attachment_content_id`)
+ON DELETE CASCADE ON UPDATE CASCADE ;
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments` ADD FOREIGN KEY ( `mail_attachment_content_id` )
+REFERENCES `{DATABASE.TABLE.PREFIX}mail_attachment_content` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE ;
 
 -- CN-754
 ALTER TABLE `{DATABASE.TABLE.PREFIX}users` ADD `remember_me_token` VARCHAR( 32 )
