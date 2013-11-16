@@ -215,7 +215,7 @@ class Groupware_EmailAccountController extends Zend_Controller_Action {
                 $newEnt->setType($type);
                 $newEnt->setGlobalName("");
                 $newEnt->setMailAccount($accountEnt);
-                $fmRep->persist($newEnt);
+                $fmRep->register($newEnt);
 
                 $fmRep->flush();
                 $dto->folderMappings[] = array(
@@ -415,7 +415,7 @@ class Groupware_EmailAccountController extends Zend_Controller_Action {
                             && empty($folderMappingData[$id][$u]['path'])) {
                             $updEnt = $fmRep->findById($folderMappingData[$id][$u]['id']);
                             $updEnt->setGlobalName("");
-                            $fmRep->persist($updEnt);
+                            $fmRep->register($updEnt);
 
                         } else if (isset($folderMappingData[$id][$u]['id'])
                             && !empty ($folderMappingData[$id][$u]['path'])) {
@@ -452,7 +452,7 @@ class Groupware_EmailAccountController extends Zend_Controller_Action {
 
                             $updEnt = $fmRep->findById($folderMappingData[$id][$u]['id']);
                             $updEnt->setGlobalName($globalName);
-                            $fmRep->persist($updEnt);
+                            $fmRep->register($updEnt);
 
                             continue;
                         }
