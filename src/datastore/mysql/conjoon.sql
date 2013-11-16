@@ -666,6 +666,16 @@ ADD `mail_attachment_content_id` BIGINT NOT NULL ,
 ADD INDEX ( `mail_attachment_content_id` );
 ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments`
 CHANGE `content` `content` BLOB NULL DEFAULT NULL ;
+INSERT INTO `{DATABASE.TABLE.PREFIX}mail_attachment_content` (`id`, `content`)
+SELECT `id`, `content` FROM `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments`;
+UPDATE  `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments`
+SET `mail_attachment_content_id` = (
+  SELECT `{DATABASE.TABLE.PREFIX}mail_attachment_content`.`id`
+  FROM `{DATABASE.TABLE.PREFIX}mail_attachment_content`
+  WHERE
+  `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments`.`id` = `{DATABASE.TABLE.PREFIX}mail_attachment_content`.`id`
+);
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments` DROP `content`;
 
 -- CN-754
 ALTER TABLE `{DATABASE.TABLE.PREFIX}users` ADD `remember_me_token` VARCHAR( 32 )
