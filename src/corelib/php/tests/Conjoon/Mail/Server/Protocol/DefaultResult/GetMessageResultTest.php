@@ -34,6 +34,12 @@ class GetMessageResultTest extends \PHPUnit_Framework_TestCase {
 
     protected $input;
 
+    protected $date;
+
+    protected function setUp() {
+        $this->date = new \DateTime('1970-01-01 00:00:00', new \DateTimeZone('UTC'));
+    }
+
     /**
      * Ensures everathing works as expected
      */
@@ -41,7 +47,7 @@ class GetMessageResultTest extends \PHPUnit_Framework_TestCase {
     {
         $entity = new \Conjoon\Data\Entity\Mail\ImapMessageEntity();
 
-        $entity->setDate('1970-01-01 00:00:00');
+        $entity->setDate($this->date);
         $entity->setSubject('subject');
         $entity->setTo('to@to.to');
         $entity->setCc('cc@cc.cc');
@@ -70,7 +76,7 @@ class GetMessageResultTest extends \PHPUnit_Framework_TestCase {
                 'message' => array(
                     'uId'        => "1",
                     'path'       => array('1', '2'),
-                    'date'       => '1970-01-01 00:00:00',
+                    'date'       => $this->date,
                     'subject'    => 'subject',
                     'to'         => 'to@to.to',
                     'cc'         => 'cc@cc.cc',
