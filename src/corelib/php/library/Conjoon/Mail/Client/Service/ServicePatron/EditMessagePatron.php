@@ -84,7 +84,10 @@ class EditMessagePatron
              */
             require_once 'Conjoon/Date/Format.php';
 
-            $d['date'] = \Conjoon_Date_Format::utcToLocal($this->v('date', $d));
+            $date = $this->v('date', $d);
+            $date = $date ? $date->format('Y-m-d H:i:s') : null;
+
+            $d['date'] = \Conjoon_Date_Format::utcToLocal($date);
 
             $d['cc']      = $this->buildAddresses($this->v('cc', $d));
             $d['to']      = $this->buildAddresses($this->v('to', $d));

@@ -43,6 +43,10 @@ class ReplyMessagePatronTest extends \Conjoon\DatabaseTestCaseDefault {
 
     protected $service;
 
+    protected $date;
+
+    protected $compDate;
+
     public function getDataSet()
     {
         return $this->createXMLDataSet(
@@ -53,6 +57,11 @@ class ReplyMessagePatronTest extends \Conjoon\DatabaseTestCaseDefault {
     protected function setUp()
     {
         parent::setUp();
+
+        $this->date  = new \DateTime('1970-01-01 00:00:00', new \DateTimeZone('UTC'));
+        $this->date->setTimezone(new \DateTimeZone(date_default_timezone_get()));
+        $this->compDate = $this->date->format('Y-m-d H:i:s');
+        $this->date->setTimezone(new \DateTimeZone('UTC'));
 
         $this->service =  new \Conjoon\Mail\Client\Account\DefaultAccountService(
             array(
@@ -79,7 +88,7 @@ class ReplyMessagePatronTest extends \Conjoon\DatabaseTestCaseDefault {
                     'message' => array(
                         'contentTextPlain' => 'sfasfajksfajkl',
                         'contentTextHtml' => '',
-                        'date' => '',
+                        'date' => $this->date,
                         'to' => 'gocheckitoutyo@receivingreceiver.com',
                         'cc' => '',
                         'from' => 'Peter Parker <peter.parker@spiderman.com>',
@@ -95,7 +104,7 @@ class ReplyMessagePatronTest extends \Conjoon\DatabaseTestCaseDefault {
                     'draft' => array(
                         'contentTextPlain' => '<blockquote>sfasfajksfajkl</blockquote>',
                         'contentTextHtml' => '',
-                        'date' => '1970-01-01 00:00:00',
+                        'date' => $this->compDate,
                         'to' => array(
                             array(
                                 'address' => 'secretaddress@peterparker.com',

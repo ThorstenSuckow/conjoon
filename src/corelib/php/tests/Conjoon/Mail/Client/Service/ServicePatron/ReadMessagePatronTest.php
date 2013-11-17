@@ -36,15 +36,25 @@ class ReadMessagePatronTest extends \PHPUnit_Framework_TestCase {
 
     protected $patron;
 
+    protected $date;
+
+    protected $compDate;
+
+
     protected function setUp()
     {
+        $this->date  = new \DateTime('1970-01-01 00:00:00', new \DateTimeZone('UTC'));
+        $this->date->setTimezone(new \DateTimeZone(date_default_timezone_get()));
+        $this->compDate = $this->date->format('Y-m-d H:i:s');
+        $this->date->setTimezone(new \DateTimeZone('UTC'));
+
         $this->input = array(
             array(
                 'input' => array(
                     'message' => array(
                         'contentTextPlain' => '',
                         'contentTextHtml' => '',
-                        'date' => '',
+                        'date' => $this->date,
                         'to' => '',
                         'cc' => '',
                         'from' => '',
@@ -58,7 +68,7 @@ class ReadMessagePatronTest extends \PHPUnit_Framework_TestCase {
                     'message' => array(
                         'isPlainText' => 1,
                         'body' => '',
-                        'date' => '1970-01-01 00:00:00',
+                        'date' => $this->compDate,
                         'to' => array('addresses' => array()),
                         'cc' => array('addresses' => array()),
                         'from' => array('addresses' => array()),

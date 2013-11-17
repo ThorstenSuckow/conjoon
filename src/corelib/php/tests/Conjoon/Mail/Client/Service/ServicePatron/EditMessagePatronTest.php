@@ -38,6 +38,10 @@ class EditMessagePatronTest extends \Conjoon\DatabaseTestCaseDefault {
 
     protected $service;
 
+    protected $date;
+
+    protected $compDate;
+
     public function getDataSet()
     {
         return $this->createXMLDataSet(
@@ -45,8 +49,14 @@ class EditMessagePatronTest extends \Conjoon\DatabaseTestCaseDefault {
         );
     }
 
+
     protected function setUp()
     {
+        $this->date  = new \DateTime('1970-01-01 00:00:00', new \DateTimeZone('UTC'));
+        $this->date->setTimezone(new \DateTimeZone(date_default_timezone_get()));
+        $this->compDate = $this->date->format('Y-m-d H:i:s');
+        $this->date->setTimezone(new \DateTimeZone('UTC'));
+
         parent::setUp();
 
         $this->service =  new \Conjoon\Mail\Client\Account\DefaultAccountService(
@@ -73,7 +83,7 @@ class EditMessagePatronTest extends \Conjoon\DatabaseTestCaseDefault {
                     'message' => array(
                         'contentTextPlain' => '',
                         'contentTextHtml' => '',
-                        'date' => '',
+                        'date' => $this->date,
                         'to' => '',
                         'cc' => '',
                         'from' => '',
@@ -87,7 +97,7 @@ class EditMessagePatronTest extends \Conjoon\DatabaseTestCaseDefault {
                     'draft' => array(
                         'contentTextPlain' => '',
                         'contentTextHtml' => '',
-                        'date' => '1970-01-01 00:00:00',
+                        'date' => $this->compDate,
                         'to' => array(),
                         'cc' => array(),
                         'from' => array(),
