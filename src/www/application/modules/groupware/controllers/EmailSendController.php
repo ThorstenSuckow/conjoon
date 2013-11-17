@@ -1089,9 +1089,14 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
             $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
         $mesageFlagRepository =
             $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMessageFlagEntity');
+        $messageRepository =
+            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMessageEntity');
+        $attachmentRepository =
+            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultAttachmentEntity');
 
         $protocolAdaptee = new \Conjoon\Mail\Server\Protocol\DefaultProtocolAdaptee(
-            $mailFolderRepository, $mesageFlagRepository, $mailAccountRepository
+            $mailFolderRepository, $mesageFlagRepository, $mailAccountRepository,
+            $messageRepository, $attachmentRepository
         );
 
         /**
