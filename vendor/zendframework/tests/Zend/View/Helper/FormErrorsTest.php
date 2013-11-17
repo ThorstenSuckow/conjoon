@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: FormErrorsTest.php 24593 2012-01-05 20:35:02Z matthew $
+ * @version    $Id: FormErrorsTest.php 25207 2013-01-10 11:36:54Z frosch $
  */
 
 // Call Zend_FormErrorsTest::main() if this source file is executed directly.
@@ -166,9 +166,29 @@ class Zend_View_Helper_FormErrorsTest extends PHPUnit_Framework_TestCase
      */
     public function testCanSetClassAttribute()
     {
-        $options = array('class' => 'custom-class');
-        $acutallHtml = $this->helper->formErrors(array(), $options);
-        $this->assertEquals('<ul class="custom-class"><li></li></ul>', $acutallHtml);
+        $options    = array('class' => 'custom-class');
+        $actualHtml = $this->helper->formErrors(array(), $options);
+        $this->assertEquals(
+            '<ul class="custom-class"><li></li></ul>',
+            $actualHtml
+        );
+    }
+
+    /**
+     * @group ZF-5962
+     */
+    public function testCanSetElementStringsPerOptions()
+    {
+        $actual = $this->helper->formErrors(
+            array('foo', 'bar', 'baz'),
+            array(
+                 'elementStart'     => '<p>',
+                 'elementEnd'       => '</p>',
+                 'elementSeparator' => '<br>',
+            )
+        );
+
+        $this->assertEquals('<p>foo<br>bar<br>baz</p>', $actual);
     }
 }
 

@@ -2,55 +2,21 @@ Welcome to the Zend Framework 1.12 Release!
 
 RELEASE INFORMATION
 ---------------
-Zend Framework 1.12.0 Release (r25051).
-Released on August 27, 2012.
+Zend Framework 1.12.3 Release (r25291).
+Released on March 13, 2013
 
-SECURITY FIXES FOR 1.12.0
--------------------------
+IMPORTANT FIXES FOR 1.12.3
+--------------------------
 
-This release incorporates fixes for each of:
+This release incorporates is primarily aimed to update
+Zend_Service_Twitter to the Twitter v1.1 API:
 
- - http://framework.zend.com/security/advisory/ZF2012-01
- - http://framework.zend.com/security/advisory/ZF2012-02
+ - http://framework.zend.com/issues/browse/ZF-12530
 
-Several components were found to be vulnerable to XML eXternal Entity
-(XXE) Injection attacks due to insecure usage of the SimpleXMLElement
-class (SimpleXML PHP extension).  External entities could be specified
-by adding a specific DOCTYPE element to XML-RPC requests; exploiting
-this vulnerability could coerce opening arbitrary files and/or TCP
-connections.
-
-Additionally, these same components were found to be vulnerable to XML
-Entity Expansion (XEE) vectors. XEE attacks define custom entities
-within the DOCTYPE that refer to themselves, leading to recursion; the
-end result is excessive consumption of CPU and RAM, making Denial of
-Service (DoS) attacks easier to implement.
-
-Vulnerable components included:
-
- - Zend_Dom
- - Zend_Feed
- - Zend_Soap
- - Zend_XmlRpc
-
-The patches applied do the following:
-
- - To remove XXE vectors, libxml_disable_entity_loader() is called
-   before any SimpleXML calls are executed.
-
- - To remove XEE vectors, we loop through the DOMDocument child nodes,
-   ensuring none are of type XML_DOCUMENT_TYPE_NODE, and raising an
-   exception if any are. If SimpleXML is used, a DOMDocument is created
-   first, processed as above, and then passed to simplexml_import_dom.
-
-The above patches are also available in the 1.11 series of releases.
-
-Thanks goes to Johannes Greil and Kestutis Gudinavicius of SEC-Consult
-for reporting the original XXE vulnerability against Zend_XmlRpc and
-working with us to provide a working solution. Thanks goes to Pádraic
-Brady for helping us identify other XXE vectors, as well as identifying
-and patching the XEE vectors.
-
+Because the Twitter v1.1 API is not backwards compatible with v1.0, the
+API for Zend_Service_Twitter has been changed; if you have been using it
+previously, you will need to update your code accordingly. Both the
+end-user and API documentation have been updated to reflect the changes.
 
 NEW FEATURES
 ============
@@ -151,7 +117,7 @@ http://framework.zend.com/manual/en/migration.html
 SYSTEM REQUIREMENTS
 -------------------
 
-Zend Framework requires PHP 5.2.4 or later. Please see our reference
+Zend Framework requires PHP 5.2.11 or later. Please see our reference
 guide for more detailed system requirements:
 
 http://framework.zend.com/manual/en/requirements.html

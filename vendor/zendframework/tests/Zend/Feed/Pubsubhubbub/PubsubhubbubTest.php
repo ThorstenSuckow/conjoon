@@ -16,7 +16,7 @@
  * @package    UnitTests
  * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: PubsubhubbubTest.php 24593 2012-01-05 20:35:02Z matthew $
+ * @version    $Id: PubsubhubbubTest.php 25083 2012-11-06 21:02:22Z rob $
  */
 
 require_once 'Zend/Feed/Pubsubhubbub.php';
@@ -41,7 +41,9 @@ class Zend_Feed_Pubsubhubbub_PubsubhubbubTest extends PHPUnit_Framework_TestCase
     public function testCanSetCustomHttpClient()
     {
         Zend_Feed_Pubsubhubbub::setHttpClient(new Test_Http_Client_Pubsub());
-        $this->assertType('Test_Http_Client_Pubsub', Zend_Feed_Pubsubhubbub::getHttpClient());
+        $this->assertTrue(
+            Zend_Feed_Pubsubhubbub::getHttpClient() instanceof Test_Http_Client_Pubsub
+        );
     }
 
     public function testCanDetectHubs()

@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: SelectTest.php 24593 2012-01-05 20:35:02Z matthew $
+ * @version    $Id: SelectTest.php 25191 2013-01-08 08:39:41Z frosch $
  */
 
 // Call Zend_Form_Element_SelectTest::main() if this source file is executed directly.
@@ -248,6 +248,26 @@ class Zend_Form_Element_SelectTest extends PHPUnit_Framework_TestCase
         $this->element->addMultiOption('1', '£' . number_format(1));
         $html = $this->element->render($this->getView());
         $this->assertContains('>£', $html);
+    }
+
+    /**
+     * @group ZF-8452
+     */
+    public function testRenderingAsArray()
+    {
+        $this->element->addMultiOption('bar', 'Bar')
+                      ->setIsArray(true)
+                      ->setDecorators(array('ViewHelper'));
+
+        $actual   = $this->element->render($this->getView());
+        $expected = PHP_EOL
+                  . '<select name="foo[]" id="foo">'
+                  . PHP_EOL
+                  . '    <option value="bar">Bar</option>'
+                  . PHP_EOL
+                  . '</select>';
+
+        $this->assertSame($expected, $actual);
     }
 
     /**

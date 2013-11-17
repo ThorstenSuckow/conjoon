@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: LinksTest.php 24593 2012-01-05 20:35:02Z matthew $
+ * @version    $Id: LinksTest.php 25239 2013-01-22 09:45:01Z frosch $
  */
 
 require_once dirname(__FILE__) . '/TestAbstract.php';
@@ -710,6 +710,28 @@ class Zend_View_Helper_Navigation_LinksTest
 
         $expected = '';
         $actual = $this->_helper->setRenderFlag($flag)->render();
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * @group ZF-8874
+     */
+    public function testRenderingWithoutWhitespace()
+    {
+        $active = $this->_helper->findOneByLabel('Page 1.1');
+        $newFlag = Zend_View_Helper_Navigation_Links::RENDER_NEXT |
+                   Zend_View_Helper_Navigation_Links::RENDER_PREV;
+        $this->_helper->setRenderFlag($newFlag);
+        $this->_helper->setIndent('  ');
+        $active->active = true;
+
+        $this->_helper->setFormatOutput(false);
+
+        // build expected and actual result
+        $expected = '<link rel="next" href="page2" title="Page 2">'
+                  . '<link rel="prev" href="page1" title="Page 1">';
+        $actual = $this->_helper->render();
 
         $this->assertEquals($expected, $actual);
     }

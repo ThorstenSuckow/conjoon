@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: PartialLoopTest.php 24593 2012-01-05 20:35:02Z matthew $
+ * @version    $Id: PartialLoopTest.php 25203 2013-01-10 11:02:17Z frosch $
  */
 
 // Call Zend_View_Helper_PartialLoopTest::main() if this source file is executed directly.
@@ -370,6 +370,33 @@ class Zend_View_Helper_PartialLoopTest extends PHPUnit_Framework_TestCase
         $result = $this->helper->partialLoop('partialLoopCouter.phtml', $data);
         foreach ($data as $key=>$item) {
             $string = 'This is an iteration: ' . $item['message'] . ', pointer at ' . ($key+1);
+            $this->assertContains($string, $result);
+        }
+    }
+
+    /**
+     * @see ZF-7157
+     */
+    public function testPartialLoopSetsTotalCount()
+    {
+        $data = array(
+            array('message' => 'foo'),
+            array('message' => 'bar'),
+            array('message' => 'baz'),
+            array('message' => 'bat')
+        );
+
+        $view = new Zend_View(
+            array(
+                 'scriptPath' =>
+                 $this->basePath . '/default/views/scripts'
+            )
+        );
+        $this->helper->setView($view);
+
+        $result = $this->helper->partialLoop('partialLoopCouter.phtml', $data);
+        foreach ($data as $key => $item) {
+            $string = 'Total count: ' . count($data);
             $this->assertContains($string, $result);
         }
     }

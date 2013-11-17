@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ButtonTest.php 24593 2012-01-05 20:35:02Z matthew $
+ * @version    $Id: ButtonTest.php 25189 2013-01-08 08:32:43Z frosch $
  */
 
 // Call Zend_Form_Element_ButtonTest::main() if this source file is executed directly.
@@ -40,6 +40,11 @@ require_once 'Zend/Translate.php';
  */
 class Zend_Form_Element_ButtonTest extends PHPUnit_Framework_TestCase
 {
+    /**
+     * @var Zend_Form_Element_Button
+     */
+    protected $element;
+
     /**
      * Runs the test methods of this class.
      *
@@ -148,6 +153,41 @@ class Zend_Form_Element_ButtonTest extends PHPUnit_Framework_TestCase
     public function testSetDefaultIgnoredToTrueWhenNotDefined()
     {
         $this->assertTrue($this->element->getIgnore());
+    }
+
+    /**
+     * @group ZF-5056
+     */
+    public function testValidateAlwaysReturnsTrue()
+    {
+        $this->element->setValue('foo');
+
+        $this->assertTrue($this->element->isValid('bar'));
+    }
+
+    /**
+     * @group ZF-5056
+     */
+    public function testRenderingWithValueAfterValidation()
+    {
+        // Set element options
+        $this->element->setOptions(
+            array(
+                 'label'      => 'Foo',
+                 'value'      => 'bar',
+                 'decorators' => array(
+                     'ViewHelper',
+                 ),
+            )
+        );
+
+        // Validate
+        $this->element->isValid(null);
+
+        $this->assertEquals(
+            PHP_EOL . '<button name="foo" id="foo" type="button" value="bar">Foo</button>',
+            $this->element->render($this->getView())
+        );
     }
 
     /**

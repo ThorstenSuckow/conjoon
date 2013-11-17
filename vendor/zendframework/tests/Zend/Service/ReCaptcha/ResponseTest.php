@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ResponseTest.php 24593 2012-01-05 20:35:02Z matthew $
+ * @version    $Id: ResponseTest.php 25152 2012-11-28 11:55:44Z cogo $
  */
 
 /** @see Zend_Service_ReCaptcha_Response */
@@ -66,10 +66,32 @@ class Zend_Service_ReCaptcha_ResponseTest extends PHPUnit_Framework_TestCase
         $this->assertSame(false, $this->_response->isValid());
     }
 
+    public function testSetFromHttpResponseWhenResponseContentIsMissing() {
+        $responseBody = 'true';
+        $httpResponse = new Zend_Http_Response(200, array('Content-Type' => 'text/html'), $responseBody);
+
+        $this->_response->setFromHttpResponse($httpResponse);
+
+        $this->assertTrue($this->_response->getStatus());
+        $this->assertSame('', $this->_response->getErrorCode());
+    }
+
     public function testSetFromHttpResponse() {
         $status = 'false';
         $errorCode = 'foobar';
         $responseBody = $status . "\n" . $errorCode;
+        $httpResponse = new Zend_Http_Response(200, array('Content-Type' => 'text/html'), $responseBody);
+
+        $this->_response->setFromHttpResponse($httpResponse);
+
+        $this->assertSame(false, $this->_response->getStatus());
+        $this->assertSame($errorCode, $this->_response->getErrorCode());
+    }
+
+    public function testSetFromHttpResponseWhenResponseHasSeveralLinesOfContent() {
+        $status = 'false';
+        $errorCode = 'foobar';
+        $responseBody = $status . "\n" . $errorCode . "\nSome data\nEven more data";
         $httpResponse = new Zend_Http_Response(200, array('Content-Type' => 'text/html'), $responseBody);
 
         $this->_response->setFromHttpResponse($httpResponse);

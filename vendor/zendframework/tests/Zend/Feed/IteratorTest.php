@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: IteratorTest.php 24593 2012-01-05 20:35:02Z matthew $
+ * @version    $Id: IteratorTest.php 25083 2012-11-06 21:02:22Z rob $
  */
 
 /**
@@ -74,12 +74,18 @@ class Zend_Feed_IteratorTest extends PHPUnit_Framework_TestCase
     public function testCurrent()
     {
         foreach ($this->_feed as $f) {
-            $this->assertType('Zend_Feed_Entry_Atom', $f, 'Each feed entry should be an instance of Zend_Feed_Entry_Atom');
+            $this->assertTrue(
+                $f instanceof Zend_Feed_Entry_Atom,
+                'Each feed entry should be an instance of Zend_Feed_Entry_Atom'
+            );
             break;
         }
 
         foreach ($this->_nsfeed as $f) {
-            $this->assertType('Zend_Feed_Entry_Atom', $f, 'Each feed entry should be an instance of Zend_Feed_Entry_Atom');
+            $this->assertTrue(
+                $f instanceof Zend_Feed_Entry_Atom,
+                'Each feed entry should be an instance of Zend_Feed_Entry_Atom'
+            );
             break;
         }
     }

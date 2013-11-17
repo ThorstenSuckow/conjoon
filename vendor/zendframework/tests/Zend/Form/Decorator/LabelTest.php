@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: LabelTest.php 24834 2012-05-30 13:49:51Z adamlundrigan $
+ * @version    $Id: LabelTest.php 25243 2013-01-22 12:07:26Z frosch $
  */
 
  
@@ -397,6 +397,36 @@ class Zend_Form_Decorator_LabelTest extends PHPUnit_Framework_TestCase
         $expected = '<label class="optional">test content My Label</label>';
 
         $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * @group ZF-8694
+     */
+    public function testLabelIsNotTranslatedTwice()
+    {
+        // Init translator
+        require_once 'Zend/Translate.php';
+        $translate = new Zend_Translate(
+            array(
+                 'adapter' => 'array',
+                 'content' => array(
+                     'firstLabel'  => 'secondLabel',
+                     'secondLabel' => 'thirdLabel',
+                 ),
+                 'locale'  => 'en'
+            )
+        );
+
+        // Create element
+        $element = new Zend_Form_Element('foo');
+        $element->setView($this->getView())
+                ->setLabel('firstLabel')
+                ->setTranslator($translate);
+
+        $this->decorator->setElement($element);
+
+        // Test
+        $this->assertEquals('secondLabel', $this->decorator->getLabel());
     }
 }
 

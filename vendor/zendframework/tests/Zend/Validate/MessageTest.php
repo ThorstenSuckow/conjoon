@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: MessageTest.php 24593 2012-01-05 20:35:02Z matthew $
+ * @version    $Id: MessageTest.php 25105 2012-11-07 20:33:22Z rob $
  */
 
 // Call Zend_Validate_MessageTest::main() if this source file is executed directly.
@@ -184,7 +184,7 @@ class Zend_Validate_MessageTest extends PHPUnit_Framework_TestCase
             );
             $this->fail('Expected to catch Zend_Validate_Exception');
         } catch (Zend_Exception $e) {
-            $this->assertType('Zend_Validate_Exception', $e,
+            $this->assertTrue($e instanceof Zend_Validate_Exception,
                 'Expected exception of type Zend_Validate_Exception, got ' . get_class($e));
             $this->assertEquals("No message template exists for key '$keyInvalid'", $e->getMessage());
         }
@@ -262,7 +262,7 @@ class Zend_Validate_MessageTest extends PHPUnit_Framework_TestCase
             $property = $this->_validator->unknownProperty;
             $this->fail('Expected to catch Zend_Validate_Exception');
         } catch (Zend_Exception $e) {
-            $this->assertType('Zend_Validate_Exception', $e,
+            $this->assertTrue($e instanceof Zend_Validate_Exception,
                 'Expected exception of type Zend_Validate_Exception, got ' . get_class($e));
             $this->assertEquals("No property exists by the name 'unknownProperty'", $e->getMessage());
         }
@@ -295,7 +295,7 @@ class Zend_Validate_MessageTest extends PHPUnit_Framework_TestCase
     {
         $vars = $this->_validator->getMessageVariables();
 
-        $this->assertType('array', $vars);
+        $this->assertTrue(is_array($vars));
         $this->assertEquals(array('min', 'max'), $vars);
         $message = 'variables: %notvar% ';
         foreach ($vars as $var) {

@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: RegexTest.php 24593 2012-01-05 20:35:02Z matthew $
+ * @version    $Id: RegexTest.php 25217 2013-01-11 11:14:17Z frosch $
  */
 
 /** Zend_Controller_Router_Route_Regex */
@@ -399,7 +399,7 @@ class Zend_Controller_Router_Route_RegexTest extends PHPUnit_Framework_TestCase
         $config = new Zend_Config($routeConf);
         $route = Zend_Controller_Router_Route_Regex::getInstance($config);
 
-        $this->assertType('Zend_Controller_Router_Route_Regex', $route);
+        $this->assertTrue($route instanceof Zend_Controller_Router_Route_Regex);
 
         $values = $route->match('forum/1');
 

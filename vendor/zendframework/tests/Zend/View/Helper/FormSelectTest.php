@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: FormSelectTest.php 24593 2012-01-05 20:35:02Z matthew $
+ * @version    $Id: FormSelectTest.php 25187 2013-01-08 08:21:00Z frosch $
  */
 
 // Call Zend_View_Helper_FormSelectTest::main() if this source file is executed directly.
@@ -74,6 +74,32 @@ class Zend_View_Helper_FormSelectTest extends PHPUnit_Framework_TestCase
     public function tearDown()
     {
         unset($this->helper, $this->view);
+    }
+
+    /**
+     * @group ZF-10661
+     */
+    public function testRenderingWithOptions()
+    {
+        $html = $this->helper->formSelect(
+            'foo',
+            null,
+            null,
+            array(
+                 'bar' => 'Bar',
+                 'baz' => 'Baz',
+            )
+        );
+
+        $expected = '<select name="foo" id="foo">'
+                  . PHP_EOL
+                  . '    <option value="bar">Bar</option>'
+                  . PHP_EOL
+                  . '    <option value="baz">Baz</option>'
+                  . PHP_EOL
+                  . '</select>';
+
+        $this->assertSame($expected, $html);
     }
 
     public function testFormSelectWithNameOnlyCreatesEmptySelect()
@@ -311,6 +337,7 @@ class Zend_View_Helper_FormSelectTest extends PHPUnit_Framework_TestCase
         $this->assertRegexp('/<select[^>]*?(name="baz\[\]")/', $html, $html);
         $this->assertNotRegexp('/<select[^>]*?(multiple="multiple")/', $html, $html);
     }
+
     /** 
      * @group ZF-8252
      */
@@ -330,6 +357,25 @@ class Zend_View_Helper_FormSelectTest extends PHPUnit_Framework_TestCase
         $this->assertRegexp('/<optgroup[^>]*?id="baz-optgroup-bar"[^>]*?"bar"[^>]*?/', $html, $html);
     }
  
+    public function testCanApplyOptionClasses()
+    {
+        $html = $this->helper->formSelect(array(
+            'name'    => 'baz[]',
+            'options' => array(
+                'foo' => 'Foo',
+                'bar' => 'Bar',
+                'baz' => 'Baz,'
+            ),
+            'attribs' => array(
+               'multiple' => false,
+               'optionClasses' => array('foo' => 'fooClass',
+                                        'bar' => 'barClass',
+                                        'baz' => 'bazClass')
+            ),
+        ));
+        $this->assertRegexp('/.*<option[^>]*?(value="foo")?(class="fooClass").*/', $html, $html);
+        $this->assertRegexp('/.*<option[^>]*?(value="bar")?(class="barClass").*/', $html, $html);
+    }
 }
 
 // Call Zend_View_Helper_FormSelectTest::main() if this source file is executed directly.

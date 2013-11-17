@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 24593 2012-01-05 20:35:02Z matthew $
+ * @version    $Id: AllTests.php 25160 2012-12-18 15:17:16Z matthew $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
@@ -32,6 +32,8 @@ require_once 'Zend/Feed/ElementTest.php';
 require_once 'Zend/Feed/ImportTest.php';
 require_once 'Zend/Feed/IteratorTest.php';
 require_once 'Zend/Feed/Entry/RssTest.php';
+require_once 'Zend/Feed/AtomTest.php';
+require_once 'Zend/Feed/RssTest.php';
 
 require_once 'Zend/Feed/ReaderTest.php';
 require_once 'Zend/Feed/Reader/Feed/RssTest.php';
@@ -89,6 +91,8 @@ class Zend_Feed_AllTests
         $suite->addTestSuite('Zend_Feed_ImportTest');
         $suite->addTestSuite('Zend_Feed_IteratorTest');
         $suite->addTestSuite('Zend_Feed_Entry_RssTest');
+        $suite->addTestSuite('Zend_Feed_AtomTest');
+        $suite->addTestSuite('Zend_Feed_RssTest');
 
         /* Zend_Feed_Reader tests */
         // Base parent class

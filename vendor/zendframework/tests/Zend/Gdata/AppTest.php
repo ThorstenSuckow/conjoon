@@ -128,7 +128,7 @@ class Zend_Gdata_AppTest extends PHPUnit_Framework_TestCase
         $this->adapter->setResponse(array('HTTP/1.1 200 OK\r\n\r\n'));
 
         $this->service->setMajorProtocolVersion(1);
-        $this->service->setMinorProtocolVersion(NULL);
+        $this->service->setMinorProtocolVersion(null);
         $this->service->get('http://www.example.com');
 
         $headers = $this->adapter->popRequest()->headers;
@@ -162,7 +162,7 @@ class Zend_Gdata_AppTest extends PHPUnit_Framework_TestCase
         $this->adapter->setResponse(array('HTTP/1.1 200 OK\r\n\r\n'));
 
         $this->service->setMajorProtocolVersion(2);
-        $this->service->setMinorProtocolVersion(NULL);
+        $this->service->setMinorProtocolVersion(null);
         $this->service->get('http://www.example.com');
 
         $headers = $this->adapter->popRequest()->headers;
@@ -583,5 +583,51 @@ class Zend_Gdata_AppTest extends PHPUnit_Framework_TestCase
         $this->service->setMinorProtocolVersion($v);
         $feed = $this->service->newFeed();
         $this->assertEquals($v, $feed->getMinorProtocolVersion());
+    }
+
+    /**
+     * When error handler is overridden to throw an ErrorException, the extension loader
+     * in Zend_Gdata will throw an ErrorException when the class doesn't exist in the 
+     * first extension directory even if it exists in subsequent ones.  This test 
+     * enforces a fix that keeps this from happening
+     *
+     * @group ZF-12268
+     * @group ZF-7013
+     */
+    public function testLoadExtensionCausesFatalErrorWhenErrorHandlerIsOverridden()
+    {
+        // Override the error handler to throw an ErrorException
+        set_error_handler(create_function('$a, $b, $c, $d', 'throw new ErrorException($b, 0, $a, $c, $d);'), E_ALL);
+        try { 
+            $eq = $this->service->newEventQuery();
+            restore_error_handler();
+            $this->assertType('Zend_Gdata_Calendar_EventQuery', $eq);
+        } catch ( Zend_Gdata_App_Exception $ex ) {
+            // If we catch this exception, it means the ErrorException resulting
+            // from the include_once E_NOTICE was caught in the right place,
+            // but the extension was not found in any directory
+            // (Expected since we didn't load the Calendar extension dir)
+            restore_error_handler();
+            $this->assertContains('EventQuery', $ex->getMessage());
+        } catch ( ErrorException $ex ) {
+            restore_error_handler();
+            $this->fail('Did not expect ErrorException');
+        }
+    }
+
+    /**
+     * @group ZF-10243
+     */
+    public function testStaticImportWithoutUsingObjectMapping()
+    {
+        $this->adapter->setResponse($this->httpEntrySample);
+        $feed = Zend_Gdata_App::import(
+            'http://www.example.com',
+            $this->client,
+            'Zend_Gdata_App_Feed',
+            false
+        );
+
+        $this->assertContains('<id>12345678901234567890</id>', $feed);
     }
 }

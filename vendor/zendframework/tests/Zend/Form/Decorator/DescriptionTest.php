@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: DescriptionTest.php 24593 2012-01-05 20:35:02Z matthew $
+ * @version    $Id: DescriptionTest.php 25243 2013-01-22 12:07:26Z frosch $
  */
 
 // Call Zend_Form_Decorator_DescriptionTest::main() if this source file is executed directly.
@@ -180,6 +180,39 @@ class Zend_Form_Decorator_DescriptionTest extends PHPUnit_Framework_TestCase
                       ->setTranslator($translate);
         $html = $this->decorator->render('');
         $this->assertContains($translations['description'], $html);
+    }
+
+    /**
+     * @group ZF-8694
+     */
+    public function testDescriptionIsNotTranslatedTwice()
+    {
+        // Init translator
+        require_once 'Zend/Translate.php';
+        $translate = new Zend_Translate(
+            array(
+                 'adapter' => 'array',
+                 'content' => array(
+                     'firstDescription'  => 'secondDescription',
+                     'secondDescription' => 'thirdDescription',
+                 ),
+                 'locale'  => 'en'
+            )
+        );
+
+        // Create element
+        $element = new Zend_Form_Element('foo');
+        $element->setView($this->getView())
+                ->setDescription('firstDescription')
+                ->setTranslator($translate);
+
+        $this->decorator->setElement($element);
+
+        // Test
+        $this->assertEquals(
+            '<p class="hint">secondDescription</p>',
+            trim($this->decorator->render(''))
+        );
     }
 }
 

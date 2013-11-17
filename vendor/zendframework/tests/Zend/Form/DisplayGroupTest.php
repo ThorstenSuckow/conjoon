@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: DisplayGroupTest.php 24593 2012-01-05 20:35:02Z matthew $
+ * @version    $Id: DisplayGroupTest.php 25093 2012-11-07 20:08:05Z rob $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
@@ -802,6 +802,32 @@ class Zend_Form_DisplayGroupTest extends PHPUnit_Framework_TestCase
         $this->group->setDecorators($t1);
         $t2 = $this->group->getDecorators();
         $this->assertEquals($t1, $t2);
+    }
+
+    /**
+     * @group ZF-12375
+     */
+    public function testHasTranslatorWithDefaultValue()
+    {
+        $this->assertFalse($this->group->hasTranslator());
+    }
+
+    /**
+     * @group ZF-12375
+     */
+    public function testHasTranslatorWithTranslateObject()
+    {
+        $this->group->setTranslator(
+            new Zend_Translate(
+                array(
+                    'adapter' => 'array',
+                    'content' => array(
+                        'foo' => 'Foo',
+                    ),
+                )
+            )
+        );
+        $this->assertTrue($this->group->hasTranslator());
     }
 }
 

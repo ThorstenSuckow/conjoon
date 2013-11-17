@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: EmailAddressTest.php 24828 2012-05-30 12:24:06Z adamlundrigan $
+ * @version    $Id: EmailAddressTest.php 25105 2012-11-07 20:33:22Z rob $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
@@ -165,7 +165,7 @@ class Zend_Validate_EmailAddressTest extends PHPUnit_Framework_TestCase
 
         $messages = $this->_validator->getMessages();
 
-        $this->assertType('array', $messages);
+        $this->assertTrue(is_array($messages));
         $this->assertEquals(0, count($messages));
     }
 

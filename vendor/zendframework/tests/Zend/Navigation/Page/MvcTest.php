@@ -17,13 +17,14 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: MvcTest.php 24964 2012-06-15 14:37:43Z adamlundrigan $
+ * @version    $Id: MvcTest.php 25251 2013-02-06 10:19:45Z frosch $
  */
 
 require_once 'Zend/Navigation/Page/Mvc.php';
 require_once 'Zend/Controller/Request/Http.php';
 require_once 'Zend/Controller/Router/Route.php';
 require_once 'Zend/Controller/Router/Route/Regex.php';
+require_once 'Zend/Controller/Router/Route/Chain.php';
 
 /**
  * Tests the class Zend_Navigation_Page_Mvc
@@ -762,5 +763,116 @@ class Zend_Navigation_Page_MvcTest extends PHPUnit_Framework_TestCase
         ));
 
         $this->assertEquals(true, $page->isActive());
+    }
+
+    /**
+     * @group ZF-12414
+     */
+    public function testNullValueInParameters()
+    {
+        // Create pages
+        $pages         = array();
+        $pages['home'] = new Zend_Navigation_Page_Mvc(
+            array(
+                 'label'      => 'Home',
+                 'route'      => 'page',
+                 'params'     => array(
+                     'slug' => '',
+                 ),
+            )
+        );
+        $pages['news'] = new Zend_Navigation_Page_Mvc(
+            array(
+                 'label'      => 'News',
+                 'route'      => 'page',
+                 'params'     => array(
+                     'slug' => 'news',
+                 ),
+            )
+        );
+
+        // Add route
+        $this->_front->getRouter()->addRoute(
+            'page',
+            new Zend_Controller_Router_Route_Regex(
+                '((?!(admin|page)).*)',
+                array(
+                    'module'     => 'page',
+                    'controller' => 'index',
+                    'action'     => 'index',
+                ),
+                array(
+                    1 => 'slug',
+                ),
+                '%s'
+            )
+        );
+
+        // Set request
+        $this->_front->getRequest()->setParams(
+            array(
+                 'module'     => 'page',
+                 'controller' => 'index',
+                 'action'     => 'index',
+                 'slug'       => 'news',
+            )
+        );
+
+        $this->assertTrue($pages['news']->isActive());
+        $this->assertFalse($pages['home']->isActive());
+    }
+
+    /**
+     * @group ZF-11442
+     */
+    public function testIsActiveIsChainedRouteAware()
+    {
+        // Create page
+        $page = new Zend_Navigation_Page_Mvc(
+            array(
+                 'action' => 'myaction',
+                 'route'  => 'myroute',
+                 'params' => array(
+                     'page' => 1337,
+                     'item' => 1234
+                 )
+            )
+        );
+
+        // Create chained route
+        $chain = new Zend_Controller_Router_Route_Chain();
+
+        $foo = new Zend_Controller_Router_Route(
+            'lolcat/:action',
+            array(
+                 'module'     => 'default',
+                 'controller' => 'foobar',
+                 'action'     => 'bazbat'
+            )
+        );
+        $bar = new Zend_Controller_Router_Route(
+            ':page/:item',
+            array(
+                 'page' => 1,
+                 'item' => 1
+            )
+        );
+        $chain->chain($foo)->chain($bar);
+
+        // Set up router
+        $this->_front->getRouter()->addRoute('myroute', $chain);
+
+        $this->_front->getRequest()->setParams(
+            array(
+                 'module'     => 'default',
+                 'controller' => 'foobar',
+                 'action'     => 'myaction',
+                 'page'       => 1337,
+                 'item'       => 1234
+            )
+        );
+
+        // Test
+        $this->assertTrue($page->isActive());
     }
 }

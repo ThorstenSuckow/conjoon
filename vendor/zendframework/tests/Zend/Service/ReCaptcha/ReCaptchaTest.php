@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ReCaptchaTest.php 24593 2012-01-05 20:35:02Z matthew $
+ * @version    $Id: ReCaptchaTest.php 25153 2012-11-28 11:56:23Z cogo $
  */
 
 /** @see Zend_Service_ReCaptcha */
@@ -210,20 +210,6 @@ class Zend_Service_ReCaptcha_ReCaptchaTest extends PHPUnit_Framework_TestCase
         $this->_reCaptcha->setPrivateKey($this->_privateKey);
         $this->_reCaptcha->setIp('127.0.0.1');
 
-        if (defined('TESTS_ZEND_SERVICE_RECAPTCHA_ONLINE_ENABLED') &&
-            constant('TESTS_ZEND_SERVICE_RECAPTCHA_ONLINE_ENABLED')) {
-
-            $this->_testVerifyOnline();
-        } else {
-            $this->_testVerifyOffline();
-        }
-    }
-
-    protected function _testVerifyOnline() {
-
-    }
-
-    protected function _testVerifyOffline() {
         $adapter = new Zend_Http_Client_Adapter_Test();
         $client = new Zend_Http_Client(null, array(
             'adapter' => $adapter
@@ -231,7 +217,10 @@ class Zend_Service_ReCaptcha_ReCaptchaTest extends PHPUnit_Framework_TestCase
 
         Zend_Service_ReCaptcha::setHttpClient($client);
 
+        // Set a header that will be reset in the recaptcha class before sending the request
+        $client->setHeaders('host', 'example.com');
         $resp = $this->_reCaptcha->verify('challengeField', 'responseField');
+        $this->assertNotSame('example.com', $client->getHeader('host'));
 
         // See if we have a valid object and that the status is false
         $this->assertTrue($resp instanceof Zend_Service_ReCaptcha_Response);
@@ -277,18 +266,16 @@ class Zend_Service_ReCaptcha_ReCaptchaTest extends PHPUnit_Framework_TestCase
     }
 
     public function testVerifyWithMissingChallengeField() {
-        $this->setExpectedException('Zend_Service_ReCaptcha_Exception');
-
         $this->_reCaptcha->setPrivateKey($this->_privateKey);
         $this->_reCaptcha->setIp('127.0.0.1');
-        $this->_reCaptcha->verify('', 'response');
+        $response = $this->_reCaptcha->verify('', 'response');
+        $this->assertFalse($response->getStatus());
     }
 
     public function testVerifyWithMissingResponseField() {
-        $this->setExpectedException('Zend_Service_ReCaptcha_Exception');
-
         $this->_reCaptcha->setPrivateKey($this->_privateKey);
         $this->_reCaptcha->setIp('127.0.0.1');
-        $this->_reCaptcha->verify('challenge', '');
+        $response = $this->_reCaptcha->verify('challenge', '');
+        $this->assertFalse($response->getStatus());
     }
 }

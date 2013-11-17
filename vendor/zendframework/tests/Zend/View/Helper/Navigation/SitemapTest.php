@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: SitemapTest.php 24593 2012-01-05 20:35:02Z matthew $
+ * @version    $Id: SitemapTest.php 25239 2013-01-22 09:45:01Z frosch $
  */
 
 require_once dirname(__FILE__) . '/TestAbstract.php';
@@ -299,5 +299,19 @@ class Zend_View_Helper_Navigation_SitemapTest
         }
 
         $this->fail('A Zend_View_Exception was not thrown when using Schema validation');
+    }
+
+    /**
+     * @group ZF-8874
+     */
+    public function testRenderingWithoutWhitespace()
+    {
+        // Reset format output option
+        $this->_helper->setFormatOutput(false);
+
+        $expected = $this->_helper->render();
+        $actual   = $this->_getExpected('sitemap/without_whitespace.xml');
+
+        $this->assertEquals($expected, $actual);
     }
 }

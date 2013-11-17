@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 24593 2012-01-05 20:35:02Z matthew $
+ * @version    $Id: AllTests.php 25209 2013-01-10 11:51:22Z frosch $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
@@ -33,6 +33,7 @@ require_once 'Zend/Form/Element/HiddenTest.php';
 require_once 'Zend/Form/Element/ImageTest.php';
 require_once 'Zend/Form/Element/MultiCheckboxTest.php';
 require_once 'Zend/Form/Element/MultiselectTest.php';
+require_once 'Zend/Form/Element/NoteTest.php';
 require_once 'Zend/Form/Element/PasswordTest.php';
 require_once 'Zend/Form/Element/RadioTest.php';
 require_once 'Zend/Form/Element/ResetTest.php';
@@ -69,6 +70,7 @@ class Zend_Form_Element_AllTests
         $suite->addTestSuite('Zend_Form_Element_ImageTest');
         $suite->addTestSuite('Zend_Form_Element_MultiCheckboxTest');
         $suite->addTestSuite('Zend_Form_Element_MultiselectTest');
+        $suite->addTestSuite('Zend_Form_Element_NoteTest');
         $suite->addTestSuite('Zend_Form_Element_PasswordTest');
         $suite->addTestSuite('Zend_Form_Element_RadioTest');
         $suite->addTestSuite('Zend_Form_Element_ResetTest');

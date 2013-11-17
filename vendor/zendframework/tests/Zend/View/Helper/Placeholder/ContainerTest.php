@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ContainerTest.php 24593 2012-01-05 20:35:02Z matthew $
+ * @version    $Id: ContainerTest.php 25255 2013-02-13 15:25:39Z frosch $
  */
 
 // Call Zend_View_Helper_Placeholder_Container_AbstractTest::main() if this source file is executed directly.
@@ -441,6 +441,26 @@ class Zend_View_Helper_Placeholder_ContainerTest extends PHPUnit_Framework_TestC
         $this->assertEquals(3, $lis);
         $this->assertTrue((strstr($string, "    <ul>\n")) ? true : false, $string);
         $this->assertTrue((strstr($string, "\n    </ul>")) ? true : false);
+    }
+
+    /**
+     * @group ZF-12044
+     */
+    public function testContainerWithoutItemsShouldAlwaysReturnEmptyString()
+    {
+        $this->assertEquals('', (string) $this->container);
+
+        $this->container->setIndent(4);
+        $this->assertEquals('', (string) $this->container);
+
+        $this->container->setPrefix('<ul><li>');
+        $this->assertEquals('', (string) $this->container);
+
+        $this->container->setSeparator('</li><li>');
+        $this->assertEquals('', (string) $this->container);
+
+        $this->container->setPrefix('</li></ul>');
+        $this->assertEquals('', (string) $this->container);
     }
 }
 

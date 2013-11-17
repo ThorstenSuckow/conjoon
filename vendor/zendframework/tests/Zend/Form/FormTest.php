@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: FormTest.php 24848 2012-05-31 19:28:48Z rob $
+ * @version    $Id: FormTest.php 25223 2013-01-17 14:44:54Z frosch $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
@@ -137,7 +137,6 @@ class Zend_Form_FormTest extends PHPUnit_Framework_TestCase
     {
         $options = $this->getOptions();
         $options['pluginLoader'] = true;
-        $options['subForms']     = true;
         $options['view']         = true;
         $options['translator']   = true;
         $options['default']      = true;
@@ -2493,9 +2492,18 @@ class Zend_Form_FormTest extends PHPUnit_Framework_TestCase
 
     public function testCanCheckIfErrorsAreRegistered()
     {
-        $this->assertFalse($this->form->isErrors());
+        $this->assertFalse($this->form->hasErrors());
         $this->testCanValidateFullFormContainingOnlyElements();
-        $this->assertTrue($this->form->isErrors());
+        $this->assertTrue($this->form->hasErrors());
+    }
+
+    /**
+     * @group ZF-9914
+     */
+    public function testDeprecatedIsErrorsProxiesToHasErrors()
+    {
+        $this->testCanValidateFullFormContainingOnlyElements();
+        $this->assertEquals($this->form->isErrors(), $this->form->hasErrors());
     }
 
     public function testCanRetrieveErrorCodesFromAllElementsAfterFailedValidation()
@@ -2888,9 +2896,9 @@ class Zend_Form_FormTest extends PHPUnit_Framework_TestCase
     public function testShouldAllowMarkingFormAsInvalid()
     {
         $this->form->addErrorMessage('Invalid values entered');
-        $this->assertFalse($this->form->isErrors());
+        $this->assertFalse($this->form->hasErrors());
         $this->form->markAsError();
-        $this->assertTrue($this->form->isErrors());
+        $this->assertTrue($this->form->hasErrors());
         $messages = $this->form->getMessages();
         $this->assertEquals(1, count($messages));
         $this->assertEquals('Invalid values entered', array_shift($messages));
@@ -2898,11 +2906,11 @@ class Zend_Form_FormTest extends PHPUnit_Framework_TestCase
 
     public function testShouldAllowPushingErrorsOntoErrorStackWithErrorMessages()
     {
-        $this->assertFalse($this->form->isErrors());
+        $this->assertFalse($this->form->hasErrors());
         $this->form->setErrors(array('Error 1', 'Error 2'))
                    ->addError('Error 3')
                    ->addErrors(array('Error 4', 'Error 5'));
-        $this->assertTrue($this->form->isErrors());
+        $this->assertTrue($this->form->hasErrors());
         $messages = $this->form->getMessages();
         $this->assertEquals(5, count($messages));
         foreach (range(1, 5) as $id) {
@@ -4336,6 +4344,163 @@ class Zend_Form_FormTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @group ZF-12375
+     */
+    public function testElementTranslatorNotOveriddenbyFormTranslatorDuringRendering()
+    {
+        // Set translator for form
+        $this->form->setTranslator(
+            new Zend_Translate(
+                'array',
+                array(
+                    'labelText' => 'Foo',
+                )
+            )
+        );
+
+        // Add element with his own translator
+        $this->form->addElement(
+            'text',
+            'foo',
+            array(
+                 'label'      => 'labelText',
+                 'translator' => new Zend_Translate(
+                     'array',
+                     array(
+                         'labelText' => 'Bar',
+                     )
+                 ),
+                 'decorators' => array(
+                     'Label',
+                 ),
+            )
+        );
+
+        $this->form->setDecorators(array('FormElements'));
+
+        // Test
+        $this->assertSame(
+            PHP_EOL . '<label for="foo" class="optional">Bar</label>' . PHP_EOL,
+            $this->form->render(new Zend_View())
+        );
+    }
+
+    public function testNameAttributeOutputForXhtml()
+    {
+        // Create form
+        $form = new Zend_Form();
+        $form->setName('foo');
+        $form->setMethod(Zend_Form::METHOD_GET);
+        $form->removeDecorator('HtmlTag');
+
+        // Set doctype
+        $this->getView()->getHelper('doctype')->doctype(
+            Zend_View_Helper_Doctype::XHTML1_STRICT
+        );
+
+        $expected = '<form id="foo" method="get" action="">'
+                  . PHP_EOL
+                  . '</form>';
+
+        $this->assertSame(
+            $expected,
+            $form->render($this->getView())
+        );
+    }
+
+    /**
+     * @group ZF-5613
+     */
+    public function testAddSubFormsPerConfig()
+    {
+        // Create form
+        $form = new Zend_Form(
+            array(
+                'subForms' => array(
+                    array(
+                        'form' => array(
+                            'elements' => array(
+                                'foo' => array(
+                                    'text',
+                                    array(
+                                        'label'      => 'Foo',
+                                        'decorators' => array(
+                                            'ViewHelper',
+                                            'Label',
+                                        ),
+                                    ),
+                                ),
+                            ),
+                            'id'       => 'subform1',
+                            'decorators' => array(
+                                'FormElements',
+                            ),
+                        ),
+                        'name'  => 'subform1',
+                        'order' => 2,
+                    ),
+                    array(
+                        'form' => array(
+                            'elements' => array(
+                                'bar' => array(
+                                    'text',
+                                    array(
+                                        'label'      => 'Bar',
+                                        'decorators' => array(
+                                            'ViewHelper',
+                                            'Label',
+                                        ),
+                                    ),
+                                ),
+                            ),
+                            'id'       => 'subform2',
+                            'decorators' => array(
+                                'FormElements',
+                            ),
+                        ),
+                        'name'  => 'subform2',
+                        'order' => 1,
+                    ),
+                ),
+            )
+        );
+        $form->removeDecorator('HtmlTag');
+
+        // Tests
+        $subForms = $form->getSubForms();
+        $subForm1 = current($subForms);
+        $subForm2 = next($subForms);
+
+        $this->assertSame(
+            array(
+                 'subform1',
+                 'subform2',
+            ),
+            array(
+                 $subForm1->getName(),
+                 $subForm2->getName(),
+            )
+        );
+
+        $expected = '<form enctype="application/x-www-form-urlencoded" action="" method="post">'
+                  . PHP_EOL
+                  . PHP_EOL
+                  . '<label for="subform2-bar" class="optional">Bar</label>'
+                  . PHP_EOL
+                  . PHP_EOL
+                  . '<input type="text" name="subform2[bar]" id="subform2-bar" value="" />'
+                  . PHP_EOL
+                  . PHP_EOL
+                  . '<label for="subform1-foo" class="optional">Foo</label>'
+                  . PHP_EOL
+                  . PHP_EOL
+                  . '<input type="text" name="subform1[foo]" id="subform1-foo" value="" />'
+                  . '</form>';
+
+        $this->assertSame($expected, $form->render($this->getView()));
+    }
+
+    /**
      * Used by test methods susceptible to ZF-2794, marks a test as incomplete
      *
      * @link   http://framework.zend.com/issues/browse/ZF-2794
@@ -4459,7 +4624,7 @@ class Zend_Form_FormTest extends PHPUnit_Framework_TestCase
     public function testExceptionThrownWhenAddElementsIsGivenNullValue()
     {
         $form = new Zend_Form();
-        $form->addElement(NULL);
+        $form->addElement(null);
     }
 
     /**
@@ -4553,6 +4718,102 @@ class Zend_Form_FormTest extends PHPUnit_Framework_TestCase
             $this->assertFalse(empty($paths));
             $this->assertContains('Foo', $paths[0]);
         }
+    }
+
+    /**
+     * @group ZF-8942
+     */
+    public function testCreateElementIncludesElementDecorators()
+    {
+        // Init form
+        $form = new Zend_Form();
+        $form->setElementDecorators(
+            array(
+                 new Zend_Form_Decorator_ViewHelper(),
+                 new Zend_Form_Decorator_Label(),
+            )
+        );
+        $element = $form->createElement('text', 'foo');
+
+        //  Test
+        $expected = array(
+            'Zend_Form_Decorator_ViewHelper',
+            'Zend_Form_Decorator_Label',
+        );
+
+        $actual = array();
+        foreach ($element->getDecorators() as $decorator) {
+            $actual[] = get_class($decorator);
+        }
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * @group ZF-12387
+     */
+    public function testAddElementAsObjectWithDecoratorsShouldNotLoseDecorators()
+    {
+        // Init form
+        $form = new Zend_Form();
+        $form->setElementDecorators(
+            array(
+                 new Zend_Form_Decorator_ViewHelper(),
+                 new Zend_Form_Decorator_Label(),
+            )
+        );
+
+        $element = new Zend_Form_Element_Text('foo');
+        $element->setDecorators(array('Errors', 'Description'));
+        $form->addElement($element);
+
+        // Test
+        $expected = array(
+            'Zend_Form_Decorator_Errors',
+            'Zend_Form_Decorator_Description',
+        );
+
+        $actual = array();
+        foreach ($form->getElement('foo')->getDecorators() as $decorator) {
+            $actual[] = get_class($decorator);
+        }
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * @group ZF-12387
+     */
+    public function testAddElementAsObjectGetsElementDecoratorsIfNoneIsExplicitlySet()
+    {
+        // Init form
+        $form = new Zend_Form();
+        $form->setElementDecorators(
+            array(
+                 new Zend_Form_Decorator_ViewHelper(),
+                 new Zend_Form_Decorator_Label(),
+            )
+        );
+
+        // Add element
+        $element = new Zend_Form_Element_Text(
+            'foo',
+            array('disableLoadDefaultDecorators' => true)
+        );
+        $form->addElement($element);
+
+        // Test
+        $expected = array(
+            'Zend_Form_Decorator_ViewHelper',
+            'Zend_Form_Decorator_Label',
+        );
+
+        $actual = array();
+        foreach ($form->getElement('foo')->getDecorators() as $decorator) {
+            $actual[] = get_class($decorator);
+        }
+
+        $this->assertEquals($expected, $actual);
     }
 }
 

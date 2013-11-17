@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: HostnameTest.php 24593 2012-01-05 20:35:02Z matthew $
+ * @version    $Id: HostnameTest.php 25061 2012-11-02 21:24:09Z rob $
  */
 
 /**
@@ -453,6 +453,13 @@ class Zend_Validate_HostnameTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($validator->isValid('tĕst123.si'));
         $this->assertTrue($validator->isValid('tàrø.si'));
         $this->assertFalse($validator->isValid('رات.si'));
+    }
+    /**
+     * @ZF-12314
+     */
+    public function testDKSpecialChars()
+    {
+        $this->assertTrue($this->_validator->isValid('testæøå.dk'));
     }
 
 }

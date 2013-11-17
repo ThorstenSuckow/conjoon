@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: MenuTest.php 24962 2012-06-15 14:28:42Z adamlundrigan $
+ * @version    $Id: MenuTest.php 25239 2013-01-22 09:45:01Z frosch $
  */
 
 require_once dirname(__FILE__) . '/TestAbstract.php';
@@ -703,5 +703,267 @@ class Zend_View_Helper_Navigation_MenuTest
             '<ul class="navigation" id="foo">',
             $this->_helper->renderSubMenu(null, null, null, 'foo')
         );
+    }
+
+    /**
+     * @group ZF-7212
+     */
+    public function testRenderingDeepestMenuWithUlId()
+    {
+        $this->assertContains(
+            '<ul class="navigation" id="foo">',
+            $this->_helper->renderMenu(null, array('ulId' => 'foo'))
+        );
+    }
+
+    /**
+     * @group ZF-7003
+     */
+    public function testSetAddPageClassToLi()
+    {
+        $this->_helper->addPageClassToLi();
+        $this->assertTrue($this->_helper->getAddPageClassToLi());
+    }
+
+    /**
+     * @group ZF-7003
+     */
+    public function testRenderingWithPageClassToLi()
+    {
+        $this->_helper->addPageClassToLi();
+
+        // Add css class
+        $container = $this->_helper->getContainer();
+        $container->findBy('href', 'page1')->setClass('foo');
+
+        // Tests
+        $this->assertContains(
+            '<li class="foo">',
+            $this->_helper->renderMenu()
+        );
+        $this->assertNotContains(
+            '<a class="foo" href="page1">Page 1</a>',
+            $this->_helper->renderMenu()
+        );
+    }
+
+    /**
+     * @group ZF-7003
+     */
+    public function testRenderDeepestMenuWithPageClassToLi()
+    {
+        // Add css class
+        $container = $this->_helper->getContainer();
+        $container->findBy('label', 'Page 2.3.3.1')->setClass('foo');
+
+        // Tests
+        $options = array(
+            'onlyActiveBranch' => true,
+            'renderParents'    => false,
+            'addPageClassToLi' => true,
+        );
+
+        $this->assertContains(
+            '<li class="active foo">',
+            $this->_helper->renderMenu(null, $options)
+        );
+        $this->assertNotContains(
+            '<a class="foo" href="page1">Page 1</a>',
+            $this->_helper->renderMenu(null, $options)
+        );
+    }
+
+    /**
+     * @group ZF-9543
+     */
+    public function testSetActiveClass()
+    {
+        $this->_helper->setActiveClass('current');
+
+        // Test getter
+        $this->assertEquals('current', $this->_helper->getActiveClass());
+
+        // Test rendering
+        $expected = $this->_getExpected('menu/css_active.html');
+        $this->assertEquals($expected, $this->_helper->render($this->_nav2));
+    }
+
+    /**
+     * @group ZF-9543
+     */
+    public function testRenderDeepestMenuWithCustomActiveClass()
+    {
+        // Tests
+        $options = array(
+            'onlyActiveBranch' => true,
+            'renderParents'    => false,
+            'activeClass'      => 'current',
+        );
+
+        $html = $this->_helper->renderMenu(null, $options);
+
+        $this->assertContains('<li class="current">', $html);
+        $this->assertNotContains('<li class="active">', $html);
+    }
+
+    /**
+     * @group ZF-8951
+     */
+    public function testSetRenderParentClass()
+    {
+        $this->_helper->setRenderParentClass(true);
+
+        $this->assertTrue($this->_helper->getRenderParentClass());
+    }
+
+    /**
+     * @group ZF-8951
+     */
+    public function testSetParentClass()
+    {
+        $this->_helper->setParentClass('foo');
+
+        $this->assertEquals('foo', $this->_helper->getParentClass());
+    }
+
+    /**
+     * @group ZF-8951
+     */
+    public function testOptionRenderParentClass()
+    {
+        $expected = $this->_getExpected('menu/parentclass_standard.html');
+        $actual   = $this->_helper->renderMenu(
+            null ,
+            array(
+                 'renderParentClass' => true,
+            )
+        );
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * @group ZF-8951
+     */
+    public function testOptionRenderParentClassAndParentClass()
+    {
+        $expected = $this->_getExpected('menu/parentclass_custom.html');
+        $actual   = $this->_helper->renderMenu(
+            null ,
+            array(
+                 'renderParentClass' => true,
+                 'parentClass'       => 'foo',
+            )
+        );
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * @group ZF-8951
+     */
+    public function testRenderingWithStandardParentClass()
+    {
+        $this->_helper->setRenderParentClass(true);
+        $expected = $this->_getExpected('menu/parentclass_standard.html');
+
+        $this->assertEquals($expected, $this->_helper->render());
+    }
+
+    /**
+     * @group ZF-8951
+     */
+    public function testRenderingWithCustomParentClass()
+    {
+        $this->_helper->setRenderParentClass(true);
+        $this->_helper->setParentClass('foo');
+        $expected = $this->_getExpected('menu/parentclass_custom.html');
+
+        $this->assertEquals($expected, $this->_helper->render());
+    }
+
+    /**
+     * @group ZF-8951
+     */
+    public function testRenderingWithParentClassAndBothDepts()
+    {
+        $this->_helper->setRenderParentClass(true);
+
+        $expected = $this->_getExpected('menu/parentclass_bothdepts.html');
+        $actual   = $this->_helper->setMinDepth(1)->setMaxDepth(2)->render();
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * @group ZF-8951
+     */
+    public function testRenderingWithParentClassAndOnlyActiveBranchAndBothDepts()
+    {
+        $this->_helper->setRenderParentClass(true);
+        $this->_helper->setOnlyActiveBranch(true);
+
+        $expected = $this->_getExpected('menu/parentclass_onlyactivebranch_bothdepts.html');
+        $actual   = $this->_helper->setMinDepth(1)->setMaxDepth(2)->render();
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * @group ZF-8874
+     */
+    public function testSetAndGetInnerIndent()
+    {
+        // Test standard
+        $this->assertSame('    ', $this->_helper->getInnerIndent());
+
+        // Test with format output true
+        $this->_helper->setInnerIndent(0);
+        $this->assertSame('', $this->_helper->getInnerIndent());
+
+        $this->_helper->setInnerIndent('        ');
+        $this->assertSame('        ', $this->_helper->getInnerIndent());
+
+        // Test with format output false
+        $this->_helper->setFormatOutput(false);
+        $this->assertSame('', $this->_helper->getInnerIndent());
+    }
+
+    /**
+     * @group ZF-8874
+     */
+    public function testRenderingWithoutWhitespace()
+    {
+        $this->_helper->setFormatOutput(false);
+
+        $expected = $this->_getExpected('menu/without_whitespace.html');
+
+        $this->assertEquals($expected, $this->_helper->render($this->_nav1));
+    }
+
+    /**
+     * @group ZF-8874
+     */
+    public function testRenderingWithInnerIndent()
+    {
+        $this->_helper->setIndent(4);
+
+        // Inner indent = 0
+        $this->_helper->setInnerIndent(0);
+        $expected = $this->_getExpected('menu/innerindent0.html');
+
+        $this->assertEquals($expected, $this->_helper->render($this->_nav1));
+
+        // Inner indent = 4
+        $this->_helper->setInnerIndent(4);
+        $expected = $this->_getExpected('menu/innerindent4.html');
+
+        $this->assertEquals($expected, $this->_helper->render($this->_nav1));
+
+        // Inner indent = 8
+        $this->_helper->setInnerIndent(8);
+        $expected = $this->_getExpected('menu/innerindent8.html');
+
+        $this->assertEquals($expected, $this->_helper->render($this->_nav1));
     }
 }

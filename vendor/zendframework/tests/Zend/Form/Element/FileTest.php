@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: FileTest.php 24876 2012-06-04 14:01:44Z adamlundrigan $
+ * @version    $Id: FileTest.php 25225 2013-01-17 15:59:16Z frosch $
  */
 
 // Call Zend_Form_Element_FileTest::main() if this source file is executed directly.
@@ -498,13 +498,40 @@ class Zend_Form_Element_FileTest extends PHPUnit_Framework_TestCase
     public function testElementShouldAllowAdapterWithBackslahes()
     {
         if (version_compare(PHP_VERSION, '5.3.0', '<')) {
-            $this->markTestSkipped(__CLASS__ . '::' . __METHOD__ . ' requires PHP 5.3.0 or greater');
+            $this->markTestSkipped(
+                __CLASS__ . '::' . __METHOD__ . ' requires PHP 5.3.0 or greater'
+            );
             return;
         }
-        $this->element->addPrefixPath('Zend\Form\Element\FileTest\Adapter', dirname(__FILE__) . '/_files/TransferAdapter', 'transfer_adapter');
+        $this->element->addPrefixPath(
+            'Zend\Form\Element\FileTest\Adapter',
+            dirname(__FILE__) . '/_files/TransferAdapter',
+            'transfer_adapter'
+        );
         $this->element->setTransferAdapter('Bar');
         $test = $this->element->getTransferAdapter();
-        $this->assertType('\Zend\Form\Element\FileTest\Adapter\Bar', $test);
+        $this->assertTrue(
+            $test instanceof \Zend\Form\Element\FileTest\Adapter\Bar
+        );
+    }
+
+    /**
+     * @group ZF-12210
+     */
+    public function testAutoInsertNotEmptyValidator()
+    {
+        $this->testElementShouldAllowSpecifyingAdapterUsingConcreteInstance();
+        $this->element->setRequired(true);
+
+        // Test before validation
+        $this->assertNull($this->element->getValidator('NotEmpty'));
+
+        // Test after validation
+        $this->element->isValid('foo.jpg');
+
+        $this->assertTrue(
+            $this->element->getValidator('NotEmpty') instanceof Zend_Validate_NotEmpty
+        );
     }
 }
 
