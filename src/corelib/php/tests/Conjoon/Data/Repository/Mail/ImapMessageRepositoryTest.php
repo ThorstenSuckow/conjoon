@@ -120,6 +120,12 @@ class ImapMessageRepositoryTest extends \PHPUnit_Framework_TestCase {
             $res instanceof \Conjoon\Data\Entity\Mail\ImapMessageEntity
         );
 
+        $this->assertTrue($res->getId() !== null);
+
+        $this->assertEquals(
+            $res->getId(), $this->messageLocation->getUid()
+        );
+
     }
 
 }

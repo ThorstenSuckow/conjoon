@@ -88,6 +88,7 @@ class GetMessageResult implements \Conjoon\Mail\Server\Protocol\SuccessResult {
         }
 
         return array('message' => array(
+            'id'  => $this->entity->getId(),
             'uId' => $this->messageLocation->getUId(),
             'path' => array_merge(
                 array($this->messageLocation->getFolder()->getRootId()),

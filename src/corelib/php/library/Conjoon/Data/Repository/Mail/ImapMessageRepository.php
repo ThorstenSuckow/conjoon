@@ -160,6 +160,16 @@ class ImapMessageRepository extends DefaultImapRepository
             );
         }
 
+        // update id of the imap message here by using reflection class
+        // this is needed since each MessageEntity needs to return an actual
+        // value for getId()
+        $reflectionClass = new \ReflectionClass(get_class($entity));
+        $property = $reflectionClass->getProperty("id");
+        $property->setAccessible(true);
+        $property->setValue($entity, $messageLocation->getUId());
+        $property->setAccessible(false);
+
+
         return $entity;
     }
 

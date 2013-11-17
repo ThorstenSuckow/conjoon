@@ -74,6 +74,7 @@ class GetMessageResultTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(
             array(
                 'message' => array(
+                    'id'         => null,
                     'uId'        => "1",
                     'path'       => array('1', '2'),
                     'date'       => $this->date,
