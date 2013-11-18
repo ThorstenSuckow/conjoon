@@ -117,17 +117,15 @@ class Conjoon_Modules_Service_Twitter_Account_Builder extends Conjoon_Builder {
 
                 $response = $twitter->userShow($dto->name);
 
-                $dto->twitterId              = (string)$response->id;
-                $dto->twitterName            = (string)$response->name;
-                $dto->twitterScreenName      = (string)$response->screen_name;
-                $dto->twitterLocation        = (string)$response->location;
-                $dto->twitterProfileImageUrl = (string)$response->profile_image_url;
-                $dto->twitterUrl             = (string)$response->url;
-                $dto->twitterProtected       = (bool)(string)$response->protected;
-                $dto->twitterDescription     = (string)$response->description;
-                $dto->twitterFollowersCount  = (int)(string)$response->followers_count;
-
-                $twitter->accountEndSession();
+                $dto->twitterId              = $response->id_str;
+                $dto->twitterName            = $response->name;
+                $dto->twitterScreenName      = $response->screen_name;
+                $dto->twitterLocation        = $response->location;
+                $dto->twitterProfileImageUrl = $response->profile_image_url;
+                $dto->twitterUrl             = $response->url;
+                $dto->twitterProtected       = $response->protected;
+                $dto->twitterDescription     = $response->description;
+                $dto->twitterFollowersCount  = $response->followers_count;
 
             } catch (Exception $e) {
                 Conjoon_Log::log(

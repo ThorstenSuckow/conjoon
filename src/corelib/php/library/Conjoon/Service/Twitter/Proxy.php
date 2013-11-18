@@ -75,7 +75,8 @@ class Conjoon_Service_Twitter_Proxy  {
 
 
         $whitelist = array(
-            'oauth_token', 'oauth_token_secret', 'user_id', 'screen_name'
+            'oauth_token', 'oauth_token_secret', 'user_id', 'screen_name',
+            'consumer_key', 'consumer_secret'
         );
 
         $accessTokenOptions = Conjoon_Util_Array::extractByKeys($options, $whitelist);
@@ -102,18 +103,137 @@ class Conjoon_Service_Twitter_Proxy  {
 
         $this->_twitter = new Conjoon_Service_Twitter(array(
             'username'    => $accessTokenOptions['screen_name'],
-            'accessToken' => $accessToken
+            'accessToken' => $accessToken,
+            'oauthOptions' => array(
+                'consumerKey'    => $accessTokenOptions['consumer_key'],
+                'consumerSecret' => $accessTokenOptions['consumer_secret']
+            )
         ));
     }
 
     /**
-     * End current session
+     * Returns a Conjoon_Error based on the specified exception.
      *
-     * @return true
+     * @param Exception $e
+     *
+     * @return Conjoon_Error
      */
-    public function accountEndSession()
-    {
-        return $this->_twitter->accountEndSession();
+    protected function fromTwitterServiceException(Exception $e) {
+        /**
+         * @see Conjoon_Error_Factory
+         */
+        require_once 'Conjoon/Error/Factory.php';
+
+        return Conjoon_Error_Factory::createError(
+            $e->getMessage(), Conjoon_Error::LEVEL_ERROR
+        );
+    }
+
+    /**
+     * Returns an error object based on the error information found in the
+     * response obejct.
+     *
+     * @param Zend_Service_Twitter_Response $respobnse
+     *
+     * @return Conjoon_Error
+     *
+     * @throws RuntimeException if neither errors or error is found
+     * in the response object
+     */
+    protected function fromTwitterServiceError(Zend_Service_Twitter_Response $response) {
+        /**
+         * @see Conjoon_Error_Factory
+         */
+        require_once 'Conjoon/Error/Factory.php';
+
+
+        if ($response->errors) {
+            $errorStr = array();
+
+            foreach ($response->errors as $value) {
+                $errorStr[] = $value->message;
+            }
+
+            $errorStr = implode("\n", $errorStr);
+
+            return Conjoon_Error_Factory::createError(
+                $errorStr .
+                    " [username: \"" .$this->_twitter->getUsername() . "\"]",
+                Conjoon_Error::LEVEL_ERROR
+            );
+        }
+
+        if ($response->error) {
+            return Conjoon_Error_Factory::createError(
+                $response->error .
+                    " [username: \"" .$this->_twitter->getUsername() . "\"]",
+                Conjoon_Error::LEVEL_ERROR
+            );
+        }
+
+        throw new RuntimeException("errors or error was not set in the resposne object");
+    }
+
+    /**
+     * Returns the list of user the specified user follows.
+     *
+     * @param mixed $id the twitter id of the user
+     *
+     * @return array an array with the users this user is following, or
+     * Conjoon_Error if any error occurres
+     */
+    public function friendsList($id) {
+
+        $cursor = -1;
+
+        $users = array();
+
+
+        while ($cursor != 0) {
+
+            $response = $this->_twitter->friends->list(array(
+                'user_id'   => $id,
+                'cursor' => $cursor,
+                'count' => 200
+            ));
+
+            if ($response->errors || $response->error) {
+                return $this->fromTwitterServiceError($response);
+            }
+
+            $jsonBody = $response->toValue();
+
+            if ($jsonBody->users) {
+
+                // looks like we won't get an array if the twitter user
+                // has only one friend. instead we'll get directly a
+                // SimpleXMLElement
+                if (!is_array($jsonBody->users)) {
+                    $jsonBody->users = array($jsonBody->users);
+                }
+
+                foreach ($jsonBody->users as $friend) {
+
+                    $users[] = array(
+                        'id'              => (string)$friend->id_str,
+                        'name'            => (string)$friend->name,
+                        'screenName'      => (string)$friend->screen_name,
+                        'location'        => (string)$friend->location,
+                        'profileImageUrl' => (string)$friend->profile_image_url,
+                        'url'             => (string)$friend->url,
+                        'description'     => (string)$friend->description,
+                        'protected'       => (string)$friend->protected,
+                        'followersCount'  => (int)(string)$friend->followers_count
+                    );
+                }
+            } else {
+                break;
+            }
+
+            $cursor = (string)$jsonBody->next_cursor_str;
+        }
+
+        return $users;
     }
 
     /**
@@ -124,36 +244,16 @@ class Conjoon_Service_Twitter_Proxy  {
     public function accountVerifyCredentials()
     {
         try {
-            /**
-             * @ticket CN-675
-             */
-            $response = $this->_twitter->userShow(
-                $this->_twitter->getUsername()
-            );
+
+            $response = $this->_twitter->accountVerifyCredentials();
 
             //$response = $this->_twitter->accountVerifyCredentials();
         } catch (Zend_Service_Twitter_Exception $e) {
-            /**
-             * @see Conjoon_Error_Factory
-             */
-            require_once 'Conjoon/Error/Factory.php';
-
-            return Conjoon_Error_Factory::createError(
-                $e->getMessage(), Conjoon_Error::LEVEL_ERROR
-            );
+            return $this->fromTwitterServiceException($e);
         }
 
-        if (isset($response->error)) {
-            /**
-             * @see Conjoon_Error_Factory
-             */
-            require_once 'Conjoon/Error/Factory.php';
-
-            return Conjoon_Error_Factory::createError(
-                (string)$response->error .
-                " [username: \"" .$this->_twitter->getUsername() . "\"]",
-                Conjoon_Error::LEVEL_ERROR
-            );
+        if ($response->errors || $response->error) {
+            return $this->fromTwitterServiceError($response);
         }
 
         /**
@@ -163,7 +263,7 @@ class Conjoon_Service_Twitter_Proxy  {
 
         $dto = new Conjoon_Modules_Service_Twitter_Account_Dto;
 
-        $dto->twitterId              = (string)$response->id;
+        $dto->twitterId              = (string)$response->id_str;
         $dto->twitterName            = (string)$response->name;
         $dto->twitterScreenName      = (string)$response->screen_name;
         $dto->twitterLocation        = (string)$response->location;
@@ -182,32 +282,16 @@ class Conjoon_Service_Twitter_Proxy  {
      * @param  int|string $id User ID or name of new friend
      * @return true or Conjoon_Error
      */
-    public function friendshipCreate($id)
+    public function friendshipsCreate($id)
     {
         try {
-            $response = $this->_twitter->friendshipCreate($id);
+            $response = $this->_twitter->friendshipsCreate($id);
         } catch (Zend_Service_Twitter_Exception $e) {
-            /**
-             * @see Conjoon_Error_Factory
-             */
-            require_once 'Conjoon/Error/Factory.php';
-
-            return Conjoon_Error_Factory::createError(
-                $e->getMessage(), Conjoon_Error::LEVEL_ERROR
-            );
+            return $this->fromTwitterServiceException($e);
         }
 
-        if (isset($response->error)) {
-            /**
-             * @see Conjoon_Error_Factory
-             */
-            require_once 'Conjoon/Error/Factory.php';
-
-            return Conjoon_Error_Factory::createError(
-                (string)$response->error .
-                " [username: \"" .$this->_twitter->getUsername() . "\"]",
-                Conjoon_Error::LEVEL_ERROR
-            );
+        if ($response->errors || $response->error) {
+            return $this->fromTwitterServiceError($response);
         }
 
         return true;
@@ -217,34 +301,20 @@ class Conjoon_Service_Twitter_Proxy  {
      * Destroy friendship
      *
      * @param  int|string $id User ID or name of friend to remove
-     * @return true or Conjoon_Error
+     *
+     * @return boolean true if friendship was destroyed, otherwise false. Returns
+     * Conjoon_Error if anything fails
      */
-    public function friendshipDestroy($id)
+    public function friendshipsDestroy($id)
     {
         try {
-            $response = $this->_twitter->friendshipDestroy($id);
+            $response = $this->_twitter->friendshipsDestroy($id);
         } catch (Zend_Service_Twitter_Exception $e) {
-            /**
-             * @see Conjoon_Error_Factory
-             */
-            require_once 'Conjoon/Error/Factory.php';
-
-            return Conjoon_Error_Factory::createError(
-                $e->getMessage(), Conjoon_Error::LEVEL_ERROR
-            );
+            return $this->fromTwitterServiceException($e);
         }
 
-        if (isset($response->error)) {
-            /**
-             * @see Conjoon_Error_Factory
-             */
-            require_once 'Conjoon/Error/Factory.php';
-
-            return Conjoon_Error_Factory::createError(
-                (string)$response->error .
-                " [username: \"" .$this->_twitter->getUsername() . "\"]",
-                Conjoon_Error::LEVEL_ERROR
-            );
+        if ($response->errors || $response->error) {
+            return $this->fromTwitterServiceError($response);
         }
 
         return true;
@@ -266,56 +336,41 @@ class Conjoon_Service_Twitter_Proxy  {
     public function favoriteTweet($id, $favorite = false)
     {
         try {
-
             if ($favorite) {
-                $favoriteStatus = $this->_twitter->favoriteCreate($id);
+                $response = $this->_twitter->favoritesCreate($id);
             } else {
-                $favoriteStatus = $this->_twitter->favoriteDestroy($id);
+                $response = $this->_twitter->favoritesDestroy($id);
             }
         } catch (Zend_Service_Twitter_Exception $e) {
-            /**
-             * @see Conjoon_Error_Factory
-             */
-            require_once 'Conjoon/Error/Factory.php';
-
-            return Conjoon_Error_Factory::createError(
-                $e->getMessage(), Conjoon_Error::LEVEL_ERROR
-            );
+            return $this->fromTwitterServiceException($e);
         }
 
-        if (isset($favoriteStatus->error)) {
-            /**
-             * @see Conjoon_Error_Factory
-             */
-            require_once 'Conjoon/Error/Factory.php';
-
-            return Conjoon_Error_Factory::createError(
-                (string)$favoriteStatus->error .
-                " [username: \"" .$this->_twitter->getUsername() . "\"]",
-                Conjoon_Error::LEVEL_ERROR
-            );
+        if ($response->errors || $response->error) {
+            return $this->fromTwitterServiceError($response);
         }
+
+        $jsonBody = $response->toValue();
 
         $data = array(
-            'id'                  => (string)$favoriteStatus->id,
-            'text'                => (string)$favoriteStatus->text,
-            'createdAt'           => (string)$favoriteStatus->created_at,
-            'source'              => (string)$favoriteStatus->source,
-            'truncated'           => (string)$favoriteStatus->truncated,
-            'userId'              => (string)$favoriteStatus->user->id,
-            'name'                => (string)$favoriteStatus->user->name,
-            'screenName'          => (string)$favoriteStatus->user->screen_name,
-            'location'            => (string)$favoriteStatus->user->location,
-            'profileImageUrl'     => (string)$favoriteStatus->user->profile_image_url,
-            'url'                 => (string)$favoriteStatus->user->url,
-            'description'         => (string)$favoriteStatus->user->description,
-            'protected'           => (string)$favoriteStatus->user->protected,
-            'isFollowing'         => (string)$favoriteStatus->user->following,
-            'followersCount'      => (string)$favoriteStatus->user->followers_count,
-            'inReplyToStatusId'   => (string)$favoriteStatus->in_reply_to_status_id,
-            'inReplyToUserId'     => (string)$favoriteStatus->in_reply_to_user_id,
-            'inReplyToScreenName' => (string)$favoriteStatus->in_reply_to_screen_name,
-            'favorited'           => $favorite//(string)$favoriteStatus->favorited
+            'id'                  => (string)$jsonBody->id_str,
+            'text'                => (string)$jsonBody->text,
+            'createdAt'           => (string)$jsonBody->created_at,
+            'source'              => (string)$jsonBody->source,
+            'truncated'           => (string)$jsonBody->truncated,
+            'userId'              => (string)$jsonBody->user->id_str,
+            'name'                => (string)$jsonBody->user->name,
+            'screenName'          => (string)$jsonBody->user->screen_name,
+            'location'            => (string)$jsonBody->user->location,
+            'profileImageUrl'     => (string)$jsonBody->user->profile_image_url,
+            'url'                 => (string)$jsonBody->user->url,
+            'description'         => (string)$jsonBody->user->description,
+            'protected'           => (string)$jsonBody->user->protected,
+            'isFollowing'         => (string)$jsonBody->user->following,
+            'followersCount'      => (string)$jsonBody->user->followers_count,
+            'inReplyToStatusId'   => (string)$jsonBody->in_reply_to_status_id_str,
+            'inReplyToUserId'     => (string)$jsonBody->in_reply_to_user_id_str,
+            'inReplyToScreenName' => (string)$jsonBody->in_reply_to_screen_name,
+            'favorited'           => $favorite
         );
 
         /**
@@ -353,51 +408,37 @@ class Conjoon_Service_Twitter_Proxy  {
     public function deleteTweet($id)
     {
         try {
-            $destroyStatus = $this->_twitter->statusDestroy($id);
+            $response = $this->_twitter->statusesDestroy($id);
         } catch (Zend_Service_Twitter_Exception $e) {
-            /**
-             * @see Conjoon_Error_Factory
-             */
-            require_once 'Conjoon/Error/Factory.php';
-
-            return Conjoon_Error_Factory::createError(
-                $e->getMessage(), Conjoon_Error::LEVEL_ERROR
-            );
+            return $this->fromTwitterServiceException($e);
         }
 
-        if (isset($destroyStatus->error)) {
-            /**
-             * @see Conjoon_Error_Factory
-             */
-            require_once 'Conjoon/Error/Factory.php';
-
-            return Conjoon_Error_Factory::createError(
-                (string)$destroyStatus->error .
-                " [username: \"" .$this->_twitter->getUsername() . "\"]",
-                Conjoon_Error::LEVEL_ERROR
-            );
+        if ($response->errors || $response->error) {
+            return $this->fromTwitterServiceError($response);
         }
+
+        $jsonBody = $response->toValue();
 
         $data = array(
-            'id'                  => (string)$destroyStatus->id,
-            'text'                => (string)$destroyStatus->text,
-            'createdAt'           => (string)$destroyStatus->created_at,
-            'source'              => (string)$destroyStatus->source,
-            'truncated'           => (string)$destroyStatus->truncated,
-            'userId'              => (string)$destroyStatus->user->id,
-            'name'                => (string)$destroyStatus->user->name,
-            'screenName'          => (string)$destroyStatus->user->screen_name,
-            'location'            => (string)$destroyStatus->user->location,
-            'profileImageUrl'     => (string)$destroyStatus->user->profile_image_url,
-            'url'                 => (string)$destroyStatus->user->url,
-            'description'         => (string)$destroyStatus->user->description,
-            'protected'           => (string)$destroyStatus->user->protected,
-            'isFollowing'         => (string)$destroyStatus->user->following,
-            'followersCount'      => (string)$destroyStatus->user->followers_count,
-            'inReplyToStatusId'   => (string)$destroyStatus->in_reply_to_status_id,
-            'inReplyToUserId'     => (string)$destroyStatus->in_reply_to_user_id,
-            'inReplyToScreenName' => (string)$destroyStatus->in_reply_to_screen_name,
-            'favorited'           => (string)$destroyStatus->favorited
+            'id'                  => (string)$jsonBody->id_str,
+            'text'                => (string)$jsonBody->text,
+            'createdAt'           => (string)$jsonBody->created_at,
+            'source'              => (string)$jsonBody->source,
+            'truncated'           => (string)$jsonBody->truncated,
+            'userId'              => (string)$jsonBody->user->id_str,
+            'name'                => (string)$jsonBody->user->name,
+            'screenName'          => (string)$jsonBody->user->screen_name,
+            'location'            => (string)$jsonBody->user->location,
+            'profileImageUrl'     => (string)$jsonBody->user->profile_image_url,
+            'url'                 => (string)$jsonBody->user->url,
+            'description'         => (string)$jsonBody->user->description,
+            'protected'           => (string)$jsonBody->user->protected,
+            'isFollowing'         => (string)$jsonBody->user->following,
+            'followersCount'      => (string)$jsonBody->user->followers_count,
+            'inReplyToStatusId'   => (string)$jsonBody->in_reply_to_status_id_str,
+            'inReplyToUserId'     => (string)$jsonBody->in_reply_to_user_id_str,
+            'inReplyToScreenName' => (string)$jsonBody->in_reply_to_screen_name,
+            'favorited'           => (string)$jsonBody->favorited
         );
 
         /**
@@ -431,32 +472,16 @@ class Conjoon_Service_Twitter_Proxy  {
      * @return Conjoon_Error if any error occures, otherwise an instance of
      * Conjoon_Modules_Service_Twitter_Tweet
      */
-    public function statusShow($id)
+    public function statusesShow($id)
     {
         try {
-            $tweet = $this->_twitter->statusShow($id);
+            $response = $this->_twitter->statusesShow($id);
         } catch (Zend_Service_Twitter_Exception $e) {
-            /**
-             * @see Conjoon_Error_Factory
-             */
-            require_once 'Conjoon/Error/Factory.php';
-
-            return Conjoon_Error_Factory::createError(
-                $e->getMessage(), Conjoon_Error::LEVEL_ERROR
-            );
+            return $this->fromTwitterServiceException($e);
         }
 
-        if (isset($tweet->error)) {
-            /**
-             * @see Conjoon_Error_Factory
-             */
-            require_once 'Conjoon/Error/Factory.php';
-
-            return Conjoon_Error_Factory::createError(
-                (string)$tweet->error .
-                " [username: \"" .$this->_twitter->getUsername() . "\"]",
-                Conjoon_Error::LEVEL_ERROR
-            );
+        if ($response->errors || $response->error) {
+            return $this->fromTwitterServiceError($response);
         }
 
         /**
@@ -473,34 +498,36 @@ class Conjoon_Service_Twitter_Proxy  {
             array(), Conjoon_Filter_Input::CONTEXT_RESPONSE
         );
 
-        $tweetUserId = (string)$tweet->user->id;
+        $jsonBody = $response->toValue();
 
-        $isFollowing = $this->friendshipExists($tweetUserId);
+        $tweetUserId = $jsonBody->user->id_str;
+
+        $isFollowing = $this->amIFollowingThatUser(array('target_id' => $tweetUserId));
 
         if (!is_bool($isFollowing)) {
             return $isFollowing;
         }
 
         $data = array(
-            'id'                  => (string)$tweet->id,
-            'text'                => (string)$tweet->text,
-            'createdAt'           => (string)$tweet->created_at,
-            'source'              => (string)$tweet->source,
-            'truncated'           => (string)$tweet->truncated,
+            'id'                  => $jsonBody->id_str,
+            'text'                => $jsonBody->text,
+            'createdAt'           => $jsonBody->created_at,
+            'source'              => $jsonBody->source,
+            'truncated'           => $jsonBody->truncated,
             'userId'              => $tweetUserId,
-            'name'                => (string)$tweet->user->name,
-            'screenName'          => (string)$tweet->user->screen_name,
-            'location'            => (string)$tweet->user->location,
-            'profileImageUrl'     => (string)$tweet->user->profile_image_url,
-            'url'                 => (string)$tweet->user->url,
-            'description'         => (string)$tweet->user->description,
-            'protected'           => (string)$tweet->user->protected,
+            'name'                => $jsonBody->user->name,
+            'screenName'          => $jsonBody->user->screen_name,
+            'location'            => $jsonBody->user->location,
+            'profileImageUrl'     => $jsonBody->user->profile_image_url,
+            'url'                 => $jsonBody->user->url,
+            'description'         => $jsonBody->user->description,
+            'protected'           => $jsonBody->user->protected,
             'isFollowing'         => $isFollowing,
-            'followersCount'      => (string)$tweet->user->followers_count,
-            'inReplyToStatusId'   => (string)$tweet->in_reply_to_status_id,
-            'inReplyToUserId'     => (string)$tweet->in_reply_to_user_id,
-            'inReplyToScreenName' => (string)$tweet->in_reply_to_screen_name,
-            'favorited'           => (string)$tweet->favorited
+            'followersCount'      => $jsonBody->user->followers_count,
+            'inReplyToStatusId'   => $jsonBody->in_reply_to_status_id_str,
+            'inReplyToUserId'     => $jsonBody->in_reply_to_user_id_str,
+            'inReplyToScreenName' => $jsonBody->in_reply_to_screen_name,
+            'favorited'           => $jsonBody->favorited
         );
 
         $filter->setData($data);
@@ -520,32 +547,16 @@ class Conjoon_Service_Twitter_Proxy  {
      * @return Conjoon_Error if any error occures, otherwise an array with the
      * Conjoon_Modules_Service_Twitter_Tweet objects
      */
-    public function statusUserTimeline(Array $params = array())
+    public function statusesUserTimeline(Array $params = array())
     {
         try {
-            $tweets = $this->_twitter->statusUserTimeline($params);
+            $response = $this->_twitter->statusesUserTimeline($params);
         } catch (Zend_Service_Twitter_Exception $e) {
-            /**
-             * @see Conjoon_Error_Factory
-             */
-            require_once 'Conjoon/Error/Factory.php';
-
-            return Conjoon_Error_Factory::createError(
-                $e->getMessage(), Conjoon_Error::LEVEL_ERROR
-            );
+            return $this->fromTwitterServiceException($e);
         }
 
-        if (isset($tweets->error)) {
-            /**
-             * @see Conjoon_Error_Factory
-             */
-            require_once 'Conjoon/Error/Factory.php';
-
-            return Conjoon_Error_Factory::createError(
-                (string)$tweets->error .
-                " [username: \"" .$this->_twitter->getUsername() . "\"]",
-                Conjoon_Error::LEVEL_ERROR
-            );
+        if ($response->errors || $response->error) {
+            return $this->fromTwitterServiceError($response);
         }
 
         $entries = array();
@@ -566,43 +577,46 @@ class Conjoon_Service_Twitter_Proxy  {
         );
 
 
-        if (isset($params['id'])) {
-            $isFollowing = $this->friendshipExists($params['id']);
+        if (isset($params['user_id'])) {
+            $isFollowing = $this->amIFollowingThatUser(array('target_id' => $params['user_id']));
         } else if (isset($params['screen_name'])) {
-                $isFollowing = $this->friendshipExists($params['screen_name']);
+            $isFollowing = $this->amIFollowingThatUser(array('target_screen_name' => $params['screen_name']));
         } else {
-            throw new Zend_Service_Twitter_Exception("Neither \"id\" nor \"screen_name\" was available.");
+            /**
+             * @see Zend_Service_Twitter_Exception
+             */
+            require_once 'Zend/Service/Twitter/Exception.php';
+
+            throw new Zend_Service_Twitter_Exception("Neither \"user_id\" nor \"screen_name\" was available.");
         }
 
         if (!is_bool($isFollowing)) {
             return $isFollowing;
         }
 
-        if (!$tweets->status) {
-            return array();
-        }
+        $jsonBody = $response->toValue();
 
-        foreach ($tweets->status as $tweet) {
+        foreach ($jsonBody as $tweet) {
             $data = array(
-                'id'                  => (string)$tweet->id,
-                'text'                => (string)$tweet->text,
-                'createdAt'           => (string)$tweet->created_at,
-                'source'              => (string)$tweet->source,
-                'truncated'           => (string)$tweet->truncated,
-                'userId'              => (string)$tweet->user->id,
-                'name'                => (string)$tweet->user->name,
-                'screenName'          => (string)$tweet->user->screen_name,
-                'location'            => (string)$tweet->user->location,
-                'profileImageUrl'     => (string)$tweet->user->profile_image_url,
-                'url'                 => (string)$tweet->user->url,
-                'description'         => (string)$tweet->user->description,
-                'protected'           => (string)$tweet->user->protected,
+                'id'                  => $tweet->id_str,
+                'text'                => $tweet->text,
+                'createdAt'           => $tweet->created_at,
+                'source'              => $tweet->source,
+                'truncated'           => $tweet->truncated,
+                'userId'              => $tweet->user->id_str,
+                'name'                => $tweet->user->name,
+                'screenName'          => $tweet->user->screen_name,
+                'location'            => $tweet->user->location,
+                'profileImageUrl'     => $tweet->user->profile_image_url,
+                'url'                 => $tweet->user->url,
+                'description'         => $tweet->user->description,
+                'protected'           => $tweet->user->protected,
                 'isFollowing'         => $isFollowing,
-                'followersCount'      => (string)$tweet->user->followers_count,
-                'inReplyToStatusId'   => (string)$tweet->in_reply_to_status_id,
-                'inReplyToUserId'     => (string)$tweet->in_reply_to_user_id,
-                'inReplyToScreenName' => (string)$tweet->in_reply_to_screen_name,
-                'favorited'           => (string)$tweet->favorited
+                'followersCount'      => $tweet->user->followers_count,
+                'inReplyToStatusId'   => $tweet->in_reply_to_status_id_str,
+                'inReplyToUserId'     => $tweet->in_reply_to_user_id_str,
+                'inReplyToScreenName' => $tweet->in_reply_to_screen_name,
+                'favorited'           => $tweet->favorited
             );
 
             $filter->setData($data);
@@ -625,36 +639,20 @@ class Conjoon_Service_Twitter_Proxy  {
      * @return mixed Either an array with the recent tweets, or a Conjoon_Error
      * object
      */
-    public function statusFriendsTimeline()
+    public function statusesHomeTimeline()
     {
         try {
-            $tweets = $this->_twitter->statusFriendsTimeline();
+            $response = $this->_twitter->statusesHomeTimeline();
         } catch (Zend_Service_Twitter_Exception $e) {
-            /**
-             * @see Conjoon_Error_Factory
-             */
-            require_once 'Conjoon/Error/Factory.php';
-
-            return Conjoon_Error_Factory::createError(
-                $e->getMessage(), Conjoon_Error::LEVEL_ERROR
-            );
+            return $this->fromTwitterServiceException($e);
         }
 
-        if (isset($tweets->error)) {
-            /**
-             * @see Conjoon_Error_Factory
-             */
-            require_once 'Conjoon/Error/Factory.php';
-
-            return Conjoon_Error_Factory::createError(
-                (string)$tweets->error .
-                " [username: \"" .$this->_twitter->getUsername() . "\"]",
-                Conjoon_Error::LEVEL_ERROR
-            );
+        if ($response->errors || $response->error) {
+            return $this->fromTwitterServiceError($response);
         }
 
         $entries = array();
-
+        $jsonBody = $response->toValue();
 
         /**
          * @see Conjoon_Modules_Service_Twitter_Tweet_Filter_Tweet
@@ -672,31 +670,31 @@ class Conjoon_Service_Twitter_Proxy  {
 
         // in case this is a fresh account and/or no tweets are available,
         // exit here
-        if (!$tweets->status) {
+        if (empty($jsonBody)) {
             return $entries;
         }
 
-        foreach ($tweets->status as $tweet) {
+        foreach ($jsonBody as $tweet) {
             $data = array(
-                'id'                  => (string)$tweet->id,
-                'text'                => (string)$tweet->text,
-                'createdAt'           => (string)$tweet->created_at,
-                'source'              => (string)$tweet->source,
-                'truncated'           => (string)$tweet->truncated,
-                'userId'              => (string)$tweet->user->id,
-                'name'                => (string)$tweet->user->name,
-                'screenName'          => (string)$tweet->user->screen_name,
-                'location'            => (string)$tweet->user->location,
-                'profileImageUrl'     => (string)$tweet->user->profile_image_url,
-                'url'                 => (string)$tweet->user->url,
-                'description'         => (string)$tweet->user->description,
-                'protected'           => (string)$tweet->user->protected,
-                'followersCount'      => (string)$tweet->user->followers_count,
-                'isFollowing'         => (string)$tweet->user->following,
-                'inReplyToStatusId'   => (string)$tweet->in_reply_to_status_id,
-                'inReplyToUserId'     => (string)$tweet->in_reply_to_user_id,
-                'inReplyToScreenName' => (string)$tweet->in_reply_to_screen_name,
-                'favorited'           => (string)$tweet->favorited
+                'id'                  => $tweet->id_str,
+                'text'                => $tweet->text,
+                'createdAt'           => $tweet->created_at,
+                'source'              => $tweet->source,
+                'truncated'           => $tweet->truncated,
+                'userId'              => $tweet->user->id_str,
+                'name'                => $tweet->user->name,
+                'screenName'          => $tweet->user->screen_name,
+                'location'            => $tweet->user->location,
+                'profileImageUrl'     => $tweet->user->profile_image_url,
+                'url'                 => $tweet->user->url,
+                'description'         => $tweet->user->description,
+                'protected'           => $tweet->user->protected,
+                'followersCount'      => $tweet->user->followers_count,
+                'isFollowing'         => $tweet->user->following,
+                'inReplyToStatusId'   => $tweet->in_reply_to_status_id_str,
+                'inReplyToUserId'     => $tweet->in_reply_to_user_id_str,
+                'inReplyToScreenName' => $tweet->in_reply_to_screen_name,
+                'favorited'           => $tweet->favorited
             );
 
             $filter->setData($data);
@@ -712,50 +710,54 @@ class Conjoon_Service_Twitter_Proxy  {
     }
 
     /**
-     * Returns true if userA follows userB, otherwise false.
+     * Returns true if the user currently signed in with this proxy follows
+     * the user specified in target_id or target_screen_name in the passed
+     * array.
      *
-     * @param  mixed $userId either the screenName or the id of the user to
-     * check the friendship against
-
+     * @param array $params an array with options to send to the service. Valid key/value
+     * pairs are:
+     *  - target_id the id of the target user to check whether this user follows that user
+     *   OR
+     *  - target_screen_name the screen name of the target user to check whether this user follows that user
      *
      * @return boolean (true/false) or Conjoon_Error
+     *
+     * @throws InvalidArgumentException if neither target_screen_name or target_id is not set
      */
-    public function friendshipExists($userId)
+    public function amIFollowingThatUser(array $params)
     {
+        $finParams = array(
+            'source_screen_name' => $this->_twitter->getUsername()
+        );
+
+        if (isset($params['target_screen_name'])) {
+            $finParams['target_screen_name'] = $params['target_screen_name'];
+        } else if (isset($params['target_id'])) {
+            $finParams['target_id'] = $params['target_id'];
+        } else {
+            return $this->fromTwitterServiceException(
+                new InvalidArgumentException(
+                "target_screen_name or target_id missing"
+                )
+            );
+        }
+
         try {
-            $tweets = $this->_twitter->friendshipExists($userId);
+            $response = $this->_twitter->friendships->show($finParams);
         } catch (Exception $e) {
-            /**
-             * @see Conjoon_Error_Factory
-             */
-            require_once 'Conjoon/Error/Factory.php';
-
-            return Conjoon_Error_Factory::createError(
-                $e->getMessage(), Conjoon_Error::LEVEL_ERROR
-            );
+            return $this->fromTwitterServiceException($e);
         }
 
 
-        if (isset($tweets->error)) {
-            /**
-             * @see Conjoon_Error_Factory
-             */
-            require_once 'Conjoon/Error/Factory.php';
-
-            return Conjoon_Error_Factory::createError(
-                (string)$tweets->error .
-                " [username: \"" .$this->_twitter->getUsername() . "\"]",
-                Conjoon_Error::LEVEL_ERROR
-            );
+        if ($response->errors || $response->error) {
+            return $this->fromTwitterServiceError($response);
         }
 
-        $isFollowing = (string)$tweets->friends;
+        $jsonBody = $response->toValue();
 
-        if ($isFollowing === "true") {
-            return true;
-        }
+        $isFollowing = (bool) $jsonBody->relationship->source->following;
 
-        return false;
+        return $isFollowing;
     }
 
     /**
@@ -766,56 +768,42 @@ class Conjoon_Service_Twitter_Proxy  {
      * @return mixed Conjoon_Error on failure, or an Conjoon_Modules_Service_Twitter_Tweet
      * object on success
      */
-    public function statusUpdate($status, $in_reply_to_status_id = null)
+    public function statusesUpdate($status, $in_reply_to_status_id = null)
     {
         try {
-            $tweet = $this->_twitter->statusUpdate(
+            $response = $this->_twitter->statusesUpdate(
                 $status, $in_reply_to_status_id
             );
         } catch (Zend_Service_Twitter_Exception $e) {
-            /**
-             * @see Conjoon_Error_Factory
-             */
-            require_once 'Conjoon/Error/Factory.php';
-
-            return Conjoon_Error_Factory::createError(
-                $e->getMessage(), Conjoon_Error::LEVEL_ERROR
-            );
+            return $this->fromTwitterServiceException($e);
         }
 
-        if (isset($tweet->error)) {
-            /**
-             * @see Conjoon_Error_Factory
-             */
-            require_once 'Conjoon/Error/Factory.php';
-
-            return Conjoon_Error_Factory::createError(
-                (string)$tweet->error .
-                " [username: \"" .$this->_twitter->getUsername() . "\"]",
-                Conjoon_Error::LEVEL_ERROR
-            );
+        if ($response->errors || $response->error) {
+            return $this->fromTwitterServiceError($response);
         }
+
+        $jsonBody = $response->toValue();
 
         $data = array(
-            'id'                  => (string)$tweet->id,
-            'text'                => (string)$tweet->text,
-            'createdAt'           => (string)$tweet->created_at,
-            'source'              => (string)$tweet->source,
-            'truncated'           => (string)$tweet->truncated,
-            'userId'              => (string)$tweet->user->id,
-            'name'                => (string)$tweet->user->name,
-            'screenName'          => (string)$tweet->user->screen_name,
-            'location'            => (string)$tweet->user->location,
-            'profileImageUrl'     => (string)$tweet->user->profile_image_url,
-            'url'                 => (string)$tweet->user->url,
-            'description'         => (string)$tweet->user->description,
-            'protected'           => (string)$tweet->user->protected,
-            'followersCount'      => (string)$tweet->user->followers_count,
-            'isFollowing'         => (string)$tweet->user->following,
-            'inReplyToStatusId'   => (string)$tweet->in_reply_to_status_id,
-            'inReplyToUserId'     => (string)$tweet->in_reply_to_user_id,
-            'inReplyToScreenName' => (string)$tweet->in_reply_to_screen_name,
-            'favorited'           => (string)$tweet->favorited
+            'id'                  => $jsonBody->id_str,
+            'text'                => $jsonBody->text,
+            'createdAt'           => $jsonBody->created_at,
+            'source'              => $jsonBody->source,
+            'truncated'           => $jsonBody->truncated,
+            'userId'              => $jsonBody->user->id_str,
+            'name'                => $jsonBody->user->name,
+            'screenName'          => $jsonBody->user->screen_name,
+            'location'            => $jsonBody->user->location,
+            'profileImageUrl'     => $jsonBody->user->profile_image_url,
+            'url'                 => $jsonBody->user->url,
+            'description'         => $jsonBody->user->description,
+            'protected'           => $jsonBody->user->protected,
+            'followersCount'      => $jsonBody->user->followers_count,
+            'isFollowing'         => $jsonBody->user->following,
+            'inReplyToStatusId'   => $jsonBody->in_reply_to_status_id_str,
+            'inReplyToUserId'     => $jsonBody->in_reply_to_user_id_str,
+            'inReplyToScreenName' => $jsonBody->in_reply_to_screen_name,
+            'favorited'           => $jsonBody->favorited
         );
 
         /**

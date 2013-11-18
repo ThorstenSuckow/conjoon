@@ -110,6 +110,21 @@ class Service_TwitterAccountController extends Zend_Controller_Action {
         $updateInterval   = $this->_request->getParam('updateInterval');
 
         /**
+         * @see Zend_Registry
+         */
+        require_once 'Zend/Registry.php';
+
+        /**
+         * @see Conjoon_Keys
+         */
+        require_once 'Conjoon/Keys.php';
+
+        $config = Zend_Registry::get(Conjoon_Keys::REGISTRY_CONFIG_OBJECT);
+
+        $consumerKey    = $config->application->twitter->oauth->consumerKey;
+        $consumerSecret = $config->application->twitter->oauth->consumerSecret;
+
+        /**
          * @see Conjoon_Service_Twitter_Proxy
          */
         require_once 'Conjoon/Service/Twitter/Proxy.php';
@@ -118,7 +133,9 @@ class Service_TwitterAccountController extends Zend_Controller_Action {
             'oauth_token'        => $oauthToken,
             'oauth_token_secret' => $oauthTokenSecret,
             'user_id'            => $twitterId,
-            'screen_name'        => $name
+            'screen_name'        => $name,
+            'consumer_key'       => $consumerKey,
+            'consumer_secret'    => $consumerSecret
         ));
 
         $dto = $proxy->accountVerifyCredentials();
@@ -505,8 +522,11 @@ class Service_TwitterAccountController extends Zend_Controller_Action {
             'screen_name'        => $screenName,
             'user_id'            => $userId,
             'oauth_token'        => $oauthToken,
-            'oauth_token_secret' => $oauthTokenSecret
+            'oauth_token_secret' => $oauthTokenSecret,
+            'consumer_key'       => $consumerKey,
+            'consumer_secret'    => $consumerSecret,
         ));
+
         $dto = $twitter->accountVerifyCredentials();
 
         if ($dto instanceof Conjoon_Error) {

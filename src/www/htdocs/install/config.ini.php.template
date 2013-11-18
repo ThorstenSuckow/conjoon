@@ -102,7 +102,7 @@ zf.use_plugin_cache = 1
 
 ; Twitter specific parameters for the Oauth process.
 twitter.oauth.callbackUrl    = ./service/twitter.account/authorize.okay
-twitter.oauth.siteUrl        = http://twitter.com/oauth
+twitter.oauth.siteUrl        = https://api.twitter.com/oauth
 twitter.oauth.consumerKey    = r6wFIOHrhaoHoNmJeA
 twitter.oauth.consumerSecret = qAvjmC33eJuDJLhhV1fJTLUmytNeEp5y1bW58heSIM
 
