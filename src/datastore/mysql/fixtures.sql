@@ -50,7 +50,7 @@ INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id` ,`key` ,`parent_id`) VALUES
 INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
 ('14', 'modules', '26');
 INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
-('15', 'email', '14');
+('15', 'mail', '14');
 INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
 ('16', 'options', '15');
 INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES

@@ -27,7 +27,7 @@ com.conjoon.groupware.email.EmailOptionsDialog = Ext.extend(
     initComponent : function()
     {
         var me = this,
-            readingKey = '/client/conjoon/modules/email/options/reading/';
+            readingKey = '/client/conjoon/modules/mail/options/reading/';
 
         Ext.apply(this, {
 
