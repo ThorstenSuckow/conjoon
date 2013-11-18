@@ -225,7 +225,6 @@ com.conjoon.groupware.email.options.ReadingOptionsCard = Ext.extend(com.conjoon.
     writeRecord : function(record)
     {
         var me = this,
-            readingKey = '/base/conjoon/modules/email/options/reading/',
             preferredFormat =  me.getRenderAsPlainField().getValue()
                                ? me.RENDER_PLAIN.toLowerCase()
                                : me.RENDER_HTML.toLowerCase(),

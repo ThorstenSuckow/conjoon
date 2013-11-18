@@ -45,8 +45,10 @@ INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
 (12, 'environment', 9);
 INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
 (13, 'applicationCache', 4);
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id` ,`key` ,`parent_id`) VALUES
+(26 , 'conjoon', '4');
 INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
-('14', 'modules', '8');
+('14', 'modules', '26');
 INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
 ('15', 'email', '14');
 INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES

@@ -32,7 +32,7 @@ com.conjoon.groupware.email.options.DialogListener = Ext.extend(
         var me = this,
             record,
             records = me.dialog.getSettingsContainer().getAllEntries(),
-            readingKey = '/base/conjoon/modules/email/options/reading/',
+            readingKey = '/client/conjoon/modules/email/options/reading/',
             settingsContainer = me.dialog.getSettingsContainer(),
             modified;
 
