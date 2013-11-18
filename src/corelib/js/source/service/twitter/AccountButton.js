@@ -104,6 +104,20 @@ com.conjoon.service.twitter.AccountButton = Ext.extend(Ext.Toolbar.Button, {
 // -------- public API
 
     /**
+     * Tries to return the menu item for the specified account id.
+     *
+     * @return {Ext.menu.CheckItem} The checkItem or null
+     */
+    getMenuItemForAccountId : function(accountId) {
+
+        if (this._accountItemMap[accountId]) {
+            return this._accountItemMap[accountId];
+        }
+
+        return null;
+    },
+
+    /**
      * Resets the check status from the given account items.
      *
      * @param {Boolean} suppressEvent true to not fire any event for the
@@ -280,7 +294,6 @@ com.conjoon.service.twitter.AccountButton = Ext.extend(Ext.Toolbar.Button, {
                     checkchange       : this._onCheckChange,
                     scope             : this
                 }
-                //handler : letterman.peekIntoInbox.createDelegate(letterman, [rec.id])
             });
 
             this._accountItemMap[rec.id] = item;

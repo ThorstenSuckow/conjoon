@@ -390,12 +390,14 @@ com.conjoon.groupware.Workbench = Ext.extend(Ext.Viewport, {
             id : 'widgetEmailPanel'
         }, defaults));
 
-        var twitterPanel = new com.conjoon.groupware.service.TwitterPanel(Ext.apply({
+        var twitterPanel = new com.conjoon.groupware.service.TwitterPanel({
             draggable : com.conjoon.groupware.workbench.PanelDragSource.getConfig(),
             itemTitle : com.conjoon.Gettext.gettext("Twitter"),
             stateId : stateIdentifiers.twitterWidget,
+            stateEvents : ['collapse', 'expand', 'show', 'hide', 'resize'],
+            stateful : true,
             id : 'widgetTwitterPanel'
-        }, defaults));
+        });
 
         quickPanel.on('show', this._onInfoPanelVisibilityChange, this);
         quickPanel.on('hide', this._onInfoPanelVisibilityChange, this);
