@@ -39,6 +39,8 @@ use \Conjoon\Argument\ArgumentCheck;
 class PlainReadableStrategy implements ReadableStrategy {
 
     /**
+     * The message text to transform can be found in $data['message']['contentTextPlain'].
+     *
      * @inheritdoc
      */
     public function execute(array $data) {
@@ -46,12 +48,18 @@ class PlainReadableStrategy implements ReadableStrategy {
         try {
 
             ArgumentCheck::check(array(
-                'text' => array(
-                    'type' => 'string',
+                'message' => array(
+                    'type' => 'array',
                     'allowEmpty' => false
                 )), $data);
 
-            $text = $data['text'];
+            ArgumentCheck::check(array(
+                'contentTextPlain' => array(
+                    'type' => 'string',
+                    'allowEmpty' => true
+                )), $data['message']);
+
+            $text = $data['message']['contentTextPlain'];
 
             if ($text == "") {
                 return "";

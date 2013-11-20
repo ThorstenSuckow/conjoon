@@ -21,6 +21,16 @@ namespace Conjoon\Mail\Client\Service\ServicePatron;
  */
 require_once 'Conjoon/Mail/Client/Service/ServicePatron/ReadMessagePatron.php';
 
+/**
+ * @see  Conjoon\Mail\Client\Message\Strategy\PlainReadableStrategy
+ */
+require_once 'Conjoon/Mail/Client/Message/Strategy/PlainReadableStrategy.php';
+
+/**
+ * @see  Conjoon\Mail\Client\Message\Strategy\HtmlReadableStrategy
+ */
+require_once 'Conjoon/Mail/Client/Message/Strategy/HtmlReadableStrategy.php';
+
 
 /**
  * @category   Conjoon
@@ -40,9 +50,15 @@ class ReadMessagePatronTest extends \PHPUnit_Framework_TestCase {
 
     protected $compDate;
 
+    protected $htmlStrategy;
+
+    protected $plainStrategy;
 
     protected function setUp()
     {
+        $this->plainStrategy = new \Conjoon\Mail\Client\Message\Strategy\PlainReadableStrategy;
+        $this->htmlStrategy = new \Conjoon\Mail\Client\Message\Strategy\HtmlReadableStrategy;
+
         $this->date  = new \DateTime('1970-01-01 00:00:00', new \DateTimeZone('UTC'));
         $this->date->setTimezone(new \DateTimeZone(date_default_timezone_get()));
         $this->compDate = $this->date->format('Y-m-d H:i:s');
@@ -81,7 +97,7 @@ class ReadMessagePatronTest extends \PHPUnit_Framework_TestCase {
             )
         );
 
-        $this->patron = new ReadMessagePatron();
+        $this->patron = new ReadMessagePatron($this->plainStrategy);
     }
 
     /**
@@ -104,5 +120,16 @@ class ReadMessagePatronTest extends \PHPUnit_Framework_TestCase {
             $this->patron->applyForData($this->input[0]['input'])
         );
     }
+
+    /**
+     * Ensures everything works as expected.
+     */
+    public function testGetReadableStrategy()
+    {
+        $patron = new ReadMessagePatron($this->htmlStrategy);
+
+        $this->assertSame($patron->getReadableStrategy(), $this->htmlStrategy);
+    }
+
 
 }

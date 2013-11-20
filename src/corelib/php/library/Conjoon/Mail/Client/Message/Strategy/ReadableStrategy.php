@@ -29,8 +29,7 @@ interface ReadableStrategy {
 
     /**
      * Returns a text based on the specified data found in the
-     * passed argument. At least the data index "text" should be available
-     * which represents the text to transform.
+     * passed argument.
      *
      * @param array $data
      *

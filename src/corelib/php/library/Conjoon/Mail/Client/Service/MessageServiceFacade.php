@@ -51,11 +51,16 @@ interface MessageServiceFacade {
      * @param mixed $path A path to the folder where the message can be found
      * @param \Conjoon\User\User $user The user object representing the user
      *                                   who triggered this operation
-     *
+     * @param array $readingOptions an additional array with reading options
+     * key value pairs are
+     *  - preferredFormat string the format in which the mail body should be
+     *    returned possible values are "plain" and "html"
+     *  - allowExternals boolean, whether external resources are allowed.
+     *    Defaults to false if omitted
      *
      * @return GetMessageServiceResult
      */
-    public function getMessage($id, $path, \Conjoon\User\User $user);
+    public function getMessage($id, $path, \Conjoon\User\User $user, array $readingOptions);
 
     /**
      * Returns the message with its header fields and its body, but without

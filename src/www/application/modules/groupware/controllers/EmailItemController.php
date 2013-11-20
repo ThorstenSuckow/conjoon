@@ -820,10 +820,27 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
             $server, $mailAccountRepository, $mailFolderRepository
         );
 
+        /**
+         * @see Conjoon_Modules_Default_Registry_Facade
+         */
+        require_once 'Conjoon/Modules/Default/Registry/Facade.php';
+
+        $registry = Conjoon_Modules_Default_Registry_Facade::getInstance();
+
+        $userId = $appUser->getId();
+
+        $readingKey = '/client/conjoon/modules/mail/options/reading/';
+
+        $preferredFormat = $registry->getValueForKeyAndUserId($readingKey . 'preferred_format', $userId);
+        $allowExternals = $registry->getValueForKeyAndUserId($readingKey . 'allow_externals', $userId);
+
         $result = $serviceFacade->getMessage(
             $this->_request->getParam('id'),
             $this->_request->getParam('path'),
-            $appUser
+            $appUser, array(
+                'preferredFormat' => $preferredFormat,
+                'allowExternals'  => $allowExternals
+            )
         );
 
         $this->view->success = $result->isSuccess();

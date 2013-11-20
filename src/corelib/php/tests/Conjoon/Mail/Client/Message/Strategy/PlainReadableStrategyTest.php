@@ -41,7 +41,9 @@ class PlainReadableStrategyTest extends \PHPUnit_Framework_TestCase {
     {
         $this->input = array(
             'input' => array(
-                'text' => 'some plain text'
+                'message' => array(
+                    'contentTextPlain' => 'some plain text'
+                )
             ),
             'output' => 'some plain text'
         );

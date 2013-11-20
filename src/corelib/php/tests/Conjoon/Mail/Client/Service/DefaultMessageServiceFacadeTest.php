@@ -72,6 +72,44 @@ class DefaultMessageServiceFacadeTest extends
         $this->assertTrue($result->isSuccess());
     }
 
+    /**
+     * @expectedException \Conjoon\Argument\InvalidArgumentException
+     */
+    public function testGetReadableStrategyForOptions_Exception() {
+        $protocol = new \Conjoon\Mail\Server\Protocol\DefaultProtocol(
+            $this->protocolAdaptee
+        );
+
+        $defaultServer = new \Conjoon\Mail\Server\DefaultServer($protocol);
+        $messageFacade = new DefaultMessageServiceFacade($defaultServer,
+            $this->mailAccountRepository, $this->mailFolderRepository);
+
+        $messageFacade->getReadableStrategyForOptions(array('bla'));
+    }
+
+    public function testGetReadableStrategyForOptionsOk() {
+        $protocol = new \Conjoon\Mail\Server\Protocol\DefaultProtocol(
+            $this->protocolAdaptee
+        );
+
+        $defaultServer = new \Conjoon\Mail\Server\DefaultServer($protocol);
+        $messageFacade = new DefaultMessageServiceFacade($defaultServer,
+            $this->mailAccountRepository, $this->mailFolderRepository);
+
+
+        $strategyHtml = $messageFacade->getReadableStrategyForOptions(
+            array('preferredFormat' => 'html'));
+
+        $this->assertTrue(
+            $strategyHtml instanceof \Conjoon\Mail\Client\Message\Strategy\HtmlReadableStrategy);
+
+        $strategyPlain = $messageFacade->getReadableStrategyForOptions(
+            array('preferredFormat' => 'plain'));
+
+        $this->assertTrue(
+            $strategyPlain instanceof \Conjoon\Mail\Client\Message\Strategy\PlainReadableStrategy);
+    }
+
     public function testGetUnformattedMessage()
     {
         $protocol = new \Conjoon\Mail\Server\Protocol\DefaultProtocol(
@@ -83,8 +121,7 @@ class DefaultMessageServiceFacadeTest extends
         $messageFacade = new DefaultMessageServiceFacade($defaultServer,
             $this->mailAccountRepository, $this->mailFolderRepository);
         $result = $messageFacade->getMessage(
-            "1", '["root","1","2"]', $this->user
-
+            "1", '["root","1","2"]', $this->user, array('preferredFormat' => 'plain')
         );
 
         $this->assertTrue($result instanceof ServiceResult);
@@ -102,13 +139,49 @@ class DefaultMessageServiceFacadeTest extends
         $messageFacade = new DefaultMessageServiceFacade($defaultServer,
             $this->mailAccountRepository, $this->mailFolderRepository);
         $result = $messageFacade->getMessage(
-            "1", '["root","1","2"]', $this->user
-
+            "1", '["root","1","2"]', $this->user,  array('preferredFormat' => 'plain')
         );
 
         $this->assertTrue($result instanceof ServiceResult);
         $this->assertTrue($result->isSuccess());
+
+        $result = $messageFacade->getMessage(
+            "1", '["root","1","2"]', $this->user,  array('preferredFormat' => 'html')
+        );
+
+        $this->assertTrue($result instanceof ServiceResult);
+        $this->assertTrue($result->isSuccess());
+
     }
+
+    public function testGetMessageMissingPreferredFormat() {
+        $protocol = new \Conjoon\Mail\Server\Protocol\DefaultProtocol(
+            $this->protocolAdaptee
+        );
+
+        $defaultServer = new \Conjoon\Mail\Server\DefaultServer($protocol);
+
+        $messageFacade = new DefaultMessageServiceFacade($defaultServer,
+            $this->mailAccountRepository, $this->mailFolderRepository);
+
+        $result = $messageFacade->getMessage(
+            "1", '["root","1","2"]', $this->user,  array()
+        );
+
+        $this->assertTrue($result instanceof ServiceResult);
+        $this->assertTrue(array_key_exists('exception', $result->getData()));
+        $this->assertFalse($result->isSuccess());
+
+
+        $result = $messageFacade->getMessage(
+            "1", '["root","1","2"]', $this->user,  array('preferredFormat' => 'something')
+        );
+
+        $this->assertTrue($result instanceof ServiceResult);
+        $this->assertTrue(array_key_exists('exception', $result->getData()));
+        $this->assertFalse($result->isSuccess());
+    }
+
 
     public function testGetMessageForForwarding()
     {

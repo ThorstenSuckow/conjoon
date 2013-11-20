@@ -15,8 +15,6 @@
 
 namespace Conjoon\Mail\Client\Service;
 
-use Conjoon\Argument\ArgumentCheck;
-
 /**
  * @see Conjoon\Argument\ArgumentCheck
  */
@@ -32,6 +30,7 @@ require_once 'Conjoon/Mail/Client/Service/MessageServiceFacade.php';
  */
 require_once 'Conjoon/Mail/Client/Service/DefaultServiceResult.php';
 
+use Conjoon\Argument\ArgumentCheck;
 
 /**
  * Service facade for operations related to messages. A default implementation
@@ -224,11 +223,63 @@ class DefaultMessageServiceFacade implements MessageServiceFacade {
     }
 
     /**
+     * Returns a strategy for transforming mail body text into a readable format.
+     *
+     * @param array $options a configuration array with
+     *  - preferredFormat string plain or html
+     *  - allowExternals true to allow external resources, such as images.
+     *    Defaults to false if omitted.
+     *
+     * @return \Conjoon\Mail\Client\Message\Strategy\ReadableStrategy
+     *
+     * @throws \Conjoon\Argument\InvalidArgumentException
+     */
+    public function getReadableStrategyForOptions(array $options) {
+
+        ArgumentCheck::check(array(
+            'preferredFormat' => array(
+                'type' => 'inArray',
+                'values' => array('plain', 'html'),
+                'allowEmpty' => false
+            ),
+            'allowExternals' => array(
+                'mandatory' => false,
+                'default'   => false,
+                'type' => 'boolean',
+                'allowEmpty' => true
+            )), $options);
+
+        $preferredFormat = $options['preferredFormat'];
+        $allowExternals = $options['allowExternals'];
+
+        switch ($preferredFormat) {
+            case 'plain':
+                /**
+                 * @see \Conjoon\Mail\Client\Message\Strategy\PlainReadableStrategy
+                 */
+                require_once 'Conjoon/Mail/Client/Message/Strategy/PlainReadableStrategy.php';
+
+                return new \Conjoon\Mail\Client\Message\Strategy\PlainReadableStrategy;
+
+            case 'html':
+                /**
+                 * @see \Conjoon\Mail\Client\Message\Strategy\HtmlReadableStrategy
+                 */
+                require_once 'Conjoon/Mail/Client/Message/Strategy/HtmlReadableStrategy.php';
+
+                return new \Conjoon\Mail\Client\Message\Strategy\HtmlReadableStrategy;
+        }
+
+    }
+
+    /**
      * @inheritdoc
      */
-    public function getMessage($id, $path, \Conjoon\User\User $user)
+    public function getMessage($id, $path, \Conjoon\User\User $user, array $readingOptions)
     {
         try {
+
+            $readableStrategy = $this->getReadableStrategyForOptions($readingOptions);
 
             /**
              * @see \Conjoon\Mail\Client\Folder\DefaultFolderPath
@@ -270,7 +321,9 @@ class DefaultMessageServiceFacade implements MessageServiceFacade {
 
             return new DefaultServiceResult(
                 $response,
-                new \Conjoon\Mail\Client\Service\ServicePatron\ReadMessagePatron()
+                new \Conjoon\Mail\Client\Service\ServicePatron\ReadMessagePatron(
+                    $readableStrategy
+                )
             );
 
         } catch (\Exception $e) {

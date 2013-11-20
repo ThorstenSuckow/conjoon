@@ -41,7 +41,10 @@ class HtmlReadableStrategyTest extends \PHPUnit_Framework_TestCase {
     {
         $this->input = array(
             'input' => array(
-                'text' => '<div>some plain text<script type="text/javascript">alert("YO!");</script></div>'
+                'message' => array(
+                    'contentTextHtml' =>
+                        '<div>some plain text<script type="text/javascript">alert("YO!");</script></div>'
+                 )
             ),
             'output' => '<div>some plain text</div>'
         );
