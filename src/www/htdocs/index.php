@@ -280,6 +280,25 @@ require_once 'Zend/Controller/Exception.php';
         \Doctrine\ORM\EntityManager::create($doctrineParams, $doctrineConfig)
     );
 
+    // +---------------------------------------------------------
+    // | HTMLPURIFIER
+    // +------------------------------------------------------------------------
+    if ($config->application->htmlpurifier->preload_all) {
+        /**
+         * @see HTMLPurifier.includes
+         */
+        require_once 'HTMLPurifier.includes.php';
+    }
+
+    /**
+     * @see HTMLPurifier_Bootstrap
+     */
+    require_once 'HTMLPurifier/Bootstrap.php';
+
+    /**
+     * @see HTMLPurifier.autoload
+     */
+    require_once 'HTMLPurifier.autoload.php';
 
     // +------------------------------------------------------------------------
     // | CACHING

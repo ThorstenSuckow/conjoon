@@ -34,6 +34,7 @@ $cnCoreLibrary = "$cnRoot/library";
 $cnCoreTests   = "$cnRoot/tests";
 $zdLib         = "$cnRoot/../../../vendor/zendframework/library";
 $doctrine      = "$cnRoot/../../../vendor/doctrine";
+$htmlpurifier  = "$cnRoot/../../../vendor/htmlpurifier/library";
 
 /*
  * Prepend the conjoon library/ and tests/ directories to the
@@ -46,6 +47,7 @@ $path = array(
     $cnCoreTests,
     $zdLib,
     $doctrine,
+    $htmlpurifier,
     get_include_path()
     );
 set_include_path(implode(PATH_SEPARATOR, $path));
@@ -67,6 +69,15 @@ $classLoader = new \Doctrine\Common\ClassLoader(
 );
 $classLoader->register();
 
+/**
+ * @see HTMLPurifier_Bootstrap
+ */
+require_once 'HTMLPurifier/Bootstrap.php';
+
+/**
+ * @see HTMLPurifier.autoload
+ */
+require_once 'HTMLPurifier.autoload.php';
 
 /*
  * Unset global variables that are no longer needed.
@@ -74,7 +85,7 @@ $classLoader->register();
 unset(
     $cnRoot, $cnCoreLibrary,
     $zdLib, $path,
-    $doctrine
+    $doctrine, $htmlpurifier
 );
 
 include_once 'setup.db.php';

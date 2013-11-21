@@ -810,16 +810,6 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
 
         $server = new \Conjoon\Mail\Server\DefaultServer($protocol);
 
-
-        /**
-         * @see \Conjoon\Mail\Client\Service\DefaultMessageServiceFacade
-         */
-        require_once 'Conjoon/Mail/Client/Service/DefaultMessageServiceFacade.php';
-
-        $serviceFacade = new \Conjoon\Mail\Client\Service\DefaultMessageServiceFacade(
-            $server, $mailAccountRepository, $mailFolderRepository
-        );
-
         /**
          * @see Conjoon_Modules_Default_Registry_Facade
          */
@@ -834,13 +824,45 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
         $preferredFormat = $registry->getValueForKeyAndUserId($readingKey . 'preferred_format', $userId);
         $allowExternals = $registry->getValueForKeyAndUserId($readingKey . 'allow_externals', $userId);
 
+        /**
+         * @see \Conjoon\Mail\Client\Message\Strategy\DefaultPlainReadableStrategy
+         */
+        require_once 'Conjoon/Mail/Client/Message/Strategy/DefaultPlainReadableStrategy.php';
+
+        $plainReadableStrategy = new \Conjoon\Mail\Client\Message\Strategy\DefaultPlainReadableStrategy();
+
+        $readableStrategy = null;
+
+        $htmlPurifier = $this->getHtmlPurifierHelper($allowExternals);
+
+        if ($preferredFormat == 'html') {
+            /**
+             * @see \Conjoon\Mail\Client\Message\Strategy\DefaultHtmlReadableStrategy
+             */
+            require_once 'Conjoon/Mail/Client/Message/Strategy/DefaultHtmlReadableStrategy.php';
+
+            $readableStrategy = new \Conjoon\Mail\Client\Message\Strategy\DefaultHtmlReadableStrategy(
+                $htmlPurifier, $plainReadableStrategy
+            );
+
+        } else {
+            $readableStrategy = $plainReadableStrategy;
+        }
+
+
+        /**
+         * @see \Conjoon\Mail\Client\Service\DefaultMessageServiceFacade
+         */
+        require_once 'Conjoon/Mail/Client/Service/DefaultMessageServiceFacade.php';
+
+        $serviceFacade = new \Conjoon\Mail\Client\Service\DefaultMessageServiceFacade(
+            $server, $mailAccountRepository, $mailFolderRepository
+        );
+
         $result = $serviceFacade->getMessage(
             $this->_request->getParam('id'),
             $this->_request->getParam('path'),
-            $appUser, array(
-                'preferredFormat' => $preferredFormat,
-                'allowExternals'  => $allowExternals
-            )
+            $appUser, $readableStrategy
         );
 
         $this->view->success = $result->isSuccess();
@@ -1007,5 +1029,56 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
         return true;
     }
 
+    /**
+     * Helper function for setting up and returning a HtmlPurifier instance
+     * for sanitizing html mail bodies.
+     *
+     * @param $allowExternals whether external resources should be allowed or not
+     *
+     * @return \HtmlPurifier
+     */
+    public function getHtmlPurifierHelper($allowExternals) {
+
+        /**
+         * @see \Conjoon\Util\Environment
+         */
+        require_once 'Conjoon/Net/Environment.php';
+
+        $cnEnvironment = new \Conjoon\Net\Environment();
+
+        /**
+         * @see Zend_Registry
+         */
+        require_once 'Zend/Registry.php';
+
+        /**
+         * @see Conjoon_Keys
+         */
+        require_once 'Conjoon/Keys.php';
+
+        $config = \Zend_Registry::get(\Conjoon_Keys::REGISTRY_CONFIG_OBJECT);
+
+        $htmlPurifierConfig = \HTMLPurifier_Config::createDefault();
+        if (!$config->application->htmlpurifier->use_cache ||
+            !$config->application->htmlpurifier->cache_dir) {
+            $htmlPurifierConfig->set('Cache.DefinitionImpl', null);
+        } else {
+            $htmlPurifierConfig->set(
+                'Cache.SerializerPath',
+                $config->application->htmlpurifier->cache_dir
+            );
+        }
+
+        $htmlPurifierConfig->set('HTML.Trusted', false);
+        $htmlPurifierConfig->set('CSS.AllowTricky', false);
+        $htmlPurifierConfig->set('CSS.AllowImportant', false);
+        $htmlPurifierConfig->set('CSS.Trusted', false);
+        $htmlPurifierConfig->set('URI.DisableExternalResources', !$allowExternals);
+        $htmlPurifierConfig->set('URI.Base', $cnEnvironment->getCurrentUriBase());
+        $htmlPurifierConfig->set('URI.MakeAbsolute', true);
+
+        return new \HTMLPurifier($htmlPurifierConfig);
+
+    }
 
 }

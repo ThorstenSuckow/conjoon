@@ -100,6 +100,20 @@ locale.date.timezone = {LOCALE.DATE.TIMEZONE}
 ; include_once statements.
 zf.use_plugin_cache = 1
 
+; tells whether preloading of htmlpurifiers base classes should be done. This is
+; helpful if you are running an opcode cache and don't want to rely on autoload
+; features (which are still used in case a class was not preloaded). It is
+; recommended to set this option to "1" if you are using an opcode cache.
+htmlpurifier.preload_all = 1
+
+; enables/disables caching for htmlpurifier. It is recommended to enable the htmlpurifier
+; cache by setting this option to "1". Set the option to "0" to disable caching.
+htmlpurifier.use_cache = 1
+
+; the directory htmlpurifier should use for cached data. The directory has to be
+; readable/writeable by the webserver
+htmlpurifier.cache_dir =
+
 ; Twitter specific parameters for the Oauth process.
 twitter.oauth.callbackUrl    = ./service/twitter.account/authorize.okay
 twitter.oauth.siteUrl        = https://api.twitter.com/oauth

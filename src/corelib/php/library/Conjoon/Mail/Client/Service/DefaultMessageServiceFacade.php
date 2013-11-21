@@ -56,22 +56,22 @@ class DefaultMessageServiceFacade implements MessageServiceFacade {
     protected $server;
 
     /**
-     * @var \Conjoon\Data\Repository\Mail\MailAccountRepository
+     * @type \Conjoon\Data\Repository\Mail\MailAccountRepository
      */
     protected $mailAccountRepository;
 
     /**
-     * @var \Conjoon\Data\Repository\Mail\MailFolderRepository
+     * @type \Conjoon\Data\Repository\Mail\MailFolderRepository
      */
     protected $mailFolderRepository;
-
 
     /**
      * Creates a new instance of the MessageServiceFacade.
      *
      * @param \Conjoon\Mail\Server\DefaultServer $server The mail server the
      *        service facade should be using
-     *
+     * @param \Conjoon\Data\Repository\Mail\MailAccountRepository $mailAccountRepository
+     * @param \Conjoon\Data\Repository\Mail\MailFolderRepository $mailFolderRepository
      */
     public function __construct(
         \Conjoon\Mail\Server\DefaultServer $server,
@@ -223,63 +223,13 @@ class DefaultMessageServiceFacade implements MessageServiceFacade {
     }
 
     /**
-     * Returns a strategy for transforming mail body text into a readable format.
-     *
-     * @param array $options a configuration array with
-     *  - preferredFormat string plain or html
-     *  - allowExternals true to allow external resources, such as images.
-     *    Defaults to false if omitted.
-     *
-     * @return \Conjoon\Mail\Client\Message\Strategy\ReadableStrategy
-     *
-     * @throws \Conjoon\Argument\InvalidArgumentException
-     */
-    public function getReadableStrategyForOptions(array $options) {
-
-        ArgumentCheck::check(array(
-            'preferredFormat' => array(
-                'type' => 'inArray',
-                'values' => array('plain', 'html'),
-                'allowEmpty' => false
-            ),
-            'allowExternals' => array(
-                'mandatory' => false,
-                'default'   => false,
-                'type' => 'boolean',
-                'allowEmpty' => true
-            )), $options);
-
-        $preferredFormat = $options['preferredFormat'];
-        $allowExternals = $options['allowExternals'];
-
-        switch ($preferredFormat) {
-            case 'plain':
-                /**
-                 * @see \Conjoon\Mail\Client\Message\Strategy\PlainReadableStrategy
-                 */
-                require_once 'Conjoon/Mail/Client/Message/Strategy/PlainReadableStrategy.php';
-
-                return new \Conjoon\Mail\Client\Message\Strategy\PlainReadableStrategy;
-
-            case 'html':
-                /**
-                 * @see \Conjoon\Mail\Client\Message\Strategy\HtmlReadableStrategy
-                 */
-                require_once 'Conjoon/Mail/Client/Message/Strategy/HtmlReadableStrategy.php';
-
-                return new \Conjoon\Mail\Client\Message\Strategy\HtmlReadableStrategy;
-        }
-
-    }
-
-    /**
      * @inheritdoc
      */
-    public function getMessage($id, $path, \Conjoon\User\User $user, array $readingOptions)
+    public function getMessage(
+        $id, $path, \Conjoon\User\User $user,
+        \Conjoon\Mail\Client\Message\Strategy\ReadableStrategy $readableStrategy)
     {
         try {
-
-            $readableStrategy = $this->getReadableStrategyForOptions($readingOptions);
 
             /**
              * @see \Conjoon\Mail\Client\Folder\DefaultFolderPath
