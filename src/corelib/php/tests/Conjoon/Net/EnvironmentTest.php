@@ -36,7 +36,7 @@ class EnvironmentTest extends \PHPUnit_Framework_TestCase {
     /**
      * Ensures everything works as expected
      *
-     * @expectedException \Conjoon\Net\InvalidContextException
+     * @expectedException \Conjoon\Net\Exception
      */
     public function testGetCurrentUriBase()
     {
