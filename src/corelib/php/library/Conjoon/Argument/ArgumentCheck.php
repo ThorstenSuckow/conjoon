@@ -48,6 +48,8 @@ class ArgumentCheck {
 
             $isSettingAvailable = array_key_exists($argumentName, $data);
 
+            $wasDefaultNull = false;
+
             if (!$isSettingAvailable && $isMandatory) {
                 throw new InvalidArgumentException(
                     "\"$argumentName\" is mandatory, but does not exist in data"
@@ -55,13 +57,19 @@ class ArgumentCheck {
             } else if (!$isSettingAvailable && !$isMandatory) {
                 if (array_key_exists('default', $entityConfig)) {
                     $data[$argumentName] = $entityConfig['default'];
+                    $wasDefaultNull = $entityConfig['default'] === null;
+                } else {
+                    continue;
                 }
-                return;
             }
 
             $allowEmpty = isset($entityConfig['allowEmpty'])
                           ? $entityConfig['allowEmpty']
                           : false;
+
+            if ($allowEmpty && $wasDefaultNull) {
+                continue;
+            }
 
             $greaterThan = isset($entityConfig['greaterThan'])
                            ? (int)(string)$entityConfig['greaterThan']

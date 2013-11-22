@@ -211,6 +211,26 @@ class ArgumentCheckTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @expectedException \Conjoon\Argument\InvalidArgumentException
+     *
+     * @ticket CN-794
+     */
+    public function testNotMandatoryAndDefaultWithNullValueAndAllowEmptyFalse()
+    {
+        $data = array('somekey' => 'somevalue');
+
+        ArgumentCheck::check(array(
+            'test' => array(
+                'type'       => 'string',
+                'allowEmpty' => false,
+                'mandatory'  => false,
+                'default' => null
+            )
+        ), $data);
+
+    }
+
+    /**
      *
      *
      * @ticket CN-793
@@ -222,7 +242,7 @@ class ArgumentCheckTest extends \PHPUnit_Framework_TestCase {
         ArgumentCheck::check(array(
             'test' => array(
                 'type'       => 'string',
-                'allowEmpty' => false,
+                'allowEmpty' => true,
                 'mandatory'  => false,
                 'default' => null
             )
