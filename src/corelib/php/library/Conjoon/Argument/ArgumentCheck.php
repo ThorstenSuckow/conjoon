@@ -53,7 +53,7 @@ class ArgumentCheck {
                     "\"$argumentName\" is mandatory, but does not exist in data"
                 );
             } else if (!$isSettingAvailable && !$isMandatory) {
-                if (isset($entityConfig['default'])) {
+                if (array_key_exists('default', $entityConfig)) {
                     $data[$argumentName] = $entityConfig['default'];
                 }
                 return;
