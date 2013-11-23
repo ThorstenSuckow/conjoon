@@ -255,7 +255,7 @@ com.conjoon.groupware.email.EmailPreview = function() {
     };
 
     /**
-     * Creates a window for displaying feed contents.
+     * Creates a window for displaying email contents.
      *
      * @return {Ext.Window} The window used for previewing.
      */
