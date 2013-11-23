@@ -97,9 +97,7 @@ class Uri {
         $this->scheme = strtolower($data['scheme']);
         $this->host = strtolower($data['host']);
         $this->port = $data['port'];
-        $this->path = is_string($data['path'])
-                      ? strtolower($data['path'])
-                      : $data['path'];
+        $this->path = $data['path'];
 
     }
 

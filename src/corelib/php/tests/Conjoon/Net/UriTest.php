@@ -36,6 +36,8 @@ class UriTest extends \PHPUnit_Framework_TestCase {
 
     protected $dataOnlySchemeAndHost;
 
+    protected $dataNotLowercased;
+
     public function setUp() {
         parent::setUp();
 
@@ -67,8 +69,34 @@ class UriTest extends \PHPUnit_Framework_TestCase {
                 'path' => null
             )
         );
+
+        $this->dataNotLowercased = array(
+            'input' => array(
+                'scheme' => 'http',
+                'host' => 'tEst.domain',
+                'path' => 'TeStPath'
+            ),
+            'output' => array(
+                'scheme' => 'http',
+                'host' => 'test.domain',
+                'port' => null,
+                'path' => 'TeStPath'
+            )
+        );
     }
 
+
+    /**
+     * @ticket CN-796
+     */
+    public function testPathNotLowercased() {
+        $uri = new \Conjoon\Net\Uri($this->dataNotLowercased['input']);
+
+        foreach ($this->dataNotLowercased['output'] as $key => $value) {
+            $methodGet = "get" . ucfirst($key);
+            $this->assertSame($value, $uri->$methodGet());
+        }
+    }
 
     /**
      * Ensures everything works as expected.
