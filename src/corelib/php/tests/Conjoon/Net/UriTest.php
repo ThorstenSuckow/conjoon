@@ -38,6 +38,8 @@ class UriTest extends \PHPUnit_Framework_TestCase {
 
     protected $dataNotLowercased;
 
+    protected $dataWithQuery;
+
     public function setUp() {
         parent::setUp();
 
@@ -83,8 +85,58 @@ class UriTest extends \PHPUnit_Framework_TestCase {
                 'path' => 'TeStPath'
             )
         );
+
+        $this->dataWithQuery = array(
+            'input' => array(
+                'scheme' => 'HTTP',
+                'host' => 'tEst.doMain',
+                'port' => 80,
+                'path' => '/test/path/',
+                'query' => 'somevar=1&somEvar2=2'
+            ),
+            'output' => array(
+                'scheme' => 'http',
+                'host' => 'test.domain',
+                'port' => 80,
+                'path' => '/test/path/',
+                'query' => 'somevar=1&somEvar2=2'
+            )
+        );
     }
 
+    /**
+     * @ticket CN-797
+     */
+    public function testWithQuery() {
+        $uri = new \Conjoon\Net\Uri($this->dataWithQuery['input']);
+
+        foreach ($this->dataWithQuery['output'] as $key => $value) {
+            $methodGet = "get" . ucfirst($key);
+            $this->assertSame($value, $uri->$methodGet());
+        }
+
+        $uri = new \Conjoon\Net\Uri($this->dataWithQuery['input']);
+
+        $query = 'foo';
+        $uri2 = $uri->setQuery($query);
+
+        $this->assertTrue($uri2 instanceof \Conjoon\Net\Uri);
+
+        foreach ($this->dataWithQuery['output'] as $key => $value) {
+            $methodGet = "get" . ucfirst($key);
+            $this->assertSame($value, $uri->$methodGet());
+        }
+
+        foreach ($this->dataWithQuery['output'] as $key => $value) {
+            if ($key == 'query') {
+                $this->assertSame($query, $uri2->getQuery());
+                continue;
+            }
+            $methodGet = "get" . ucfirst($key);
+            $this->assertSame($uri->$methodGet(), $uri2->$methodGet());
+        }
+
+    }
 
     /**
      * @ticket CN-796
@@ -149,7 +201,6 @@ class UriTest extends \PHPUnit_Framework_TestCase {
             $methodGet = "get" . ucfirst($key);
             $this->assertSame($uri->$methodGet(), $uri2->$methodGet());
         }
-
     }
 
 }

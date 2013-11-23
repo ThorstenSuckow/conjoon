@@ -54,6 +54,11 @@ class Uri {
     protected $path = null;
 
     /**
+     * @type string
+     */
+    protected $query = null;
+
+    /**
      * Returns the scheme and the authority of the uri this script is
      * currently running an. Will fall back to $_SERVER information if no
      * further information is available.
@@ -91,6 +96,12 @@ class Uri {
                 'mandatory' => false,
                 'default' => null,
                 'allowEmpty' => true
+            ),
+            'query' => array(
+                'type' => 'string',
+                'mandatory' => false,
+                'default' => null,
+                'allowEmpty' => true
             )
         ), $data);
 
@@ -98,6 +109,7 @@ class Uri {
         $this->host = strtolower($data['host']);
         $this->port = $data['port'];
         $this->path = $data['path'];
+        $this->query = $data['query'];
 
     }
 
@@ -130,8 +142,17 @@ class Uri {
     }
 
     /**
+     * @return string
+     */
+    public function getQuery() {
+        return $this->query;
+    }
+
+    /**
      * Returns a new Uri instance with all information from
      * this, except for path which gets set to the path specified.
+     *
+     * @param string $path
      *
      * @return \Conjoon\Net\Uri
      *
@@ -142,7 +163,28 @@ class Uri {
             'scheme' => $this->getScheme(),
             'host' => $this->getHost(),
             'port' => $this->getPort(),
-            'path' => $path
+            'path' => $path,
+            'query' => $this->getQuery(),
+        ));
+    }
+
+    /**
+     * Returns a new Uri instance with all information from
+     * this, except for query which gets set to the query specified.
+     *
+     * @param string $query
+     *
+     * @return \Conjoon\Net\Uri
+     *
+     * @throws \Conjoon\Argument\InvalidArgumentException
+     */
+    public function setQuery($query) {
+        return new Uri(array(
+            'scheme' => $this->getScheme(),
+            'host' => $this->getHost(),
+            'port' => $this->getPort(),
+            'path' => $this->getPath(),
+            'query' => $query
         ));
     }
 }
