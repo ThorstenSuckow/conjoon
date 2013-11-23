@@ -193,14 +193,37 @@ com.conjoon.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
 
     onRender : function(ct, position)
     {
-        com.conjoon.groupware.email.EmailViewPanel.superclass.onRender.apply(this, arguments);
+        var me = this;
 
-        var view = this.getView()
-        view.init(this);
+        com.conjoon.groupware.email.EmailViewPanel.superclass.onRender.apply(me, arguments);
+
+        var view = me.getView();
+        me.mon(view, 'refreshdatarequest', me.onViewRefreshDataRequest, me);
+        view.init(me);
 
         this.view.render();
 
         this.viewReady = true;
+    },
+
+    /**
+     * Listener for this panel's viewrenderer.
+     *
+     * @param {DefaultViewRenderer} viewRenderer
+     * @param {Object} data
+     *
+     */
+    onViewRefreshDataRequest : function (viewRenderer, data) {
+
+        var me = this,
+            allowExternals = data.allowExternals;
+
+        delete data.allowExternals;
+
+        this.setEmailItem(
+            new com.conjoon.groupware.email.EmailItemRecord(data, data.id),
+            false, allowExternals
+        );
     },
 
     // private
@@ -232,9 +255,10 @@ com.conjoon.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
      * @param {com.conjoon.groupware.email.EmailItemRecord} emailItem The
      * new emailItem this panel should represent
      * @param {Boolean} suspendAutoLoad If set to true, the according message will not be loaded
-     *
+     * @param {Boolean} allowExternals whether external resources should be loaded with
+     * the message
      */
-    setEmailItem : function(emailItem, suspendAutoLoad)
+    setEmailItem : function(emailItem, suspendAutoLoad, allowExternals)
     {
         // check first if the requested email item is already being loaded
         if (emailItem && this.emailItem && this.requestId != null && emailItem.id == this.emailItem.id) {
@@ -256,7 +280,7 @@ com.conjoon.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
             return;
         }
 
-        this.load();
+        this.load(undefined, allowExternals);
     },
 
     /**
@@ -265,11 +289,12 @@ com.conjoon.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
      * @param {Number} id The id of the email to load. If not provided,
      * the id of the emailItem that was passed to the constriuctor will be used
      * instead
-     * @param {Array} path The path to the folder from which the message was
-     * loaded
+     * @param {Boolean} allowExternals whether external resources are allowed.
+     * This should be usually handled by the backend and only set if the loaded email
+     * message should get reloaded along with its external resources, if any
      *
      */
-    load : function(id)
+    load : function(id, allowExternals)
     {
         if (id == undefined) {
             if (this.emailItem) {
@@ -295,12 +320,18 @@ com.conjoon.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
 
         this.emailRecord = null;
 
+        var params = {
+            id   : id,
+            path : Ext.util.JSON.encode(this.emailItem.get('path'))
+        };
+
+        if (allowExternals !== undefined) {
+            Ext.apply(params, {allowExternals : allowExternals});
+        }
+
         this.requestId = Ext.Ajax.request({
             url            : './groupware/email.item/get.email/format/json',
-            params         : {
-                id   : id,
-                path : Ext.util.JSON.encode(this.emailItem.get('path'))
-            },
+            params         : params,
             success        : this.onEmailLoadSuccess,
             failure        : this.onEmailLoadFailure,
             scope          : this,

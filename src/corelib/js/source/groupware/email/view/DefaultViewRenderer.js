@@ -24,6 +24,17 @@ Ext.namespace('com.conjoon.groupware.email.view');
  */
 com.conjoon.groupware.email.view.DefaultViewRenderer = function(config){
 
+    this.addEvents(
+        /**
+         * @event refreshdatarequest
+         * Event gets fired whenever this renderer requests refreshing the data
+         * @param {DefaultViewRenderer} this
+         * @param {Object} data An object literal with at least path and uId of the message
+         * which gets requested.
+         */
+        'refreshdatarequest'
+    );
+
     var DownloadManager = com.conjoon.groupware.DownloadManager;
 
     DownloadManager.on('request', this.onDownloadRequest, this);
@@ -37,7 +48,7 @@ com.conjoon.groupware.email.view.DefaultViewRenderer = function(config){
     Ext.apply(this, config);
 };
 
-com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
+Ext.extend(com.conjoon.groupware.email.view.DefaultViewRenderer, Ext.util.Observable, {
 
     /**
      * @cfg {String} toValue
@@ -65,6 +76,11 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
     fromValue : 'From',
 
     /**
+     * @cfg {String} loadExternalsValue
+     */
+    loadExternalsValue : 'To protect your privacy, external resources in this message are blocked.',
+
+    /**
      * @cfg {com.conjoon.groupware.email.EmailViewPanel} panel The panel
      * to which this view is bound
      */
@@ -75,6 +91,9 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
      * <ul>
      *  <li><strong>master</strong>: The body template in which the other templates get nested</li>
      *  <li><strong>header</strong>: The header template in which subject, to, cc et.c get nested</li>
+     *  <li><strong>loadExternalsContainer</strong>: The template in which an option to reload the message
+     *  with external resources,if any, is provided</li>
+     *  <li><strong>loadExternalsControl</strong>: The control used to show the message with external resources</li>
      *  <li><strong>subject</strong>: The template for the subject-data of the email</li>
      *  <li><strong>cc</strong>: The template for the cc addresses of the email</li>
      *  <li><strong>bcc</strong>: The template for the bcc addresses of the email</li>
@@ -134,6 +153,18 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
      * @type {Ext.Element} attachmentContainer
      */
     attachmentContainer : null,
+
+    /**
+     * @type {Ext.Element} loadExternalsContainer
+     */
+    loadExternalsContainer : null,
+
+    /**
+     * An object literal containing both uId and path of the currently
+     * rendered message.
+     * @type {Objec} messageLocationData
+     */
+    messageLocationData : null,
 
     /**
      * @type {String} downloadTypeEmailAttachment
@@ -301,7 +332,15 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
         var iframe = this.iframe.dom;
         var ifrAnchor = document.getElementById(this.viewId);
 
-        var heightPrev = ifrAnchor.previousSibling ? Ext.fly(ifrAnchor.previousSibling).getHeight() : 0;
+        var prevSibling = ifrAnchor.previousSibling
+                          ? ifrAnchor.previousSibling
+                          : null,
+            heightPrev = 0;
+
+        while(prevSibling) {
+            heightPrev += Ext.fly(prevSibling).getHeight();
+            prevSibling = prevSibling.previousSibling;
+        }
 
         var heightNext = 0;
         if (this.splitBar) {
@@ -356,6 +395,19 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
     },
 
     /**
+     *
+     * @param {mixed} uId The unique identifier of the message for which external resources
+     * should get loaded
+     */
+    renderLoadExternalsControl : function(uId) {
+
+        return this.templates.loadExternalsControl.apply({
+            uId : uId
+        })
+
+    },
+
+    /**
      * Renders the view with the given data
      *
      * @param {Object}
@@ -381,9 +433,15 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
             attachments = data.attachments,
             isPlainText = data.isPlainText,
             path        = data.path,
-            uId         = data.uId;
+            uId         = data.uId,
+            loadExternals = data.loadExternals;
 
-        var ts = this.templates;
+        var ts = this.templates,
+            loadExternalsHtml;
+
+        loadExternalsHtml = loadExternals ? ts.loadExternalsContainer.apply({
+            loadExternalsControl : this.renderLoadExternalsControl(uId)
+        }) : null;
 
         var cc = this._renderAddresses(cc);
         var ccHtml = cc ? ts.cc.apply({
@@ -429,6 +487,10 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
         var len = attachments.length;
 
         this.attachmentData = {};
+        this.messageLocationData = {
+            uId : uId,
+            path : path
+        };
 
         for (var i = 0; i < len; i++) {
             var attachmentTemplateId = Ext.id(),
@@ -458,6 +520,12 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
         var ifrAnchor = document.getElementById(this.viewId);
 
         DomHelper.insertHtml('beforeBegin', ifrAnchor, header);
+        if (loadExternals) {
+            DomHelper.insertHtml('beforeBegin', ifrAnchor, loadExternalsHtml);
+            this.loadExternalsContainer = new Ext.Element(ifrAnchor.previousSibling);
+            this.installListenerForLoadExternalsControl();
+        }
+
 
         if (len > 0) {
             attachHtml = ts.attachments.apply({
@@ -492,7 +560,7 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
 
             }, this, {
                 delegate : 'div.com-conjoon-groupware-email-EmailView-attachmentItem'
-            })
+            });
 
         }
 
@@ -539,6 +607,7 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
         }
 
         this.attachmentData = {};
+        this.messageLocationData = {};
         this.attachmentKeys = {};
 
         var dom = document.getElementById(this.viewId);
@@ -556,11 +625,19 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
 
         Ext.fly(dom.parentNode).removeClass('attachment');
 
-        var prev = dom.previousSibling;
-        var next = dom.nextSibling;
+        if (this.loadExternalsContainer) {
+            this.loadExternalsContainer.removeAllListeners();
+            this.loadExternalsContainer = null;
+        }
 
-        if (prev) {
+        var prev = dom.previousSibling,
+            prevTmp,
+            next = dom.nextSibling;
+
+        while (prev) {
+            prevTmp = prev.previousSibling;
             prev.parentNode.removeChild(prev);
+            prev = prevTmp;
         }
 
         if (this.attachmentContainer) {
@@ -661,6 +738,23 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
                         '</table>',
                        '</div>',
                     '</div>'
+            );
+        }
+
+        if (!ts.loadExternalsContainer) {
+            ts.loadExternalsContainer = new Ext.Template(
+                '<div class="loadExternalsContainer">',
+                    '<span>', this.loadExternalsValue, '</span>',
+                    '<span>{loadExternalsControl}</span>',
+                '</div>'
+            );
+        }
+
+        if (!ts.loadExternalsControl) {
+            ts.loadExternalsControl = new Ext.Template(
+                '<span class="control" cn_id="{uId}">',
+                    'Show message with external resources',
+                '</span>'
             );
         }
 
@@ -782,6 +876,42 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
         this.initData(null);
     },
 
+    /**
+     * Gets called when the loadExternalsContainer and the control was added
+     * to the DOM and it's secure to add the event listener to the control.
+     * This method should be called whenever a new message gets rendered
+     * with this view,
+     */
+    installListenerForLoadExternalsControl : function() {
+
+        var me = this;
+
+        if (!me.loadExternalsContainer) {
+            return;
+        }
+
+        me.loadExternalsContainer.on('click', function(e, t) {
+            e.stopEvent();
+
+            var uId = t.getAttribute('cn_id');
+
+            if (!this.messageLocationData || this.messageLocationData.uId != uId) {
+                return;
+            }
+
+            this.fireEvent(
+                'refreshdatarequest', this, {
+                    id : uId,
+                    path : this.messageLocationData.path,
+                    allowExternals : true
+            });
+
+
+        }, me, {
+            delegate : 'span.control'
+        });
+    },
+
     onEmailLoad : function(record)
     {
         var data = record.data;
@@ -797,7 +927,8 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
             attachments = data.attachments || '',
             isPlainText = data.isPlainText || false,
             path        = data.path,
-            uId         = data.uId;
+            uId         = data.uId,
+            loadExternals = true//data.hasExternalResources && data.externalResourcesDisabled;
 
         this.doRender({
             subject     : subject,
@@ -811,7 +942,8 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
             attachments : attachments,
             isPlainText : isPlainText,
             path        : path,
-            uId         : uId
+            uId         : uId,
+            loadExternals : loadExternals
         });
         this.layout();
         this.isPlainTextView = isPlainText;
@@ -919,4 +1051,4 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
 
         this.layout();
     }
-};
+});

@@ -311,6 +311,21 @@ div.com-conjoon-groupware-email-EmailView-attachmentItem:focus {
     border-top:1px solid #99BBE8;
 }
 
+.com-conjoon-groupware-email-EmailView .loadExternalsContainer {
+    padding:5px;
+    background-color:#fffdd6;
+    border-bottom:1px solid #99BBE8;
+    font-size:11px;
+    font-family:Tahoma, Verdana, Helvetica, Arial;
+}
+
+.com-conjoon-groupware-email-EmailView .loadExternalsContainer .control {
+    padding-left:5px;
+    color:#0000FF;
+    cursor:pointer;
+    text-decoration:underline;
+}
+
 .com-conjoon-groupware-email-EmailView .attachmentWrap {
     overflow:auto;
     background-color:white;
