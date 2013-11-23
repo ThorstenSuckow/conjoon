@@ -1069,13 +1069,31 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
             );
         }
 
+        /**
+         * @see \Conjoon\Vendor\HtmlPurifier\UriFilter\ResourceNotAvailableUriFilter
+         */
+        require_once 'Conjoon/Vendor/HtmlPurifier/UriFilter/ResourceNotAvailableUriFilter.php';
+
         $htmlPurifierConfig->set('HTML.Trusted', false);
         $htmlPurifierConfig->set('CSS.AllowTricky', false);
         $htmlPurifierConfig->set('CSS.AllowImportant', false);
         $htmlPurifierConfig->set('CSS.Trusted', false);
         $htmlPurifierConfig->set('URI.DisableExternalResources', !$allowExternals);
-        $htmlPurifierConfig->set('URI.Base', $cnEnvironment->getCurrentUriBase());
-        $htmlPurifierConfig->set('URI.MakeAbsolute', true);
+
+        $uri = $htmlPurifierConfig->getDefinition('URI');
+
+        $cnUri = $cnEnvironment->getCurrentUriBase();
+        $cnUri = $cnUri->setPath(
+            rtrim($config->environment->base_url, '/') .
+            '/' .
+            '/default/index/resource.not.available'
+        );
+
+        $uri->addFilter(
+            new \Conjoon\Vendor\HtmlPurifier\UriFilter\ResourceNotAvailableUriFilter($cnUri),
+            $htmlPurifierConfig
+        );
+
 
         return new \HTMLPurifier($htmlPurifierConfig);
 

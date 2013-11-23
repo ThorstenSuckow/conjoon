@@ -83,6 +83,21 @@ class IndexController extends Zend_Controller_Action {
     }
 
     /**
+     * Default action for external resources that are only available
+     * as relative urls, but or not located on 'this' server instance.
+     * Some scripts will use this action and append the url representing
+     * the missing resource.
+     */
+    public function resourceNotAvailableAction() {
+
+        $url = $this->_request->getParam('url');
+
+        $url = $url ? urldecode($url) : $url;
+
+        $this->view->url = $url;
+    }
+
+    /**
      * Default action for redirecting to links not part of the conjoon application.
      *
      */
