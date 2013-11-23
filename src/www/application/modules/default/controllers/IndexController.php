@@ -104,7 +104,7 @@ class IndexController extends Zend_Controller_Action {
     public function redirectAction()
     {
         $link = $this->_request->getParam('url');
-        $this->_redirect(urldecode($link));
+        $this->redirect(urldecode($link));
 
         die();
     }
