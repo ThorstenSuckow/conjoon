@@ -928,7 +928,7 @@ Ext.extend(com.conjoon.groupware.email.view.DefaultViewRenderer, Ext.util.Observ
             isPlainText = data.isPlainText || false,
             path        = data.path,
             uId         = data.uId,
-            loadExternals = true//data.hasExternalResources && data.externalResourcesDisabled;
+            loadExternals = data.hasResources && !data.resourcesLoaded;
 
         this.doRender({
             subject     : subject,

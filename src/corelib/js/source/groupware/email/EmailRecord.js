@@ -19,6 +19,8 @@ com.conjoon.groupware.email.EmailRecord = Ext.data.Record.create([
     {name : 'id', type : 'string'},
     {name : 'uId', type : 'string'},
     {name : 'path'},
+    {name : 'hasResources', type : 'bool'},
+    {name : 'resourcesLoaded', type : 'bool'},
     {name : 'attachments'},
     {name : 'subject', type : 'string'},
     {name : 'from'},
