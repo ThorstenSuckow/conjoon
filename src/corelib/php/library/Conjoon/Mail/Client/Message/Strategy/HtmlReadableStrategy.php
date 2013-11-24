@@ -32,4 +32,14 @@ require_once 'Conjoon/Mail/Client/Message/Strategy/ReadableStrategy.php';
  */
 interface HtmlReadableStrategy extends ReadableStrategy {
 
+
+    /**
+     * Returns true if this strategy allows external resources in email messages,
+     * otehrwise false
+     *
+     * @return bool
+     */
+    public function areExternalResourcesAllowed();
+
+
 }

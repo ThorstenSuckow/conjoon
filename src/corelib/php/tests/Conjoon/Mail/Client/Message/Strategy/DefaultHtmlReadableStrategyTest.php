@@ -26,6 +26,10 @@ require_once 'Conjoon/Mail/Client/Message/Strategy/DefaultHtmlReadableStrategy.p
  */
 require_once 'Conjoon/Mail/Client/Message/Strategy/DefaultPlainReadableStrategy.php';
 
+/**
+ * @see \Conjoon\Text\Parser\Html\ExternalResourcesParser
+ */
+require_once 'Conjoon/Text/Parser/Html/ExternalResourcesParser.php';
 
 
 /**
@@ -42,6 +46,8 @@ class DefaultHtmlReadableStrategyTest extends \PHPUnit_Framework_TestCase {
     protected $strategy;
 
     protected $input;
+
+    protected $parser;
 
     protected function setUp()
     {
@@ -79,9 +85,12 @@ class DefaultHtmlReadableStrategyTest extends \PHPUnit_Framework_TestCase {
 
         $htmlPurifierConfig->set('HTML.Trusted', false);
 
+        $this->parser = new \Conjoon\Text\Parser\Html\ExternalResourcesParser();
+
         $this->strategy = new \Conjoon\Mail\Client\Message\Strategy\DefaultHtmlReadableStrategy(
             new \HTMLPurifier($htmlPurifierConfig),
-            new \Conjoon\Mail\Client\Message\Strategy\DefaultPlainReadableStrategy
+            new \Conjoon\Mail\Client\Message\Strategy\DefaultPlainReadableStrategy,
+            $this->parser
         );
 
     }
@@ -98,8 +107,12 @@ class DefaultHtmlReadableStrategyTest extends \PHPUnit_Framework_TestCase {
      */
     public function testOk() {
 
+        $result = $this->strategy->execute($this->input['input']);
+
+        $this->assertTrue($result instanceof \Conjoon\Mail\Client\Message\Strategy\ReadableStrategyResult);
+
         $this->assertSame(
-            $this->strategy->execute($this->input['input']),
+            $result->getBody(),
             $this->input['output']
         );
 
@@ -110,8 +123,11 @@ class DefaultHtmlReadableStrategyTest extends \PHPUnit_Framework_TestCase {
      */
     public function testNoContentTextHtmlOk() {
 
+        $result = $this->strategy->execute($this->inputNoContentTextHtml['input']);
+        $this->assertTrue($result instanceof \Conjoon\Mail\Client\Message\Strategy\ReadableStrategyResult);
+
         $this->assertSame(
-            $this->strategy->execute($this->inputNoContentTextHtml['input']),
+            $result->getBody(),
             $this->inputNoContentTextHtml['output']
         );
 
@@ -122,11 +138,59 @@ class DefaultHtmlReadableStrategyTest extends \PHPUnit_Framework_TestCase {
      */
     public function testNoContentTextAtAllOk() {
 
+        $result = $this->strategy->execute($this->inputNoContentTextAtAll['input']);
+        $this->assertTrue($result instanceof \Conjoon\Mail\Client\Message\Strategy\ReadableStrategyResult);
+
+
         $this->assertSame(
-            $this->strategy->execute($this->inputNoContentTextAtAll['input']),
+            $result->getBody(),
             $this->inputNoContentTextAtAll['output']
         );
 
+    }
+
+    /**
+     * Ensures everything works as expected.
+     */
+    public function testAreExternalResourcesAllowed() {
+
+        $htmlPurifierConfig = \HTMLPurifier_Config::createDefault();
+        $htmlPurifierConfig->set('Cache.DefinitionImpl', null);
+        $htmlPurifierConfig->set('HTML.Trusted', false);
+
+        $strategy = new \Conjoon\Mail\Client\Message\Strategy\DefaultHtmlReadableStrategy(
+            new \HTMLPurifier($htmlPurifierConfig),
+            new \Conjoon\Mail\Client\Message\Strategy\DefaultPlainReadableStrategy,
+            $this->parser
+        );
+
+        $this->assertTrue($strategy->areExternalResourcesAllowed());
+
+        $htmlPurifierConfig = \HTMLPurifier_Config::createDefault();
+        $htmlPurifierConfig->set('Cache.DefinitionImpl', null);
+        $htmlPurifierConfig->set('HTML.Trusted', false);
+        $htmlPurifierConfig->set('URI.DisableExternalResources', false);
+
+        $strategy = new \Conjoon\Mail\Client\Message\Strategy\DefaultHtmlReadableStrategy(
+            new \HTMLPurifier($htmlPurifierConfig),
+            new \Conjoon\Mail\Client\Message\Strategy\DefaultPlainReadableStrategy,
+            $this->parser
+        );
+
+        $this->assertTrue($strategy->areExternalResourcesAllowed());
+
+        $htmlPurifierConfig = \HTMLPurifier_Config::createDefault();
+        $htmlPurifierConfig->set('Cache.DefinitionImpl', null);
+        $htmlPurifierConfig->set('HTML.Trusted', false);
+        $htmlPurifierConfig->set('URI.DisableExternalResources', true);
+
+        $strategy = new \Conjoon\Mail\Client\Message\Strategy\DefaultHtmlReadableStrategy(
+            new \HTMLPurifier($htmlPurifierConfig),
+            new \Conjoon\Mail\Client\Message\Strategy\DefaultPlainReadableStrategy,
+            $this->parser
+        );
+
+        $this->assertFalse($strategy->areExternalResourcesAllowed());
     }
 
 }

@@ -33,7 +33,7 @@ interface ReadableStrategy {
      *
      * @param array $data
      *
-     * @return string
+     * @return \Conjoon\Mail\Client\Message\Strategy\ReadableStrategyResult;
      *
      * @throws \Conjoon\Mail\Client\Message\Strategy\StrategyException if anything fails
      */

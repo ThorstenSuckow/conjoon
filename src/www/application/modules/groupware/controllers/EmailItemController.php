@@ -745,21 +745,24 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
             );
         }
 
-        $path = $_POST['path'];
+        $id = $this->_request->getParam('id');
+        $path = $this->_request->getParam('path');
+        $allowExternals = $this->_request->getParam('allowExternals', null);
 
-        return $this->getMessageHelper($_POST['id'], $path);
+        return $this->getMessageHelper($id, $path, $allowExternals);
     }
 
     /**
      * Helper function for fetching a single email message from a remote
      * server.
      *
-     * @param string $uId The id of the message
+     * @param string $id The id of the message
      * @param string $path The json encoded path where the message can be found
-     *
+     * @param mixed $allowExternals whether external resources are allowed. If this is
+     * set to NULL, the registry settings of the current user will be given precedence
      *
      */
-    protected function getMessageHelper($uId, $path)
+    protected function getMessageHelper($id, $path, $allowExternals = null)
     {
         /**
          * @see Zend_Registry
@@ -822,7 +825,9 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
         $readingKey = '/client/conjoon/modules/mail/options/reading/';
 
         $preferredFormat = $registry->getValueForKeyAndUserId($readingKey . 'preferred_format', $userId);
-        $allowExternals = $registry->getValueForKeyAndUserId($readingKey . 'allow_externals', $userId);
+        $allowExternals = $allowExternals === null
+                          ? $registry->getValueForKeyAndUserId($readingKey . 'allow_externals', $userId)
+                          : $allowExternals;
 
         /**
          * @see \Conjoon\Mail\Client\Message\Strategy\DefaultPlainReadableStrategy
@@ -835,20 +840,27 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
 
         $htmlPurifier = $this->getHtmlPurifierHelper($allowExternals);
 
+
         if ($preferredFormat == 'html') {
             /**
              * @see \Conjoon\Mail\Client\Message\Strategy\DefaultHtmlReadableStrategy
              */
             require_once 'Conjoon/Mail/Client/Message/Strategy/DefaultHtmlReadableStrategy.php';
 
+            /**
+             * @see \Conjoon\Text\Parser\Html\ExternalResourcesParser
+             */
+            require_once 'Conjoon/Text/Parser/Html/ExternalResourcesParser.php';
+
             $readableStrategy = new \Conjoon\Mail\Client\Message\Strategy\DefaultHtmlReadableStrategy(
-                $htmlPurifier, $plainReadableStrategy
+                $htmlPurifier,
+                $plainReadableStrategy,
+                new \Conjoon\Text\Parser\Html\ExternalResourcesParser()
             );
 
         } else {
             $readableStrategy = $plainReadableStrategy;
         }
-
 
         /**
          * @see \Conjoon\Mail\Client\Service\DefaultMessageServiceFacade
@@ -860,9 +872,7 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
         );
 
         $result = $serviceFacade->getMessage(
-            $this->_request->getParam('id'),
-            $this->_request->getParam('path'),
-            $appUser, $readableStrategy
+            $id, $path, $appUser, $readableStrategy
         );
 
         $this->view->success = $result->isSuccess();
@@ -1033,7 +1043,8 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
      * Helper function for setting up and returning a HtmlPurifier instance
      * for sanitizing html mail bodies.
      *
-     * @param $allowExternals whether external resources should be allowed or not
+     * @param boolean $allowExternals whether external resources should be
+     * allowed or not
      *
      * @return \HtmlPurifier
      */
@@ -1046,28 +1057,9 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
 
         $cnEnvironment = new \Conjoon\Net\Environment();
 
-        /**
-         * @see Zend_Registry
-         */
-        require_once 'Zend/Registry.php';
+        $htmlPurifierConfig = $this->getBaseHtmlPurifierConfig();
 
-        /**
-         * @see Conjoon_Keys
-         */
-        require_once 'Conjoon/Keys.php';
-
-        $config = \Zend_Registry::get(\Conjoon_Keys::REGISTRY_CONFIG_OBJECT);
-
-        $htmlPurifierConfig = \HTMLPurifier_Config::createDefault();
-        if (!$config->application->htmlpurifier->use_cache ||
-            !$config->application->htmlpurifier->cache_dir) {
-            $htmlPurifierConfig->set('Cache.DefinitionImpl', null);
-        } else {
-            $htmlPurifierConfig->set(
-                'Cache.SerializerPath',
-                $config->application->htmlpurifier->cache_dir
-            );
-        }
+        $config = $this->getApplicationConfiguration();
 
         /**
          * @see \Conjoon\Vendor\HtmlPurifier\UriFilter\ResourceNotAvailableUriFilter
@@ -1094,9 +1086,51 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
             $htmlPurifierConfig
         );
 
-
         return new \HTMLPurifier($htmlPurifierConfig);
 
     }
+
+    /**
+     * Returns basic htmlpurifier configuration.
+     *
+     * @return \HTMLPurifier_Config
+     */
+    protected function getBaseHtmlPurifierConfig() {
+
+        $config = $this->getApplicationConfiguration();
+
+        $htmlPurifierConfig = \HTMLPurifier_Config::createDefault();
+        if (!$config->application->htmlpurifier->use_cache ||
+            !$config->application->htmlpurifier->cache_dir) {
+            $htmlPurifierConfig->set('Cache.DefinitionImpl', null);
+        } else {
+            $htmlPurifierConfig->set(
+                'Cache.SerializerPath',
+                $config->application->htmlpurifier->cache_dir
+            );
+        }
+
+        return $htmlPurifierConfig;
+    }
+
+    /**
+     * Returns the application configuration
+     *
+     * @return \stdClass
+     */
+    protected function getApplicationConfiguration() {
+        /**
+         * @see Zend_Registry
+         */
+        require_once 'Zend/Registry.php';
+
+        /**
+         * @see Conjoon_Keys
+         */
+        require_once 'Conjoon/Keys.php';
+
+        return \Zend_Registry::get(\Conjoon_Keys::REGISTRY_CONFIG_OBJECT);
+    }
+
 
 }

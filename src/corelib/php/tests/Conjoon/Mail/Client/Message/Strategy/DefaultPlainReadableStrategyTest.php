@@ -37,6 +37,8 @@ class DefaultPlainReadableStrategyTest extends \PHPUnit_Framework_TestCase {
 
     protected $input;
 
+    protected $inputNoText;
+
     protected function setUp()
     {
         $this->input = array(
@@ -46,6 +48,15 @@ class DefaultPlainReadableStrategyTest extends \PHPUnit_Framework_TestCase {
                 )
             ),
             'output' => 'some plain text'
+        );
+
+        $this->inputNoText = array(
+            'input' => array(
+                'message' => array(
+                    'contentTextPlain' => ''
+                )
+            ),
+            'output' => ''
         );
 
         $this->strategy = new \Conjoon\Mail\Client\Message\Strategy\DefaultPlainReadableStrategy;
@@ -64,9 +75,29 @@ class DefaultPlainReadableStrategyTest extends \PHPUnit_Framework_TestCase {
      */
     public function testOk() {
 
+        $result = $this->strategy->execute($this->input['input']);
+        $this->assertTrue($result instanceof \Conjoon\Mail\Client\Message\Strategy\ReadableStrategyResult);
+
+
         $this->assertSame(
-            $this->strategy->execute($this->input['input']),
+            $result->getBody(),
             $this->input['output']
+        );
+
+    }
+
+    /**
+     * Ensures everything works as expected
+     */
+    public function testInputNoTextOk() {
+
+        $result = $this->strategy->execute($this->inputNoText['input']);
+        $this->assertTrue($result instanceof \Conjoon\Mail\Client\Message\Strategy\ReadableStrategyResult);
+
+
+        $this->assertSame(
+            $result->getBody(),
+            $this->inputNoText['output']
         );
 
     }

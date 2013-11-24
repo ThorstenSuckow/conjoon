@@ -30,8 +30,15 @@ require_once 'Conjoon/Mail/Client/Message/Strategy/HtmlReadableStrategy.php';
  */
 require_once 'Conjoon/Mail/Client/Message/Strategy/PlainReadableStrategy.php';
 
+/**
+ * @see \Conjoon\Mail\Client\Message\Strategy\ReadableStrategyResult
+ */
+require_once 'Conjoon/Mail/Client/Message/Strategy/ReadableStrategyResult.php';
+
+
 use \Conjoon\Argument\ArgumentCheck,
-    \Conjoon\Mail\Client\Message\Strategy\PlainReadableStrategy;
+    \Conjoon\Mail\Client\Message\Strategy\PlainReadableStrategy,
+    \Conjoon\Mail\Client\Message\Strategy\ReadableStrategyResult;
 
 /**
  * Default implementation for parsing a mail's html body part
@@ -55,22 +62,36 @@ class DefaultHtmlReadableStrategy implements HtmlReadableStrategy {
     protected $plainReadableStrategy;
 
     /**
+     * @type \Conjoon\Text\Parser\Html\ExternalResourcesParser
+     */
+    protected $externalResourcesParser;
+
+    /**
      * Creates a new instance of HtmlReadableStrategy.
      *
      * @param \HTMLPurifier $htmlPurifier The htmlpurifier instance to sanitize html code
      * @param \Conjoon\Mail\Client\Message\Strategy\PlainReadableStrategy $plainReadableStrategy
      * the fallback strategy if no html is available and plain text should be rendered.
-    *
-     *
+     * @param \Conjoon\Text\Parser\Html\ExternalResourcesParser $externalResourcesParser
+     * filter for checking if external resources are available in the parsed text
      */
     public function __construct(
         \HtmlPurifier $htmlPurifier,
-        \Conjoon\Mail\Client\Message\Strategy\PlainReadableStrategy $plainReadableStrategy,
-        $allowExternals = false) {
+        PlainReadableStrategy $plainReadableStrategy,
+        \Conjoon\Text\Parser\Html\ExternalResourcesParser $externalResourcesParser) {
+
         $this->htmlPurifier = $htmlPurifier;
         $this->plainReadableStrategy = $plainReadableStrategy;
+        $this->externalResourcesParser = $externalResourcesParser;
+
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function areExternalResourcesAllowed() {
+        return !$this->htmlPurifier->config->get('URI.DisableExternalResources');
+    }
 
     /**
      * The message text to transform can be found in $data['message']['contentTextHtml'].
@@ -100,12 +121,19 @@ class DefaultHtmlReadableStrategy implements HtmlReadableStrategy {
             if ($text == "") {
                 if (isset($data['message']['contentTextPlain'])) {
                     return $this->plainReadableStrategy->execute($data);
-                } else {
-                    return "";
+                 } else {
+                    return new ReadableStrategyResult("", false, false);
                 }
             }
 
-            return $this->htmlPurifier->purify($text);
+            $parseResult = $this->externalResourcesParser->parse($text);
+            $parseData = $parseResult->getData();
+
+            return new ReadableStrategyResult(
+                $this->htmlPurifier->purify($text),
+                $parseData['externalResources'],
+                $this->areExternalResourcesAllowed()
+            );
 
 
         } catch (\Exception $e) {

@@ -86,7 +86,16 @@ class ReadMessagePatron
             $d =& $data['message'];
 
             $d['isPlainText'] = 1;
-            $d['body']        = $this->getReadableStrategy()->execute($data);
+            $strategyResult = $this->getReadableStrategy()->execute($data);
+            $d['body'] = $strategyResult->getBody();
+
+            $d['hasResources'] = false;
+            $d['resourcesLoaded'] = false;
+
+            if ($strategyResult->hasExternalResources()) {
+                $d['hasResources'] = true;
+                $d['resourcesLoaded'] = $strategyResult->areExternalResourcesLoaded();
+            }
 
             $d['attachments'] = $this->createAttachments($this->v('attachments', $d));
 

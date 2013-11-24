@@ -85,7 +85,9 @@ class ReadMessagePatronTest extends \PHPUnit_Framework_TestCase {
                         'bcc' => array('addresses' => array()),
                         'replyTo' => array('addresses' => array()),
                         'subject' => '',
-                        'attachments' => array()
+                        'attachments' => array(),
+                        'hasResources' => false,
+                        'resourcesLoaded' => false
                     )
                 )
             )

@@ -25,7 +25,15 @@ require_once 'Conjoon/Argument/ArgumentCheck.php';
  */
 require_once 'Conjoon/Mail/Client/Message/Strategy/PlainReadableStrategy.php';
 
-use \Conjoon\Argument\ArgumentCheck;
+/**
+ * @see \Conjoon\Mail\Client\Message\Strategy\ReadableStrategyResult
+ */
+require_once 'Conjoon/Mail/Client/Message/Strategy/ReadableStrategyResult.php';
+
+
+use \Conjoon\Argument\ArgumentCheck,
+    \Conjoon\Mail\Client\Message\Strategy\PlainReadableStrategy,
+    \Conjoon\Mail\Client\Message\Strategy\ReadableStrategyResult;
 
 /**
  * Default implementation for parsing a mail body to plain format along with
@@ -62,7 +70,7 @@ class DefaultPlainReadableStrategy implements PlainReadableStrategy {
             $text = $data['message']['contentTextPlain'];
 
             if ($text == "") {
-                return "";
+                return new ReadableStrategyResult("", false, false);
             }
 
             /**
@@ -152,7 +160,8 @@ class DefaultPlainReadableStrategy implements PlainReadableStrategy {
                 )
             );
 
-            return $transformer->transform(
+
+            return new ReadableStrategyResult($transformer->transform(
                 $plainToHtmlFilter->filter(
                     $signatureFilter->filter(
                         $quoteFilter->filter(
@@ -166,7 +175,7 @@ class DefaultPlainReadableStrategy implements PlainReadableStrategy {
                         )
                     )
                 )
-            );
+            ), false, false);
 
         } catch (\Exception $e) {
 
