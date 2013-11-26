@@ -880,6 +880,14 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
             $adapter->commit();
         } catch (Exception $e) {
             $adapter->rollBack();
+
+            /**
+             * @see Conjoon_Log
+             */
+            require_once 'Conjoon/Log.php';
+
+            Conjoon_Log::log($e, Zend_Log::ERROR);
+
             return null;
         }
 
@@ -1019,6 +1027,7 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
                 $outboxWhere = $outboxModel->getAdapter()->quoteInto('groupware_email_items_id = ?', $id);
                 $outboxModel->update($outboxUpdate, $outboxWhere);
             } else {
+
                 // insert!
                 $id = $this->insert($itemUpdate);
 
@@ -1231,6 +1240,7 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
             // the addresses, the subject, the email text and the attachments.
             // those fields have to be updated in the datastorage as well
             case 'draft':
+
                 Conjoon_Util_Array::apply($itemUpdate, array(
                     'subject'            => $message->getSubject(),
                     'to'                 => $toString,
@@ -1351,7 +1361,7 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
      * data according to the structure of com.conjoon.cudgets.data.FileRecord.
      * Important keys are 'orgId', 'metaType', 'key', 'name'
      *
-     * Warning! since its notguaranteed that the ids in removeAttachments are
+     * Warning! since its not guaranteed that the ids in removeAttachments are
      * ids for attachments that indeed belong to the draft, it's needed
      * to check whether the current list of attachments holds this id.
      *
@@ -1474,7 +1484,6 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
 
             $newAttachmentId = $attachmentModel->copyFromFilesForItemId(
                 $file['key'], $file['orgId'], $draft->getId(), $file['name']
-
             );
 
             if ($newAttachmentId > 0) {
