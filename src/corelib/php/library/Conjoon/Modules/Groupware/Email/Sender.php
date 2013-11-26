@@ -378,10 +378,7 @@ class Conjoon_Modules_Groupware_Email_Sender {
                          || $att['encoding'] == 'base64');
 
 
-        $fileModel       = new Conjoon_Modules_Groupware_Files_File_Model_File();
-        $attachmentModel = new Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment();
-
-        if ($model instanceof
+       if ($model instanceof
             Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment) {
             $newAttachment = new Conjoon_Mime_Part(
                 $model->getAttachmentContentAsStreamForKeyAndId(
