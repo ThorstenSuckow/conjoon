@@ -92,6 +92,7 @@ class Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment
             }
         }
 
+
         $db = self::getDefaultAdapter();
 
         /**
@@ -111,8 +112,6 @@ class Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment
                 get_class($db)
             );
         }
-
-        $db->beginTransaction();
 
         try {
 
@@ -163,10 +162,9 @@ class Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment
 
             );
 
-            $db->commit();
+
 
         } catch (Exception $e) {
-            $db->rollBack();
             throw $e;
         }
 
