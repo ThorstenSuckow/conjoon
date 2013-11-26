@@ -727,7 +727,7 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
 
         $recipientsFilter = new Conjoon_Filter_EmailRecipients();
 
-        $newVersion             = array();
+        $newVersions            = array();
         $sendItems              = array();
         $contextReferencedItems = array();
 
@@ -739,6 +739,8 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
 
             $id   = $pathInfo['id'];
             $path = $pathInfo['path'];
+
+            $account = null;
 
             // check if path is remote!
             $isRemote = $this->isRemotePath($path, $userId);
@@ -753,14 +755,20 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
                     'path'    => $path
                 );
                 $rawDraft['groupwareEmailAccountsId'] = $isRemote->id;
+
+                $account = $accountDecorator->getAccountAsEntity(
+                    $rawDraft['groupwareEmailAccountsId'],
+                    $userId
+                );
+
             } else {
                 $rawDraft = $draftModel->getDraft($id, $userId);
-            }
 
-            $account = $accountDecorator->getAccountAsEntity(
-                $rawDraft['groupwareEmailAccountsId'],
-                $userId
-            );
+                $account = $accountDecorator->getAccountAsEntity(
+                    $rawDraft['groupware_email_accounts_id'],
+                    $userId
+                );
+            }
 
             // no account found?
             if (!$account) {
