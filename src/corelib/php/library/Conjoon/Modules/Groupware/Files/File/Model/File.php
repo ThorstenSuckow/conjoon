@@ -232,6 +232,10 @@ class Conjoon_Modules_Groupware_Files_File_Model_File extends Conjoon_Db_Table
             'id'  => $id
         );
 
+        if (!$this->isStreamAccessSupported()) {
+            return $this->getLobContent($data);
+        }
+
         return $this->getLobAsStream($data);
     }
 
@@ -320,7 +324,7 @@ class Conjoon_Modules_Groupware_Files_File_Model_File extends Conjoon_Db_Table
         }
 
         $stmt = $db->query("INSERT INTO ".
-                   "`".self::getTablePrefix() . "groupware_files`
+                   "`". self::getTablePrefix() . "groupware_files`
                    (`key`, `groupware_files_folders_id`, `name`,
                    `mime_type`, `content`, `storage_container`
                    )
@@ -593,7 +597,7 @@ class Conjoon_Modules_Groupware_Files_File_Model_File extends Conjoon_Db_Table
     {
         if (!$this->isStreamAccessSupported()) {
             throw new Conjoon_Data_Exception(
-                "Stream access for ".get_class(self)." is not supported."
+                "Stream access for ".get_class($this)." is not supported."
             );
         }
 
@@ -614,6 +618,8 @@ class Conjoon_Modules_Groupware_Files_File_Model_File extends Conjoon_Db_Table
         $statement->bindParam( ':id', $data['id'],  PDO::PARAM_INT);
 
         $statement->execute();
+
+        $content = null;
 
         $statement->bindColumn('content', $content, PDO::PARAM_LOB);
 
@@ -695,11 +701,24 @@ class Conjoon_Modules_Groupware_Files_File_Model_File extends Conjoon_Db_Table
     public function addLob(Array $data)
     {
         Conjoon_Argument_Check::check(array(
-            'groupwareFilesFoldersId' => array('type' => 'int'),
-            'key' => array('type' => 'string'),
-            'name' => array('type' => 'string'),
-            'mimeType' => array('type' => 'string'),
-            'storageContainer' => array('type' => 'string', 'allowEmpty' => true)
+            'groupwareFilesFoldersId' => array(
+                'type' => 'int'
+            ),
+            'key' => array(
+                'type' => 'string'
+            ),
+            'name' => array(
+                'type' => 'string'
+            ),
+            'mimeType' => array(
+                'type' => 'string'
+            ),
+            'storageContainer' => array(
+                'type' => 'string',
+                'allowEmpty' => true,
+                'mandatory' => false,
+                'default' => null
+            )
         ), $data);
 
         if (isset($data['resource']) && is_resource($data['resource'])) {
@@ -755,7 +774,12 @@ class Conjoon_Modules_Groupware_Files_File_Model_File extends Conjoon_Db_Table
             'key' => array('type' => 'string'),
             'name' => array('type' => 'string'),
             'mimeType' => array('type' => 'string'),
-            'storageContainer' => array('type' => 'string', 'allowEmpty' => true)
+            'storageContainer' => array(
+                'type' => 'string',
+                'allowEmpty' => true,
+                'mandatory' => false,
+                'default' => null
+            )
         ), $data);
 
         if (isset($data['resource']) && !is_resource($data['resource'])) {

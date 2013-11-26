@@ -112,18 +112,64 @@ class Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment
             );
         }
 
-        $stmt = $db->query("INSERT INTO ".
-                   "`".self::getTablePrefix() . "groupware_email_items_attachments`
-                   (`key`, `groupware_email_items_id`, `file_name`, `mime_type`,
-                   `content`)
-                   (SELECT "
-                   ."'".md5(uniqid(mt_rand(), true))."' AS `key`, "
-                   .$itemId." AS `groupware_email_items_id`,"
-                   .(!$name ? "`name`," : $db->quote($name)." AS `name`,")
-                   ." `mime_type`, `content` FROM "
-                   ."`".self::getTablePrefix() . "groupware_files`
-                   WHERE `id` = ".$id." AND `key`=".$db->quote($key).")"
-        );
+        $db->beginTransaction();
+
+        try {
+
+            $select = $db->select()
+                      ->from(array('files' => self::getTablePrefix() . "groupware_files"), 'content')
+                      ->where('`id`=?', $id)
+                      ->where('`key`=?', $key);
+
+            $row = $db->fetchRow($select);
+
+            if (!$row) {
+                return 0;
+            }
+            $content = base64_encode($row['content']);
+
+            $stmt = $db->query("INSERT INTO ".
+                    "`".self::getTablePrefix() . "mail_attachment_content`
+                       (`content`) VALUES ('" . $content . "')"
+            );
+
+            $result = $stmt->rowCount();
+
+            if ($result > 0) {
+                $attachmentContentId = $db->lastInsertId();
+            } else {
+                return 0;
+            }
+
+            $stmt = $db->query("INSERT INTO ".
+                       "`".self::getTablePrefix() . "groupware_email_items_attachments`
+                       (`encoding`,
+                       `content_id`,
+                        `mail_attachment_content_id`,
+                       `key`,
+                       `groupware_email_items_id`,
+                       `file_name`,
+                       `mime_type`)
+                       (SELECT "
+                       . "'base64' as `encoding`,"
+                       . "null as `content_id`,"
+                       . "'" . $attachmentContentId."' as `mail_attachment_content_id`,"
+                       ."'".md5(uniqid(mt_rand(), true))."' AS `key`, "
+                       .$itemId." AS `groupware_email_items_id`,"
+                       .(!$name ? "`name`," : $db->quote($name)." AS `name`,")
+                       ." `mime_type` FROM "
+                       ."`".self::getTablePrefix() . "groupware_files`
+                       WHERE `id` = ".$id." AND `key`=".$db->quote($key).")"
+
+            );
+
+            $db->commit();
+
+        } catch (Exception $e) {
+            $db->rollBack();
+            throw $e;
+        }
+
 
         $result = $stmt->rowCount();
         if ($result > 0) {
