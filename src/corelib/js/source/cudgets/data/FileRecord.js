@@ -40,7 +40,7 @@ com.conjoon.cudgets.data.FileRecord = Ext.data.Record.create([
 
     /**
      * @type {Mixed} folderId
-     * The id of thie folder the file resists in, if available.
+     * The id of the folder the file resists in, if available.
      */
     {name : 'folderId', type : 'int'},
 

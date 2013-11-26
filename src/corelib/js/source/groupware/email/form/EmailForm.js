@@ -120,7 +120,7 @@ com.conjoon.groupware.email.form.EmailForm = Ext.extend(Ext.Panel, {
             clicksToEdit:1
         });
 
-        /*this.fileGridPanel = new com.conjoon.cudgets.grid.FilePanel({
+        this.fileGridPanel = new com.conjoon.cudgets.grid.FilePanel({
             ui          : new com.conjoon.groupware.email.form
                             .ui.AttachmentPanelUi(),
             contextMenu : new com.conjoon.cudgets.grid.FilePanelContextMenu({
@@ -131,7 +131,7 @@ com.conjoon.groupware.email.form.EmailForm = Ext.extend(Ext.Panel, {
                     renameText   : com.conjoon.Gettext.gettext("Rename")
                 })
             })
-        });*/
+        });
 
        this.subjectField = new Ext.form.TextField({
             name            : 'subject',
@@ -197,9 +197,7 @@ com.conjoon.groupware.email.form.EmailForm = Ext.extend(Ext.Panel, {
                                     this.subjectField
                                 ]
                           })
-                      ]})/*,
-
-                        this.fileGridPanel*/
+                      ]}), this.fileGridPanel
                     ]
                 }),
                 new Ext.form.FormPanel({
@@ -235,7 +233,7 @@ com.conjoon.groupware.email.form.EmailForm = Ext.extend(Ext.Panel, {
 
         this.on('destroy', this._onDestroy, this);
 
-        /*this.mon(
+        this.mon(
             this.fileGridPanel, 'downloadcancel',
             this.onFilePanelDownloadCancel,  this
         );
@@ -243,15 +241,15 @@ com.conjoon.groupware.email.form.EmailForm = Ext.extend(Ext.Panel, {
         this.mon(
             this.fileGridPanel, 'downloadrequest',
             this.onFilePanelDownloadRequest,  this
-        );*/
+        );
 
-        /*var DownloadManager = com.conjoon.groupware.DownloadManager;
+        var DownloadManager = com.conjoon.groupware.DownloadManager;
 
         DownloadManager.on('request', this.onDownloadStart, this);
         DownloadManager.on('success', this.onDownloadEnd, this);
         DownloadManager.on('error',   this.onDownloadEnd, this);
         DownloadManager.on('failure', this.onDownloadEnd, this);
-        DownloadManager.on('cancel',  this.onDownloadEnd, this);*/
+        DownloadManager.on('cancel',  this.onDownloadEnd, this);
 
         com.conjoon.groupware.email.form.EmailForm.superclass.initEvents.call(this);
     },
@@ -287,13 +285,12 @@ com.conjoon.groupware.email.form.EmailForm = Ext.extend(Ext.Panel, {
     },
 
    /**
-     * Listener for the file panel's download request event.
-     *
-     * @param {com.conjoon.cudgets.grid.FilePanel} filePanel
-     * @param {com.conjoon.cudgets.data.FielRecord} record
-     */
-    onFilePanelDownloadRequest : function(filePanel, record)
-    {
+    * Listener for the file panel's download request event.
+    *
+    * @param {com.conjoon.cudgets.grid.FilePanel} filePanel
+    * @param {com.conjoon.cudgets.data.FielRecord} record
+    */
+    onFilePanelDownloadRequest : function(filePanel, record) {
         if (record.get('metaType') ==
             com.conjoon.cudgets.data.FileRecord.META_TYPE_FILE) {
             com.conjoon.groupware.DownloadManager.downloadFile(

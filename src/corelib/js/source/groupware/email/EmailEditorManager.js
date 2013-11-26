@@ -406,7 +406,7 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
                 metaType = FileRecord.META_TYPE_EMAIL_ATTACHMENT,
                 location = FileRecord.LOCATION_REMOTE;
 
-            // convert attachments to fiel Records
+            // convert attachments to file Records
             var fileRecords = [], attachment = null;
             for (var i = 0, len = attachments.length; i < len; i++) {
                 attachment = attachments[i];
@@ -497,14 +497,14 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
             return;
         }
 
-        //if (formValues[panelId].uploadMediator.isUploadPending()) {
-        //    controlBar.setDisabled(true);
-        //    formValues[panelId].attachmentButton.setDisabled(false);
-        //} else {
+        if (formValues[panelId].uploadMediator.isUploadPending()) {
+            controlBar.setDisabled(true);
+            formValues[panelId].attachmentButton.setDisabled(false);
+        } else {
             controlBar.setDisabled(false);
-        //}
+        }
 
-        var mf = [];//formValues[panelId].uploadMediator.getManagedFiles();
+        var mf = formValues[panelId].uploadMediator.getManagedFiles();
         if (mf.length) {
             var fg    = form.fileGridPanel;
             var store = fg.getStore();
@@ -856,7 +856,7 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
 
         var fValues = formValues[panelId];
 
-        var files       = [];//fValues.uploadMediator.getManagedFiles(),
+        var files       = fValues.uploadMediator.getManagedFiles(),
             attachments = [];
 
         var id = (fValues.type == 'edit' || type == 'edit')
@@ -1306,9 +1306,10 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
         if (formValues[panel.id].attachmentButton) {
             formValues[panel.id].attachmentButton.hide();
         }
-        //form.fileGridPanel.hide();
-        //form.fileGridPanel.getStore().removeAll();
-        //form.fileGridPanel.ownerCt.doLayout();
+
+        form.fileGridPanel.hide();
+        form.fileGridPanel.getStore().removeAll();
+        form.fileGridPanel.ownerCt.doLayout();
     }
 
     var onActivatePanel = function(panel)
@@ -1323,7 +1324,7 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
 
         contentPanel.layout.activeItem = masterPanel;
         contentPanel.layout.layout();
-/*
+
         if (!formValues[panel.id].attachmentButton) {
 
             formValues[panel.id].attachmentButton =
@@ -1396,7 +1397,7 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
         }
 
         formValues[panel.id].attachmentButton.show();
-*/
+
         var tbarManager = com.conjoon.groupware.workbench.ToolbarController;
         tbarManager.show('com.conjoon.groupware.email.EmailForm.toolbar');
 
@@ -1416,8 +1417,8 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
             Ext.Ajax.abort(reqId);
         }
 
-        //formValues[panel.id].attachmentButton.destroy();
-        //formValues[panel.id].uploadMediator.destroy();
+        formValues[panel.id].attachmentButton.destroy();
+        formValues[panel.id].uploadMediator.destroy();
 
         formValues[panel.id] = null;
         delete formValues[panel.id];
