@@ -532,9 +532,6 @@ class Groupware_EmailEditController extends Zend_Controller_Action {
         $cc  = array();
         $bcc = array();
 
-        $toString  = array();
-        $ccString  = array();
-
         $postedAttachments = $data['attachments'];
         $data['attachments'] = array();
 
@@ -542,22 +539,17 @@ class Groupware_EmailEditController extends Zend_Controller_Action {
         unset($data['removedAttachments']);
 
         foreach ($data['cc'] as $dcc) {
-            $add        = new Conjoon_Modules_Groupware_Email_Address($dcc);
-            $cc[]       = $add;
-            $toString[] = $add->__toString();
+            $add  = new Conjoon_Modules_Groupware_Email_Address($dcc);
+            $cc[] = $add;
         }
         foreach ($data['bcc'] as $dbcc) {
-            $add         = new Conjoon_Modules_Groupware_Email_Address($dbcc);
-            $bcc[]       = $add;
+            $add   = new Conjoon_Modules_Groupware_Email_Address($dbcc);
+            $bcc[] = $add;
         }
         foreach ($data['to'] as $dto) {
-            $add        = new Conjoon_Modules_Groupware_Email_Address($dto);
-            $to[]       = $add;
-            $toString[] = $add->__toString();
+            $add  = new Conjoon_Modules_Groupware_Email_Address($dto);
+            $to[] = $add;
         }
-
-        $toString  = implode(', ', $toString);
-        $ccString  = implode(', ', $ccString);
 
         $data['cc']  = $cc;
         $data['to']  = $to;
@@ -638,8 +630,6 @@ class Groupware_EmailEditController extends Zend_Controller_Action {
                 $postedAttachments, $removeAttachmentIds, $attachmentMap, $userId);
             return;
         }
-
-
         $item = $itemModel->saveDraft(
             $draft, $account, $userId, $data['type'], $data['referencesId'],
             $postedAttachments, $removeAttachmentIds, $attachmentMap
@@ -757,9 +747,6 @@ class Groupware_EmailEditController extends Zend_Controller_Action {
         $cc  = array();
         $bcc = array();
 
-        $toString  = array();
-        $ccString  = array();
-
         $postedAttachments = $data['attachments'];
         $data['attachments'] = array();
 
@@ -767,22 +754,17 @@ class Groupware_EmailEditController extends Zend_Controller_Action {
         unset($data['removedAttachments']);
 
         foreach ($data['cc'] as $dcc) {
-            $add        = new Conjoon_Modules_Groupware_Email_Address($dcc);
-            $cc[]       = $add;
-            $toString[] = $add->__toString();
+            $add  = new Conjoon_Modules_Groupware_Email_Address($dcc);
+            $cc[] = $add;
         }
         foreach ($data['bcc'] as $dbcc) {
-            $add         = new Conjoon_Modules_Groupware_Email_Address($dbcc);
-            $bcc[]       = $add;
+            $add   = new Conjoon_Modules_Groupware_Email_Address($dbcc);
+            $bcc[] = $add;
         }
         foreach ($data['to'] as $dto) {
-            $add        = new Conjoon_Modules_Groupware_Email_Address($dto);
-            $to[]       = $add;
-            $toString[] = $add->__toString();
+            $add  = new Conjoon_Modules_Groupware_Email_Address($dto);
+            $to[] = $add;
         }
-
-        $toString  = implode(', ', $toString);
-        $ccString  = implode(', ', $ccString);
 
         $data['cc']  = $cc;
         $data['to']  = $to;
