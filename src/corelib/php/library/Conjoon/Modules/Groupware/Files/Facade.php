@@ -104,7 +104,7 @@ class Conjoon_Modules_Groupware_Files_Facade {
         Zend_File_Transfer_Adapter_Http $upload, $userId)
     {
         $this->_checkArguments(array(
-            'userId'   => array('value' => &$userId,   'type' => 'int')
+            'userId' => array('value' => &$userId,   'type' => 'int')
         ));
 
         if (count($upload->getFilters()) && !$upload->isFiltered()) {
