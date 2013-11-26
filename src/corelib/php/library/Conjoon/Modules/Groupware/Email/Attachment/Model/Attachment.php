@@ -225,16 +225,35 @@ class Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment
         }
 
         $statement = $db->prepare(
-            "SELECT `content` FROM `".self::getTablePrefix() . "groupware_email_items_attachments`
-             WHERE `key` = :key AND `id` = :id"
+            "SELECT `mail_attachment_content_id` FROM " .
+            "`" . self::getTablePrefix() . "groupware_email_items_attachments` ".
+            "WHERE `key` = :key AND `id` = :id"
         );
-        $statement->setFetchMode(PDO::FETCH_BOUND);
 
         $statement->bindParam(':key', $key, PDO::PARAM_STR);
+        $statement->bindParam(':id', $id,  PDO::PARAM_INT);
+        $statement->execute();
+        $row = $statement->fetch(PDO::FETCH_ASSOC);
+        if (!$row || empty($row)) {
+            return null;
+        }
+
+        // reset id to mail_attachment_content_id
+        $id = $row['mail_attachment_content_id'];
+
+        $statement = $db->prepare(
+            "SELECT `content` FROM " .
+                "`" . self::getTablePrefix() . "mail_attachment_content` ".
+                "WHERE `id` = :id"
+        );
+
+        $statement->setFetchMode(PDO::FETCH_BOUND);
+
         $statement->bindParam( ':id', $id,  PDO::PARAM_INT);
 
         $statement->execute();
 
+        $content = null;
         $statement->bindColumn(1, $content, PDO::PARAM_LOB);
 
         $statement->fetch();
