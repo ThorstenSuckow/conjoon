@@ -687,3 +687,9 @@ NULL DEFAULT NULL;
 ALTER TABLE `{DATABASE.TABLE.PREFIX}users` ADD UNIQUE `remember_me_token`
 (`remember_me_token`);
 UPDATE `{DATABASE.TABLE.PREFIX}users` SET `remember_me_token` = NULL;
+
+
+-- CN-14
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments` CHANGE
+`content_id` `content_id` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_bin
+NULL DEFAULT NULL;

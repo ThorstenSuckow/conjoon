@@ -28,7 +28,7 @@ Conjoon\Data\Entity\Mail\DefaultAttachmentEntity:
             column: `encoding`
         contentId:
             type: text
-            nullable: false
+            nullable: true
             column: `content_id`
     manyToOne:
       message:
