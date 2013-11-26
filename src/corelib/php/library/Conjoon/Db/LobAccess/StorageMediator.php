@@ -410,7 +410,6 @@ abstract class Conjoon_Db_LobAccess_StorageMediator {
         Conjoon_util_Array::apply($data, array('resource' => $path));
 
         @fclose($fp);
-
         return $result;
     }
 
@@ -432,7 +431,7 @@ abstract class Conjoon_Db_LobAccess_StorageMediator {
             $resource = $data['resource'];
 
             while (!feof($resource)) {
-                $cont .= fread($content, 1024);
+                $cont .= fread($resource, 1024);
             }
 
             Conjoon_util_Array::apply($data, array('resource' => $cont));
