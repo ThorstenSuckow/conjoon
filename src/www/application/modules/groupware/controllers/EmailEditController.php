@@ -14,15 +14,16 @@
  */
 
 /**
- * Zend_Controller_Action
+ * @see \Conjoon\Vendor\Zend\Controller\Action\MailModule\MessageController
  */
-require_once 'Zend/Controller/Action.php';
+require_once 'Conjoon/Vendor/Zend/Controller/Action/MailModule/MessageController.php';
 
 /**
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class Groupware_EmailEditController extends Zend_Controller_Action {
+class Groupware_EmailEditController extends
+    \Conjoon\Vendor\Zend\Controller\Action\MailModule\MessageController {
 
     const CONTEXT_JSON = 'json';
 
@@ -204,16 +205,14 @@ class Groupware_EmailEditController extends Zend_Controller_Action {
             $standardId   = $accountModel->getStandardAccountIdForUser($userId);
 
             if ($standardId == 0) {
-                require_once 'Conjoon/Error.php';
-                $error = new Conjoon_Error();
-                $error = $error->getDto();;
-                $error->title = 'Error while opening draft';
-                $error->message = 'Please configure an email account first.';
-                $error->level = Conjoon_Error::LEVEL_ERROR;
+                $this->view->error = $this->getErrorDto(
+                    'Error while opening draft',
+                    'Please configure an email account first.',
+                    Conjoon_Error::LEVEL_ERROR
+                );
 
                 $this->view->draft   = null;
                 $this->view->success = false;
-                $this->view->error   = $error;
 
                 return;
             }
@@ -255,21 +254,18 @@ class Groupware_EmailEditController extends Zend_Controller_Action {
         $draftData = $draftModel->getDraft($id, $userId, $type);
 
         if (empty($draftData)) {
-            require_once 'Conjoon/Error.php';
-            $error = new Conjoon_Error();
-            $error = $error->getDto();;
-            $error->title = 'Error while opening draft';
-            $error->message = 'Could not find the referenced draft.';
-            $error->level = Conjoon_Error::LEVEL_ERROR;
+
+            $this->view->error = $this->getErrorDto(
+                'Error while opening draft',
+                'Could not find the referenced draft.',
+                Conjoon_Error::LEVEL_ERROR
+            );
 
             $this->view->draft   = null;
             $this->view->success = false;
-            $this->view->error   = $error;
 
             return;
         }
-
-        $context = "";
 
         switch ($type) {
             case 'reply':
@@ -400,68 +396,9 @@ class Groupware_EmailEditController extends Zend_Controller_Action {
      */
     protected function getDraftFromRemoteServer($id, $path, $type)
     {
-        /**
-         * @see Zend_Registry
-         */
-        require_once 'Zend/Registry.php';
+        $appUser = $this->getCurrentAppUser();
 
-        /**
-         *@see Conjoon_Keys
-         */
-        require_once 'Conjoon/Keys.php';
-
-        $auth = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
-
-        /**
-         * @see Conjoon_User_AppUser
-         */
-        require_once 'Conjoon/User/AppUser.php';
-
-        $appUser = new \Conjoon\User\AppUser($auth->getIdentity());
-
-        $entityManager = Zend_Registry::get(Conjoon_Keys::DOCTRINE_ENTITY_MANAGER);
-
-        $mailFolderRepository =
-            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
-        $messageFlagRepository =
-            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMessageFlagEntity');
-        $mailAccountRepository =
-            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMailAccountEntity');
-        $attachmentRepository =
-            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultAttachmentEntity');
-        $messageRepository =
-            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMessageEntity');
-
-
-
-        $protocolAdaptee = new \Conjoon\Mail\Server\Protocol\DefaultProtocolAdaptee(
-            $mailFolderRepository, $messageFlagRepository, $mailAccountRepository,
-            $messageRepository, $attachmentRepository
-        );
-
-        /**
-         * @see \Conjoon\Mail\Server\Protocol\DefaultProtocol
-         */
-        $protocol = new \Conjoon\Mail\Server\Protocol\DefaultProtocol(
-            $protocolAdaptee
-        );
-
-        /**
-         * @see \Conjoon\Mail\Server\DefaultServer
-         */
-        require_once 'Conjoon/Mail/Server/DefaultServer.php';
-
-        $server = new \Conjoon\Mail\Server\DefaultServer($protocol);
-
-
-        /**
-         * @see \Conjoon\Mail\Client\Service\DefaultMessageServiceFacade
-         */
-        require_once 'Conjoon/Mail/Client/Service/DefaultMessageServiceFacade.php';
-
-        $serviceFacade = new \Conjoon\Mail\Client\Service\DefaultMessageServiceFacade(
-            $server, $mailAccountRepository, $mailFolderRepository
-        );
+        $serviceFacade = $this->getMessageServiceFacadeHelper();
 
         if ($type == 'forward') {
             $result =  $serviceFacade->getMessageForForwarding($id, $path, $appUser);
@@ -570,13 +507,13 @@ class Groupware_EmailEditController extends Zend_Controller_Action {
 
         // no account found?
         if (!$account) {
-            require_once 'Conjoon/Error.php';
-            $error = new Conjoon_Error();
-            $error = $error->getDto();;
-            $error->title = 'Error while saving email';
-            $error->message = 'Could not find specified account.';
-            $error->level = Conjoon_Error::LEVEL_ERROR;
-            $this->view->error   = $error;
+
+            $this->view->error = $this->getErrorDto(
+                'Error while saving email',
+                'Could not find specified account.',
+                Conjoon_Error::LEVEL_ERROR
+            );
+
             $this->view->success = false;
             $this->view->item    = null;
             return;
@@ -636,16 +573,12 @@ class Groupware_EmailEditController extends Zend_Controller_Action {
         );
 
         if (!$item || empty($item)) {
-            /**
-             * @see Conjoon_Error
-             */
-            require_once 'Conjoon/Error.php';
-            $error = new Conjoon_Error();
-            $error = $error->getDto();;
-            $error->title = 'Error while saving email';
-            $error->message = 'The email could not be stored into the database.';
-            $error->level = Conjoon_Error::LEVEL_ERROR;
-            $this->view->error   = $error;
+            $this->view->error = $this->getErrorDto(
+                'Error while saving email',
+                'The email could not be stored into the database.',
+                Conjoon_Error::LEVEL_ERROR
+            );
+
             $this->view->success = false;
             $this->view->item    = null;
             return;
@@ -785,13 +718,13 @@ class Groupware_EmailEditController extends Zend_Controller_Action {
 
         // no account found?
         if (!$account) {
-            require_once 'Conjoon/Error.php';
-            $error = new Conjoon_Error();
-            $error = $error->getDto();;
-            $error->title = 'Error while moving email to the outbox folder';
-            $error->message = 'Could not find specified account.';
-            $error->level = Conjoon_Error::LEVEL_ERROR;
-            $this->view->error   = $error;
+
+            $this->view->error = $this->getErrorDto(
+                'Error while moving email to the outbox folder',
+                'Could not find specified account.',
+                Conjoon_Error::LEVEL_ERROR
+            );
+
             $this->view->success = false;
             $this->view->item    = null;
             return;
@@ -861,13 +794,13 @@ class Groupware_EmailEditController extends Zend_Controller_Action {
         );
 
         if (!$item) {
-            require_once 'Conjoon/Error.php';
-            $error = new Conjoon_Error();
-            $error = $error->getDto();;
-            $error->title = 'Error while saving email';
-            $error->message = 'The email could not be stored into the database.';
-            $error->level = Conjoon_Error::LEVEL_ERROR;
-            $this->view->error   = $error;
+
+            $this->view->error = $this->getErrorDto(
+                'Error while saving email',
+                'The email could not be stored into the database.',
+                Conjoon_Error::LEVEL_ERROR
+            );
+
             $this->view->success = false;
             $this->view->item    = null;
             return;
@@ -932,14 +865,13 @@ class Groupware_EmailEditController extends Zend_Controller_Action {
         }
 
         if (!$globalName) {
-            require_once 'Conjoon/Error.php';
-            $folderMappingError = new Conjoon_Error();
-            $folderMappingError = $folderMappingError->getDto();;
-            $folderMappingError->title   = 'Missing folder mapping';
-            $folderMappingError->message = 'Cannot save draft, since no "draft" folder mapping is available. Please configure the folder mappings for this account first.';
-            $folderMappingError->level = Conjoon_Error::LEVEL_ERROR;
 
-            $this->view->error   = $folderMappingError;
+            $this->view->error = $this->getErrorDto(
+                'Missing folder mapping',
+                'Cannot save draft, since no "draft" folder mapping is available. Please configure the folder mappings for this account first.',
+                Conjoon_Error::LEVEL_ERROR
+            );
+
             $this->view->success = false;
             $this->view->item    = null;
 
@@ -1012,7 +944,6 @@ class Groupware_EmailEditController extends Zend_Controller_Action {
             $item['id'], $item['path']
         );
 
-
         $this->view->error         = null;
         $this->view->success       = true;
         $this->view->item          = $item;
@@ -1073,67 +1004,7 @@ class Groupware_EmailEditController extends Zend_Controller_Action {
     {
         $path = json_encode($path);
 
-        /**
-         * @see Zend_Registry
-         */
-        require_once 'Zend/Registry.php';
-
-        /**
-         *@see Conjoon_Keys
-         */
-        require_once 'Conjoon/Keys.php';
-
-        $auth = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
-
-        /**
-         * @see Conjoon_User_AppUser
-         */
-        require_once 'Conjoon/User/AppUser.php';
-
-        $appUser = new \Conjoon\User\AppUser($auth->getIdentity());
-
-        $entityManager = Zend_Registry::get(Conjoon_Keys::DOCTRINE_ENTITY_MANAGER);
-
-        $mailAccountRepository =
-            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMailAccountEntity');
-        $mailFolderRepository =
-            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
-        $mesageFlagRepository =
-            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMessageFlagEntity');
-        $attachmentRepository =
-            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultAttachmentEntity');
-        $messageRepository =
-            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMessageEntity');
-
-        $protocolAdaptee = new \Conjoon\Mail\Server\Protocol\DefaultProtocolAdaptee(
-            $mailFolderRepository, $mesageFlagRepository, $mailAccountRepository,
-            $messageRepository, $attachmentRepository
-        );
-
-        /**
-         * @see \Conjoon\Mail\Server\Protocol\DefaultProtocol
-         */
-        $protocol = new \Conjoon\Mail\Server\Protocol\DefaultProtocol($protocolAdaptee);
-
-        /**
-         * @see \Conjoon\Mail\Server\DefaultServer
-         */
-        require_once 'Conjoon/Mail/Server/DefaultServer.php';
-
-        $server = new \Conjoon\Mail\Server\DefaultServer($protocol);
-
-        /**
-         * @see \Conjoon\Mail\Client\Service\DefaultMessageServiceFacade
-         */
-        require_once 'Conjoon/Mail/Client/Service/DefaultMessageServiceFacade.php';
-
-        $serviceFacade = new \Conjoon\Mail\Client\Service\DefaultMessageServiceFacade(
-            $server, $mailAccountRepository, $mailFolderRepository
-        );
-
-        $result = $serviceFacade->getMessage(
-            $uId, $path, $appUser
-        );
+        $result = $this->getMessageHelper($uId, $path);
 
         if ($result->isSuccess()) {
             $d = $result->getData();
@@ -1170,14 +1041,13 @@ class Groupware_EmailEditController extends Zend_Controller_Action {
         }
 
         if ($globalName == "") {
-            require_once 'Conjoon/Error.php';
-            $folderMappingError = new Conjoon_Error();
-            $folderMappingError = $folderMappingError->getDto();
-            $folderMappingError->title   = 'Missing folder mapping';
-            $folderMappingError->message = 'The message cannot be moved into the outbox folder, since no valid outbox folder was found. Did you configure the folder mappings of the account?';
-            $folderMappingError->level = Conjoon_Error::LEVEL_ERROR;
 
-            $this->view->error   = $folderMappingError;
+            $this->view->error = $this->getErrorDto(
+                'Missing folder mapping',
+                'The message cannot be moved into the outbox folder, since no valid outbox folder was found. Did you configure the folder mappings of the account?',
+                Conjoon_Error::LEVEL_ERROR
+            );
+
             $this->view->success = false;
             $this->view->item    = null;
 

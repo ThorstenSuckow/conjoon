@@ -14,15 +14,17 @@
  */
 
 /**
- * Zend_Controller_Action
+ * @see \Conjoon\Vendor\Zend\Controller\Action\MailModule\MessageController
  */
-require_once 'Zend/Controller/Action.php';
+require_once 'Conjoon/Vendor/Zend/Controller/Action/MailModule/MessageController.php';
+
 
 /**
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class Groupware_EmailItemController extends Zend_Controller_Action {
+class Groupware_EmailItemController extends
+    \Conjoon\Vendor\Zend\Controller\Action\MailModule\MessageController {
 
     const CONTEXT_JSON = 'json';
 
@@ -306,12 +308,11 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
         $this->view->error      = null;
 
         if (count($errorMessages) > 0) {
-            $error = new Conjoon_Error();
-            $error = $error->getDto();
-            $error->title = 'Error while fetching email(s)';
-            $error->message = implode("\n", $errorMessages);
-            $error->level = Conjoon_Error::LEVEL_ERROR;
-            $this->view->error = $error;
+            $this->view->error = $this->getErrorDto(
+                'Error while fetching email(s)',
+                implode("\n", $errorMessages),
+                Conjoon_Error::LEVEL_ERROR
+            );
         }
 
 
@@ -650,71 +651,12 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
             );
         }
 
-        /**
-         * @see Zend_Registry
-         */
-        require_once 'Zend/Registry.php';
-
-        /**
-         *@see Conjoon_Keys
-         */
-        require_once 'Conjoon/Keys.php';
-
-        $auth = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
-
-        /**
-         * @see Conjoon_User_AppUser
-         */
-        require_once 'Conjoon/User/AppUser.php';
-
-        $appUser = new \Conjoon\User\AppUser($auth->getIdentity());
-
-
-        $entityManager = Zend_Registry::get(Conjoon_Keys::DOCTRINE_ENTITY_MANAGER);
-
-        $mailFolderRepository =
-            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
-        $mailAccountRepository =
-            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMailAccountEntity');
-        $mesageFlagRepository =
-            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMessageFlagEntity');
-        $messageRepository =
-            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMessageEntity');
-        $attachmentRepository =
-            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultAttachmentEntity');
-
-        $protocolAdaptee = new \Conjoon\Mail\Server\Protocol\DefaultProtocolAdaptee(
-            $mailFolderRepository, $mesageFlagRepository, $mailAccountRepository,
-            $messageRepository, $attachmentRepository
-        );
-
-        /**
-         * @see \Conjoon\Mail\Server\Protocol\DefaultProtocol
-         */
-        $protocol = new \Conjoon\Mail\Server\Protocol\DefaultProtocol($protocolAdaptee);
-
-        /**
-         * @see \Conjoon\Mail\Server\DefaultServer
-         */
-        require_once 'Conjoon/Mail/Server/DefaultServer.php';
-
-        $server = new \Conjoon\Mail\Server\DefaultServer($protocol);
-
-
-        /**
-         * @see \Conjoon\Mail\Client\Service\DefaultMessageServiceFacade
-         */
-        require_once 'Conjoon/Mail/Client/Service/DefaultMessageServiceFacade.php';
-
-        $serviceFacade = new \Conjoon\Mail\Client\Service\DefaultMessageServiceFacade(
-            $server, $mailAccountRepository, $mailFolderRepository
-        );
-
+        $serviceFacade = $this->getMessageServiceFacadeHelper();
 
         $result =  $serviceFacade->setFlagsForMessagesInFolder(
             $this->_request->getParam('json'),
             $this->_request->getParam('path'),
-            $appUser
+            $this->getCurrentAppUser()
         );
 
         $this->view->success = $result->isSuccess();
@@ -749,135 +691,11 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
         $path = $this->_request->getParam('path');
         $allowExternals = $this->_request->getParam('allowExternals', null);
 
-        return $this->getMessageHelper($id, $path, $allowExternals);
-    }
-
-    /**
-     * Helper function for fetching a single email message from a remote
-     * server.
-     *
-     * @param string $id The id of the message
-     * @param string $path The json encoded path where the message can be found
-     * @param mixed $allowExternals whether external resources are allowed. If this is
-     * set to NULL, the registry settings of the current user will be given precedence
-     *
-     */
-    protected function getMessageHelper($id, $path, $allowExternals = null)
-    {
-        /**
-         * @see Zend_Registry
-         */
-        require_once 'Zend/Registry.php';
-
-        /**
-         *@see Conjoon_Keys
-         */
-        require_once 'Conjoon/Keys.php';
-
-        $auth = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
-
-        /**
-         * @see Conjoon_User_AppUser
-         */
-        require_once 'Conjoon/User/AppUser.php';
-
-        $appUser = new \Conjoon\User\AppUser($auth->getIdentity());
-
-        $entityManager = Zend_Registry::get(Conjoon_Keys::DOCTRINE_ENTITY_MANAGER);
-
-        $mailAccountRepository =
-            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMailAccountEntity');
-        $mailFolderRepository =
-            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
-        $messageFlagRepository =
-            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMessageFlagEntity');
-        $localMessageRepository =
-            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMessageEntity');
-        $attachmentRepository =
-            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultAttachmentEntity');
-
-        $protocolAdaptee = new \Conjoon\Mail\Server\Protocol\DefaultProtocolAdaptee(
-            $mailFolderRepository, $messageFlagRepository, $mailAccountRepository,
-            $localMessageRepository, $attachmentRepository
-        );
-
-        /**
-         * @see \Conjoon\Mail\Server\Protocol\DefaultProtocol
-         */
-        $protocol = new \Conjoon\Mail\Server\Protocol\DefaultProtocol($protocolAdaptee);
-
-        /**
-         * @see \Conjoon\Mail\Server\DefaultServer
-         */
-        require_once 'Conjoon/Mail/Server/DefaultServer.php';
-
-        $server = new \Conjoon\Mail\Server\DefaultServer($protocol);
-
-        /**
-         * @see Conjoon_Modules_Default_Registry_Facade
-         */
-        require_once 'Conjoon/Modules/Default/Registry/Facade.php';
-
-        $registry = Conjoon_Modules_Default_Registry_Facade::getInstance();
-
-        $userId = $appUser->getId();
-
-        $readingKey = '/client/conjoon/modules/mail/options/reading/';
-
-        $preferredFormat = $registry->getValueForKeyAndUserId($readingKey . 'preferred_format', $userId);
-        $allowExternals = $allowExternals === null
-                          ? $registry->getValueForKeyAndUserId($readingKey . 'allow_externals', $userId)
-                          : $allowExternals;
-
-        /**
-         * @see \Conjoon\Mail\Client\Message\Strategy\DefaultPlainReadableStrategy
-         */
-        require_once 'Conjoon/Mail/Client/Message/Strategy/DefaultPlainReadableStrategy.php';
-
-        $plainReadableStrategy = new \Conjoon\Mail\Client\Message\Strategy\DefaultPlainReadableStrategy();
-
-        $readableStrategy = null;
-
-        $htmlPurifier = $this->getHtmlPurifierHelper($allowExternals);
-
-
-        if ($preferredFormat == 'html') {
-            /**
-             * @see \Conjoon\Mail\Client\Message\Strategy\DefaultHtmlReadableStrategy
-             */
-            require_once 'Conjoon/Mail/Client/Message/Strategy/DefaultHtmlReadableStrategy.php';
-
-            /**
-             * @see \Conjoon\Text\Parser\Html\ExternalResourcesParser
-             */
-            require_once 'Conjoon/Text/Parser/Html/ExternalResourcesParser.php';
-
-            $readableStrategy = new \Conjoon\Mail\Client\Message\Strategy\DefaultHtmlReadableStrategy(
-                $htmlPurifier,
-                $plainReadableStrategy,
-                new \Conjoon\Text\Parser\Html\ExternalResourcesParser()
-            );
-
-        } else {
-            $readableStrategy = $plainReadableStrategy;
-        }
-
-        /**
-         * @see \Conjoon\Mail\Client\Service\DefaultMessageServiceFacade
-         */
-        require_once 'Conjoon/Mail/Client/Service/DefaultMessageServiceFacade.php';
-
-        $serviceFacade = new \Conjoon\Mail\Client\Service\DefaultMessageServiceFacade(
-            $server, $mailAccountRepository, $mailFolderRepository
-        );
-
-        $result = $serviceFacade->getMessage(
-            $id, $path, $appUser, $readableStrategy
-        );
+        $result = $this->getMessageHelper($id, $path, $allowExternals);
 
         $this->view->success = $result->isSuccess();
-        $this->view->data    = $result->getData();
-        $this->view->error   = null;
+        $this->view->data = $result->getData();
+        $this->view->error = null;
     }
 
 
@@ -1037,99 +855,6 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
 
 
         return true;
-    }
-
-    /**
-     * Helper function for setting up and returning a HtmlPurifier instance
-     * for sanitizing html mail bodies.
-     *
-     * @param boolean $allowExternals whether external resources should be
-     * allowed or not
-     *
-     * @return \HtmlPurifier
-     */
-    public function getHtmlPurifierHelper($allowExternals) {
-
-        /**
-         * @see \Conjoon\Util\Environment
-         */
-        require_once 'Conjoon/Net/Environment.php';
-
-        $cnEnvironment = new \Conjoon\Net\Environment();
-
-        $htmlPurifierConfig = $this->getBaseHtmlPurifierConfig();
-
-        $config = $this->getApplicationConfiguration();
-
-        /**
-         * @see \Conjoon\Vendor\HtmlPurifier\UriFilter\ResourceNotAvailableUriFilter
-         */
-        require_once 'Conjoon/Vendor/HtmlPurifier/UriFilter/ResourceNotAvailableUriFilter.php';
-
-        $htmlPurifierConfig->set('HTML.Trusted', false);
-        $htmlPurifierConfig->set('CSS.AllowTricky', false);
-        $htmlPurifierConfig->set('CSS.AllowImportant', false);
-        $htmlPurifierConfig->set('CSS.Trusted', false);
-        $htmlPurifierConfig->set('URI.DisableExternalResources', !$allowExternals);
-
-        $uri = $htmlPurifierConfig->getDefinition('URI');
-
-        $cnUri = $cnEnvironment->getCurrentUriBase();
-        $cnUri = $cnUri->setPath(
-            rtrim($config->environment->base_url, '/') .
-            '/' .
-            '/default/index/resource.not.available'
-        );
-
-        $uri->addFilter(
-            new \Conjoon\Vendor\HtmlPurifier\UriFilter\ResourceNotAvailableUriFilter($cnUri),
-            $htmlPurifierConfig
-        );
-
-        return new \HTMLPurifier($htmlPurifierConfig);
-
-    }
-
-    /**
-     * Returns basic htmlpurifier configuration.
-     *
-     * @return \HTMLPurifier_Config
-     */
-    protected function getBaseHtmlPurifierConfig() {
-
-        $config = $this->getApplicationConfiguration();
-
-        $htmlPurifierConfig = \HTMLPurifier_Config::createDefault();
-        if (!$config->application->htmlpurifier->use_cache ||
-            !$config->application->htmlpurifier->cache_dir) {
-            $htmlPurifierConfig->set('Cache.DefinitionImpl', null);
-        } else {
-            $htmlPurifierConfig->set(
-                'Cache.SerializerPath',
-                $config->application->htmlpurifier->cache_dir
-            );
-        }
-
-        return $htmlPurifierConfig;
-    }
-
-    /**
-     * Returns the application configuration
-     *
-     * @return \stdClass
-     */
-    protected function getApplicationConfiguration() {
-        /**
-         * @see Zend_Registry
-         */
-        require_once 'Zend/Registry.php';
-
-        /**
-         * @see Conjoon_Keys
-         */
-        require_once 'Conjoon/Keys.php';
-
-        return \Zend_Registry::get(\Conjoon_Keys::REGISTRY_CONFIG_OBJECT);
     }
 
 
