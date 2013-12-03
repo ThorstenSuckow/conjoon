@@ -294,20 +294,9 @@ class Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade {
             }
 
             // possible attachment?
-            $bodystructure =& $messageStruct[$i]['bodystructure'];
-            for ($u = 0, $lenu = count($bodystructure); $u < $lenu; $u++) {
-                if (isset($bodystructure[$u][5])
-                    && strtolower($bodystructure[$u][5]) == 'base64'
-                    && isset($bodystructure[$u][8])
-                    && is_array($bodystructure[$u][8])
-                    && isset($bodystructure[$u][8][0])
-                    && strtolower($bodystructure[$u][8][0]) == 'attachment') {
-                    $header['isAttachment'] = true;
-
-                    break;
-                }
-
-            }
+            $header['isAttachment'] = $this->lookUpImapAttachmentInBodyStructure(
+                $messageStruct[$i]['bodystructure']
+            );
 
             $parsedHeaders[] = $header;
         }
@@ -415,6 +404,41 @@ class Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade {
 
         return $responseItems;
 
+    }
+
+    /**
+     * Helper function to try to determine whether the passed argument
+     * contains hints to an attachment.
+     *
+     * @param array $bodystructure
+     *
+     * @return boolean true if the bodystructure possibly hints to an attachment,
+     * otherwise false
+     */
+    protected function lookUpImapAttachmentInBodyStructure(array $bodystructure) {
+
+        $lookUpInd = array(8, 9);
+
+        for ($u = 0, $lenu = count($bodystructure); $u < $lenu; $u++) {
+            if (isset($bodystructure[$u][5])
+                && strtolower($bodystructure[$u][5]) == 'base64') {
+
+                $bodystructurePart = &$bodystructure[$u];
+
+                foreach ($lookUpInd as $ind) {
+
+                    if (isset($bodystructurePart[$ind]) &&
+                        is_array($bodystructurePart[$ind]) &&
+                        isset($bodystructurePart[$ind][0]) &&
+                        strtolower($bodystructurePart[$ind][0]) == 'attachment') {
+                        return true;
+                    }
+                }
+            }
+
+        }
+
+        return false;
     }
 
     /**
