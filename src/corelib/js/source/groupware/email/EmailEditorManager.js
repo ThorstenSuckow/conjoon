@@ -141,6 +141,13 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
                     com.conjoon.groupware.email.EmailEditorManager, {stopEvent:true});
             }, htmlEditor, {single : true});
 
+            form.mon(
+                form.fileGridPanel,
+                'downloadrequest',
+                onFilePanelDownloadRequest,
+                com.conjoon.groupware.email.EmailEditorManager
+            );
+
             recipientStore = form.gridStore;
 
             contentPanel.add(masterPanel);
@@ -1184,6 +1191,29 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
     {
         formValues[activePanel.id].dirty = true;
         _attachSignature(activePanel.id, record.id, true);
+
+    };
+
+    /**
+     * Listener for a download request from the email editors attachment panel.
+     * 
+     * @param filePanel
+     * @param record
+     */
+    var onFilePanelDownloadRequest = function(filePanel, record) {
+
+        if (record.get('metaType') ==
+            com.conjoon.cudgets.data.FileRecord.META_TYPE_FILE) {
+            com.conjoon.groupware.DownloadManager.downloadFile(
+                record.get('orgId'), record.get('key'), record.get('name')
+            );
+        } else {
+
+            com.conjoon.groupware.DownloadManager.downloadEmailAttachment(
+                record.get('orgId'), record.get('key'), record.get('name'),
+                formValues[activePanel.id].id, formValues[activePanel.id].path
+            );
+        }
 
     };
 

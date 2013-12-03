@@ -238,11 +238,6 @@ com.conjoon.groupware.email.form.EmailForm = Ext.extend(Ext.Panel, {
             this.onFilePanelDownloadCancel,  this
         );
 
-        this.mon(
-            this.fileGridPanel, 'downloadrequest',
-            this.onFilePanelDownloadRequest,  this
-        );
-
         var DownloadManager = com.conjoon.groupware.DownloadManager;
 
         DownloadManager.on('request', this.onDownloadStart, this);
@@ -255,7 +250,7 @@ com.conjoon.groupware.email.form.EmailForm = Ext.extend(Ext.Panel, {
     },
 
     /**
-     * Listener for the attached filePanel's "downloadcancel" event.
+        * Listener for the attached filePanel's "downloadcancel" event.
      *
      * @param {com.conjoon.cudgets.grid.FilePanel} filePanel
      * @param {Array} records
@@ -280,25 +275,6 @@ com.conjoon.groupware.email.form.EmailForm = Ext.extend(Ext.Panel, {
             }
             DownloadManager.cancelDownloadForIdAndKey(
                 records[i].get('orgId'), records[i].get('key'), type
-            );
-        }
-    },
-
-   /**
-    * Listener for the file panel's download request event.
-    *
-    * @param {com.conjoon.cudgets.grid.FilePanel} filePanel
-    * @param {com.conjoon.cudgets.data.FielRecord} record
-    */
-    onFilePanelDownloadRequest : function(filePanel, record) {
-        if (record.get('metaType') ==
-            com.conjoon.cudgets.data.FileRecord.META_TYPE_FILE) {
-            com.conjoon.groupware.DownloadManager.downloadFile(
-                record.get('orgId'), record.get('key'), record.get('name')
-            );
-        } else {
-            com.conjoon.groupware.DownloadManager.downloadEmailAttachment(
-                record.get('orgId'), record.get('key'), record.get('name')
             );
         }
     },

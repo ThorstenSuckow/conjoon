@@ -97,8 +97,7 @@ class EditMessagePatron
 
             $usedAccount = $this->guessAccountUsed( $d['from']);
 
-            $d['attachments'] = array();
-
+            $d['attachments'] = $this->createAttachments($this->v('attachments', $d));
 
             $d['groupwareEmailAccountsId'] = null;
 
@@ -138,6 +137,16 @@ class EditMessagePatron
     protected function createAttachments(array $attachments)
     {
         $data = array();
+
+        for ($i = 0, $len = count($attachments); $i < $len; $i++) {
+            $att =& $attachments[$i];
+
+            $data[] = array(
+                'fileName' => $att['fileName'],
+                'mimeType' => $att['mimeType'],
+                'key'      => $att['key']
+            );
+        }
 
         return $data;
     }
