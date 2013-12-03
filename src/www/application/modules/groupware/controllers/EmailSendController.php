@@ -165,13 +165,13 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
 
         // no account found?
         if (!$account) {
-            require_once 'Conjoon/Error.php';
-            $error = new Conjoon_Error();
-            $error = $error->getDto();;
-            $error->title = 'Error while sending email';
-            $error->message = 'Could not find specified account.';
-            $error->level = Conjoon_Error::LEVEL_ERROR;
-            $this->view->error   = $error;
+
+            $this->view->error = $this->getErrorDto(
+                'Error while sending email',
+                'Could not find specified account.',
+                Conjoon_Error::LEVEL_ERROR
+            );
+
             $this->view->success = false;
             $this->view->item    = null;
             return;
@@ -218,23 +218,24 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
                 $message, $account, $postedAttachments, $removeAttachmentIds
             );
         } catch (Exception $e) {
-            require_once 'Conjoon/Error.php';
-            $error = new Conjoon_Error();
-            $error = $error->getDto();;
-            $error->title = 'Error while sending email';
-            $error->message = $e->getMessage();
+
+            $errorMessage = $e->getMessage();
+
             // check here if a message is set. We rely heavily on stream_socket_client
             // in Zend_Mail_Protocol_Abstract which may not set the error message all
             // the time. If no internet conn is available, the message will be missing
             // on windows systems, for example
-            if ($error->message == "") {
-                $error->message = "The message with the subject \""
-                                  . $message->getSubject()."\" could not be sent. "
-                                  . "Please check the internet connection of "
-                                  . "the server this software runs on.";
+            if ($errorMessage == "") {
+                $errorMessage = "The message with the subject \""
+                    . $message->getSubject()."\" could not be sent. "
+                    . "Please check the internet connection of "
+                    . "the server this software runs on.";
             }
-            $error->level = Conjoon_Error::LEVEL_ERROR;
-            $this->view->error   = $error;
+
+            $this->view->error = $this->getErrorDto(
+                'Error while sending email', $errorMessage, Conjoon_Error::LEVEL_ERROR
+            );
+
             $this->view->success = false;
             $this->view->item    = null;
             return;
@@ -432,9 +433,9 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
 
                     $storage->selectFolder($globalName);
                     $response = $storage->appendMessage(
-                        $mail->getHeader()
-                        . "\n\n"
-                        . $message->getContentTextPlain(),
+                        $mail->getSentHeaderText() .
+                        "\n\n" .
+                        $mail->getSentBodyText(),
                         $globalName
                     );
 
@@ -467,12 +468,13 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
             }
 
             if ($folderMappingError) {
-                require_once 'Conjoon/Error.php';
-                $folderMappingError = new Conjoon_Error();
-                $folderMappingError = $folderMappingError->getDto();;
-                $folderMappingError->title   = 'Missing folder mapping';
-                $folderMappingError->message = 'The email was sent, but a "sent" version could not be stored to the configured IMAP account. Make sure you have configured the folder mappings for this account properly.';
-                $folderMappingError->level = Conjoon_Error::LEVEL_ERROR;
+
+                $folderMappingError = $this->getErrorDto(
+                    'Missing folder mapping',
+                    'The email was sent, but a "sent" version could not be stored to the configured IMAP account. Make sure you have configured the folder mappings for this account properly.',
+                    Conjoon_Error::LEVEL_ERROR
+                );
+
             } else {
 
                 $item = $this->getSingleImapListItem(
@@ -563,13 +565,13 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
         );
 
         if (!$item) {
-            require_once 'Conjoon/Error.php';
-            $error = new Conjoon_Error();
-            $error = $error->getDto();;
-            $error->title = 'Error while saving email';
-            $error->message = 'The email was sent, but it could not be stored into the database.';
-            $error->level = Conjoon_Error::LEVEL_ERROR;
-            $this->view->error   = $error;
+
+            $this->view->error = $this->getErrorDto(
+                'Error while saving email',
+                'The email was sent, but it could not be stored into the database.',
+                Conjoon_Error::LEVEL_ERROR
+            );
+
             $this->view->success = false;
             $this->view->item    = null;
             return;

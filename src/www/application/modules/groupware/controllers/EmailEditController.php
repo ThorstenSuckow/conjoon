@@ -910,9 +910,9 @@ class Groupware_EmailEditController extends
         }
 
         $response = $storage->appendMessage(
-            $mail->getHeader()
+            $mail->getExpectedHeaderText()
                 . "\n\n"
-                . $draft->getContentTextPlain(),
+                . $mail->getExpectedBodyText(),
             $globalName
         );
 
@@ -1143,9 +1143,9 @@ class Groupware_EmailEditController extends
         $storage->selectFolder($globalName);
 
         $response = $storage->appendMessage(
-            $mail->getHeader()
+            $mail->getExpectedHeaderText()
                 . "\n\n"
-                . $draft->getContentTextPlain(),
+                . $mail->getExpectedBodyText(),
             $globalName
         );
 

@@ -25,55 +25,122 @@ require_once 'Conjoon/Mail.php';
  */
 class Conjoon_Mail_Sent{
 
-    private $_mailObject;
-    private $_header;
-    private $_body;
+    /**
+     * @type Conjoon_Mail
+     */
+    private $mailObject;
 
+    /**
+     * @type boolean
+     */
+    protected $isPrepared;
+
+    /**
+     * @type string
+     */
+    protected $expectedBodyText;
+
+    /**
+     * @type string
+     */
+    protected $expectedHeaderText;
+
+    /**
+     * @type \Conjoon\Mail\Transport\Smtp
+     */
     private $transport;
 
-    public function __construct(Conjoon_Mail $mailObject, $header, $body = null)
+    public function __construct(Conjoon_Mail $mailObject, \Conjoon\Mail\Transport\Smtp $transport)
     {
-        $this->_mailObject = $mailObject;
+        $this->mailObject = $mailObject;
 
-        if ($body === null && ($header instanceof \Conjoon\Mail\Transport\Smtp)) {
-
-            $this->transport = $header;
-            $this->_header   = $header->header
-                               ? $header->header
-                               : $header->getPreparedHeader(
-                                      $mailObject->getHeaders()
-                               );
-
-            $this->_body = $header->body
-                           ? $header->body
-                           : $mailObject->getBodyText(true);
-
-            return;
-        }
-
-        $this->_header     = $header;
-        $this->_body       = $body;
-
+        $this->transport = $transport;
     }
 
-    public function getTransport()
-    {
+    /**
+     * @return Conjoon\Mail\Transport\Smtp
+     */
+    public function getTransport() {
         return $this->transport;
     }
 
-    public function getMailObject()
-    {
-        return $this->_mailObject;
+    /**
+     * @return Conjoon_Mail
+     */
+    public function getMailObject() {
+        return $this->mailObject;
     }
 
-    public function getHeader()
-    {
-        return $this->_header;
+    /**
+     * @return string
+     */
+    public function getExpectedHeaderText() {
+
+        $this->prepareMail();
+
+        return $this->expectedHeaderText;
     }
 
-    public function getBody()
-    {
-        return $this->_body;
+    /**
+     * @return string
+     */
+    public function getExpectedBodyText() {
+        $this->prepareMail();
+
+        return $this->expectedBodyText;
+    }
+
+    /**
+     * @return void
+     */
+    protected function prepareMail() {
+
+        if ($this->isPrepared) {
+            return;
+        }
+
+        $this->expectedHeaderText = $this->transport->getPreparedHeader(
+            $this->mailObject
+        );
+        $this->expectedBodyText = $this->transport->body;
+
+        $this->isPrepared = true;
+
+    }
+
+    /**
+     * @return string
+     * @throws Conjoon_Mail_Exception
+     */
+    public function getSentHeaderText() {
+        if (!$this->transport->wasSent()) {
+            /**
+             * @see Conjoon_Mail_Exception
+             */
+            require_once 'Conjoon/Mail/Exception.php';
+            throw new Conjoon_Mail_Exception(
+                "Cannot retrieve sent header text from unsent mail message"
+            );
+        }
+        return $this->transport->header;
+    }
+
+    /**
+     * @return string
+     * @throws Conjoon_Mail_Exception
+     */
+    public function getSentBodyText() {
+        if (!$this->transport->wasSent()) {
+            /**
+             * @see Conjoon_Mail_Exception
+             */
+            require_once 'Conjoon/Mail/Exception.php';
+            throw new Conjoon_Mail_Exception(
+                "Cannot retrieve sent body text from unsent mail message"
+            );
+        }
+
+        return $this->transport->body;
     }
 
 

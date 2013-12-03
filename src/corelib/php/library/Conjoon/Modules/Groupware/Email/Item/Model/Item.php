@@ -1198,8 +1198,8 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
 
         $outboxUpdate = array(
             'sent_timestamp'              => time(),
-            'raw_header'                  => $mailSent->getHeader(),
-            'raw_body'                    => $mailSent->getBody(),
+            'raw_header'                  => $mailSent->getSentHeaderText(),
+            'raw_body'                    => $mailSent->getSentBodyText(),
             'groupware_email_accounts_id' => $message->getGroupwareEmailAccountsId()
         );
 

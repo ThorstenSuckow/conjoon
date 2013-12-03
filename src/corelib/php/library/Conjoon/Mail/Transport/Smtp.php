@@ -12,39 +12,79 @@ require_once 'Zend/Mail/Transport/Smtp.php';
 
 class Smtp extends \Zend_Mail_Transport_Smtp {
 
+    /**
+     * @type boolean
+     */
+    protected $isUsed = false;
 
-    public function getPreparedHeader($headers)
-    {
-        $myHeader = '';
+    /**
+     * While set to true, this transport won't send anything.
+     * @type boolean
+     */
+    protected $isMailTextAssemble = false;
 
-        foreach ($headers as $header => $content) {
-            if (isset($content['append'])) {
-                unset($content['append']);
-                $value = implode(',' . $this->EOL . ' ', $content);
-                $myHeader .= $header . ': ' . $value . $this->EOL;
-            } else {
-                array_walk($content, array(get_class($this), '_formatHeader'), $header);
-                $myHeader .= implode($this->EOL, $content) . $this->EOL;
-            }
-        }
+    /**
+     * Returns true if a call to send() was made, i.e. the transport tried
+     * to send this message.
+     *
+     * @return boolean
+     */
+    public function wasSent() {
 
-        // Sanity check on headers -- should not be > 998 characters
-        $sane = true;
-        foreach (explode($this->EOL, $myHeader) as $line) {
-            if (strlen(trim($line)) > 998) {
-                $sane = false;
-                break;
-            }
-        }
-        if (!$sane) {
+        return $this->isUsed;
+
+    }
+
+    /**
+     * @inheritdoc
+     *
+     * @throws \Conjoon_Mail_Exception if this transport was already used
+     */
+    public function send(\Zend_Mail $mail) {
+
+        if ($this->isUsed) {
             /**
-             * @see Zend_Mail_Transport_Exception
+             * @see \Conjoon_Mail_Exception
              */
-            require_once 'Zend/Mail/Transport/Exception.php';
-            throw new Zend_Mail_Exception('At least one mail header line is too long');
+            require_once 'Conjoon/Mail/Exception.php';
+
+            throw new \Conjoon_Mail_Exception(
+                "Transport was already used"
+            );
         }
 
-        return $myHeader;
+        $this->isUsed = true;
+
+        return parent::send($mail);
+    }
+
+
+    /**
+     * It is not guaranteed that the prepared header is identical to the header
+     * which gets send later on.
+     *
+     * @param \Conjoon_Mail $mail
+     * @return string
+     *
+     * @throws Zend_Mail_Exception
+     */
+    public function getPreparedHeader(\Conjoon_Mail $mail)
+    {
+        $this->isMailTextAssemble = true;
+        $this->send($mail);
+        $this->isMailTextAssemble = false;
+        return $this->header;
+    }
+
+    /**
+     * Willonly issue sending the mail if #$isMailTextAssemble is set to false
+     *
+     * @inheritdoc
+     */
+    public function _sendMail() {
+        if (!$this->isMailTextAssemble) {
+            parent::_sendMail();
+        }
     }
 
 
