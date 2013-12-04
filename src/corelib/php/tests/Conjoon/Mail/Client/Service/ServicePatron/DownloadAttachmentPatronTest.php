@@ -49,7 +49,6 @@ class DownloadAttachmentPatronTest extends \PHPUnit_Framework_TestCase {
                     'mimeType' => ''
                 ),
                 'output' => array(
-                    'encoding' => 'sssfasaf',
                     'resource' => 'sfasaf',
                     'contentId' => 'asf',
                     'key' => 'asf',
@@ -81,6 +80,16 @@ class DownloadAttachmentPatronTest extends \PHPUnit_Framework_TestCase {
             $this->input[0]['output'],
             $this->patron->applyForData($this->input[0]['input'])
         );
+    }
+
+    /**
+     * @ticket CN-804
+     */
+    public function test_CN_804()
+    {
+        $res = $this->patron->applyForData($this->input[0]['input']);
+
+        $this->assertFalse(array_key_exists('encoding', $res));
     }
 
 }

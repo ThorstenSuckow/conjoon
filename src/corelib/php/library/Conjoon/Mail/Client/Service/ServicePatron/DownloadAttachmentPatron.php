@@ -69,6 +69,7 @@ class DownloadAttachmentPatron
 
             unset($d['fileName']);
             unset($d['content']);
+            unset($d['encoding']);
 
         } catch (\Exception $e) {
             throw new ServicePatronException(
