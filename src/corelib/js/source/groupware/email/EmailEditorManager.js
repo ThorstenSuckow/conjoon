@@ -1196,7 +1196,7 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
 
     /**
      * Listener for a download request from the email editors attachment panel.
-     * 
+     *
      * @param filePanel
      * @param record
      */
