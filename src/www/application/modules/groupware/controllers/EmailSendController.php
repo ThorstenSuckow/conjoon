@@ -14,15 +14,16 @@
  */
 
 /**
- * Zend_Controller_Action
+ * @see \Conjoon\Vendor\Zend\Controller\Action\BaseController
  */
-require_once 'Zend/Controller/Action.php';
+require_once 'Conjoon/Vendor/Zend/Controller/Action/BaseController.php';
 
 /**
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class Groupware_EmailSendController extends Zend_Controller_Action {
+class Groupware_EmailSendController extends
+    \Conjoon\Vendor\Zend\Controller\Action\BaseController {
 
     const CONTEXT_JSON = 'json';
 
@@ -214,9 +215,13 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
 
 
         try {
-            $mail = Conjoon_Modules_Groupware_Email_Sender::send(
-                $message, $account, $postedAttachments, $removeAttachmentIds
+
+            $assembledMail = Conjoon_Modules_Groupware_Email_Sender::getAssembledMail(
+                $message, $account, $postedAttachments, $removeAttachmentIds,
+                $this->getCurrentAppUser()->getId()
             );
+
+            $mail = Conjoon_Modules_Groupware_Email_Sender::send($assembledMail);
         } catch (Exception $e) {
 
             $errorMessage = $e->getMessage();
@@ -744,13 +749,28 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
 
             $account = null;
 
+            $remoteAttachments = array();
+
             // check if path is remote!
             $isRemote = $this->isRemotePath($path, $userId);
             if ($isRemote) {
                 $rawDraft = $this->getRawImapMessage($id, $path);
+
                 if (empty($rawDraft)) {
                     continue;
                 }
+
+                //we have to post the existing attachments of the remote draft
+                // again when assembling the message to send.
+                // Otherwise the sender would not know which attachments should get send
+                // along with the message
+                $remoteAttachments = $rawDraft['attachments'];
+
+                foreach ($remoteAttachments as &$remoteAttachment) {
+                    $remoteAttachment['metaType'] = 'emailAttachment';
+                    $remoteAttachment['name'] = $remoteAttachment['fileName'];
+                }
+
                 $remoteInfo = array(
                     'uid'     => $id,
                     'account' => $isRemote,
@@ -833,7 +853,13 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
             }
 
             try {
-                $mail = Conjoon_Modules_Groupware_Email_Sender::send($message, $account);
+
+                $assembledMail = Conjoon_Modules_Groupware_Email_Sender::getAssembledMail(
+                    $message, $account, $remoteAttachments, array(),
+                    $this->getCurrentAppUser()->getId(), true
+                );
+
+                $mail = Conjoon_Modules_Groupware_Email_Sender::send($assembledMail);
             } catch (Exception $e) {
                 $errors[] = array(
                     'subject'     => $message->getSubject(),

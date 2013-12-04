@@ -62,25 +62,17 @@ class Conjoon_Modules_Groupware_Email_Sender {
     /**
      * Sends the draft for the specified account
      *
-     * @param Conjoon_Modules_Groupware_Email_Draft $draft The draft to send
-     * @param Conjoon_Modules_Groupware_Email_Account $account The account to
-     * use to send this email with
-     * @param array $postedAttachments an array with additional posted attachments
-     * or attachments that need to get renamed
-     * @param array $removeAttachmentIds An array with attachment ids that need
-     * to be removed from the list of existing attachments
+     * @param Conjoon_Mail_Sent $mail The assembled mail that should be send. #getAssembledMail()
+     *                           can be used to assemble a mail message based upon the specified
+     *                           information
      *
      * @return Conjoon_Mail_Sent
      *
+     *
      * @throws Zend_Mail_Exception
      */
-    public static function send(
-        Conjoon_Modules_Groupware_Email_Draft $draft, Conjoon_Modules_Groupware_Email_Account $account,
-        $postedAttachments = array(), $removeAttachmentIds = array()
-     )
+    public static function send(Conjoon_Mail_Sent $mail)
     {
-        $mail = self::getAssembledMail($draft, $account, $postedAttachments, $removeAttachmentIds);
-
         $mailObject = $mail->getMailObject();
 
         $transport = $mail->getTransport();
@@ -98,6 +90,15 @@ class Conjoon_Modules_Groupware_Email_Sender {
     }
 
 
+    /**
+     * @static
+     * @param Conjoon_Modules_Groupware_Email_Draft $draft
+     * @param Conjoon_Modules_Groupware_Email_Account $account
+     * @param array $postedAttachments
+     * @param array $removeAttachmentIds
+     * @param $userId
+     * @return Conjoon_Mail_Sent
+     */
     public static function getAssembledMail(
         Conjoon_Modules_Groupware_Email_Draft $draft, Conjoon_Modules_Groupware_Email_Account $account,
         $postedAttachments = array(), $removeAttachmentIds = array(), $userId
@@ -204,6 +205,18 @@ class Conjoon_Modules_Groupware_Email_Sender {
     }
 
     /**
+     * Warning! Remote mail message attachments get treated differently than local messages.
+     * If an empty array of attachments is being submitted for a remote message,
+     * it is assumed that all existing attachments for this remote message should be removed,
+     * and no attachments should be used at all. In short: The supplied attachment list overrides
+     * the existing list of attachments for remote messages. Remote messages will ignore the
+     * removedAttachmentIds list.
+     * Local messages will check whether the posted attachments already exist in their list of
+     * attachments, and will either be added to the existing list of attachments, or, if the ids
+     * of the posted attachments are found in the list of existing attachments, these attachments
+     * will be updated with the posted names. Attachments which should be removed for local
+     * messages must be specified in $removeAttachmentIds
+     *
      * @static
      * @param Conjoon_Modules_Groupware_Email_Draft $draft
      * @param Conjoon_Mail $mail

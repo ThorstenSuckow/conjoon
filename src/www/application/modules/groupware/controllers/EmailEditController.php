@@ -528,7 +528,7 @@ class Groupware_EmailEditController extends
         // check whether we need to apply attachments for a previously saved
         // draft
         if ($draft->getId() > 0 && $account->getProtocol() != 'IMAP') {
-            
+
             /**
              * @see Conjoon_Modules_Groupware_Email_Attachment_Filter_AttachmentResponse
              */
@@ -738,7 +738,9 @@ class Groupware_EmailEditController extends
         );
 
         if ($account->getProtocol() == 'IMAP') {
-            return $this->moveImapToOutbox($account, $draft, $userId);
+            return $this->moveImapToOutbox(
+                $account, $draft, $userId, $postedAttachments, $removeAttachmentIds
+            );
         }
 
         $draft = Conjoon_BeanContext_Inspector::create(
@@ -1020,7 +1022,8 @@ class Groupware_EmailEditController extends
      *
      *
      */
-    protected function moveImapToOutbox($account, $draft, $userId)
+    protected function moveImapToOutbox(
+        $account, $draft, $userId, $postedAttachments, $removeAttachmentIds)
     {
         // check ifmapping is okay
         $accountId = $account->getId();
@@ -1063,7 +1066,7 @@ class Groupware_EmailEditController extends
         require_once 'Conjoon/Modules/Groupware/Email/Sender.php';
 
         $mail = Conjoon_Modules_Groupware_Email_Sender::getAssembledMail(
-            $draft, $account, array(), array()
+            $draft, $account, $postedAttachments, $removeAttachmentIds, $userId
         );
 
         /**
