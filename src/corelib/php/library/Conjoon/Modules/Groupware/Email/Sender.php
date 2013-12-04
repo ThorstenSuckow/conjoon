@@ -100,7 +100,7 @@ class Conjoon_Modules_Groupware_Email_Sender {
 
     public static function getAssembledMail(
         Conjoon_Modules_Groupware_Email_Draft $draft, Conjoon_Modules_Groupware_Email_Account $account,
-        $postedAttachments = array(), $removeAttachmentIds = array()
+        $postedAttachments = array(), $removeAttachmentIds = array(), $userId
     )
     {
         $mail = new Conjoon_Mail('UTF-8');
@@ -169,7 +169,7 @@ class Conjoon_Modules_Groupware_Email_Sender {
             $mail->setBodyHtml($html);
         }
 
-        self::_applyAttachments($draft, $mail, $postedAttachments, $removeAttachmentIds);
+        self::_applyAttachments($draft, $mail, $postedAttachments, $removeAttachmentIds, $userId);
 
         // send!
         $config = array();
@@ -203,9 +203,18 @@ class Conjoon_Modules_Groupware_Email_Sender {
         return new Conjoon_Mail_Sent($mail, $transport);
     }
 
+    /**
+     * @static
+     * @param Conjoon_Modules_Groupware_Email_Draft $draft
+     * @param Conjoon_Mail $mail
+     * @param array $postedAttachments
+     * @param array $removeAttachmentIds
+     * @param $userId
+     * @throws RuntimeException
+     */
     protected static function _applyAttachments(
         Conjoon_Modules_Groupware_Email_Draft $draft, Conjoon_Mail $mail,
-        $postedAttachments = array(), $removeAttachmentIds = array())
+        $postedAttachments = array(), $removeAttachmentIds = array(), $userId)
     {
 
         /**
@@ -226,6 +235,91 @@ class Conjoon_Modules_Groupware_Email_Sender {
         $fileModel       = new Conjoon_Modules_Groupware_Files_File_Model_File();
         $attachmentModel = new Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment();
 
+        $path = $draft->getPath();
+
+        if (!empty($path)) {
+
+            /**
+             * @see Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser
+             */
+            require_once 'Conjoon/Text/Parser/Mail/MailboxFolderPathJsonParser.php';
+
+            $parser = new Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser();
+
+            $pathInfo = $parser->parse(json_encode($path));
+
+            /**
+             * @see Conjoon_Modules_Groupware_Email_Folder_Facade
+             */
+            require_once 'Conjoon/Modules/Groupware/Email/Folder/Facade.php';
+
+            $facade = Conjoon_Modules_Groupware_Email_Folder_Facade::getInstance();
+
+            // get the account for the root folder first
+            $imapAccount =
+                $facade->getImapAccountForFolderIdAndUserId($pathInfo['rootId'],
+                    $userId);
+
+            if (!empty($pathInfo) && $facade->isRemoteFolder($pathInfo['rootId'])) {
+                if ($imapAccount && $facade->isRemoteFolder($pathInfo['rootId'])) {
+
+                    // remote!
+                    // we can ignore the removed attachments since a remote mail
+                    // message will get assembled from ground up
+
+                    foreach ($postedAttachments as $postedAttachment) {
+
+                        if ($postedAttachment['metaType'] == 'file') {
+
+                            $dbFile = $fileModel->getLobData(array(
+                                'key' => $postedAttachment['key'],
+                                'id' => $postedAttachment['orgId']
+                            ));
+
+                            if ($dbFile && !empty($dbFile)) {
+                                $mail->addAttachment(self::_createAttachment(array(
+                                    'encoding'  => null,
+                                    'mime_type' => $dbFile['mime_type'],
+                                    'key'       => $dbFile['key'],
+                                    'id'        => $dbFile['id']
+                                ), $postedAttachment['name'], $fileModel));
+
+                                $dbFile = null;
+                            }
+
+                        } else if ($postedAttachment['metaType'] == 'emailAttachment') {
+
+                            $attachment = self::getAttachmentFromServer(
+                                $postedAttachment['key'],
+                                $draft->getId(),
+                                json_encode($path),
+                                $userId
+                            );
+
+                            if ($attachment && $attachment->isSuccess() && $attachment->getData()) {
+
+                                $attachmentData = $attachment->getData();
+
+                                $mail->addAttachment(self::_createAttachment(array(
+                                    'encoding'  => null,
+                                    'mime_type' => $attachmentData['mimeType'],
+                                    'key'       => $attachmentData['key'],
+                                    'resource'  => $attachmentData['resource']
+                                ), $postedAttachment['name'], null));
+
+                            }
+                        }
+                    }
+
+                    // remote mails done! exit
+                    return;
+
+                } else {
+                    throw new RuntimeException("Cannot assemble attachments: No remote information found");
+                }
+            }
+        }
+
         // first off, get all the attachments from the draft
         $draftAttachments = $draft->getAttachments();
 
@@ -241,6 +335,7 @@ class Conjoon_Modules_Groupware_Email_Sender {
 
         //get ids for emailAttachments
         for ($i = 0, $len = count($postedAttachments); $i < $len; $i++) {
+
             if ($postedAttachments[$i]['metaType'] == 'emailAttachment') {
                 $postedEmailAttachmentIds[] = $postedAttachments[$i]['orgId'];
                 $finalPostedAttachments[$postedAttachments[$i]['orgId']] =
@@ -367,7 +462,7 @@ class Conjoon_Modules_Groupware_Email_Sender {
     }
 
 
-    protected static function _createAttachment(Array $att, $name, $model)
+    protected static function _createAttachment(Array $att, $name, $model = null)
     {
         /**
          * @see Conjoon_Mime_Part
@@ -378,19 +473,29 @@ class Conjoon_Modules_Groupware_Email_Sender {
                          || $att['encoding'] == 'base64');
 
 
-       if ($model instanceof
-            Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment) {
+        if ($model && ($model instanceof
+            Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment)) {
             $newAttachment = new Conjoon_Mime_Part(
                 $model->getAttachmentContentAsStreamForKeyAndId(
                     $att['key'], $att['id']
                 ), $validEncoding
             );
-        } else if ($model instanceof
-            Conjoon_Modules_Groupware_Files_File_Model_File) {
+        } else if ($model && ($model instanceof
+            Conjoon_Modules_Groupware_Files_File_Model_File)) {
             $newAttachment = new Conjoon_Mime_Part(
                 $model->getFileContentAsStreamForKeyAndId(
                     $att['key'], $att['id']
                 ), $validEncoding
+            );
+        } else {
+            if (!array_key_exists('resource', $att)) {
+               throw new RuntimeException(
+                   'Expected "resource" in argument, but was not available'
+               );
+            }
+
+            $newAttachment = new Conjoon_Mime_Part(
+                $att['resource'], $validEncoding
             );
         }
 
@@ -405,5 +510,90 @@ class Conjoon_Modules_Groupware_Email_Sender {
 
         return $newAttachment;
     }
+
+    /**
+     * Helper function for fetching a single attachment
+     *
+     * @param string $key The key of the attachment
+     * @param string $uId The message id of the message
+     * @param string $path The json encoded path where the message can be found
+     */
+    protected static function getAttachmentFromServer($key, $uId, $path, $userId)
+    {
+        /**
+         * @see Zend_Registry
+         */
+        require_once 'Zend/Registry.php';
+
+        /**
+         *@see Conjoon_Keys
+         */
+        require_once 'Conjoon/Keys.php';
+
+        $auth = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
+
+        /**
+         * @see Conjoon_User_AppUser
+         */
+        require_once 'Conjoon/User/AppUser.php';
+
+        $appUser = new \Conjoon\User\AppUser($auth->getIdentity());
+
+        if ($appUser->getId() != $userId) {
+            throw new RuntimeException(
+                "current user not the same as user id found in argument"
+            );
+        }
+
+        $entityManager = Zend_Registry::get(Conjoon_Keys::DOCTRINE_ENTITY_MANAGER);
+
+        $mailFolderRepository =
+            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
+        $mailAccountRepository =
+            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMailAccountEntity');
+        $messageFlagRepository =
+            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMessageFlagEntity');
+        $messageRepository =
+            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMessageEntity');
+        $attachmentRepository =
+            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultAttachmentEntity');
+
+        $protocolAdaptee = new \Conjoon\Mail\Server\Protocol\DefaultProtocolAdaptee(
+            $mailFolderRepository, $messageFlagRepository,
+            $mailAccountRepository, $messageRepository, $attachmentRepository
+        );
+
+        /**
+         * @see \Conjoon\Mail\Server\Protocol\DefaultProtocol
+         */
+        $protocol = new \Conjoon\Mail\Server\Protocol\DefaultProtocol($protocolAdaptee);
+
+        /**
+         * @see \Conjoon\Mail\Server\DefaultServer
+         */
+        require_once 'Conjoon/Mail/Server/DefaultServer.php';
+
+        $server = new \Conjoon\Mail\Server\DefaultServer($protocol);
+
+
+        /**
+         * @see \Conjoon\Mail\Client\Service\DefaultMessageServiceFacade
+         */
+        require_once 'Conjoon/Mail/Client/Service/DefaultMessageServiceFacade.php';
+
+        $serviceFacade = new \Conjoon\Mail\Client\Service\DefaultMessageServiceFacade(
+            $server, $mailAccountRepository, $mailFolderRepository
+        );
+
+
+        $result = $serviceFacade->getAttachment($key, $uId, $path, $appUser);
+
+        if ($result->isSuccess()) {
+            return $result;
+        }
+
+        return null;
+    }
+
 
 }

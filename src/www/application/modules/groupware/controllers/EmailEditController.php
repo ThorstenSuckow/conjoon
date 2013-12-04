@@ -527,7 +527,8 @@ class Groupware_EmailEditController extends
 
         // check whether we need to apply attachments for a previously saved
         // draft
-        if ($draft->getId() > 0) {
+        if ($draft->getId() > 0 && $account->getProtocol() != 'IMAP') {
+            
             /**
              * @see Conjoon_Modules_Groupware_Email_Attachment_Filter_AttachmentResponse
              */
@@ -886,7 +887,7 @@ class Groupware_EmailEditController extends
         require_once 'Conjoon/Modules/Groupware/Email/Sender.php';
 
         $mail = Conjoon_Modules_Groupware_Email_Sender::getAssembledMail(
-            $draft, $account, $postedAttachments, $removeAttachmentIds
+            $draft, $account, $postedAttachments, $removeAttachmentIds, $userId
         );
 
         /**
