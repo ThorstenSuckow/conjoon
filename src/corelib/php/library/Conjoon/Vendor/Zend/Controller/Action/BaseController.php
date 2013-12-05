@@ -31,6 +31,11 @@ require_once 'Zend/Registry.php';
 require_once 'Conjoon/Keys.php';
 
 /**
+ * @see \Conjoon_Error
+ */
+require_once 'Conjoon/Error.php';
+
+/**
  * @see \Conjoon_ErrorDto
  */
 require_once 'Conjoon/ErrorDto.php';
