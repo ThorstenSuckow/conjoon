@@ -174,7 +174,7 @@ class Conjoon_Modules_Groupware_Files_Facade {
     {
         $this->_checkArguments(array(
             'name'   => array('value' => &$name,   'type' => 'string'),
-            'type'   => array('type'  => &$type,   'type' => 'string'),
+            'type'   => array('value' => &$type,   'type' => 'string'),
             'userId' => array('value' => &$userId, 'type' => 'int')
         ));
 
