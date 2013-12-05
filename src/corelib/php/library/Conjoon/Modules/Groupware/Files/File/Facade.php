@@ -150,6 +150,47 @@ class Conjoon_Modules_Groupware_Files_File_Facade extends Conjoon_Db_LobAccess_S
     }
 
     /**
+     * Creates the file with the specified name, content and type for the specified user
+     *in the given folder.
+     *
+     * @param $folderId
+     * @param $name
+     * @param $content
+     * @param $mimeType
+     * @param $userId
+     *
+     * @return Conjoon_Modules_Groupware_Files_File
+     */
+    public function createFileInFolderForUser($folderId, $name, $content, $mimeType, $userId) {
+
+        $data = array(
+            'groupwareFilesFoldersId' => $folderId,
+            'userId'                  => $userId,
+            'name'                    => $name,
+            'mimeType'                => $mimeType
+        );
+
+        Conjoon_Argument_Check::check(array(
+            'groupwareFilesFoldersId' => array('type' => 'int'),
+            'userId' => array('type' => 'int'),
+            'name' => array('type' => 'string'),
+            'mimeType' => array('type' => 'string'),
+        ), $data);
+
+        $data['resource'] = $content;
+
+        $lob = $this->_createLob($data, false, false);
+
+        return $this->_createFileObject(
+            $lob['dbResult'],
+            $lob['key'],
+            $lob['name'],
+            $lob['mimeType'],
+            $lob['groupwareFilesFoldersId']
+        );
+    }
+
+    /**
      * Returns true if the user may download the file with the specified
      * id, otherwise false.
      *
