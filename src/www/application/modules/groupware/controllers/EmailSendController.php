@@ -92,6 +92,7 @@ class Groupware_EmailSendController extends
              $this->view->item    = null;
              return;
         }
+
         // input filter does not work properly sometimes with refrenced data
         // check here for referencedData, throw an exception if not set
         if (!isset($data['referencedData']) || !is_array($data['referencedData'])) {
@@ -188,7 +189,8 @@ class Groupware_EmailSendController extends
 
         // check whether we need to apply attachments for a previously saved
         // draft
-        if ($message->getId() > 0) {
+        if ($message->getId() > 0 && !$this->isRemotePath($data['path'], $userId)) {
+
 
             $updateCache = true;
 
@@ -204,6 +206,7 @@ class Groupware_EmailSendController extends
                 )
             );
             $atts = $attDecorator->getAttachmentsForItemAsEntity($message->getId());
+
             $message->setAttachments($atts);
         }
 
@@ -212,14 +215,15 @@ class Groupware_EmailSendController extends
          */
         require_once 'Conjoon/Modules/Groupware/Email/Sender.php';
 
-
-
         try {
 
-            $assembledMail = Conjoon_Modules_Groupware_Email_Sender::getAssembledMail(
+            $assembleInformation = Conjoon_Modules_Groupware_Email_Sender::getAssembledMail(
                 $message, $account, $postedAttachments, $removeAttachmentIds,
-                $this->getCurrentAppUser()->getId()
+                $this->getCurrentAppUser()->getId(), $data['type']
             );
+
+            $assembledMail = $assembleInformation['message'];
+            $postedAttachments =  $assembleInformation['postedAttachments'];
 
             $mail = Conjoon_Modules_Groupware_Email_Sender::send($assembledMail);
         } catch (Exception $e) {
@@ -258,12 +262,16 @@ class Groupware_EmailSendController extends
 
         // check if the mesage was loaded from a remote draft
         // if this is the case, remove the draft from the rmeote server
-        if ($message->getId() > 0) {
+
+        $imapAccount = $message->getId() > 0
+                       ? $this->isRemotePath($message->getPath(), $userId)
+                       : null;
+
+        if ($message->getId() > 0 && $imapAccount) {
 
             $uId = $message->getId();
             $path = $message->getPath();
 
-            // check if folder is remote folder
             /**
              * @see Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser
              */
@@ -280,39 +288,32 @@ class Groupware_EmailSendController extends
 
             $facade = Conjoon_Modules_Groupware_Email_Folder_Facade::getInstance();
 
-            // get the account for the root folder first
-            $imapAccount =
-                $facade->getImapAccountForFolderIdAndUserId($pathInfo['rootId'],
-                    $userId);
+            // if remote, where is the referenced mail stored?
+            $globalName = $facade->getAssembledGlobalNameForAccountAndPath(
+                $imapAccount, $pathInfo['path']);
 
-            if ($imapAccount && !empty($pathInfo) && $facade->isRemoteFolder($pathInfo['rootId'])) {
+            /**
+             * @see Conjoon_Modules_Groupware_Email_ImapHelper
+             */
+            require_once 'Conjoon/Modules/Groupware/Email/ImapHelper.php';
 
-                // if remote, where is the referenced mail stored?
-                $globalName = $facade->getAssembledGlobalNameForAccountAndPath(
-                    $imapAccount, $pathInfo['path']);
+            /**
+             * @see Conjoon_Mail_Storage_Imap
+             */
+            require_once 'Conjoon/Mail/Storage/Imap.php';
 
-                /**
-                 * @see Conjoon_Modules_Groupware_Email_ImapHelper
-                 */
-                require_once 'Conjoon/Modules/Groupware/Email/ImapHelper.php';
+            $protocol = Conjoon_Modules_Groupware_Email_ImapHelper
+            ::reuseImapProtocolForAccount($imapAccount);
 
-                /**
-                 * @see Conjoon_Mail_Storage_Imap
-                 */
-                require_once 'Conjoon/Mail/Storage/Imap.php';
+            $storage = new Conjoon_Mail_Storage_Imap($protocol);
 
-                $protocol = Conjoon_Modules_Groupware_Email_ImapHelper
-                ::reuseImapProtocolForAccount($imapAccount);
+            // get the number of the message by it's unique id
+            $storage->selectFolder($globalName);
+            $messageNumber = $storage->getNumberByUniqueId($uId);
 
-                $storage = new Conjoon_Mail_Storage_Imap($protocol);
+            $storage->removeMessage($messageNumber);
+            $storage->close();
 
-                // get the number of the message by it's unique id
-                $storage->selectFolder($globalName);
-                $messageNumber = $storage->getNumberByUniqueId($uId);
-
-                $storage->removeMessage($messageNumber);
-                $storage->close();
-            }
         }
 
         if (!empty($referencedData) && isset($referencedData['uId']) &&
@@ -854,10 +855,13 @@ class Groupware_EmailSendController extends
 
             try {
 
-                $assembledMail = Conjoon_Modules_Groupware_Email_Sender::getAssembledMail(
+                $assembleInformation = Conjoon_Modules_Groupware_Email_Sender::getAssembledMail(
                     $message, $account, $remoteAttachments, array(),
                     $this->getCurrentAppUser()->getId(), true
                 );
+
+                $assembledMail = $assembleInformation['message'];
+                $postedAttachments =  $assembleInformation['postedAttachments'];
 
                 $mail = Conjoon_Modules_Groupware_Email_Sender::send($assembledMail);
             } catch (Exception $e) {
@@ -1086,6 +1090,8 @@ class Groupware_EmailSendController extends
             && $facade->isRemoteFolder($pathInfo['rootId'])) {
             return $imapAccount;
         }
+
+        return null;
 
     }
 

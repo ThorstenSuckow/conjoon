@@ -94,16 +94,32 @@ class Conjoon_Modules_Groupware_Email_Sender {
      * @static
      * @param Conjoon_Modules_Groupware_Email_Draft $draft
      * @param Conjoon_Modules_Groupware_Email_Account $account
-     * @param array $postedAttachments
+     * @param array $postedAttachments the attachments posted for this draft.
+     *                                 Information found in this array might get edited when
+     *                                 attachments get assembled. This changed information has
+     *                                 to be considered later on when a sent mail gets saved. The changed
+     *                                 information can be found in the returned array in the key
+     *                                 'postedAttachments'
      * @param array $removeAttachmentIds
      * @param $userId
-     * @return Conjoon_Mail_Sent
+     * @param string $type Type of the action the draft was created for, e.g. "forward"
+     * if the message gets assembled from a forwarded mail
+     *
+     * @return array an array with the following key/value pairs:
+     *         message => Conjoon_Mail_Sent the generated mail object
+     *         postedAttachments => array with postedAttachments which might have been
+     *         edited
      */
     public static function getAssembledMail(
         Conjoon_Modules_Groupware_Email_Draft $draft, Conjoon_Modules_Groupware_Email_Account $account,
-        $postedAttachments = array(), $removeAttachmentIds = array(), $userId
+        $postedAttachments = array(), $removeAttachmentIds = array(), $userId, $type = null
     )
     {
+        $returnData = array(
+            'message' => null,
+            'postedAttachments' => array()
+        );
+
         $mail = new Conjoon_Mail('UTF-8');
 
         // let everyone know...
@@ -170,7 +186,9 @@ class Conjoon_Modules_Groupware_Email_Sender {
             $mail->setBodyHtml($html);
         }
 
-        self::_applyAttachments($draft, $mail, $postedAttachments, $removeAttachmentIds, $userId);
+        $returnData['postedAttachments'] = self::_applyAttachments(
+            $draft, $mail, $postedAttachments, $removeAttachmentIds, $userId, $account, $type
+        );
 
         // send!
         $config = array();
@@ -201,7 +219,9 @@ class Conjoon_Modules_Groupware_Email_Sender {
             $account->getServerOutbox(), $config
         );
 
-        return new Conjoon_Mail_Sent($mail, $transport);
+        $returnData['message'] = new Conjoon_Mail_Sent($mail, $transport);
+
+        return $returnData;
     }
 
     /**
@@ -220,14 +240,26 @@ class Conjoon_Modules_Groupware_Email_Sender {
      * @static
      * @param Conjoon_Modules_Groupware_Email_Draft $draft
      * @param Conjoon_Mail $mail
-     * @param array $postedAttachments
+     * @param array $postedAttachments If the mail was created from an IMAP
+     *  message and is now sent using a account that is locally synced,we have to save the attachment
+     *  in the database. Information about changed postedAttachment storage location and so on
+     * can be found in the return value of this method
      * @param array $removeAttachmentIds
      * @param $userId
+     * @param  Conjoon_Modules_Groupware_Email_Account $account
+     * @param string $type Type of the action the draft was created for, e.g. "forward"
+     * if the message gets assembled from a forwarded mail
+     *
+     * @return array An array that might equal to postedAttachments. If the posted
+     * attachments had to be re-created in the local storage, this return value will
+     * hold all necessary information about this
+     *
      * @throws RuntimeException
      */
     protected static function _applyAttachments(
         Conjoon_Modules_Groupware_Email_Draft $draft, Conjoon_Mail $mail,
-        $postedAttachments = array(), $removeAttachmentIds = array(), $userId)
+        $postedAttachments = array(), $removeAttachmentIds = array(), $userId,
+        Conjoon_Modules_Groupware_Email_Account $account, $type)
     {
 
         /**
@@ -269,67 +301,101 @@ class Conjoon_Modules_Groupware_Email_Sender {
             $facade = Conjoon_Modules_Groupware_Email_Folder_Facade::getInstance();
 
             // get the account for the root folder first
-            $imapAccount =
-                $facade->getImapAccountForFolderIdAndUserId($pathInfo['rootId'],
-                    $userId);
+            $imapAccount =  !empty($pathInfo) && $facade->isRemoteFolder($pathInfo['rootId'])
+                            ? $facade->getImapAccountForFolderIdAndUserId($pathInfo['rootId'], $userId)
+                            : null;
 
-            if (!empty($pathInfo) && $facade->isRemoteFolder($pathInfo['rootId'])) {
-                if ($imapAccount && $facade->isRemoteFolder($pathInfo['rootId'])) {
+            if ($imapAccount) {
 
-                    // remote!
-                    // we can ignore the removed attachments since a remote mail
-                    // message will get assembled from ground up
+                // remote!
+                // we can ignore the removed attachments since a remote mail
+                // message will get assembled from ground up
 
-                    foreach ($postedAttachments as $postedAttachment) {
+                foreach ($postedAttachments as &$postedAttachment) {
 
-                        if ($postedAttachment['metaType'] == 'file') {
+                    if ($postedAttachment['metaType'] == 'file') {
 
-                            $dbFile = $fileModel->getLobData(array(
-                                'key' => $postedAttachment['key'],
-                                'id' => $postedAttachment['orgId']
-                            ));
+                        $dbFile = $fileModel->getLobData(array(
+                            'key' => $postedAttachment['key'],
+                            'id' => $postedAttachment['orgId']
+                        ));
 
-                            if ($dbFile && !empty($dbFile)) {
-                                $mail->addAttachment(self::_createAttachment(array(
-                                    'encoding'  => null,
-                                    'mime_type' => $dbFile['mime_type'],
-                                    'key'       => $dbFile['key'],
-                                    'id'        => $dbFile['id']
-                                ), $postedAttachment['name'], $fileModel));
+                        if ($dbFile && !empty($dbFile)) {
+                            $mail->addAttachment(self::_createAttachment(array(
+                                'encoding'  => null,
+                                'mime_type' => $dbFile['mime_type'],
+                                'key'       => $dbFile['key'],
+                                'id'        => $dbFile['id']
+                            ), $postedAttachment['name'], $fileModel));
 
-                                $dbFile = null;
+                            $dbFile = null;
+                        }
+
+                    } else if ($postedAttachment['metaType'] == 'emailAttachment') {
+
+                        $lookupId = $draft->getId();
+
+                        if ($lookupId <= 0 && $type == 'forward') {
+                            // look up referenced data if we forward a message
+                            $referencedData = $draft->getReferencedData();
+                            $lookupId = $referencedData['uId'];
+                        }
+
+                        $attachment = self::getAttachmentFromServer(
+                            $postedAttachment['key'],
+                            $lookupId,
+                            json_encode($path),
+                            $userId
+                        );
+
+                        if ($attachment && $attachment->isSuccess() && $attachment->getData()) {
+
+                            $attachmentData = $attachment->getData();
+
+                            $mail->addAttachment(self::_createAttachment(array(
+                                'encoding'  => null,
+                                'mime_type' => $attachmentData['mimeType'],
+                                'key'       => $attachmentData['key'],
+                                'resource'  => $attachmentData['resource']
+                            ), $postedAttachment['name'], null));
+
+                            // save this attachment!
+                            // later: AccountService::isLocallySynced($account)
+                            // to check whether data us stored locally
+                            if ($account->getProtocol() === 'POP3') {
+
+                                /**
+                                 * @see Conjoon_Modules_Groupware_Files_Facade
+                                 */
+                                require_once 'Conjoon/Modules/Groupware/Files/Facade.php';
+
+                                $filesFacade = Conjoon_Modules_Groupware_Files_Facade::getInstance();
+
+                                $myFile = $filesFacade->addFileDataToTempFolderForUser(
+                                    $postedAttachment['name'],
+                                    $attachmentData['resource'],
+                                    $attachmentData['mimeType'],
+                                    $userId
+                                );
+
+                                if ($myFile instanceof Conjoon_Modules_Groupware_Files_File_Dto) {
+                                    $postedAttachment['metaType'] = 'file';
+                                    $postedAttachment['key']      = $myFile->key;
+                                    $postedAttachment['id']       = $myFile->id;
+                                    $postedAttachment['orgId']    = $myFile->id;
+
+                                } else {
+                                    throw new RuntimeException("could not create file");
+                                }
+
                             }
 
-                        } else if ($postedAttachment['metaType'] == 'emailAttachment') {
-
-                            $attachment = self::getAttachmentFromServer(
-                                $postedAttachment['key'],
-                                $draft->getId(),
-                                json_encode($path),
-                                $userId
-                            );
-
-                            if ($attachment && $attachment->isSuccess() && $attachment->getData()) {
-
-                                $attachmentData = $attachment->getData();
-
-                                $mail->addAttachment(self::_createAttachment(array(
-                                    'encoding'  => null,
-                                    'mime_type' => $attachmentData['mimeType'],
-                                    'key'       => $attachmentData['key'],
-                                    'resource'  => $attachmentData['resource']
-                                ), $postedAttachment['name'], null));
-
-                            }
                         }
                     }
-
-                    // remote mails done! exit
-                    return;
-
-                } else {
-                    throw new RuntimeException("Cannot assemble attachments: No remote information found");
                 }
+
+                // remote mails done! exit
+                return $postedAttachments;
             }
         }
 
@@ -471,6 +537,8 @@ class Conjoon_Modules_Groupware_Email_Sender {
                 $dbFile = null;
             }
         }
+
+        return $postedAttachments;
 
     }
 
