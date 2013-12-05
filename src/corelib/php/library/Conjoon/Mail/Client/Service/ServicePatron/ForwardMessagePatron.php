@@ -126,7 +126,7 @@ class ForwardMessagePatron
             $d['cc']  = array();
             $d['bcc'] = array();
 
-            $d['attachments'] = array();
+            $d['attachments'] = $this->createAttachments($this->v('attachments', $d));
 
             $d['inReplyTo']  = "";
             $d['references'] = "";
@@ -162,6 +162,30 @@ class ForwardMessagePatron
     }
 
 // -------- helper
+
+    /**
+     * Creates the attachments.
+     *
+     * @param array
+     * @return array
+     *
+     */
+    protected function createAttachments(array $attachments)
+    {
+        $data = array();
+
+        for ($i = 0, $len = count($attachments); $i < $len; $i++) {
+            $att =& $attachments[$i];
+
+            $data[] = array(
+                'fileName' => $att['fileName'],
+                'mimeType' => $att['mimeType'],
+                'key'      => $att['key']
+            );
+        }
+
+        return $data;
+    }
 
     /**
      * @return string
