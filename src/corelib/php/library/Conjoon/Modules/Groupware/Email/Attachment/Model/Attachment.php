@@ -461,23 +461,84 @@ class Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment
             );
         }
 
-        $stmt = $db->query("INSERT INTO ".
-                   "`".self::getTablePrefix() . "groupware_email_items_attachments`
-                   (`key`, `groupware_email_items_id`, `file_name`, `mime_type`,
-                   `encoding`, `content`)
-                   (SELECT "
-                   ."'".md5(uniqid(mt_rand(), true))."' AS `key`, "
-                   .$itemId." AS `groupware_email_items_id`,"
-                   .(!$name ? "`file_name`," : $db->quote($name)." AS `file_name`,")
-                   ." `mime_type`, `encoding`, `content` FROM "
-                   ."`".self::getTablePrefix() . "groupware_email_items_attachments`
-                   WHERE id = ".$attachmentId.")"
-        );
+        $query = "SELECT * FROM `".self::getTablePrefix() . "groupware_email_items_attachments`
+                  WHERE id = :id";
 
-        $result = $stmt->rowCount();
-        if ($result > 0) {
-            return $db->lastInsertId();
+        $stmt = $db->prepare($query);
+        $stmt->bindParam(':id', $attachmentId, PDO::PARAM_STR);
+        $stmt->execute();
+
+        $groupwareEmailItemsId = $itemId;
+        $key = md5(uniqid(mt_rand(), true));
+
+        while ($row = $stmt->fetch()) {
+
+            $fileName = $row['file_name'];
+            $mimeType = $row['mime_type'];
+            $encoding = $row['encoding'];
+
+            $innerQuery = "SELECT `content` FROM `".self::getTablePrefix() . "mail_attachment_content` " .
+                     "WHERE `id` = :id";
+
+            $innerStmt = $db->prepare($innerQuery);
+            $innerStmt->bindParam(':id', $row['mail_attachment_content_id'], PDO::PARAM_STR);
+            $innerStmt->execute();
+
+            while ($innerRow = $innerStmt->fetch()) {
+
+                $insertStmt = $db->prepare("INSERT INTO ".
+                        "`".self::getTablePrefix() . "mail_attachment_content`
+                   (`content`) VALUES (:content)"
+                );
+                $insertStmt->bindParam(':content', $innerRow['content'], PDO::PARAM_LOB);
+                $insertStmt->execute();
+
+                $insertResult = $insertStmt->rowCount();
+
+                if ($insertResult > 0) {
+                    $attachmentContentId = $db->lastInsertId();
+                } else {
+                    return 0;
+                }
+
+                $fileName = $name ? $name : $fileName;
+
+                $finStmt = $db->prepare("INSERT INTO ".
+                        "`".self::getTablePrefix() . "groupware_email_items_attachments` (
+                       `key`,
+                       `groupware_email_items_id`,
+                       `file_name`,
+                       `mime_type`,
+                       `encoding`,
+                       `mail_attachment_content_id`)
+                       VALUES
+                       (:key,
+                       :groupware_email_items_id,
+                       :file_name,
+                       :mime_type,
+                       :encoding,
+                       :mail_attachment_content_id)"
+                );
+
+                $finStmt->bindParam(':key', $key, PDO::PARAM_STR);
+                $finStmt->bindParam(':groupware_email_items_id', $groupwareEmailItemsId, PDO::PARAM_STR);
+                $finStmt->bindParam(':file_name', $fileName, PDO::PARAM_STR);
+                $finStmt->bindParam(':mime_type', $mimeType, PDO::PARAM_STR);
+                $finStmt->bindParam(':encoding', $encoding, PDO::PARAM_STR);
+                $finStmt->bindParam(':mail_attachment_content_id', $attachmentContentId, PDO::PARAM_STR);
+
+                $finStmt->execute();
+
+                $finResult = $finStmt->rowCount();
+                if ($finResult > 0) {
+                    return $db->lastInsertId();
+                }
+                return 0;
+
+            }
+            break;
         }
+
         return 0;
     }
 
