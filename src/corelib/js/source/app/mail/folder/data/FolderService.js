@@ -156,7 +156,7 @@ Ext.defineClass('conjoon.mail.folder.data.FolderService', {
             attrs = folder.attributes,
             lock = folder.disabled;
 
-        if (me.isPartOfProxySubtree(folder) || !attrs.allowChildren  || lock) {
+        if (me.isPartOfProxySubtree(folder) || !attrs.allowChildren || lock) {
             return false;
         }
 
@@ -199,17 +199,46 @@ Ext.defineClass('conjoon.mail.folder.data.FolderService', {
             attrs = folder.attributes,
             lock = folder.disabled;
 
-        if (me.isPartOfProxySubtree(folder) << attrs.isLocked || lock) {
+        if (me.isPartOfProxySubtree(folder) || attrs.isLocked || lock) {
             return false;
         }
 
         return true;
+    },
+
+    /**
+     * Returns true if pathToFolder1 is a parent folder of pathToFolder2.
+     * Returns true if pathToFolder2 is a child folder of pathToFolder1
+     *
+     * @param {Array} pathToFolder1
+     * @param {Array} pathToFolder2
+     *
+     * @return {Boolean}
+     *
+     * @throws {cudgets.base.InvalidArgumentException} if any of the specified arguments
+     * is not an array
+     */
+    isParentPath : function(pathToFolder1, pathToFolder2) {
+
+        if ((Object.prototype.toString.call(pathToFolder1)).toLowerCase() !== '[object array]') {
+            throw new cudgets.base.InvalidArgumentException("pathToFolder1 is not of type Array");
+        }
+
+        if ((Object.prototype.toString.call(pathToFolder2)).toLowerCase() !== '[object array]') {
+            throw new cudgets.base.InvalidArgumentException("pathToFolder2 is not of type Array");
+        }
+
+        if (pathToFolder1.length > pathToFolder2.length) {
+            return false;
+        }
+
+        for (var i = 0, len = pathToFolder1.length; i < len; i++) {
+            if (pathToFolder1[i] != pathToFolder2[i]) {
+                return false;
+            }
+        }
+
+        return true;
     }
-
-
-
-
-
-
 
 });

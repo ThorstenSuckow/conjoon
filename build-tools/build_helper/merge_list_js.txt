@@ -197,6 +197,7 @@ src/corelib/js/source/groupware/service/youtube/FeaturePanel.js
 src/corelib/js/source/groupware/SystemSoundManager.js
 src/corelib/js/source/app/base/Exception.js
 src/corelib/js/source/app/state/base/MissingStateIdException.js
+src/corelib/js/source/mail/folder/base/FolderRelationshipException.js
 src/corelib/js/source/mail/folder/base/FolderNotFoundException.js
 src/corelib/js/source/mail/folder/base/ParentFolderNotFoundException.js
 src/corelib/js/source/mail/folder/comp/compModel/ProxySyncQueue.js

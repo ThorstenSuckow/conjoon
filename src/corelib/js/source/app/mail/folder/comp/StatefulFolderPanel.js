@@ -129,6 +129,8 @@ Ext.defineClass('conjoon.mail.folder.comp.StatefulFolderPanel', {
      *
      * @throws {conjoon.mail.folder.base.FolderNotFoundException} if a parent folder of
      * a folder to delete was not found
+     * @throws {conjoon.mail.folder.base.FolderRelationshipException} if the folder to
+     * delete is a parent folder of the folder representing the trash bin
      */
     deleteFolder : function(clkNode)
     {
@@ -148,6 +150,12 @@ Ext.defineClass('conjoon.mail.folder.comp.StatefulFolderPanel', {
             rootNode = this.getNodeById(currP),
             parentNode = clkNode.parentNode,
             proxyToCheck;
+
+        if (me.folderService.isParentPath(clkPath, trashId)) {
+            throw new conjoon.mail.folder.base.FolderRelationshipException(
+                "folder to delete is a parent folder of the folder representing the trash bin"
+            )
+        }
 
         if (clkNode.getPath('type').indexOf('/trash') != -1) {
 
