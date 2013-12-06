@@ -178,6 +178,11 @@ Ext.extend(com.conjoon.cudgets.tree.data.ProxyTreeLoader, Ext.tree.TreeLoader, {
                 if (!o) {
                     throw('Failure');
                 }
+
+            } else if (o && o.success !== undefined && o.items !== undefined) {
+                // we also have to check for o.success and o.items which will be in
+                // "o" when we are using dataUrls instead of directFn for this loader
+                o = o.items;
             }
 
             if (!proxyConfig) {
