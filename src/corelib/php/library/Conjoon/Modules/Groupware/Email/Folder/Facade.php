@@ -894,7 +894,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
 
             if (empty($folderIds)) {
                 throw new RuntimeException(
-                    "No fodlers for account found"
+                    "No folders for account found"
                 );
             }
 
@@ -954,6 +954,10 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
 
         $accountIds = $this->_getFoldersAccountsModel()
                            ->getAccountIdsMappedToFolderIds(array($folderId));
+
+        if (!isset($accountIds[$folderId])) {
+            return array();
+        }
 
         $accountIds = $accountIds[$folderId];
 
@@ -1139,7 +1143,9 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
         }
 
         foreach  ($iFolders as $localName => $iFold) {
+
             $gb = $iFold->getGlobalName();
+
             $folders[] = $this->_transformImapFolder(
                 $iFold, $account, $protocol, $isRootLevel,
                 (isset($map[$gb])
@@ -1279,7 +1285,14 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
 
             $imap = new Zend_Mail_Storage_Imap($protocol);
 
-            $iFolders = $imap->getFolders($globalName)->getChildren();
+            /**
+             * @ticket CN-595
+             */
+            if ($globalName === "INBOX") {
+                $iFolders = $imap->getFolders(null)->getChildren();
+            } else {
+                $iFolders = $imap->getFolders($globalName)->getChildren();
+            }
 
             foreach ($iFolders as $tmpFolder) {
                 $childCount++;
