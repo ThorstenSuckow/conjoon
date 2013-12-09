@@ -277,6 +277,12 @@ class Conjoon_Modules_Groupware_Email_Sender {
          */
         require_once 'Conjoon/Mime/Part.php';
 
+        /**
+         * @see Conjoon_Modules_Groupware_Files_File_Facade
+         */
+        require_once 'Conjoon/Modules/Groupware/Files/File/Facade.php';
+
+        $fileFacade      = Conjoon_Modules_Groupware_Files_File_Facade::getInstance();
         $fileModel       = new Conjoon_Modules_Groupware_Files_File_Model_File();
         $attachmentModel = new Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment();
 
@@ -326,7 +332,7 @@ class Conjoon_Modules_Groupware_Email_Sender {
                                 'mime_type' => $dbFile['mime_type'],
                                 'key'       => $dbFile['key'],
                                 'id'        => $dbFile['id']
-                            ), $postedAttachment['name'], $fileModel));
+                            ), $postedAttachment['name'], $fileFacade));
 
                             $dbFile = null;
                         }
@@ -532,7 +538,7 @@ class Conjoon_Modules_Groupware_Email_Sender {
                     'mime_type' => $dbFile['mime_type'],
                     'key'       => $dbFile['key'],
                     'id'        => $dbFile['id']
-                ), $file['name'], $fileModel));
+                ), $file['name'], $fileFacade));
 
                 $dbFile = null;
             }
@@ -554,7 +560,15 @@ class Conjoon_Modules_Groupware_Email_Sender {
                          || $att['encoding'] == 'base64');
 
 
-        if ($model && ($model instanceof
+        if ($model && ($model instanceof Conjoon_Modules_Groupware_Files_File_Facade)) {
+            $fRes = $model->getLobContentWithData(array(
+                'includeResource' => true,
+                'key' => $att['key'],
+                'id' => $att['id']
+            ));
+            $fRes = $fRes['resource'];
+            $newAttachment = new Conjoon_Mime_Part($fRes, $validEncoding);
+        } else if ($model && ($model instanceof
             Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment)) {
             $newAttachment = new Conjoon_Mime_Part(
                 $model->getAttachmentContentAsStreamForKeyAndId(
