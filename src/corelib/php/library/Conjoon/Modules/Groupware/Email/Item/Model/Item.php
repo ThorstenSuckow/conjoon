@@ -1376,6 +1376,7 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
         Conjoon_Modules_Groupware_Email_Draft $draft,
         $postedAttachments = array(), $removeAttachmentIds = array(), &$attachmentMap = array())
     {
+
         if ($draft->getId() <= 0) {
             throw new InvalidArgumentException(
                 "Invalid draft supplied - id was ".$draft->getId()
@@ -1480,10 +1481,25 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
         }
 
         // copy files to attachments
+        /**
+         * @see Conjoon_Modules_Groupware_Files_File_Facade
+         */
+        require_once 'Conjoon/Modules/Groupware/Files/File/Facade.php';
+
+        $filesFacade = Conjoon_Modules_Groupware_Files_File_Facade::getInstance();
+
         foreach ($finalPostedFiles as $id => $file) {
 
+            // possible that the file is stored in the file system, so get the content here
+            // and pass as argument
+            $fileData = $filesFacade->getLobContentWithData(array(
+                'id'  => $file['orgId'],
+                'key' => $file['key']
+            ));
+
             $newAttachmentId = $attachmentModel->copyFromFilesForItemId(
-                $file['key'], $file['orgId'], $draft->getId(), $file['name']
+                $file['key'], $file['orgId'], $draft->getId(), $file['name'],
+                $fileData['resource']
             );
 
             if ($newAttachmentId > 0) {

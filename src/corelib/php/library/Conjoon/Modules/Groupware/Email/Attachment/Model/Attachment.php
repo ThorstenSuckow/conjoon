@@ -55,13 +55,18 @@ class Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment
      * @param integer $itemId the id of the email item for which the file gets copied
      * @param string $name optional, the new name to store newly
      * created attachment under
+     * @param string $content optional, the files contents. If not specified, the data found
+     * in the files table will be used. However, if the file's contents are not saved in the database, but in
+     * the file system, this value might be NULL, so it has to be set from outside. This value must not already
+     * be encoded.
+     *
      *
      * @return integer The id of the newly created row, or 0
      *
      * @throws InvalidArgumentException
      * @throws Conjoon_Exception
      */
-    public function copyFromFilesForItemId($key, $id, $itemId, $name = null)
+    public function copyFromFilesForItemId($key, $id, $itemId, $name = null, $fileContent = null)
     {
         $key = trim((string)$key);
         $id  = (int)$id;
@@ -115,17 +120,21 @@ class Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment
 
         try {
 
-            $select = $db->select()
-                      ->from(array('files' => self::getTablePrefix() . "groupware_files"), 'content')
-                      ->where('`id`=?', $id)
-                      ->where('`key`=?', $key);
+            if ($fileContent === null) {
+                $select = $db->select()
+                          ->from(array('files' => self::getTablePrefix() . "groupware_files"), 'content')
+                          ->where('`id`=?', $id)
+                          ->where('`key`=?', $key);
 
-            $row = $db->fetchRow($select);
+                $row = $db->fetchRow($select);
 
-            if (!$row) {
-                return 0;
+                if (!$row) {
+                    return 0;
+                }
+                $content = base64_encode($row['content']);
+            } else {
+                $content = base64_encode($fileContent);
             }
-            $content = base64_encode($row['content']);
 
             $stmt = $db->query("INSERT INTO ".
                     "`".self::getTablePrefix() . "mail_attachment_content`
