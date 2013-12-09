@@ -88,6 +88,8 @@ class Groupware_FileController extends Zend_Controller_Action {
         $type   = $this->_request->getParam('type');
         $name   = $this->_request->getParam('name');
 
+        $mimeType = false;
+
         $uId = $this->_request->getParam('uId');
         $path      = $this->_request->getParam('path');
 
@@ -103,6 +105,8 @@ class Groupware_FileController extends Zend_Controller_Action {
 
             $data = $this->getAttachmentFromServer($key, $uId, $path);
 
+            $mimeType = $data['mimeType'];
+
         } else {
             /**
              * @see Conjoon_Modules_Groupware_Files_File_Facade
@@ -114,6 +118,8 @@ class Groupware_FileController extends Zend_Controller_Action {
             $data = $facade->getFileDownloadDataForUserId(
                 $id, $key, $userId
             );
+
+            $mimeType = $data['mime_type'];
 
         }
 
@@ -129,15 +135,15 @@ class Groupware_FileController extends Zend_Controller_Action {
             return;
         }
 
-        if (!isset($data['mimeType'])) {
+        if ($mimeType === false) {
             /**
              * @see Conjoon_Exception
              */
             require_once 'Conjoon/Exception.php';
 
             throw new Conjoon_Exception(
-                "Sorry, but \"mimeType\" is missing. "
-                . "Maybe \"mime_type\" is available?"
+                "Sorry, but the \"mime type\" is missing. Make sure \"mimeType\" for attachments " .
+                "is available, or \"mime_type\" for files."
             );
 
             return;
@@ -156,7 +162,7 @@ class Groupware_FileController extends Zend_Controller_Action {
                  ->setHeader('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT', true)
                  ->setHeader('Pragma', 'no-cache', true)
                  ->setHeader('Content-Description', ($name != "" ? $name : $data['name']), true)
-                 ->setHeader('Content-Type', $data['mimeType'], true)
+                 ->setHeader('Content-Type', $mimeType, true)
                  ->setHeader('Content-Transfer-Encoding', 'binary', true)
                  ->setHeader(
                     'Content-Disposition',
