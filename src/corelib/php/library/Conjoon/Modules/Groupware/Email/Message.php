@@ -58,6 +58,8 @@ require_once 'Conjoon/Modules/Groupware/Email/Message/Dto.php';
 class Conjoon_Modules_Groupware_Email_Message implements Conjoon_BeanContext, Serializable {
 
     private $id;
+    private $uId;
+    private $path;
     private $to;
     private $cc;
     private $bcc;
@@ -88,6 +90,8 @@ class Conjoon_Modules_Groupware_Email_Message implements Conjoon_BeanContext, Se
 // -------- accessors
 
     public function getId(){return $this->id;}
+    public function getUId(){return $this->uId;}
+    public function getPath(){return $this->path;}
     public function getTo(){return $this->to;}
     public function getCc(){return $this->cc;}
     public function getBcc(){return $this->bcc;}
@@ -102,6 +106,8 @@ class Conjoon_Modules_Groupware_Email_Message implements Conjoon_BeanContext, Se
     public function getGroupwareEmailFoldersId(){return $this->groupwareEmailFoldersId;}
 
     public function setId($id){$this->id = $id;}
+    public function setUId($uId){$this->uId = $uId;}
+    public function setPath($path){$this->path = $path;}
     public function setTo(Conjoon_Modules_Groupware_Email_Address_List $to){$this->to = $to;}
     public function setBcc(Conjoon_Modules_Groupware_Email_Address_List $bcc){$this->bcc = $bcc;}
     public function setBody($body){$this->body = $body;}
@@ -200,6 +206,8 @@ class Conjoon_Modules_Groupware_Email_Message implements Conjoon_BeanContext, Se
 
         return array(
             'id'           => $this->id,
+            'uId'          => $this->uId,
+            'path'         => $this->path,
             'to'           => $this->cc->toArray(),
             'cc'           => $this->cc->toArray(),
             'bcc'          => $this->bcc->toArray(),
@@ -236,6 +244,8 @@ class Conjoon_Modules_Groupware_Email_Message implements Conjoon_BeanContext, Se
                 $strs[] = 'replyTo: ['.$this->replyTo->__toString().']';
             } else if ($key == 'bcc') {
                 $strs[] = 'bcc: ['.$this->bcc->__toString().']';
+            } else if ($key == 'path') {
+                $strs[] = 'path: ['.json_encode($this->path).']';
             } else if ($key == 'attachments') {
                 $attachments = array();
                 for ($i = 0; $i < count($this->attachments); $i++) {

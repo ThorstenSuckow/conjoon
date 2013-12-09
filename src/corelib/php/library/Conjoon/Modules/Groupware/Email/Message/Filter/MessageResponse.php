@@ -44,6 +44,8 @@ class Conjoon_Modules_Groupware_Email_Message_Filter_MessageResponse extends Con
          self::CONTEXT_RESPONSE => array(
             'id',
             'to',
+            'uId',
+            'path',
             'cc',
             'bcc',
             'replyTo',

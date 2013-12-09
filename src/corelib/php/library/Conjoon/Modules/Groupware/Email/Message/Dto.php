@@ -21,6 +21,8 @@ require_once 'Conjoon/Dto.php';
 class Conjoon_Modules_Groupware_Email_Message_Dto extends Conjoon_Dto {
 
     public $id;
+    public $uId;
+    public $path;
     public $to;
     public $cc;
     public $bcc;

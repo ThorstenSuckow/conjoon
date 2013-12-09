@@ -84,8 +84,23 @@ class Conjoon_Modules_Groupware_Email_Message_Model_Message
 
         $row = $adapter->fetchRow($select);
 
-        return ($row != false) ? $row : null;
+        if (!$row) {
+            return null;
+        }
 
+        /**
+         * @see Conjoon_Modules_Groupware_Email_Folder_Model_Folder
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/Folder/Model/Folder.php';
+
+        $folderModel = new Conjoon_Modules_Groupware_Email_Folder_Model_Folder;
+
+        // unique id. Underscore needed since this wil automatically get
+        // camelized later on
+        $row['u_id'] = $row['id'];
+        $row['path'] = $folderModel->getPathForFolderId($row['groupware_email_folders_id']);
+
+        return $row;
     }
 
 
