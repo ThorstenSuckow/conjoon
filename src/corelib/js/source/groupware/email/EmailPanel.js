@@ -1635,17 +1635,16 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
             //return;
         }
 
-        var referencedRecord = message.referencedItem;
-
-        var oldDraftId    = message.draft.get('id');
-        var newVersion    = message.newVersion;
-        var previousId     = message.previousId;
-        var oldFolderPath = message.path;
-        var itemRecord    = message.itemRecord;
-        var newFolderPath = itemRecord.get('path');
-        var currFolderId  = this.clkNodeId;
-        var store         = this.gridPanel.getStore();
-        var pendingStore  = tp.pendingItemStore;
+        var referencedRecord = message.referencedItem,
+            oldDraftId    = message.draft.get('id'),
+            newVersion    = message.newVersion,
+            previousId     = message.previousId,
+            oldFolderPath = message.path,
+            itemRecord    = message.itemRecord,
+            newFolderPath = itemRecord.get('path'),
+            currFolderId  = this.clkNodeId,
+            store         = this.gridPanel.getStore(),
+            pendingStore  = tp.pendingItemStore;
 
         // the draft was moved while saving from one draft folder to another
         // if and only if the oldDraftId does not equal to anything but -1
@@ -2169,10 +2168,10 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
         // only use the referenced record if the referencedRecord id equals to the
         // id of the itemRecord. Then the method has to update an existing item in the grid
         if (referencedRecord && (referencedRecord.id == itemCopy.id || newVersion)) {
-            var wasSelected = false;
-            var view        = this.gridPanel.getView();
-            var refresh     = view.isRecordRendered(referencedRecord);
-            var selModel    = this.gridPanel.getSelectionModel();
+            var wasSelected = false,
+                view        = this.gridPanel.getView(),
+                refresh     = view.isRecordRendered(referencedRecord),
+                selModel    = this.gridPanel.getSelectionModel();
 
             // programmatic call to switchButtonState since the store's event are
             // suspended
