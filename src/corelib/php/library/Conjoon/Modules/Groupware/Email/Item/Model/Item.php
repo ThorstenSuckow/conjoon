@@ -1494,7 +1494,8 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
             // and pass as argument
             $fileData = $filesFacade->getLobContentWithData(array(
                 'id'  => $file['orgId'],
-                'key' => $file['key']
+                'key' => $file['key'],
+                'includeResource' => true
             ));
 
             $newAttachmentId = $attachmentModel->copyFromFilesForItemId(
