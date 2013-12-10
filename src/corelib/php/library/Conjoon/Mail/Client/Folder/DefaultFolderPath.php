@@ -126,5 +126,18 @@ class DefaultFolderPath implements FolderPath {
         );
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function __toString() {
+        return json_encode(
+            array(
+                'rootId' => $this->getRootId(),
+                'path' => $this->getPath(),
+                'nodeId' => $this->getNodeId()
+            )
+        );
+    }
+
 }
 

@@ -43,5 +43,11 @@ interface FolderPath {
      */
     public function getPath();
 
+    /**
+     * Returns a textual representation of this instance.
+     * @return string
+     */
+    public function __toString();
+
 }
 

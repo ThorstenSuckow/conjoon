@@ -89,5 +89,17 @@ class DefaultMessageLocation implements MessageLocation {
         return $this->id;
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function __toString() {
+        return json_encode(
+            array(
+                'uId' => $this->getUId(),
+                'folder' => $this->getFolder()->__toString()
+            )
+        );
+    }
+
 }
 

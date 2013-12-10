@@ -95,18 +95,16 @@ class Folder implements \Conjoon\Mail\Folder\FolderPath {
     }
 
     /**
-     * Returns a textual representation for this instance.
-     *
-     * @return string
+     * @inheritdoc
      */
-    public function __toString()
-    {
-        return get_class($this)
-               . ':'
-               . '[rootId: ' . $this->getRootId() . '; '
-               . 'path: ' . implode(',', $this->getPath()) . '; '
-               . 'nodeId: ' . $this->getNodeId()
-               . ']';
+    public function __toString() {
+        return json_encode(
+            array(
+                'rootId' => $this->getRootId(),
+                'path' => $this->getPath(),
+                'nodeId' => $this->getNodeId()
+            )
+        );
     }
 }
 

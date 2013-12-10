@@ -76,6 +76,10 @@ class DefaultFolderPathTest extends \PHPUnit_Framework_TestCase {
             $this->assertEquals($output['rootId'], $path->getRootId());
         }
 
+        $this->assertTrue(
+            is_string($path->__toString())
+        );
+
     }
 
 }

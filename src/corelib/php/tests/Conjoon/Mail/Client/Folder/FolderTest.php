@@ -47,6 +47,10 @@ class ClientMailFolderTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(
             "79", $folder->getRootId()
         );
+
+        $this->assertTrue(
+            is_string($folder->__toString())
+        );
     }
 
     /**

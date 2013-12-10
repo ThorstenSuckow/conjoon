@@ -42,5 +42,11 @@ interface MessageLocation {
      */
     public function getUId();
 
+    /**
+     * Returns a string representation of this MessageLocation.
+     * @return string
+     */
+    public function __toString();
+
 }
 
