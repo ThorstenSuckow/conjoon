@@ -30,6 +30,61 @@ require_once 'Conjoon/Mail/Client/Service/MessageServiceFacade.php';
  */
 require_once 'Conjoon/Mail/Client/Service/DefaultServiceResult.php';
 
+/**
+ * @see \Conjoon\Mail\Client\Folder\DefaultFolderPath
+ */
+require_once 'Conjoon/Mail/Client/Folder/DefaultFolderPath.php';
+
+/**
+ * @see \Conjoon\Mail\Client\Folder\Folder
+ */
+require_once 'Conjoon/Mail/Client/Folder/Folder.php';
+
+/**
+ * @see \Conjoon\Mail\Client\Message\DefaultMessageLocation
+ */
+require_once 'Conjoon/Mail/Client/Message/DefaultMessageLocation.php';
+
+/**
+ * @see \Conjoon\Mail\Client\Service\ServicePatron\ReadMessagePatron
+ */
+require_once 'Conjoon/Mail/Client/Service/ServicePatron/ReadMessagePatron.php';
+
+/**
+ * @see \Conjoon\Mail\Client\Message\Flag\DefaultFlagCollection
+ */
+require_once 'Conjoon/Mail/Client/Message/Flag/DefaultFlagCollection.php';
+
+/**
+ * @see \Conjoon\Mail\Client\Message\Flag\FolderFlagCollection
+ */
+require_once 'Conjoon/Mail/Client/Message/Flag/FolderFlagCollection.php';
+
+/**
+ * @see \Conjoon\Mail\Server\Request\DefaultSetFlagsRequest
+ */
+require_once 'Conjoon/Mail/Server/Request/DefaultSetFlagsRequest.php';
+
+/**
+ * @see \Conjoon\Mail\Client\Message\DefaultAttachmentLocation
+ */
+require_once 'Conjoon/Mail/Client/Message/DefaultAttachmentLocation.php';
+
+/**
+ * @see \Conjoon\Mail\Client\Account\DefaultAccountService
+ */
+require_once 'Conjoon/Mail/Client/Account/DefaultAccountService.php';
+
+/**
+ * @see \Conjoon\Mail\Client\Folder\DefaultFolderService
+ */
+require_once 'Conjoon/Mail/Client/Folder/DefaultFolderService.php';
+
+/**
+ * @see \Conjoon\Mail\Client\Folder\DefaultFolderCommons
+ */
+require_once 'Conjoon/Mail/Client/Folder/DefaultFolderCommons.php';
+
 use Conjoon\Argument\ArgumentCheck;
 
 /**
@@ -106,46 +161,21 @@ class DefaultMessageServiceFacade implements MessageServiceFacade {
     {
         try {
 
-            /**
-             * @see \Conjoon\Mail\Client\Folder\DefaultFolderPath
-             */
-            require_once 'Conjoon/Mail/Client/Folder/DefaultFolderPath.php';
-
             $folderPath = new \Conjoon\Mail\Client\Folder\DefaultFolderPath(
                 $path
             );
 
-            /**
-             * @see \Conjoon\Mail\Client\Folder\Folder
-             */
-            require_once 'Conjoon/Mail/Client/Folder/Folder.php';
-
             $folder = new \Conjoon\Mail\Client\Folder\Folder($folderPath);
-
-            /**
-             * @see \Conjoon\Mail\Client\Message\Flag\DefaultFlagCollection
-             */
-            require_once 'Conjoon/Mail/Client/Message/Flag/DefaultFlagCollection.php';
 
             $flagCollection =
                 new \Conjoon\Mail\Client\Message\Flag\DefaultFlagCollection(
                     $flag
                 );
 
-            /**
-             * @see \Conjoon\Mail\Client\Message\Flag\FolderFlagCollection
-             */
-            require_once 'Conjoon/Mail/Client/Message/Flag/FolderFlagCollection.php';
-
             $folderFlagCollection =
                 new \Conjoon\Mail\Client\Message\Flag\FolderFlagCollection(
                     $flagCollection, $folder
                 );
-
-            /**
-             * @see \Conjoon\Mail\Server\Request\DefaultSetFlagsRequest
-             */
-            require_once 'Conjoon/Mail/Server/Request/DefaultSetFlagsRequest.php';
 
             $request = new \Conjoon\Mail\Server\Request\DefaultSetFlagsRequest(array(
                 'user'       => $user,
@@ -175,26 +205,11 @@ class DefaultMessageServiceFacade implements MessageServiceFacade {
     {
         try {
 
-            /**
-             * @see \Conjoon\Mail\Client\Folder\DefaultFolderPath
-             */
-            require_once 'Conjoon/Mail/Client/Folder/DefaultFolderPath.php';
-
             $folderPath = new \Conjoon\Mail\Client\Folder\DefaultFolderPath(
                 $path
             );
 
-            /**
-             * @see \Conjoon\Mail\Client\Folder\Folder
-             */
-            require_once 'Conjoon/Mail/Client/Folder/Folder.php';
-
             $folder = new \Conjoon\Mail\Client\Folder\Folder($folderPath);
-
-            /**
-             * @see \Conjoon\Mail\Client\Message\DefaultMessageLocation
-             */
-            require_once 'Conjoon/Mail/Client/Message/DefaultMessageLocation.php';
 
             $location = new \Conjoon\Mail\Client\Message\DefaultMessageLocation(
                 $folder, $id
@@ -231,26 +246,11 @@ class DefaultMessageServiceFacade implements MessageServiceFacade {
     {
         try {
 
-            /**
-             * @see \Conjoon\Mail\Client\Folder\DefaultFolderPath
-             */
-            require_once 'Conjoon/Mail/Client/Folder/DefaultFolderPath.php';
-
             $folderPath = new \Conjoon\Mail\Client\Folder\DefaultFolderPath(
                 $path
             );
 
-            /**
-             * @see \Conjoon\Mail\Client\Folder\Folder
-             */
-            require_once 'Conjoon/Mail/Client/Folder/Folder.php';
-
             $folder = new \Conjoon\Mail\Client\Folder\Folder($folderPath);
-
-            /**
-             * @see \Conjoon\Mail\Client\Message\DefaultMessageLocation
-             */
-            require_once 'Conjoon/Mail/Client/Message/DefaultMessageLocation.php';
 
             $location = new \Conjoon\Mail\Client\Message\DefaultMessageLocation(
                 $folder, $id
@@ -263,11 +263,6 @@ class DefaultMessageServiceFacade implements MessageServiceFacade {
                 )));
 
             $response = $this->server->handle($request);
-
-            /**
-             * @see \Conjoon\Mail\Client\Service\ServicePatron\ReadMessagePatron
-             */
-            require_once 'Conjoon/Mail/Client/Service/ServicePatron/ReadMessagePatron.php';
 
             return new DefaultServiceResult(
                 $response,
@@ -293,35 +288,15 @@ class DefaultMessageServiceFacade implements MessageServiceFacade {
     {
         try {
 
-            /**
-             * @see \Conjoon\Mail\Client\Folder\DefaultFolderPath
-             */
-            require_once 'Conjoon/Mail/Client/Folder/DefaultFolderPath.php';
-
             $folderPath = new \Conjoon\Mail\Client\Folder\DefaultFolderPath(
                 $path
             );
 
-            /**
-             * @see \Conjoon\Mail\Client\Folder\Folder
-             */
-            require_once 'Conjoon/Mail/Client/Folder/Folder.php';
-
             $folder = new \Conjoon\Mail\Client\Folder\Folder($folderPath);
-
-            /**
-             * @see \Conjoon\Mail\Client\Message\DefaultMessageLocation
-             */
-            require_once 'Conjoon/Mail/Client/Message/DefaultMessageLocation.php';
 
             $location = new \Conjoon\Mail\Client\Message\DefaultMessageLocation(
                 $folder, $uId
             );
-
-            /**
-             * @see \Conjoon\Mail\Client\Message\DefaultAttachmentLocation
-             */
-            require_once 'Conjoon/Mail/Client/Message/DefaultAttachmentLocation.php';
 
             $attachmentLocation = new \Conjoon\Mail\Client\Message\DefaultAttachmentLocation(
                 $location, $key
@@ -368,26 +343,11 @@ class DefaultMessageServiceFacade implements MessageServiceFacade {
 
             $replyAll = $data['replyAll'];
 
-            /**
-             * @see \Conjoon\Mail\Client\Folder\DefaultFolderPath
-             */
-            require_once 'Conjoon/Mail/Client/Folder/DefaultFolderPath.php';
-
             $folderPath = new \Conjoon\Mail\Client\Folder\DefaultFolderPath(
                 $path
             );
 
-            /**
-             * @see \Conjoon\Mail\Client\Folder\Folder
-             */
-            require_once 'Conjoon/Mail/Client/Folder/Folder.php';
-
             $folder = new \Conjoon\Mail\Client\Folder\Folder($folderPath);
-
-            /**
-             * @see \Conjoon\Mail\Client\Message\DefaultMessageLocation
-             */
-            require_once 'Conjoon/Mail/Client/Message/DefaultMessageLocation.php';
 
             $location = new \Conjoon\Mail\Client\Message\DefaultMessageLocation(
                 $folder, $id
@@ -582,26 +542,6 @@ class DefaultMessageServiceFacade implements MessageServiceFacade {
                 )));
 
             $response = $this->server->handle($request);
-
-            /**
-             * @see \Conjoon\Mail\Client\Service\ServicePatron\ReadMessagePatron
-             */
-            require_once 'Conjoon/Mail/Client/Service/ServicePatron/ReadMessagePatron.php';
-
-            /**
-             * @see \Conjoon\Mail\Client\Account\DefaultAccountService
-             */
-            require_once 'Conjoon/Mail/Client/Account/DefaultAccountService.php';
-
-            /**
-             * @see \Conjoon\Mail\Client\Folder\DefaultFolderService
-             */
-            require_once 'Conjoon/Mail/Client/Folder/DefaultFolderService.php';
-
-            /**
-             * @see \Conjoon\Mail\Client\Folder\DefaultFolderCommons
-             */
-            require_once 'Conjoon/Mail/Client/Folder/DefaultFolderCommons.php';
 
             $accountService = new \Conjoon\Mail\Client\Account\DefaultAccountService(
                 array(

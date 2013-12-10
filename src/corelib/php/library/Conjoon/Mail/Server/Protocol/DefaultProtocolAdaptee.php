@@ -225,9 +225,7 @@ class DefaultProtocolAdaptee implements ProtocolAdaptee {
         }
 
         if (!$isRemoteMailbox) {
-
             $entity = $this->doctrineMessageRepository->findById($messageLocation);
-
         } else {
 
             try{
@@ -239,13 +237,11 @@ class DefaultProtocolAdaptee implements ProtocolAdaptee {
                         "No mail account found for folder"
                     );
                 }
-
                 $imapMessageRepository =
                     $this->defaultClassNames['imapMessageRepository'];
                 $imapRepository = new $imapMessageRepository($account);
 
                 $entity = $imapRepository->findById($messageLocation);
-
             } catch (\Exception $e) {
                 throw new \Conjoon\Mail\Server\Protocol\ProtocolException(
                     "Exception thrown by previous exception: "

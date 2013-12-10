@@ -31,9 +31,59 @@ require_once 'Conjoon/Argument/ArgumentCheck.php';
 require_once 'Zend/Registry.php';
 
 /**
+ * @see Conjoon_Cache_Factory
+ */
+require_once 'Conjoon/Cache/Factory.php';
+
+/**
  * @see Conjoon_Keys
  */
 require_once 'Conjoon/Keys.php';
+
+/**
+ * @see \Conjoon\Mail\Server\Protocol\DefaultProtocol
+ */
+require_once 'Conjoon/Mail/Server/Protocol/DefaultProtocol.php';
+
+/**
+ * @see \Conjoon\Mail\Server\DefaultServer
+ */
+require_once 'Conjoon/Mail/Server/DefaultServer.php';
+
+/**
+ * @see \Conjoon\Mail\Client\Service\DefaultMessageServiceFacade
+ */
+require_once 'Conjoon/Mail/Client/Service/DefaultMessageServiceFacade.php';
+
+/**
+ * @see \Conjoon\Mail\Client\Service\CacheableMessageServiceFacade
+ */
+require_once 'Conjoon/Mail/Client/Service/CacheableMessageServiceFacade.php';
+
+/**
+ * @see Conjoon_Modules_Default_Registry_Facade
+ */
+require_once 'Conjoon/Modules/Default/Registry/Facade.php';
+
+/**
+ * @see \Conjoon\Mail\Client\Message\Strategy\DefaultPlainReadableStrategy
+ */
+require_once 'Conjoon/Mail/Client/Message/Strategy/DefaultPlainReadableStrategy.php';
+
+/**
+ * @see \Conjoon\Mail\Client\Message\Strategy\DefaultHtmlReadableStrategy
+ */
+require_once 'Conjoon/Mail/Client/Message/Strategy/DefaultHtmlReadableStrategy.php';
+
+/**
+ * @see \Conjoon\Text\Parser\Html\ExternalResourcesParser
+ */
+require_once 'Conjoon/Text/Parser/Html/ExternalResourcesParser.php';
+
+/**
+ * @see \Conjoon\Vendor\HtmlPurifier\UriFilter\ResourceNotAvailableUriFilter
+ */
+require_once 'Conjoon/Vendor/HtmlPurifier/UriFilter/ResourceNotAvailableUriFilter.php';
 
 use \Conjoon\Vendor\Zend\Controller\Action\BaseController,
     \Conjoon\Argument\ArgumentCheck;
@@ -70,11 +120,6 @@ abstract class MessageController extends BaseController {
 
         $path = $data['path'];
 
-        /**
-         * @see Conjoon_Modules_Default_Registry_Facade
-         */
-        require_once 'Conjoon/Modules/Default/Registry/Facade.php';
-
         $registry = \Conjoon_Modules_Default_Registry_Facade::getInstance();
 
         $readingKey = '/client/conjoon/modules/mail/options/reading/';
@@ -90,11 +135,6 @@ abstract class MessageController extends BaseController {
               )
             : $allowExternals;
 
-        /**
-         * @see \Conjoon\Mail\Client\Message\Strategy\DefaultPlainReadableStrategy
-         */
-        require_once 'Conjoon/Mail/Client/Message/Strategy/DefaultPlainReadableStrategy.php';
-
         $plainReadableStrategy = new \Conjoon\Mail\Client\Message\Strategy\DefaultPlainReadableStrategy();
 
         $readableStrategy = null;
@@ -102,15 +142,6 @@ abstract class MessageController extends BaseController {
         $htmlPurifier = $this->getHtmlPurifierHelper($allowExternals);
 
         if ($preferredFormat == 'html') {
-            /**
-             * @see \Conjoon\Mail\Client\Message\Strategy\DefaultHtmlReadableStrategy
-             */
-            require_once 'Conjoon/Mail/Client/Message/Strategy/DefaultHtmlReadableStrategy.php';
-
-            /**
-             * @see \Conjoon\Text\Parser\Html\ExternalResourcesParser
-             */
-            require_once 'Conjoon/Text/Parser/Html/ExternalResourcesParser.php';
 
             $readableStrategy = new \Conjoon\Mail\Client\Message\Strategy\DefaultHtmlReadableStrategy(
                 $htmlPurifier,
@@ -160,26 +191,29 @@ abstract class MessageController extends BaseController {
             $localMessageRepository, $attachmentRepository
         );
 
-        /**
-         * @see \Conjoon\Mail\Server\Protocol\DefaultProtocol
-         */
         $protocol = new \Conjoon\Mail\Server\Protocol\DefaultProtocol($protocolAdaptee);
 
-        /**
-         * @see \Conjoon\Mail\Server\DefaultServer
-         */
-        require_once 'Conjoon/Mail/Server/DefaultServer.php';
 
         $server = new \Conjoon\Mail\Server\DefaultServer($protocol);
 
-        /**
-         * @see \Conjoon\Mail\Client\Service\DefaultMessageServiceFacade
-         */
-        require_once 'Conjoon/Mail/Client/Service/DefaultMessageServiceFacade.php';
-
-        return new \Conjoon\Mail\Client\Service\DefaultMessageServiceFacade(
+        $messageServiceFacade = new \Conjoon\Mail\Client\Service\DefaultMessageServiceFacade(
             $server, $mailAccountRepository, $mailFolderRepository
         );
+
+
+        $options = \Zend_Registry::get(\Conjoon_Keys::REGISTRY_CONFIG_OBJECT);
+        $cache = \Conjoon_Cache_Factory::getCache(
+            \Conjoon_Keys::CACHE_EMAIL_MESSAGE,
+            $options->toArray()
+        );
+        if ($cache) {
+            $messageServiceFacade = new \Conjoon\Mail\Client\Service\CacheableMessageServiceFacade(
+                $messageServiceFacade, $cache
+            );
+        }
+
+
+        return $messageServiceFacade;
     }
 
 
@@ -204,11 +238,6 @@ abstract class MessageController extends BaseController {
         $htmlPurifierConfig = $this->getBaseHtmlPurifierConfig();
 
         $config = $this->getApplicationConfiguration();
-
-        /**
-         * @see \Conjoon\Vendor\HtmlPurifier\UriFilter\ResourceNotAvailableUriFilter
-         */
-        require_once 'Conjoon/Vendor/HtmlPurifier/UriFilter/ResourceNotAvailableUriFilter.php';
 
         $htmlPurifierConfig->set('HTML.Trusted', false);
         $htmlPurifierConfig->set('CSS.AllowTricky', false);
