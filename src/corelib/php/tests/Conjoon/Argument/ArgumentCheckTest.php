@@ -192,6 +192,62 @@ class ArgumentCheckTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @ticket CN-810
+     */
+    public function testStrict() {
+        $data = array('str' => 2);
+        $exc = null;
+        try {
+            ArgumentCheck::check(array(
+                'str' => array(
+                    'type'       => 'string',
+                    'allowEmpty' => false,
+                    'strict'  => true
+                )
+            ), $data);
+        } catch (\Exception $e) {
+            $exc = $e;
+        }
+
+        $this->assertTrue($exc instanceof \Conjoon\Argument\InvalidArgumentException);
+
+        $data = array('intval' => "2");
+        $exc = null;
+        try {
+            ArgumentCheck::check(array(
+                'intval' => array(
+                    'type'       => 'int',
+                    'allowEmpty' => false,
+                    'strict'  => true
+                )
+            ), $data);
+        } catch (\Exception $e) {
+            $exc = $e;
+        }
+
+        $this->assertTrue($exc instanceof \Conjoon\Argument\InvalidArgumentException);
+
+        $data = array('str' => "2", 'intval' => 2);
+
+        ArgumentCheck::check(array(
+            'intval' => array(
+                'type'       => 'int',
+                'allowEmpty' => false,
+                'strict'  => true
+            ),
+            'str' => array(
+                'type'       => 'string',
+                'allowEmpty' => false,
+                'strict'  => true
+            )
+        ), $data);
+
+        $this->assertSame("2", $data['str']);
+        $this->assertSame(2, $data['intval']);
+
+    }
+
+    /**
      * @ticket CN-791
      */
     public function testMandatoryFalse_Default() {

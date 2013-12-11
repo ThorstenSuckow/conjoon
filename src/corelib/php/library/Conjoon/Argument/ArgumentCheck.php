@@ -153,6 +153,15 @@ class ArgumentCheck {
                         );
                     }
 
+                    if (isset($entityConfig['strict']) &&
+                        $entityConfig['strict'] === true) {
+                        if (!is_string($data[$argumentName])) {
+                            throw new InvalidArgumentException(
+                                "not a string!"
+                            );
+                        }
+                    }
+
                     $val = trim((string)$data[$argumentName]);
                     $org = $data[$argumentName];
 
@@ -176,6 +185,15 @@ class ArgumentCheck {
                                 ? 'array'
                                 :'object')
                         );
+                    }
+
+                    if (isset($entityConfig['strict']) &&
+                        $entityConfig['strict'] === true) {
+                        if (!is_int($data[$argumentName])) {
+                            throw new InvalidArgumentException(
+                                "not an integer!"
+                            );
+                        }
                     }
 
                     $val = (int)trim((string)$data[$argumentName]);
