@@ -85,7 +85,13 @@ require_once 'Conjoon/Mail/Client/Folder/DefaultFolderService.php';
  */
 require_once 'Conjoon/Mail/Client/Folder/DefaultFolderCommons.php';
 
-use Conjoon\Argument\ArgumentCheck;
+/**
+ * @see \Conjoon\Mail\Client\Service\ServiceResult\GetMessageServiceResult
+ */
+require_once 'Conjoon/Mail/Client/Service/ServiceResult/GetMessageServiceResult.php';
+
+use \Conjoon\Argument\ArgumentCheck,
+    \Conjoon\Mail\Client\Service\ServiceResult\GetMessageServiceResult;
 
 /**
  * Service facade for operations related to messages. A default implementation
@@ -239,6 +245,8 @@ class DefaultMessageServiceFacade implements MessageServiceFacade {
 
     /**
      * @inheritdoc
+     *
+     * @return \Conjoon\Mail\Client\Service\ServiceResult\GetMessageServiceResult
      */
     public function getMessage(
         $id, $path, \Conjoon\User\User $user,
@@ -264,7 +272,7 @@ class DefaultMessageServiceFacade implements MessageServiceFacade {
 
             $response = $this->server->handle($request);
 
-            return new DefaultServiceResult(
+            return new GetMessageServiceResult(
                 $response,
                 new \Conjoon\Mail\Client\Service\ServicePatron\ReadMessagePatron(
                     $readableStrategy
@@ -273,7 +281,7 @@ class DefaultMessageServiceFacade implements MessageServiceFacade {
 
         } catch (\Exception $e) {
 
-            return new DefaultServiceResult(new MessageServiceException(
+            return new GetMessageServiceResult(new MessageServiceException(
                 "Exception thrown by previous exception: " . $e->getMessage(),
                 0, $e
             ));

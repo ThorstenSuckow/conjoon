@@ -17,6 +17,11 @@
 namespace Conjoon\Mail\Client\Service;
 
 /**
+ * @see \Conjoon\Mail\Client\Service\ServiceResult
+ */
+require_once 'Conjoon/Mail/Client/Service/ServiceResult.php';
+
+/**
  * Default implementation for a Service Result.
  * Note:
  * This class will try to suppress exceptions as much as possible. Any caught

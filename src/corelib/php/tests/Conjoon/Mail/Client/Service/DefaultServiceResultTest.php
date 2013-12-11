@@ -31,6 +31,7 @@ require_once dirname(__FILE__) . '/../../Server/Request/SimpleRequest.php';
  */
 require_once dirname(__FILE__) . '/ServicePatron/SimpleServicePatron.php';
 
+
 /**
  * @category   Conjoon
  * @package    Conjoon_Mail
@@ -41,13 +42,15 @@ require_once dirname(__FILE__) . '/ServicePatron/SimpleServicePatron.php';
  */
 class DefaultServiceResultTest extends \PHPUnit_Framework_TestCase {
 
+    protected $clName = "\Conjoon\Mail\Client\Service\DefaultServiceResult";
 
     /**
      * Ensures everything works as expected
      */
     public function testWithInvalidArgument()
     {
-        $result = new DefaultServiceResult("test");
+        $n = $this->clName;
+        $result = new $n("test");
 
         $this->assertFalse($result->isSuccess());
         $this->assertTrue(is_array($result->getData()));
@@ -64,7 +67,8 @@ class DefaultServiceResultTest extends \PHPUnit_Framework_TestCase {
      */
     public function testWithException()
     {
-        $result = new DefaultServiceResult(
+        $n = $this->clName;
+        $result = new $n(
             new \Exception('message', 1, new \Exception()));
 
         $this->assertFalse($result->isSuccess());
@@ -95,7 +99,8 @@ class DefaultServiceResultTest extends \PHPUnit_Framework_TestCase {
             $request,  $responseBody, array('status' => 200)
         );
 
-        $result = new DefaultServiceResult($response);
+        $n = $this->clName;
+        $result = new $n($response);
 
         $this->assertTrue($result->isSuccess());
         $this->assertEquals($responseBody->getData(), $result->getData());
@@ -119,7 +124,8 @@ class DefaultServiceResultTest extends \PHPUnit_Framework_TestCase {
             $request,  $responseBody, array('status' => 200)
         );
 
-        $result = new DefaultServiceResult(
+        $n = $this->clName;
+        $result = new $n(
             $response, new ServicePatron\SimpleServicePatron()
         );
 

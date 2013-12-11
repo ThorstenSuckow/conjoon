@@ -92,8 +92,8 @@ class DefaultMessageServiceFacadeTest extends
 
         $messageFacade = new DefaultMessageServiceFacade($defaultServer,
             $this->mailAccountRepository, $this->mailFolderRepository);
-        $result = $messageFacade->getMessage(
-            "1", '["root","1","2"]', $this->user, $this->plainReadableStrategy
+        $result = $messageFacade->getUnformattedMessage(
+            "1", '["root","1","2"]', $this->user
         );
 
         $this->assertTrue($result instanceof ServiceResult);
@@ -114,7 +114,8 @@ class DefaultMessageServiceFacadeTest extends
             "1", '["root","1","2"]', $this->user,  $this->plainReadableStrategy
         );
 
-        $this->assertTrue($result instanceof ServiceResult);
+        $this->assertTrue($result instanceof
+            \Conjoon\Mail\Client\Service\ServiceResult\GetMessageServiceResult);
         $this->assertTrue($result->isSuccess());
     }
 
