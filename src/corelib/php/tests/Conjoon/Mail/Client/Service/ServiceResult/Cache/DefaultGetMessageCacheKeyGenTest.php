@@ -55,6 +55,27 @@ class DefaultGetMessageCacheKeyGenTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @ticket CN-811
+     */
+    public function testPathInvalidCharacters() {
+
+        $data = $this->data;
+        $data['path'] = "[\"[MailFolder]\",\"Anotherone\"]";
+
+        $key = $this->keyGen->generateKey($data);
+
+        $this->assertTrue(
+            $key instanceof
+                \Conjoon\Mail\Client\Service\ServiceResult\Cache\GetMessageCacheKey
+        );
+
+        $this->assertTrue(preg_match('~^[a-zA-Z0-9_]+$~D', $key->getValue()) != 0);
+
+        $this->assertTrue(is_string($key->getValue()));
+
+    }
+
+    /**
      * Ensures everything works as expected
      */
     public function testOkay() {

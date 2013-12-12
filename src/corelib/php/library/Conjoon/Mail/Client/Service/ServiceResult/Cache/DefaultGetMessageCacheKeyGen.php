@@ -84,10 +84,16 @@ class DefaultGetMessageCacheKeyGen implements GetMessageCacheKeyGen {
             );
         }
 
+        $strPath = implode('_', $path);
+
+        if (preg_match('~^[a-zA-Z0-9_]+$~D', $strPath) === 0) {
+            $strPath = md5($strPath);
+        }
+
         $arrStr = array(
             $data['userId'],
             $data['messageId'],
-            implode('_', $path),
+            $strPath,
             $data['format'],
             (string) ((int) $data['externalResources'])
         );
