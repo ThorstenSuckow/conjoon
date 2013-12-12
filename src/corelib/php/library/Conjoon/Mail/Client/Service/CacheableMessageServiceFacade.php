@@ -20,6 +20,13 @@ namespace Conjoon\Mail\Client\Service;
  */
 require_once 'Conjoon/Mail/Client/Service/MessageServiceFacade.php';
 
+/**
+ * @see \Conjoon\Mail\Client\Service\ServiceResult\GetMessageServiceResult
+ */
+require_once 'Conjoon/Mail/Client/Service/ServiceResult/GetMessageServiceResult.php';
+
+use \Conjoon\Mail\Client\Service\ServiceResult\GetMessageServiceResult;
+
 
 /**
  * Service facade for decorating a DefaultMessageServiceFacade with operations related to
