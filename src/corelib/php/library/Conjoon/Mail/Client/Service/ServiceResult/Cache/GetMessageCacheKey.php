@@ -24,7 +24,9 @@ require_once 'Conjoon/Argument/ArgumentCheck.php';
 use \Conjoon\Argument\ArgumentCheck;
 
 /**
- * Class representing the id for a cached GetMessageServiceResult
+ * Class representing the id for a cached GetMessageServiceResult.
+ * Do not use this class directly. Instances of this class
+ * must be created by GetMessageCacheKeyGen.
  *
  * @package Conjoon
  * @category Conjoon\Mail
