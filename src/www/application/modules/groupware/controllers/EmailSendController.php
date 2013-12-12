@@ -594,7 +594,8 @@ class Groupware_EmailSendController extends
             Conjoon_Modules_Groupware_Email_Message_Facade::getInstance()
                 ->removeMessageFromCache(
                     $item->id,
-                    $this->_helper->registryAccess()->getUserId()
+                    $this->_helper->registryAccess()->getUserId(),
+                    $data['path']
             );
         }
 

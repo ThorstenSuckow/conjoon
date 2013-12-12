@@ -612,7 +612,7 @@ class Groupware_EmailEditController extends
                        ->getMessage(
                             $item->id,
                             $this->_helper->registryAccess()->getUserId(),
-                            true
+                            true, $data['path']
                        );
 
         // silently add old ids to new ids from attachmentMap
@@ -652,6 +652,7 @@ class Groupware_EmailEditController extends
                 Conjoon_Filter_Input::CONTEXT_CREATE
             );
             $data = $filter->getProcessedData();
+            $postedPath = $data['path'];
         } catch (Exception $e) {
              require_once 'Conjoon/Error.php';
              $error = Conjoon_Error::fromFilter($filter, $e);
@@ -820,7 +821,8 @@ class Groupware_EmailEditController extends
             Conjoon_Modules_Groupware_Email_Message_Facade::getInstance()
                 ->removeMessageFromCache(
                     $item->id,
-                    $this->_helper->registryAccess()->getUserId()
+                    $this->_helper->registryAccess()->getUserId(),
+                    $postedPath
             );
         }
 
@@ -912,6 +914,9 @@ class Groupware_EmailEditController extends
         if ($draft->getId() > -1) {
             $msgNumber = $storage->getNumberByUniqueId($draft->getId());
             $newVersion = true;
+            // remove old message. No need to invoke
+            // the cache service for removing the cached version.
+            // it is okay if this data exists until the cache gets emptied.
             $storage->removeMessage($msgNumber);
         }
 
@@ -946,6 +951,10 @@ class Groupware_EmailEditController extends
             $account->getDto(), $userId, $lastMessage, $globalName
         );
 
+        // this is where the cache for the GetMessageServiceResult will
+        // be rebuild automatically! No need to remove previous cached version!
+        // The old plain mail message should by now be removed
+        // from the IMAP server
         $emailRecord = $this->getMessageFromRemoteServer(
             $item['id'], $item['path']
         );

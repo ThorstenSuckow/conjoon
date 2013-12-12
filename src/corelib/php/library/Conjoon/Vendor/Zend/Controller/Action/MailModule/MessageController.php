@@ -115,6 +115,11 @@ use \Conjoon\Vendor\Zend\Controller\Action\BaseController,
 abstract class MessageController extends BaseController {
 
     /**
+     * @type \Conjoon\Mail\Client\Service\ServiceResult\Cache\GetMessageCacheService
+     */
+    protected $messageCacheService;
+
+    /**
      * Helper function for fetching a single email message from a remote
      * server.
      *
@@ -219,22 +224,43 @@ abstract class MessageController extends BaseController {
         );
 
 
-        $options = \Zend_Registry::get(\Conjoon_Keys::REGISTRY_CONFIG_OBJECT);
-        $cache = \Conjoon_Cache_Factory::getCache(
-            \Conjoon_Keys::CACHE_EMAIL_MESSAGE,
-            $options->toArray()
-        );
-        if ($cache) {
+        $messageCacheService = $this->getMessageCacheServiceHelper();
+
+        if ($messageCacheService) {
             $messageServiceFacade = new \Conjoon\Mail\Client\Service\CacheableMessageServiceFacade(
-                $messageServiceFacade,
-                new GetMessageCacheService(
-                    new DefaultGetMessageCache($cache), new DefaultGetMessageCacheKeyGen
-                )
+                $messageServiceFacade, $messageCacheService
             );
         }
 
 
         return $messageServiceFacade;
+    }
+
+    /**
+     * Helper function for getting the mail message cache service. Will return null if
+     * cache is disabled.
+     *
+     * @return \Conjoon\Mail\Client\Service\ServiceResult\Cache\GetMessageCacheService
+     */
+    protected function getMessageCacheServiceHelper() {
+
+        if ($this->messageCacheService) {
+            return $this->messageCacheService;
+        }
+
+        $options = \Zend_Registry::get(\Conjoon_Keys::REGISTRY_CONFIG_OBJECT);
+        $cache = \Conjoon_Cache_Factory::getCache(
+            \Conjoon_Keys::CACHE_EMAIL_MESSAGE,
+            $options->toArray()
+        );
+
+        if ($cache) {
+            $this->messageCacheService = new GetMessageCacheService(
+                new DefaultGetMessageCache($cache), new DefaultGetMessageCacheKeyGen
+            );
+        }
+
+        return $this->messageCacheService;
     }
 
 
