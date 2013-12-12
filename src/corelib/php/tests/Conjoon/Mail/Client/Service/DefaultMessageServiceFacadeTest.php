@@ -49,6 +49,13 @@ class DefaultMessageServiceFacadeTest extends
     protected $plainReadabelStrategy;
 
 
+    protected function getMessageServiceFacade($server, $mailAccountRepository, $mailFolderRepository) {
+
+        return  new DefaultMessageServiceFacade(
+            $server, $mailAccountRepository, $mailFolderRepository);
+
+    }
+
     protected function setUp()
     {
         parent::setUp();
@@ -71,7 +78,7 @@ class DefaultMessageServiceFacadeTest extends
 
         $defaultServer = new \Conjoon\Mail\Server\DefaultServer($protocol);
 
-        $messageFacade = new DefaultMessageServiceFacade($defaultServer,
+        $messageFacade = $this->getMessageServiceFacade($defaultServer,
             $this->mailAccountRepository, $this->mailFolderRepository);
         $result = $messageFacade->setFlagsForMessagesInFolder(
             '[{"id":"56","isRead":true}]', '["root","1","2"]', $this->user
@@ -90,7 +97,7 @@ class DefaultMessageServiceFacadeTest extends
 
         $defaultServer = new \Conjoon\Mail\Server\DefaultServer($protocol);
 
-        $messageFacade = new DefaultMessageServiceFacade($defaultServer,
+        $messageFacade = $this->getMessageServiceFacade($defaultServer,
             $this->mailAccountRepository, $this->mailFolderRepository);
         $result = $messageFacade->getUnformattedMessage(
             "1", '["root","1","2"]', $this->user
@@ -108,7 +115,7 @@ class DefaultMessageServiceFacadeTest extends
 
         $defaultServer = new \Conjoon\Mail\Server\DefaultServer($protocol);
 
-        $messageFacade = new DefaultMessageServiceFacade($defaultServer,
+        $messageFacade = $this->getMessageServiceFacade($defaultServer,
             $this->mailAccountRepository, $this->mailFolderRepository);
         $result = $messageFacade->getMessage(
             "1", '["root","1","2"]', $this->user,  $this->plainReadableStrategy
@@ -127,7 +134,7 @@ class DefaultMessageServiceFacadeTest extends
 
         $defaultServer = new \Conjoon\Mail\Server\DefaultServer($protocol);
 
-        $messageFacade = new DefaultMessageServiceFacade($defaultServer,
+        $messageFacade = $this->getMessageServiceFacade($defaultServer,
             $this->mailAccountRepository, $this->mailFolderRepository);
         $result = $messageFacade->getMessageForReply(
             "1", '["root","1","2"]', $this->user
@@ -154,7 +161,7 @@ class DefaultMessageServiceFacadeTest extends
 
         $defaultServer = new \Conjoon\Mail\Server\DefaultServer($protocol);
 
-        $messageFacade = new DefaultMessageServiceFacade($defaultServer,
+        $messageFacade =$this->getMessageServiceFacade($defaultServer,
             $this->mailAccountRepository, $this->mailFolderRepository);
         $result = $messageFacade->getMessageForReply(
             "1", '["root","1","2"]', $this->user
@@ -181,7 +188,7 @@ class DefaultMessageServiceFacadeTest extends
 
         $defaultServer = new \Conjoon\Mail\Server\DefaultServer($protocol);
 
-        $messageFacade = new DefaultMessageServiceFacade($defaultServer,
+        $messageFacade = $this->getMessageServiceFacade($defaultServer,
             $this->mailAccountRepository, $this->mailFolderRepository);
         $result = $messageFacade->getMessageForComposing(
             "1", '["root","1","2"]', $this->user
@@ -200,7 +207,7 @@ class DefaultMessageServiceFacadeTest extends
 
         $defaultServer = new \Conjoon\Mail\Server\DefaultServer($protocol);
 
-        $messageFacade = new DefaultMessageServiceFacade(
+        $messageFacade = $this->getMessageServiceFacade(
             $defaultServer,
             $this->mailAccountRepository, $this->mailFolderRepository
         );

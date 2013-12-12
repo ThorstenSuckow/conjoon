@@ -85,8 +85,26 @@ require_once 'Conjoon/Text/Parser/Html/ExternalResourcesParser.php';
  */
 require_once 'Conjoon/Vendor/HtmlPurifier/UriFilter/ResourceNotAvailableUriFilter.php';
 
+/**
+ * @see \Conjoon\Mail\Client\Service\ServiceResult\Cache\GetMessageCacheService
+ */
+require_once 'Conjoon/Mail/Client/Service/ServiceResult/Cache/GetMessageCacheService.php';
+
+/**
+ * @see Conjoon\Mail\Client\Service\ServiceResult\Cache\DefaultGetMessageCache
+ */
+require_once 'Conjoon/Mail/Client/Service/ServiceResult/Cache/DefaultGetMessageCache.php';
+
+/**
+ * @see Conjoon\Mail\Client\Service\ServiceResult\Cache\DefaultGetMessageCacheKeyGen
+ */
+require_once 'Conjoon/Mail/Client/Service/ServiceResult/Cache/DefaultGetMessageCacheKeyGen.php';
+
 use \Conjoon\Vendor\Zend\Controller\Action\BaseController,
-    \Conjoon\Argument\ArgumentCheck;
+    \Conjoon\Argument\ArgumentCheck,
+    \Conjoon\Mail\Client\Service\ServiceResult\Cache\GetMessageCacheService,
+    \Conjoon\Mail\Client\Service\ServiceResult\Cache\DefaultGetMessageCache,
+    \Conjoon\Mail\Client\Service\ServiceResult\Cache\DefaultGetMessageCacheKeyGen;
 
 /**
  * Abstract base class for controllers dealing with retrieving mail messages
@@ -208,7 +226,10 @@ abstract class MessageController extends BaseController {
         );
         if ($cache) {
             $messageServiceFacade = new \Conjoon\Mail\Client\Service\CacheableMessageServiceFacade(
-                $messageServiceFacade, $cache
+                $messageServiceFacade,
+                new GetMessageCacheService(
+                    new DefaultGetMessageCache($cache), new DefaultGetMessageCacheKeyGen
+                )
             );
         }
 

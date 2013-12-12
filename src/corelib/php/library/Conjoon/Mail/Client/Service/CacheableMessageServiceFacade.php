@@ -38,22 +38,23 @@ class CacheableMessageServiceFacade implements MessageServiceFacade {
     protected $messageServiceFacade;
 
     /**
-     * @type \Zend_Cache_Frontend
+     * @type \Conjoon\Mail\Client\Service\ServiceResult\Cache\GetMessageCacheService
      */
-    protected $zendCacheFrontend;
+    protected $messageCacheService;
 
     /**
      * Creates a new instance of the MessageServiceFacade.
      *
      * @param DefaultMessageServiceFacade The service facade to decorate
-     * @param \Zend_Cache_Core $zendCacheFrontend the Zend Cache object used for
-     * caching messages
+     * @param \Conjoon\Mail\Client\Service\ServiceResult\Cache\GetMessageCacheService $messageCacheService
+     *        the cache service used for caching messages
      */
     public function __construct(
-        DefaultMessageServiceFacade $messageServiceFacade, \Zend_Cache_Core $zendCacheFrontend) {
+        DefaultMessageServiceFacade $messageServiceFacade,
+        \Conjoon\Mail\Client\Service\ServiceResult\Cache\GetMessageCacheService $messageCacheService) {
 
         $this->messageServiceFacade = $messageServiceFacade;
-        $this->zendCacheFrontend = $zendCacheFrontend;
+        $this->messageCacheService = $messageCacheService;
     }
 
     /**
@@ -84,51 +85,43 @@ class CacheableMessageServiceFacade implements MessageServiceFacade {
         \Conjoon\Mail\Client\Message\Strategy\ReadableStrategy $readableStrategy)
     {
         try {
-            $cache = $this->zendCacheFrontend;
-
-            $folderPath = new \Conjoon\Mail\Client\Folder\DefaultFolderPath(
-                $path
-            );
+            $messageCacheService = $this->messageCacheService;
 
             $format = 'plain';
-            $externalResources = 0;
+            $externalResources = false;
 
             if ($readableStrategy instanceof
                 \Conjoon\Mail\Client\Message\Strategy\HtmlReadableStrategy) {
                 $format = 'html';
-                $externalResources = (int) $readableStrategy->areExternalResourcesAllowed();
+                $externalResources = $readableStrategy->areExternalResourcesAllowed();
             }
 
-            $cacheId = $user->getId() .
-                       '_' .
-                       $id .
-                       '_' .
-                       $folderPath->getRootId() .
-                       '_' .
-                       implode('_', $folderPath->getPath()) .
-                       '_' .
-                       $format .
-                       '_' .
-                       $externalResources;
+            $keyConfig = array(
+                'userId' => $user->getId(),
+                'messageId' => $id,
+                'path' => $path,
+                'format' => $format,
+                'externalResources' => $externalResources
+            );
 
-            if (!($cache->test($cacheId))) {
+            $data = $messageCacheService->load($keyConfig);
+
+            if ($data === null) {
                 $data = $this->messageServiceFacade->getMessage(
                     $id, $path, $user, $readableStrategy
                 );
 
                 if ($data->isSuccess()) {
-                    $cache->save($data, $cacheId);
+                    $messageCacheService->save($data, $keyConfig);
                 }
 
-            } else {
-                $data = $cache->load($cacheId);
             }
 
             return $data;
 
         } catch (\Exception $e) {
 
-            return new DefaultServiceResult(new MessageServiceException(
+            return new GetMessageServiceResult(new MessageServiceException(
                 "Exception thrown by previous exception: " . $e->getMessage(),
                 0, $e
             ));
