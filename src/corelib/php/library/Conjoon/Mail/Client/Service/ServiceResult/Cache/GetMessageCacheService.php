@@ -46,10 +46,10 @@ class GetMessageCacheService  {
 
     /**
      * @param GetMessageCache $messageCache
-     * @param GetMessageCacheKeyGen $keyGen
+     * @param DefaultGetMessageCacheKeyGen $keyGen
      */
     public function __construct(
-        GetMessageCache $messageCache, GetMessageCacheKeyGen $keyGen) {
+        GetMessageCache $messageCache, DefaultGetMessageCacheKeyGen $keyGen) {
 
         $this->messageCache = $messageCache;
         $this->keyGen = $keyGen;
@@ -147,6 +147,39 @@ class GetMessageCacheService  {
             );
         }
 
+    }
+
+    /**
+     * Tries to remove all cached items which can be identified given the
+     * passed arguments. Missing identifiers for the cache key will be guessed
+     * and added.
+     *
+     * @param int $messageId
+     * @param int $userId
+     * @param array $path
+     *
+     * @throws CacheServiceException
+     */
+    public function removeCachedItemsFor($messageId, $userId, $path) {
+
+        $data = array(
+            array('format' => 'plain', 'externalResources' => true),
+            array('format' => 'plain', 'externalResources' => false),
+            array('format' => 'html', 'externalResources' => true),
+            array('format' => 'html', 'externalResources' => false),
+        );
+
+        $path = json_encode($path);
+
+        foreach ($data as $keyConfig) {
+            $this->remove(array(
+                'messageId' => $messageId,
+                'userId' => $userId,
+                'path' => $path,
+                'format' => $keyConfig['format'],
+                'externalResources' => $keyConfig['externalResources']
+            ));
+        }
     }
 
 }

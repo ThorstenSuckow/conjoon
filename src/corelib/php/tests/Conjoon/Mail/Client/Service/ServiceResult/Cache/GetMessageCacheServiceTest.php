@@ -22,9 +22,9 @@ namespace Conjoon\Mail\Client\Service\ServiceResult\Cache;
 require_once 'Conjoon/Mail/Client/Service/ServiceResult/Cache/GetMessageCacheService.php';
 
 /**
- * @see GetMessageCacheKeyGen
+ * @see DefaultGetMessageCacheKeyGen
  */
-require_once 'Conjoon/Mail/Client/Service/ServiceResult/Cache/GetMessageCacheKeyGen.php';
+require_once 'Conjoon/Mail/Client/Service/ServiceResult/Cache/DefaultGetMessageCacheKeyGen.php';
 
 /**
  * @see GetMessageCacheKey
@@ -65,12 +65,24 @@ class GetMessageCacheServiceTest extends \PHPUnit_Framework_TestCase {
 
         $this->service = new GetMessageCacheService(
             new MockGetMessageCache,
-            new MockGetMessageCacheKeyGen
+            new DefaultGetMessageCacheKeyGen
         );
 
         $this->data = array(
-            array(array('key1'), new GetMessageServiceResult("key1")),
-            array(array('key2'), new GetMessageServiceResult("key2"))
+            array(array(
+                'messageId' => 1,
+                'userId' => 1,
+                'path' => "[1, 2]",
+                'format' => 'html',
+                'externalResources' => true
+            ), new GetMessageServiceResult("key1")),
+            array(array(
+                'messageId' => 1,
+                'userId' => 1,
+                'path' => "[1, 2]",
+                'format' => 'plain',
+                'externalResources' => true
+            ), new GetMessageServiceResult("key2"))
         );
     }
 
@@ -109,21 +121,52 @@ class GetMessageCacheServiceTest extends \PHPUnit_Framework_TestCase {
 
         $cache = $this->service;
 
-        $key = $this->service->getCacheKey(array('data'));
+        $key = $this->service->getCacheKey(array(
+            'messageId' => 2,
+            'userId' => 1,
+            'path' => "[3, 4]",
+            'format' => 'html',
+            'externalResources' => true
+        ));
 
         $this->assertTrue($key instanceof GetMessageCacheKey);
 
     }
 
-}
+    /**
+     * Ensures everything works as expected
+     */
+    public function testRemoveCachedItemsFor() {
 
+        $cache = $this->service;
 
-class MockGetMessageCacheKeyGen implements GetMessageCacheKeyGen {
+        foreach ($this->data as $key => $data) {
+            $key = $data[0];
+            $data = $data[1];
+            $this->assertNull($cache->load($key));
+            $cache->save($data, $key);
+        }
 
-    public function generateKey($data) {
-        return new GetMessageCacheKey(json_encode(array($data)));
+        foreach ($this->data as $key => $data) {
+            $key = $data[0];
+            $data = $data[1];
+
+            $loaded = $cache->load($key);
+            $this->assertTrue($loaded instanceof GetMessageServiceResult);
+        }
+
+        $cache->removeCachedItemsFor(1, 1, array(1, 2));
+
+        foreach ($this->data as $key => $data) {
+            $key = $data[0];
+            $data = $data[1];
+            $this->assertNull($cache->load($key));
+        }
+
     }
+
 }
+
 
 class MockGetMessageCache implements GetMessageCache {
 

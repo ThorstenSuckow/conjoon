@@ -27,9 +27,9 @@ require_once 'Conjoon/Mail/Client/Service/CacheableMessageServiceFacade.php';
 require_once 'Conjoon/Mail/Client/Service/DefaultMessageServiceFacadeTest.php';
 
 /**
- * @see \Conjoon\Mail\Client\Service\ServiceResult\Cache\GetMessageCacheKeyGen
+ * @see \Conjoon\Mail\Client\Service\ServiceResult\Cache\DefaultGetMessageCacheKeyGen
  */
-require_once 'Conjoon/Mail/Client/Service/ServiceResult/Cache/GetMessageCacheKeyGen.php';
+require_once 'Conjoon/Mail/Client/Service/ServiceResult/Cache/DefaultGetMessageCacheKeyGen.php';
 
 /**
  * @see \Conjoon\Mail\Client\Service\ServiceResult\Cache\GetMessageCacheKey
@@ -46,7 +46,7 @@ require_once 'Conjoon/Mail/Client/Service/ServiceResult/Cache/GetMessageCache.ph
  */
 require_once 'Conjoon/Mail/Client/Service/ServiceResult/Cache/GetMessageCacheService.php';
 
-use \Conjoon\Mail\Client\Service\ServiceResult\Cache\GetMessageCacheKeyGen,
+use \Conjoon\Mail\Client\Service\ServiceResult\Cache\DefaultGetMessageCacheKeyGen,
     \Conjoon\Mail\Client\Service\ServiceResult\Cache\GetMessageCacheKey,
     \Conjoon\Mail\Client\Service\ServiceResult\Cache\GetMessageCache,
     \Conjoon\Mail\Client\Service\ServiceResult\Cache\GetMessageCacheService;
@@ -67,7 +67,7 @@ class CacheableMessageServiceFacadeTest extends DefaultMessageServiceFacadeTest 
 
         $messageCacheService = new GetMessageCacheService(
             new MockGetMessageCache,
-            new MockGetMessageCacheKeyGen
+            new DefaultGetMessageCacheKeyGen
         );
 
         return new CacheableMessageServiceFacade(
@@ -81,12 +81,6 @@ class CacheableMessageServiceFacadeTest extends DefaultMessageServiceFacadeTest 
 
 }
 
-class MockGetMessageCacheKeyGen implements GetMessageCacheKeyGen {
-
-    public function generateKey($data) {
-        return new GetMessageCacheKey(json_encode(array($data)));
-    }
-}
 
 class MockGetMessageCache implements GetMessageCache {
 
