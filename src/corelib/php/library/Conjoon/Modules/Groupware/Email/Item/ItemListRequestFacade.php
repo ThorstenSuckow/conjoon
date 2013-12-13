@@ -302,7 +302,7 @@ class Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade {
         }
 
         // PARSED HEADERS IS THE INPUT AS WE NEED IT FOR STORING INTO THE DB
-        // NOW GENERATE THEOUTPUT AS CONJOON EXPECTS IT!
+        // NOW GENERATE THE OUTPUT AS CONJOON EXPECTS IT!
 
         /**
          * @see Conjoon_Date_Format
