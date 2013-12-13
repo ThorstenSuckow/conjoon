@@ -14,10 +14,6 @@
 
 Ext.namespace('com.conjoon.cudgets.data');
 
-if (!Ext.Version == '3.2.1') {
-    throw("Look up Ext.data.DataReader.realize() for com.conjoon.cudgets.data.FileSelectionMediator.onUploadSuccess()");
-}
-
 /**
  * Instances of this class mediate between FileChooserButtons and FilePanels.
  *
@@ -339,6 +335,9 @@ Ext.extend(com.conjoon.cudgets.data.FileSelectionMediator, Ext.util.Observable, 
         for (i = 0, len = files.length; i < len; i++) {
             data = finFiles[files[i].id];
 
+            // this is the same logic applied as DataReader.realize()
+            // leave this in for now as it is most likely treeated as legacy code
+            // when updating to ExtJS >= 4
             files[i].phantom = false;
             files[i]._phid   = files[i].id;
             files[i].id      = data.id;
