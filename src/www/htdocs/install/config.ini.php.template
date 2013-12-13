@@ -399,22 +399,6 @@ storage.use_filesystem = {FILES.STORAGE.USE_FILESYSTEM}
 ; IF YOU ARE NOT SURE WHAT YOU ARE DOING, SET storage.filesystem TO 0 and
 ; LET conjoon TAKE CARE OF STORING LOBs IN THE DATABASE
 
-; [EMAIL-MODULE]
-; The path to the folder where attachments will be stored.
-; Either absolute or relative to the application_path setting.
-; TAKE CARE OF PROPER FILE PERMISSIONS!
-storage.email.attachments.dir = {FILES.STORAGE.EMAIL.ATTACHMENTS.DIR}
-
-; the path to the folder where inbox data will be stored
-; (header/bodies). Either absolute or relative to the application_path setting.
-; TAKE CARE OF PROPER FILE PERMISSIONS!
-storage.email.inbox.dir = {FILES.STORAGE.EMAIL.INBOX.DIR}
-
-; the path to the folder where outbox data will be stored
-; (header/bodies). Either absolute or relative to the application_path setting.
-; TAKE CARE OF PROPER FILE PERMISSIONS!
-storage.email.outbox.dir = {FILES.STORAGE.EMAIL.OUTBOX.DIR}
-
 ; [FILE_MODULE]
 ; the path to the folder where files for a user get stored, for
 ; example when a user uploads a file.  Either absolute or relative to the
