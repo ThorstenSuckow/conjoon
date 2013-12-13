@@ -312,7 +312,6 @@ Ext.extend(com.conjoon.cudgets.tree.data.ProxyTreeLoader, Ext.tree.TreeLoader, {
                       : {};
 
                 if (!lookupItem || !childNodes[i].equalsTo(obj)) {
-                    console.log("NO MATCH", childNodes[i], obj);
                     validState = false;
                     break;
                 }
