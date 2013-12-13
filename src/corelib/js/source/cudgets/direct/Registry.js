@@ -657,8 +657,9 @@ com.conjoon.cudgets.direct.Registry.prototype = {
                         me.startRequest(finVals, config);
 
                     }, me, [config]);
-                    me.bufferTask.delay(me.bufferTimeout);
                 }
+
+                me.bufferTask.delay(me.bufferTimeout);
 
             } else {
                 me.startRequest(cfValues, config);
