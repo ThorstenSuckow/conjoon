@@ -209,6 +209,20 @@ class ArgumentCheckTest extends \PHPUnit_Framework_TestCase {
         } catch (\Exception $e) {
             $this->fail("Unexpected exception.");
         }
+
+        $oE = null;
+        try {
+            ArgumentCheck::check(array(
+                'cl' => array(
+                    'type' => 'instanceof',
+                    'class' => 'noneExistingClass'
+                )
+            ), $data);
+        } catch (\Exception $e) {
+           $oE = $e;
+        }
+
+        $this->assertTrue($oE instanceof \Exception);
     }
 
     /**
