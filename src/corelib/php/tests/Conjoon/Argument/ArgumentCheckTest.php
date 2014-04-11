@@ -192,6 +192,26 @@ class ArgumentCheckTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @ticket CN-651
+     */
+    public function testInstanceOfClassAndString() {
+
+        $cl = new \stdClass();
+        $data = array('cl' => $cl);
+
+        try {
+            ArgumentCheck::check(array(
+                'cl' => array(
+                    'type' => 'instanceof',
+                    'class' => '\stdClass'
+                )
+            ), $data);
+        } catch (\Exception $e) {
+            $this->fail("Unexpected exception.");
+        }
+    }
+
+    /**
      * @ticket CN-810
      */
     public function testStrict() {
