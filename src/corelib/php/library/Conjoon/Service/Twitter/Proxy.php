@@ -244,10 +244,7 @@ class Conjoon_Service_Twitter_Proxy  {
     public function accountVerifyCredentials()
     {
         try {
-
             $response = $this->_twitter->accountVerifyCredentials();
-
-            //$response = $this->_twitter->accountVerifyCredentials();
         } catch (Zend_Service_Twitter_Exception $e) {
             return $this->fromTwitterServiceException($e);
         }

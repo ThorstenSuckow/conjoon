@@ -538,6 +538,8 @@ class Service_TwitterAccountController extends Zend_Controller_Action {
 
         /**
          * @ticket CN-675
+         * We could possibly remove this due to CN-676, but decided to leave it
+         * in here to double check... doesn't hurt
          */
         if ($dto->twitterId != $userId) {
             throw new RuntimeException(
