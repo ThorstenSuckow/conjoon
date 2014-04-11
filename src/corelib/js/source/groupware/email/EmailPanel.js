@@ -1882,9 +1882,11 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
     {
         this.switchButtonState(0, null);
 
-        var attr = node && node.attributes
-                   ? node && node.attributes
-                   : false;
+        var me = this,
+            attr = node && node.attributes
+                   ? node.attributes
+                   : false,
+            gridPanel = me.gridPanel;
 
         if (attr !== false
             && (attr.type != 'root_remote'
@@ -1896,28 +1898,29 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
             this.centerPanel.getLayout().setActiveItem(1);
 
             if (this.clkNodeId != this.lastClkNodeId) {
-                var proxy = this.gridPanel.store.proxy;
+                var proxy = gridPanel.store.proxy;
                 var ar    = proxy.activeRequest[Ext.data.Api.actions.read];
                 if (ar) {
                     proxy.getConnection().abort(ar);
                 }
-                this.gridPanel.store.removeAll();
+                gridPanel.selModel.clearSelections(true);
+                gridPanel.store.removeAll();
 
                 if (!attr.isSelectable && ar) {
-                    this.gridPanel.loadMask.hide();
+                    gridPanel.loadMask.hide();
                 }
 
                 if (attr.isSelectable) {
 
-                    this.gridPanel.installStateEvents(false);
-                    this.gridPanel.applyState(
-                        Ext.state.Manager.get(this.gridPanel.stateId),
+                    gridPanel.installStateEvents(false);
+                    gridPanel.applyState(
+                        Ext.state.Manager.get(gridPanel.stateId),
                         this.clkNodeId
                     );
-                    this.gridPanel.installStateEvents(true);
+                    gridPanel.installStateEvents(true);
                 }
 
-                this.gridPanel.view.reset((attr.isSelectable ? true : false));
+                gridPanel.view.reset((attr.isSelectable ? true : false));
 
                 this.lastClkNodeId = this.clkNodeId;
             }
