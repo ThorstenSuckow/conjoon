@@ -178,6 +178,10 @@ com.conjoon.groupware.email.EmailGrid = Ext.extend(Ext.ux.grid.livegrid.GridPane
         var me = this,
             clkNodeId = me.controller.clkNodeId;
 
+        if (me.stateful !== true || !me.stateId || me.stateNodeId != clkNodeId) {
+            return;
+        }
+
         if (me.stateNodeId != clkNodeId) {
             return;
         }
@@ -204,6 +208,10 @@ com.conjoon.groupware.email.EmailGrid = Ext.extend(Ext.ux.grid.livegrid.GridPane
     applyState : function(state, clkNodeId) {
 
         var me = this;
+
+        if (me.stateful !== true || !me.stateId) {
+            return;
+        }
 
         if (!clkNodeId) {
             me.folderStates = state;
