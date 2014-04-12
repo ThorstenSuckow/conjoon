@@ -1,4 +1,9 @@
-﻿Version 0.8 (GPL)
+﻿Version 0.8.1 (GPL)
+12-April-2014
+ - fixed: fixed an issue where in rare cases "-1" would be sent to the 
+attached data storage as the "start" parameter for the requested range
+
+Version 0.8 (GPL)
 14-November-2013
  - enhancement: livegrid is now staful, thus able to restore selections and
 scroll position upon load

@@ -129,7 +129,7 @@ Ext.ux.grid.livegrid.GridPanel = Ext.extend(Ext.grid.GridPanel, {
         var me = this,
             selections = state.selections,
             bufferRange = state.bufferRange
-                ? state.bufferRange[0]
+                ? Math.max(state.bufferRange[0], 0)
                 : 0,
             conf = {
                 rowIndex :  state.rowIndex,
