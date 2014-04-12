@@ -459,23 +459,19 @@ com.conjoon.groupware.Reception = function() {
         _buildLoginWindow({
             loginUrl      : './default/reception/unlock/format/json',
             usernameValue : _user.userName,
-            showExit      : (_workbenchInit === false) ? false : !_applicationStarted,
+            exitUrl       : './?noappcache',
+            showExit      : !_applicationStarted || _workbenchInit,
             modal         : _applicationStarted,
             draggable     : true
         });
-
-        var msg = null;
-        if (_applicationStarted) {
-            msg = com.conjoon.Gettext.gettext("The workbench has been locked. Please sign in again to unlock the workbench.");
-        } else {
-            msg = com.conjoon.Gettext.gettext("The workbench has been locked. Please sign in again to unlock the workbench. Press the &quot;exit&quot;-button to log the previous user out and to login with a new account.");
-        }
 
         loginWindow.setFormIntroLabel(
             com.conjoon.Gettext.gettext("Login")
         );
 
-        loginWindow.setFormIntroText(msg);
+        loginWindow.setFormIntroText(
+            com.conjoon.Gettext.gettext("The workbench has been locked. Please sign in again to unlock the workbench. Press the &quot;exit&quot;-button to log the previous user out and to login with a new account.")
+        );
     };
 
     /**
