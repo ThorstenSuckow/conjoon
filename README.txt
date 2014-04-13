@@ -18,14 +18,8 @@
 | ========                                                                     |
 | http://conjoon.org/about/license                                             |
 |                                                                              |
+| Author:                                                                      |
+| ========                                                                     |
+| Thorsten Suckow-Homberg <tsuckow@conjoon.org>                                |
+|                                                                              |
 +==============================================================================+
-
-
-
-Author:
--------
-Thorsten Suckow-Homberg <thorsten@suckow-homberg.de> (<tsuckow@conjoon.org)
-
-Blog:
--------------------------
-http://thorsten.suckow-homberg.de
