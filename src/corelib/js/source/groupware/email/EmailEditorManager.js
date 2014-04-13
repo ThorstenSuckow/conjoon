@@ -1209,9 +1209,37 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
             );
         } else {
 
+            var myformValues = formValues[activePanel.id],
+                referencedId = myformValues.id,
+                forwardedId = null;
+
+            /**
+             * @ticket CN-815
+             * if we are forwarding a message, the id for the draft is discarded.
+             * This is not the case when we re "editing" a message, where
+             * the id is used to save the edited message again.
+             * So when we want to download an attachment from a draft being
+             * edited in "forward"-mode, we hbe to submit the original id of the
+             * referenced message.
+             */
+            if (myformValues.type == 'forward') {
+                forwardedId = myformValues.emailItemRecord
+                              ? myformValues.emailItemRecord.get('id')
+                              : -1;
+
+                if (!forwardedId || forwardedId <= 0) {
+                    throw new cudgets.base.RuntimeException(
+                        "cannot download existing attachment from forwarded " +
+                        "draft without referenced id"
+                    );
+                }
+
+                referencedId = forwardedId;
+            };
+
             com.conjoon.groupware.DownloadManager.downloadEmailAttachment(
                 record.get('orgId'), record.get('key'), record.get('name'),
-                formValues[activePanel.id].id, formValues[activePanel.id].path
+                referencedId, myformValues.path
             );
         }
 
