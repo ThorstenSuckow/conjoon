@@ -1569,9 +1569,12 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
             && (
             (tp.isPathOfType(oldFolderPath, 'outbox') || tp.isPathOfType(oldFolderPath, 'draft'))
             &&
-            (
-                (!message.newVersion && emailRecord.get('id') == referencedRecord.get('id'))
-             || (message.newVersion && message.previousId == referencedRecord.get('id'))
+            ((!message.newVersion
+               && emailRecord
+               && emailRecord.get('id') == referencedRecord.get('id'))
+             ||
+             (message.newVersion
+              && message.previousId == referencedRecord.get('id'))
             )
 
             )) {
