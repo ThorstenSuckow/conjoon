@@ -549,6 +549,24 @@ class Conjoon_Modules_Groupware_Email_Sender {
     }
 
 
+    /**
+     * Helper function for creating an attachment.
+     *
+     * @note ticket CN-817 might be of interest since we do not do further encoding
+     * on the content if validEncoding in the code is set to "true". In this case, we
+     * should be able to rely on the content being chunk splitted to be compliant
+     * with RFC 2045.
+     *
+     * @static
+     *
+     * @param array $att
+     * @param $name
+     * @param null $model
+     *
+     * @return Conjoon_Mime_Part
+     *
+     * @throws RuntimeException
+     */
     protected static function _createAttachment(Array $att, $name, $model = null)
     {
         /**

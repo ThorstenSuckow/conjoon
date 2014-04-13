@@ -131,9 +131,17 @@ class Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment
                 if (!$row) {
                     return 0;
                 }
-                $content = base64_encode($row['content']);
+                /**
+                 * @ticket CN-817
+                 * Save the chunk splitted string in the mail attachment table
+                 */
+                $content = chunk_split(base64_encode($row['content']), 72, "\n");
             } else {
-                $content = base64_encode($fileContent);
+                /**
+                 * @ticket CN-817
+                 * Save the chunk splitted string in the mail attachment table
+                 */
+                $content = chunk_split(base64_encode($fileContent), 72, "\n");
             }
 
             $stmt = $db->query("INSERT INTO ".
