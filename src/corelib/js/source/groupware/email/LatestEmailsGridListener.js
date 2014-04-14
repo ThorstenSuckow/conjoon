@@ -12,7 +12,7 @@
  * $URL$
  */
 
-Ext.namespace('com.conjoon.groupware.feeds');
+Ext.namespace('com.conjoon.groupware.email');
 
 /**
  * @inheritdoc
