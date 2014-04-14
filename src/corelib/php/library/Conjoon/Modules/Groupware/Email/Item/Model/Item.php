@@ -519,7 +519,7 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
      *
      * @param array $rows
      */
-    protected function applyPathToEmailItems(array $items)
+    public function applyPathToEmailItems(array $items)
     {
         $cachedFolderPaths =& $this->cachedFolderPaths;
 

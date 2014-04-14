@@ -301,6 +301,8 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Inbox
 
         require_once 'Conjoon/Modules/Groupware/Email/Item/Model/Item.php';
 
+        $itemModel = new Conjoon_Modules_Groupware_Email_Item_Model_Item;
+
         $select = Conjoon_Modules_Groupware_Email_Item_Model_Item::getItemBaseQuery(
             $userId,
             $sortInfo,
@@ -333,7 +335,7 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Inbox
         $rows = $adapter->fetchAll($select);
 
         if ($rows != false) {
-            return $rows;
+            return $itemModel->applyPathToEmailItems($rows);
         }
 
         return array();
