@@ -489,46 +489,6 @@ class Groupware_EmailItemController extends
             'start' => $filteredData['start']
         );
 
-        // check if folder is remote folder
-        /**
-         * @see Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser
-         */
-        require_once 'Conjoon/Text/Parser/Mail/MailboxFolderPathJsonParser.php';
-
-        $parser = new Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser();
-
-        $pathInfo = $parser->parse($filteredData['path']);
-
-        /**
-         * @see Conjoon_Modules_Groupware_Email_Folder_Facade
-         */
-        require_once 'Conjoon/Modules/Groupware/Email/Folder/Facade.php';
-
-        $facade = Conjoon_Modules_Groupware_Email_Folder_Facade::getInstance();
-
-        if ($facade->isRemoteFolder((int)$pathInfo['rootId'])) {
-
-            /**
-             * @see Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade
-             */
-            require_once 'Conjoon/Modules/Groupware/Email/Item/ItemListRequestFacade.php';
-
-            $listFacade = Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade::getInstance();
-
-            $itemData = $listFacade->getEmailItemList($pathInfo, $userId, $sortInfo, true);
-
-            $this->view->success      = true;
-            $this->view->error        = null;
-            $this->view->items        = $itemData['items'];
-            $this->view->version      = 1;
-            $this->view->totalCount   = $itemData['totalCount'];
-            $this->view->pendingItems = $itemData['pendingItems'];
-            return;
-        }
-
-
-
-
         require_once 'Conjoon/BeanContext/Decorator.php';
         require_once 'Conjoon/Modules/Groupware/Email/Item/Filter/ItemResponse.php';
         $itemResponseFilter = new Conjoon_Modules_Groupware_Email_Item_Filter_ItemResponse(
@@ -539,6 +499,42 @@ class Groupware_EmailItemController extends
         $pendingItems = -1;
 
         if ($context == $CONTEXT_REQUEST) {
+            // check if folder is remote folder
+            /**
+             * @see Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser
+             */
+            require_once 'Conjoon/Text/Parser/Mail/MailboxFolderPathJsonParser.php';
+
+            $parser = new Conjoon_Text_Parser_Mail_MailboxFolderPathJsonParser();
+
+            $pathInfo = $parser->parse($filteredData['path']);
+
+            /**
+             * @see Conjoon_Modules_Groupware_Email_Folder_Facade
+             */
+            require_once 'Conjoon/Modules/Groupware/Email/Folder/Facade.php';
+
+            $facade = Conjoon_Modules_Groupware_Email_Folder_Facade::getInstance();
+
+            if ($facade->isRemoteFolder((int)$pathInfo['rootId'])) {
+
+                /**
+                 * @see Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade
+                 */
+                require_once 'Conjoon/Modules/Groupware/Email/Item/ItemListRequestFacade.php';
+
+                $listFacade = Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade::getInstance();
+
+                $itemData = $listFacade->getEmailItemList($pathInfo, $userId, $sortInfo, true);
+
+                $this->view->success      = true;
+                $this->view->error        = null;
+                $this->view->items        = $itemData['items'];
+                $this->view->version      = 1;
+                $this->view->totalCount   = $itemData['totalCount'];
+                $this->view->pendingItems = $itemData['pendingItems'];
+                return;
+            }
 
             // get the number of emails currently available for this folder
             // and this user
@@ -576,7 +572,6 @@ class Groupware_EmailItemController extends
             $pendingItems = $folderModel->getPendingCountForFolderAndUser(
                 $filteredData['groupwareEmailFoldersId'], $userId
             );
-
 
         } else if ($context == $CONTEXT_REQUEST_LATEST) {
 
