@@ -20,6 +20,14 @@ Ext.namespace('com.conjoon.groupware.email');
 com.conjoon.groupware.email.LatestEmailsGridListener
     = Ext.extend(com.conjoon.groupware.util.PreviewListener, {
 
+
+    /**
+     *  @inheritdoc
+     */
+    isRecordIndexInStoreEqualToRowIndex : function(record, rowIndex, store) {
+        return store.indexOf(record) + store.bufferRange[0] === rowIndex
+    },
+
     /**
      *  @inheritdoc
      */

@@ -147,7 +147,6 @@ com.conjoon.groupware.util.PreviewListener.prototype = {
         this.multiSelections = false;
     },
 
-    i : 0,
     /**
      * Listener for the grid selection model's rowselect event. Will void if
      * either one of the flags multiSelections or cellClickActive equals to
@@ -208,24 +207,41 @@ com.conjoon.groupware.util.PreviewListener.prototype = {
 
         this.sClick = true;
 
-        var selModel = grid.getSelectionModel();
-        var record   = selModel.getSelected();
-        var key      = (e.ctrlKey || e.shiftKey);
+        var selModel = grid.getSelectionModel(),
+            record   = selModel.getSelected(),
+            key      = (e.ctrlKey || e.shiftKey);
 
         if (!record || (key && this.preview.isPreviewShownForRecord(record))) {
             // hide preview if deselect or no selections are available
             this.preview.hide(false);
         } else if (selModel.getCount() == 1
-            && grid.getStore().indexOf(record) === rowIndex) {
+            && this.isRecordIndexInStoreEqualToRowIndex(
+                record, rowIndex, grid.getStore())
+            ) {
             // show preview panel if click occurs on already selected row,
             // and this is the only selected row
             this.preview.show(grid, record);
         }
 
-
         return;
     },
 
+    /**
+     * Override to adapt to different rowIndex computing, such as livegrid.
+     *
+     * @ticket CN-823
+     *
+     * @param record The record to look up
+     * @param rowIndex The row index to compare to
+     * @param store
+     *
+     * @return {Boolean}
+     */
+    isRecordIndexInStoreEqualToRowIndex : function(record, rowIndex, store) {
+
+        return store.indexOf(record) === rowIndex
+
+    },
 
     /**
      * Delegates to onCellDblClick and makes sure that any existing preview
