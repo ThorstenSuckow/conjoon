@@ -387,7 +387,11 @@ com.conjoon.groupware.email.EmailPreview = function() {
             }
             clkRecord = record.copy();
 
-            var rowIndex = grid.getStore().indexOf(record);
+            var store    = grid.getStore(),
+                /**
+                 * @ticket CN-821
+                 */
+                rowIndex = store.indexOf(record) + store.bufferRange[0];
 
             var pId = clkRecord.id;
             if (activeEmailId == pId) {
