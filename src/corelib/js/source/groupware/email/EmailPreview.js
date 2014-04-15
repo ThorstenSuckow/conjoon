@@ -176,6 +176,14 @@ com.conjoon.groupware.email.EmailPreview = function() {
         lastRecord = emailView.emailRecord;
 
         loadMask.hide();
+
+        /**
+         * @ticket CN-822
+         */
+        if (!emailView.isVisible()) {
+            emailView.show();
+        }
+
         previewPanel.setTitle(lastRecord.get('subject'));
     };
 
