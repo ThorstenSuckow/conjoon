@@ -948,6 +948,13 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
                 return false;
             }
 
+            /**
+             * @ticket CN-825
+             */
+            if (Ext.util.JSON.encode(sourcePath) === Ext.util.JSON.encode(targetPath)) {
+                return false;
+            }
+
             return source.isDropValid === true;
         }
 
