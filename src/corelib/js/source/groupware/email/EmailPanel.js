@@ -671,11 +671,13 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
 
         var unread = 0;
 
-        var gs = this.gridPanel.getStore();
-        var requestArray = [];
+        var gs = this.gridPanel.getStore(),
+            requestArray = [],
+            plainIds = [];
 
         for (var i = 0, max_i = records.length; i < max_i; i++) {
             unread += (records[i].get('isRead') ? 0 : 1);
+            plainIds.push(records[i].id);
             requestArray.push({
                 id                      : records[i].id,
                 groupwareEmailFoldersId : folderId[folderId.length - 1]
@@ -686,14 +688,16 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
             return;
         }
 
-        var allowPendingUpdate = this.allowNodePendingUpdate(currFolderId);
-        var updatePendingCount = allowPendingUpdate ? 0 : i;
+        var allowPendingUpdate = this.allowNodePendingUpdate(currFolderId),
+            updatePendingCount = allowPendingUpdate ? 0 : i,
+            fromPath = tp.getNodeById(currFolderId).getPathAsArray('idForPath');
+
 
         Ext.Ajax.request({
             url: './groupware/email.item/move.items/format/json',
             params: {
                 toPath      : Ext.encode(folderId),
-                fromPath    : Ext.encode(tp.getNodeById(currFolderId).getPathAsArray('idForPath')),
+                fromPath    : Ext.encode(fromPath),
                 itemsToMove : Ext.encode(requestArray)
             }
         });
@@ -714,7 +718,13 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
             pendingRecord.set('pending', pendingRecord.data.pending -
                 (allowPendingUpdate ? unread : updatePendingCount));
         }
+
+        Ext.ux.util.MessageBus.publish('conjoon.mail.publicMessage.mailMove', {
+            path   : {to : folderId, from : fromPath},
+            ids      : plainIds
+        });
     },
+
 
     /**
      * Shows an informal message if the specified node - which is assumed to be
@@ -1229,7 +1239,9 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
             }
 
             var pendingStore  = this.treePanel.pendingItemStore;
-            var pendingRecord = pendingStore.getById(this.treePanel.assemblePath(record.data.path));
+            var pendingRecord = pendingStore.getById(
+                this.treePanel.assemblePath(record.data.path)
+            );
             if (pendingRecord) {
                 pendingRecord.set('pending', pendingRecord.data.pending+up);
             }

@@ -72,6 +72,21 @@ Ext.apply(Ext, {
     },
 
     /**
+     * Mimics ExtJS4 "Ext.Array.indexOf()"
+     *
+     * @param {Array}
+     * @param mixed item
+     *
+     * @return {Number}
+     */
+    Array : {
+        indexOf : function(arr, item) {
+            // Ext 3
+            return arr.indexOf(item);
+        }
+    },
+
+    /**
      * Mimics ExtJS4 "Ext.create()"
      *
      * @param className

@@ -133,6 +133,12 @@ com.conjoon.groupware.email.LatestEmailsPanel = Ext.extend(Ext.ux.grid.livegrid.
     initEvents : function()
     {
         Ext.ux.util.MessageBus.subscribe(
+            'conjoon.mail.publicMessage.mailMove',
+            this.onEmailItemMove,
+            this
+        );
+
+        Ext.ux.util.MessageBus.subscribe(
             'com.conjoon.groupware.email.view.onEmailLoad',
             this.onEmailItemLoad,
             this
@@ -238,6 +244,43 @@ com.conjoon.groupware.email.LatestEmailsPanel = Ext.extend(Ext.ux.grid.livegrid.
 
         if (rec) {
             this.setItemsAsRead([rec], true);
+        }
+    },
+
+    /**
+     * Subscribed to the message with the subject
+     * conjoon.mail.publicMessage.mailMove
+     *
+     * @ticket CN-719
+     *
+     * @param {String} subject
+     * @param {Object} message
+     */
+    onEmailItemMove : function(subject, message)
+    {
+        var me       = this,
+            recs     = this.store.getRange(),
+            fromPath = message.path.from,
+            toPath   = message.path.to,
+            ids      = message.ids;
+
+        // discard root entry as returned from the path
+        // computed by tree nodes
+        if (fromPath.length && fromPath[0] === 'root') {
+            fromPath.shift();
+        }
+        if (toPath.length && toPath[0] === 'root') {
+            toPath.shift();
+        }
+
+        for (var i = 0, len = recs.length; i < len; i++) {
+
+            if (Ext.Array.indexOf(ids, recs[i].get('id')) !== -1 &&
+                Ext.util.JSON.encode(recs[i].get('path')) ===
+                Ext.util.JSON.encode(fromPath)) {
+                recs[i].set('path', toPath);
+            }
+
         }
     },
 
