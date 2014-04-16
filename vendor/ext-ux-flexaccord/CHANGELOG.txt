@@ -1,3 +1,9 @@
+V0.2
+16-April-2014
+ - fixed: fixed an issue where it would not be possible to set the initial height of a 
+panel with "0", i.e. collapsed
+
+
 V0.1.1
 17-July-2009
  - enhancement: (Layout.js) layout now injects "_isDragged" property nto panels that are

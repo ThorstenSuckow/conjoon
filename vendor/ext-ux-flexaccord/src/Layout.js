@@ -1,6 +1,6 @@
 /**
  * Ext.ux.layout.flexAccord.Layout
- * Copyright (c) 2009, http://www.siteartwork.de
+ * Copyright (c) 2009-2014, http://www.siteartwork.de
  *
  * Ext.ux.layout.flexAccord.Layout is licensed under the terms of the
  *                  GNU Open Source LGPL 3.0
