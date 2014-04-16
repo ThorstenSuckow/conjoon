@@ -49,9 +49,7 @@ com.conjoon.groupware.email.NodeEditor = function(treePanel, config) {
     // beforehide will be called
     this.on('beforecomplete', this.onBeforeEditingComplete, this);
     this.on('complete',       this.onEditorComplete, this);
-    this.on('show',           this.onEditorShow,  this);
     this.on('beforehide',     this.onBeforeHide,  this);
-    this.on('hide',           this.onEditorHide,  this);
 
 };
 
@@ -75,16 +73,6 @@ Ext.extend(com.conjoon.groupware.email.NodeEditor, Ext.tree.TreeEditor, {
 
 
 // ----------------------------- Methods ---------------------------------------
-
-    initEditor : function(tree)
-    {
-        com.conjoon.groupware.email.NodeEditor.superclass.initEditor.call(this, tree);
-        // needed to overwrite since the mousdwon wad not in the ext2.0rc1
-        // this is needed since a node which is currently being edited must not be draggable,
-        // but without this custom implementation the tree would allow a node being
-        // currently edited to be dragged around
-        tree.getTreeEl().on('mousedown', this.hide, this);
-    },
 
     /**
      * Validator for the node editor.
@@ -238,22 +226,6 @@ Ext.extend(com.conjoon.groupware.email.NodeEditor, Ext.tree.TreeEditor, {
 
         this.editMode  = this.NONE;
         this.isWarning = false;
-    },
-
-    /**
-    *
-    */
-    onEditorShow : function()
-    {
-        //alert(this.editMode+": SHOW");
-    },
-
-    /**
-    *
-    */
-    onEditorHide : function()
-    {
-        //alert(this.editMode+": HIDE");
     },
 
     /**
