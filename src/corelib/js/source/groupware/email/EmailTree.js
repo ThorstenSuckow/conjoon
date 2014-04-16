@@ -870,7 +870,13 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
 
         var me = this;
 
-        return me.folderService.isPartOfProxySubtree(data.node) === false;
+        // check if the node is registered in the editingNodesStorage,
+        // or if its editor is currently active,
+        // or if its part of a proxy subtree
+        return  (!this.editingNodesStorage ||
+                !this.editingNodesStorage[data.node.id]) &&
+                !this.nodeEditor.isEditPendingForNode(data.node) &&
+                me.folderService.isPartOfProxySubtree(data.node) === false;
     },
 
     /**
@@ -1215,6 +1221,8 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
 
         }
         this.requestId = null;
+
+        this.nodeEditor.resetPendingState();
 
         delete this.editingNodesStorage[nodeId];
 

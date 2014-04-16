@@ -119,6 +119,32 @@ Ext.extend(com.conjoon.groupware.email.NodeEditor, Ext.tree.TreeEditor, {
     },
 
     /**
+     * Tells this editor that pendning states should be reset.
+     * The next call to isEditPending will then return false.
+     *
+     * @ticket CN-117
+     *
+     */
+    resetPendingState : function() {
+        this.editNode = null;
+        this.editMode = this.NONE;
+    },
+
+    /**
+     * Returns true if the editor for the specified node is
+     * currently in a pending state.
+     *
+     * @ticket CN-117
+     *
+     * @param {Ext.tree.TreeNode}
+     *
+     * @return {Boolean}
+     */
+    isEditPendingForNode : function(node) {
+        return node != null && this.editNode === node;
+    },
+
+    /**
      *
      */
     triggerEdit : function(node, mode)
