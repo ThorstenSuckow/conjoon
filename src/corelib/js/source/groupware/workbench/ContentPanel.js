@@ -83,12 +83,13 @@ com.conjoon.groupware.workbench.ContentPanel = Ext.extend(Ext.TabPanel, {
 
                 var state = {
                     activeTabId : tab.id,
-                    emailViewPanelStates : []
+                    panelStates : []
                 };
 
                 for (var i = 0, items = this.items.items, len = items.length; i< len; i++) {
-                    if (items[i]  instanceof com.conjoon.groupware.email.EmailViewPanel) {
-                        state.emailViewPanelStates.push(items[i].getState());
+                    if ((items[i] instanceof com.conjoon.groupware.email.EmailViewPanel) ||
+                        items[i].cnCompType === 'feedViewPanel') {
+                        state.panelStates.push(items[i].getState());
                     }
                 }
 
@@ -101,19 +102,50 @@ com.conjoon.groupware.workbench.ContentPanel = Ext.extend(Ext.TabPanel, {
                 }
                 var id = state.activeTabId,
                     tab,
-                    emailViewPanelStates = state.emailViewPanelStates || [],
-                    panel;
+                    panelStates = state.panelStates || [],
+                    panel,
+                    currPanelState;
 
-                for (var i = 0, len = emailViewPanelStates.length; i < len; i++) {
-                    panel = com.conjoon.groupware.email.EmailViewBaton.showEmail(
-                        new com.conjoon.groupware.email.EmailItemRecord(
-                            emailViewPanelStates[i].emailItem,
-                            emailViewPanelStates[i].emailItem.id
-                        )
-                    );
-                    delete emailViewPanelStates[i].emailItem;
+                for (var i = 0, len = panelStates.length; i < len; i++) {
 
-                    panel.applyState(emailViewPanelStates[i]);
+                    currPanelState = panelStates[i];
+
+                    switch(currPanelState.cnCompType) {
+                        case 'emailViewPanel':
+                            panel = com.conjoon.groupware.email.EmailViewBaton.showEmail(
+                                new com.conjoon.groupware.email.EmailItemRecord(
+                                    currPanelState.emailItem,
+                                    currPanelState.emailItem.id
+                                )
+                            );
+                            // delete unneccessary state props before applying state
+                            // to panel
+                            delete currPanelState.emailItem;
+                            delete currPanelState.cnCompType;
+
+                            break;
+
+                        case 'feedViewPanel':
+                            panel = com.conjoon.groupware.feeds.FeedViewBaton.showFeed(
+                                new com.conjoon.groupware.feeds.ItemRecord(
+                                    currPanelState.feedItem, currPanelState.feedItem.id
+                                ), true
+                            );
+
+                            panel = panel.view
+
+                            // delete unneccessary state props before applying state
+                            // to panel
+                            delete currPanelState.feedItem;
+                            delete currPanelState.cnCompType;
+
+                            break;
+
+                    }
+
+                    // apply remaining state props, such as icon and title
+                    panel.applyState(currPanelState);
+
                 }
 
                 tab = this.getComponent(id);

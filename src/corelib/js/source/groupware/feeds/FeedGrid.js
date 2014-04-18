@@ -20,11 +20,31 @@ com.conjoon.groupware.feeds.FeedGrid = Ext.extend(Ext.grid.GridPanel, {
     clkRecord       : null,
     cellClickActive : false,
 
+    /**
+     * The state of the groups in the view, gets set once state gets applied from
+     * statemanager
+     * @type {Object}
+     * @ticket CN-789
+     */
+    groupstate : null,
+
     initComponent : function()
     {
+        /**
+         * @ticket CN-789
+         */
+        this.addEvents('grouptoggle');
+        this.stateEvents = [
+            'collapse', 'expand', 'show', 'hide',
+            'resize', 'columnmove', 'columnresize',
+            'sortchange', 'groupchange', 'grouptoggle'
+        ];
+
         this.store = com.conjoon.groupware.feeds.FeedStore.getInstance();
 
         this.store.setDefaultSort('pubDate', "DESC");
+
+
 
         this.columns = [{
             id:'name',
@@ -59,7 +79,11 @@ com.conjoon.groupware.feeds.FeedGrid = Ext.extend(Ext.grid.GridPanel, {
           }
         ];
 
-        var groupTextTpl  = '{text} ({[values.rs.length]}/{[function(){var b = 0;for (var i = 0, rs = values.rs, max_i = rs.length; i < max_i; i++) {if (!rs[i].data.isRead) {b++;}}return b;}()]})';
+        var groupTextTpl  = '{text} ({[values.rs.length]}/{[function(){' +
+                            'var b = 0;for (var i = 0, rs = values.rs, ' +
+                            'max_i = rs.length; i < max_i; i++) {' +
+                            'if (!rs[i].data.isRead) {b++;}}return b;}()]})';
+
         this.groupTextTpl = new Ext.XTemplate(groupTextTpl);
         this.groupTextTpl.compile();
 
@@ -67,30 +91,62 @@ com.conjoon.groupware.feeds.FeedGrid = Ext.extend(Ext.grid.GridPanel, {
             forceFit      : false,
             showGroupName : false,
             groupTextTpl  : groupTextTpl,
-            getRowClass   : this.applyRowClass
-        });
+            getRowClass   : this.applyRowClass,
+            /**
+             * @ticket CN-789
+             */
+            toggleGroup : function(group, expanded){
+                Ext.grid.GroupingView.prototype.toggleGroup.call(this, group, expanded);
+                this.grid.fireEvent('grouptoggle', this.grid, group, expanded);
+            },
+            /**
+             * We need this override of the private method to make sure
+             * we do not accidently look up elements and add css-classes
+             * during expnding/collapsing when re-applying the state.
+             *
+             * @ticket CN-789
+             * @param field
+             *
+             * @return {String}
+             */
+            getPrefix: function(field){
+                return 'cn-feedGrid-gp-' + field + '-';
+            },
+            /**
+             * Applies state (groupstate) and groups once grid was rendered.
+             * grid's afterrender event does not work, since the event is fired before
+             * the view rendering methods are invoked when view's deferRowRender is
+             * enabled
+             *
+             * @ticket CN-789
+             *
+             * @private
+             */
+            afterRender : function() {
 
-        var displayOptionsMenu = new Ext.menu.Menu({
-            items: [{
-                id : 'groupFeeds',
-                text: com.conjoon.Gettext.gettext("group after feeds"),
-                checked: true,
-                //group: 'com.conjoon.groupware.FeedGrid.display',
-                checkHandler: this.toggleGroupView,
-                scope: this
-              },
-              "-",{
-                iconCls : 'com-conjoon-groupware-feeds-FeedGrid-optionsMenu-configureItem-icon',
-                text    : com.conjoon.Gettext.gettext("Settings..."),
-                scope   : this,
-                handler : function() {
-                    var optDialog = new com.conjoon.groupware.feeds.FeedOptionsDialog();
-                    optDialog.show();
+                Ext.grid.GroupingView.prototype.afterRender.call(this);
+
+                var me = this,
+                    grid = me.grid,
+                    groupstate = grid.groupstate,
+                    el;
+
+                if (!groupstate || !me.state) {
+                    return;
                 }
 
-              }]
-        });
+                for (var i in groupstate) {
+                    // view dows not seem to check for existing
+                    // element in toggleGroup, so do it here
+                    var el = Ext.get(i);
+                    if (!el) {
+                        continue;
+                    }
 
+                    me.toggleGroup(i, groupstate[i]);
+                }
+            }
+        });
 
         this.tbar = new Ext.Toolbar([{
             iconCls : 'com-conjoon-groupware-feeds-FeedGrid-toolbar-addFeedButton-icon',
@@ -132,6 +188,25 @@ com.conjoon.groupware.feeds.FeedGrid = Ext.extend(Ext.grid.GridPanel, {
         });
 
         com.conjoon.groupware.feeds.FeedGrid.superclass.initComponent.call(this);
+    },
+
+    /**
+     * @inheritdoc
+     * @ticket CN-789
+     */
+    getState : function() {
+        var orgState = com.conjoon.groupware.feeds.FeedGrid.superclass.getState.call(this),
+            state = Ext.apply({
+                collapsed  : this.collapsed,
+                hidden     : !this.isVisible(),
+                groupstate : this.view.state
+            }, orgState);
+
+        if (!this.collapsed && this.resizable !== false) {
+            state.height = this.getHeight();
+        }
+
+        return state;
     },
 
     initEvents : function()

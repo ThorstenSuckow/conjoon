@@ -342,23 +342,6 @@ com.conjoon.groupware.Workbench = Ext.extend(Ext.Viewport, {
             return me.widgets;
         }
 
-        var defaults = {
-            stateful : true,
-            stateEvents : ['collapse', 'expand', 'show', 'hide', 'resize'],
-            getState : function() {
-                var state = {
-                    collapsed : this.collapsed,
-                    hidden    : !this.isVisible()
-                };
-
-                if (!this.collapsed && this.resizable !== false) {
-                    state.height = this.getHeight();
-                }
-
-                return state;
-            }
-        };
-
         var quickPanel = com.conjoon.groupware.QuickEditPanel.getComponent({
             workbench : me,
             draggable : com.conjoon.groupware.workbench.PanelDragSource.getConfig(),
@@ -377,23 +360,40 @@ com.conjoon.groupware.Workbench = Ext.extend(Ext.Viewport, {
             }
         });
 
-        var feedGrid = new com.conjoon.groupware.feeds.FeedGrid(Ext.apply({
+        var feedGrid = new com.conjoon.groupware.feeds.FeedGrid({
             draggable : com.conjoon.groupware.workbench.PanelDragSource.getConfig(),
             stateId : stateIdentifiers.feedWidget,
-            id : 'widgetFeedPanel'
-        }, defaults));
+            id : 'widgetFeedPanel',
+            stateful : true
+        });
 
-        var emailsPanel = new com.conjoon.groupware.email.LatestEmailsPanel(Ext.apply({
+        var emailsPanel = new com.conjoon.groupware.email.LatestEmailsPanel({
             collapsed : true,
             draggable : com.conjoon.groupware.workbench.PanelDragSource.getConfig(),
             stateId : stateIdentifiers.emailWidget,
-            id : 'widgetEmailPanel'
-        }, defaults));
+            id : 'widgetEmailPanel',
+            stateful : true,
+            stateEvents : ['collapse', 'expand', 'show', 'hide', 'resize'],
+            getState : function() {
+                var state = {
+                    collapsed : this.collapsed,
+                    hidden    : !this.isVisible()
+                };
+
+                if (!this.collapsed && this.resizable !== false) {
+                    state.height = this.getHeight();
+                }
+
+                return state;
+            }
+        });
 
         var twitterPanel = new com.conjoon.groupware.service.TwitterPanel({
             draggable : com.conjoon.groupware.workbench.PanelDragSource.getConfig(),
             itemTitle : com.conjoon.Gettext.gettext("Twitter"),
             stateId : stateIdentifiers.twitterWidget,
+            // state of selected twitter account gets saved in twitter
+            // comp itself
             stateEvents : ['collapse', 'expand', 'show', 'hide', 'resize'],
             stateful : true,
             id : 'widgetTwitterPanel'

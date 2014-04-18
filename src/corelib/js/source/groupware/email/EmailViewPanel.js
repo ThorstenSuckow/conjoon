@@ -150,9 +150,10 @@ com.conjoon.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
         }
 
         return {
-            title     : (me.emailItem.data.subject || '&#160;'),
-            iconCls   : me._orgIconCls,
-            emailItem : me.emailItem.data
+            cnCompType : 'emailViewPanel',
+            title      : (me.emailItem.data.subject || '&#160;'),
+            iconCls    : me._orgIconCls,
+            emailItem  : me.emailItem.data
         };
 
     },

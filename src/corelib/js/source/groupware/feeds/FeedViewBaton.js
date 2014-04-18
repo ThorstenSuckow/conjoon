@@ -142,7 +142,7 @@ com.conjoon.groupware.feeds.FeedViewBaton = function() {
             'com-conjoon-groupware-feeds-FeedView-Icon'
         );
 
-        openedFeeds[options.panelId]['body'].update(rec.get('content'));
+        openedFeeds[options.panelId].body.body.update(rec.get('content'));
     };
 
     /**
@@ -196,23 +196,45 @@ com.conjoon.groupware.feeds.FeedViewBaton = function() {
     /**
      *
      *
-     * @param {com.conjoon.groupware.feeds.FeedItemRecord}
+     * @param {com.conjoon.groupware.feeds.ItemRecord}
      * @param {Boolean} loadFromServer
      */
     var buildPanel = function(feedItemRecord, loadFromServer)
     {
-        var accRec = AccountStore.getById(feedItemRecord.get('groupwareFeedsAccountsId'));
-        var link   = accRec.get('link');
-        var name   = feedItemRecord.get('name')+' - '+accRec.get('description');
-
-        var body = new Ext.Panel({
-            region     : 'center',
-            autoScroll : true,
-            cls        : 'com-conjoon-groupware-feeds-FeedView-panel',
-            html       : ''
-        });
+        var accRec = AccountStore.getById(feedItemRecord.get('groupwareFeedsAccountsId')),
+            link   = accRec.get('link').
+            name   = feedItemRecord.get('name')+' - '+accRec.get('description'),
+            body = new Ext.Panel({
+                region     : 'center',
+                autoScroll : true,
+                cls        : 'com-conjoon-groupware-feeds-FeedView-panel',
+                html       : ''
+            });
 
         var view = new Ext.Panel({
+            /**
+             * Not creating a specific class in this case. We simply set cnCompType
+             * as a helper to indicate we have a panel representing a feed entry
+             * @ticket CN-789
+             */
+            cnCompType : 'feedViewPanel',
+            feedItemRecord : feedItemRecord,
+            /**
+             * @inheritdoc
+             * @ticket CN-789
+             */
+            getState : function() {
+
+                var me = this;
+
+                return {
+                    cnCompType : 'feedViewPanel',
+                    feedItem   : me.feedItemRecord.data,
+                    title      : feedItemRecord.get('title'),
+                    iconCls    : 'com-conjoon-groupware-feeds-FeedView-Icon'
+                };
+
+            },
             layout     : 'border',
             id         : idPrefix+feedItemRecord.id,
             title      : loadFromServer
@@ -284,15 +306,32 @@ com.conjoon.groupware.feeds.FeedViewBaton = function() {
             tbarManager.hide('com.conjoon.groupware.feeds.FeedView.toolbar');
         });
 
+        if (loadFromServer === true) {
+            view.on('afterrender', function() {
+                loadFeedContents(
+                    feedItemRecord.id,
+                    feedItemRecord.get('groupwareFeedsAccountsId'),
+                    idPrefix+feedItemRecord.id
+                );
+            }, {single : true});
+        }
+
         contentPanel.add(view);
         contentPanel.setActiveTab(view);
-        openedFeeds[idPrefix+feedItemRecord.id] = {
+        var key = idPrefix+feedItemRecord.id;
+        openedFeeds[key] = {
             view : view,
-            body : body.body,
+            /**
+             * We are only storing a reference to the body and concatenate
+             * to the body's body later on, since the body might not be rendered
+             * immediately (see afterrender)
+             * @ticket CN-789
+             */
+            body : body,
             link : feedItemRecord.get('link')
         };
 
-        return view;
+        return openedFeeds[key];
     };
 
     return {
@@ -302,10 +341,12 @@ com.conjoon.groupware.feeds.FeedViewBaton = function() {
          * If the second argument is set to true, the baton will load additionally
          * feed's contents from the server.
          *
-         * @param {com.conjoon.groupware.feeds.FeedItemRecord} feedItemRecord either the fully configured
-         * feed item record or the id of the feed item lo load
+         * @param {com.conjoon.groupware.feeds.ItemRecord} feedItemRecord the fully configured
+         * feed item record
          * @param {Boolean} loadFromServer true if the record is not fully
          * configured and needs loading from the server, otherwise false
+         *
+         * @return {Object}
          */
         showFeed : function(feedItemRecord, loadFromServer)
         {
@@ -324,19 +365,14 @@ com.conjoon.groupware.feeds.FeedViewBaton = function() {
 
             if (opened) {
                 contentPanel.setActiveTab(opened['view']);
-                return opened;
             } else {
-                buildPanel(feedItemRecord, loadFromServer);
-                if (loadFromServer === true) {
-                    loadFeedContents(
-                        feedItemRecord.id,
-                        feedItemRecord.get('groupwareFeedsAccountsId'),
-                        idPrefix+feedItemRecord.id
-                    );
-                } else {
-                    openedFeeds[idPrefix+feedItemRecord.id]['body'].update(feedItemRecord.get('content'));
+                opened = buildPanel(feedItemRecord, loadFromServer);
+                if (loadFromServer !== true) {
+                    openedFeeds[idPrefix+feedItemRecord.id].body.body.update(feedItemRecord.get('content'));
                 }
             }
+
+            return opened;
         }
     }
 }();
