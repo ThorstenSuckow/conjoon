@@ -158,7 +158,7 @@ com.conjoon.groupware.feeds.AddFeedDialog = Ext.extend(Ext.Window, {
             allowBlank   : false,
             anchor       : '95%',
             validator    : function(v){
-                               var alphanum = /^[a-zA-Z0-9_()\/ :.]+$/;
+                               var alphanum = /^[a-zA-Z0-9_\-()\/ :.]+$/;
                                return alphanum.test(v);
                            }
         });
