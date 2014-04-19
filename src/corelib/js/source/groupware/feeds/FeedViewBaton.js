@@ -209,9 +209,11 @@ com.conjoon.groupware.feeds.FeedViewBaton = function() {
                 autoScroll : true,
                 cls        : 'com-conjoon-groupware-feeds-FeedView-panel',
                 html       : ''
-            });
+            }),
+            key = idPrefix+feedItemRecord.id,
+            view;
 
-        var view = new Ext.Panel({
+        view = new Ext.Panel({
             /**
              * Not creating a specific class in this case. We simply set cnCompType
              * as a helper to indicate we have a panel representing a feed entry
@@ -219,6 +221,7 @@ com.conjoon.groupware.feeds.FeedViewBaton = function() {
              */
             cnCompType : 'feedViewPanel',
             feedItemRecord : feedItemRecord,
+            cnLoadContentFromServer : loadFromServer,
             /**
              * @inheritdoc
              * @ticket CN-789
@@ -304,6 +307,14 @@ com.conjoon.groupware.feeds.FeedViewBaton = function() {
 
 
         view.on('activate', function(panel) {
+            if (panel.cnLoadContentFromServer === true) {
+                var feedItemRecord = panel.feedItemRecord;
+                loadFeedContents(
+                    feedItemRecord.id,
+                    feedItemRecord.get('groupwareFeedsAccountsId'),
+                    idPrefix+feedItemRecord.id
+                );
+            }
             tbarManager.show('com.conjoon.groupware.feeds.FeedView.toolbar');
         });
 
@@ -311,19 +322,9 @@ com.conjoon.groupware.feeds.FeedViewBaton = function() {
             tbarManager.hide('com.conjoon.groupware.feeds.FeedView.toolbar');
         });
 
-        if (loadFromServer === true) {
-            view.on('afterrender', function() {
-                loadFeedContents(
-                    feedItemRecord.id,
-                    feedItemRecord.get('groupwareFeedsAccountsId'),
-                    idPrefix+feedItemRecord.id
-                );
-            }, {single : true});
-        }
-
         contentPanel.add(view);
         contentPanel.setActiveTab(view);
-        var key = idPrefix+feedItemRecord.id;
+
         openedFeeds[key] = {
             view : view,
             /**
@@ -369,13 +370,18 @@ com.conjoon.groupware.feeds.FeedViewBaton = function() {
             var opened = openedFeeds[idPrefix+feedItemRecord.id];
 
             if (opened) {
+                // needs to be set before activate
+                opened.view.cnLoadContentFromServer = loadFromServer;
                 contentPanel.setActiveTab(opened['view']);
             } else {
                 opened = buildPanel(feedItemRecord, loadFromServer);
-                if (loadFromServer !== true) {
-                    openedFeeds[idPrefix+feedItemRecord.id].body.body.update(feedItemRecord.get('content'));
-                }
+                opened.view.cnLoadContentFromServer = loadFromServer;
             }
+
+            if (loadFromServer !== true) {
+                openedFeeds[idPrefix+feedItemRecord.id].body.body.update(feedItemRecord.get('content'));
+            }
+
 
             return opened;
         }
