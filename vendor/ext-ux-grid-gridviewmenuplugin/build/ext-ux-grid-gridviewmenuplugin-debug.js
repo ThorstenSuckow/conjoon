@@ -1,6 +1,6 @@
 /**
  * Ext.ux.grid.GridViewMenuPlugin
- * Copyright (c) 2008, http://www.siteartwork.de
+ * Copyright (c) 2008-2014, http://www.siteartwork.de
  *
  * Ext.ux.grid.GridViewMenuPlugin is licensed under the terms of the
  *                  GNU Open Source LGPL 3.0
@@ -218,9 +218,13 @@ Ext.ux.grid.GridViewMenuPlugin = Ext.extend(Object, {
                             if(checked){
                                 this._view.enableGrouping = true;
                                 this._grid.store.groupBy(this._lastGroupField);
+                                this._grid.fireEvent(
+                                    'groupchange', this._grid, this._grid.store.getGroupState()
+                                );
                             }else{
                                 this._view.enableGrouping = false;
                                 this._grid.store.clearGrouping();
+                                this._grid.fireEvent('groupchange', this._grid, null);
                             }
                         },
                         scope : this
@@ -229,8 +233,8 @@ Ext.ux.grid.GridViewMenuPlugin = Ext.extend(Object, {
 
                 var sep = new Ext.menu.Separator();
                 var gI  = this._view.enableNoGroups
-                          ? new Ext.menu.CheckItem(conf)
-                          : new Ext.menu.Item(conf);
+                    ? new Ext.menu.CheckItem(conf)
+                    : new Ext.menu.Item(conf);
 
                 this._keepItems.unshift(sep, gI);
             }
@@ -299,10 +303,15 @@ Ext.ux.grid.GridViewMenuPlugin = Ext.extend(Object, {
             if(item.checked){
                 this._view.enableGrouping = false;
                 this._grid.store.clearGrouping();
+                this._grid.fireEvent('groupchange', this._grid, null);
             } else {
                 this._view.enableGrouping = true;
                 this._grid.store.groupBy(dIndex);
                 this._lastGroupField = this._view.getGroupField();
+                this._grid.fireEvent(
+                    'groupchange', this._grid, this._grid.store.getGroupState()
+                );
+
             }
         }
     },

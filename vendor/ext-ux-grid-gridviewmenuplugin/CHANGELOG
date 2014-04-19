@@ -1,4 +1,9 @@
-﻿Version 0.4
+﻿Version 0.5
+19-April-2014
+ - enhancement: added support for "groupchange" event, i.e. support for 
+stateful grouping grids using this plugin
+
+Version 0.4
 01-November-2012
  - enhancement: added Ext 3.4 compatibility
 
