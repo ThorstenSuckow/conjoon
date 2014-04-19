@@ -225,11 +225,16 @@ com.conjoon.groupware.feeds.FeedViewBaton = function() {
              */
             getState : function() {
 
-                var me = this;
+                var me = this,
+                    feedData = me.feedItemRecord.data;
+
+                // remove unnedded information from the record
+                delete feedData.description;
+                delete feedData.content;
 
                 return {
                     cnCompType : 'feedViewPanel',
-                    feedItem   : me.feedItemRecord.data,
+                    feedItem   : feedData,
                     title      : feedItemRecord.get('title'),
                     iconCls    : 'com-conjoon-groupware-feeds-FeedView-Icon'
                 };
