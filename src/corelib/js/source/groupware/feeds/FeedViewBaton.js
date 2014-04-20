@@ -340,7 +340,7 @@ com.conjoon.groupware.feeds.FeedViewBaton = function() {
                 );
             }
             tbarManager.show('com.conjoon.groupware.feeds.FeedView.toolbar');
-        });
+        }, view, {single : true});
 
         view.on('deactivate', function(panel) {
             tbarManager.hide('com.conjoon.groupware.feeds.FeedView.toolbar');
