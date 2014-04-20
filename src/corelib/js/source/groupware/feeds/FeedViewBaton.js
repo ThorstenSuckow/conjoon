@@ -94,6 +94,17 @@ com.conjoon.groupware.feeds.FeedViewBaton = function() {
             return;
         }
 
+        /**
+         * @ticket CN-832
+         */
+        var tab = openedFeeds[panelId]
+                  ? openedFeeds[panelId].view
+                  : null;
+        if (tab) {
+            tab.setTitle(com.conjoon.Gettext.gettext("Loading..."));
+            tab.setIconClass('com-conjoon-groupware-pending-icon');
+        }
+
         _requestIds[panelId] = Ext.Ajax.request({
             url    : './groupware/feeds.item/get.feed.content/format/json',
             params : {
