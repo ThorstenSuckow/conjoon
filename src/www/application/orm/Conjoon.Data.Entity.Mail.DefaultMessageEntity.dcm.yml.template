@@ -1,7 +1,7 @@
 Conjoon\Data\Entity\Mail\DefaultMessageEntity:
     type: entity
     repositoryClass: Conjoon\Data\Repository\Mail\DoctrineMessageRepository
-    table: groupware_email_items
+    table: {DATABASE.TABLE.PREFIX}groupware_email_items
     fields:
         id:
             id: true

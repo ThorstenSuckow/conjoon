@@ -1,7 +1,7 @@
 Conjoon\Data\Entity\Mail\DefaultAttachmentContentEntity:
     type: entity
     repositoryClass: Conjoon\Data\Repository\Mail\DoctrineAttachmentContentRepository
-    table: mail_attachment_content
+    table: {DATABASE.TABLE.PREFIX}mail_attachment_content
     fields:
         id:
             id: true

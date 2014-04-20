@@ -1,7 +1,7 @@
 Conjoon\Data\Entity\Mail\DefaultMailAccountEntity:
     repositoryClass: Conjoon\Data\Repository\Mail\DoctrineMailAccountRepository
     type: entity
-    table: groupware_email_accounts
+    table: {DATABASE.TABLE.PREFIX}groupware_email_accounts
     fields:
         id:
             id: true

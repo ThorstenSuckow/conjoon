@@ -1,7 +1,7 @@
 Conjoon\Data\Entity\Mail\DefaultMailFolderEntity:
     repositoryClass: Conjoon\Data\Repository\Mail\DoctrineMailFolderRepository
     type: entity
-    table: groupware_email_folders
+    table: {DATABASE.TABLE.PREFIX}groupware_email_folders
     fields:
         id:
             id: true
@@ -53,7 +53,7 @@ Conjoon\Data\Entity\Mail\DefaultMailFolderEntity:
             targetEntity: Conjoon\Data\Entity\Mail\DefaultMailAccountEntity
             inversedBy: DefaultMailFolderEntity
             joinTable:
-                name: groupware_email_folders_accounts
+                name: {DATABASE.TABLE.PREFIX}groupware_email_folders_accounts
                 joinColumns:
                     groupware_email_folders_id:
                         referencedColumnName: id

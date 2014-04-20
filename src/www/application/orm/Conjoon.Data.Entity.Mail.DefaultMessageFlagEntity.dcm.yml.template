@@ -1,7 +1,7 @@
 Conjoon\Data\Entity\Mail\DefaultMessageFlagEntity:
     type: entity
     repositoryClass: Conjoon\Data\Repository\Mail\DoctrineMessageFlagRepository
-    table: groupware_email_items_flags
+    table: {DATABASE.TABLE.PREFIX}groupware_email_items_flags
     id:
         users:
             associationKey: true

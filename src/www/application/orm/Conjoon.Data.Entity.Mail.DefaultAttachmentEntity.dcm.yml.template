@@ -1,7 +1,7 @@
 Conjoon\Data\Entity\Mail\DefaultAttachmentEntity:
     type: entity
     repositoryClass: Conjoon\Data\Repository\Mail\DoctrineAttachmentRepository
-    table: groupware_email_items_attachments
+    table: {DATABASE.TABLE.PREFIX}groupware_email_items_attachments
     fields:
         id:
             id: true

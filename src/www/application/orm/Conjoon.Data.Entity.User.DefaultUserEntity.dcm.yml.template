@@ -1,7 +1,7 @@
 Conjoon\Data\Entity\User\DefaultUserEntity:
     type: entity
     repositoryClass: Conjoon\Data\Repository\User\DoctrineUserRepository
-    table: users
+    table: {DATABASE.TABLE.PREFIX}users
     fields:
         id:
             id: true
