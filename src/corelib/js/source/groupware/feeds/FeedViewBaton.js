@@ -226,7 +226,7 @@ com.conjoon.groupware.feeds.FeedViewBaton = function() {
     var buildPanel = function(feedItemRecord, loadFromServer)
     {
         var accRec = AccountStore.getById(feedItemRecord.get('groupwareFeedsAccountsId')),
-            link   = accRec.get('link').
+            link   = accRec.get('link'),
             name   = feedItemRecord.get('name')+' - '+accRec.get('description'),
             body = new Ext.Panel({
                 region     : 'center',
