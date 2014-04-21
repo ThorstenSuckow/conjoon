@@ -256,6 +256,25 @@ if (isset($_POST['install_post'])) {
                     : "",
                  $configini);
 
+    // Htmlpurifier settings
+    $configini = str_replace(
+                    '{HTMLPURIFIER.PRELOAD_ALL}',
+                    $_SESSION['htmlpurifier']['preload_all'],
+                    $configini
+    );
+    $configini = str_replace(
+                    '{HTMLPURIFIER.USE_CACHE}',
+                    $_SESSION['htmlpurifier']['use_cache'],
+                    $configini
+    );
+    $configini = str_replace(
+                    '{HTMLPURIFIER.CACHE_DIR}',
+                    $_SESSION['htmlpurifier']['use_cache']
+                    && $_SESSION['htmlpurifier']['cache_dir']
+                    ? $_SESSION['htmlpurifier']['cache_dir']
+                    : "",
+                    $configini
+    );
 
     // overwrite the file completely, even if it still exists from a previous
     // installation!

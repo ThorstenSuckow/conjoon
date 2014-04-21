@@ -104,15 +104,15 @@ zf.use_plugin_cache = 1
 ; helpful if you are running an opcode cache and don't want to rely on autoload
 ; features (which are still used in case a class was not preloaded). It is
 ; recommended to set this option to "1" if you are using an opcode cache.
-htmlpurifier.preload_all = 1
+htmlpurifier.preload_all = {HTMLPURIFIER.PRELOAD_ALL}
 
 ; enables/disables caching for htmlpurifier. It is recommended to enable the htmlpurifier
 ; cache by setting this option to "1". Set the option to "0" to disable caching.
-htmlpurifier.use_cache = 1
+htmlpurifier.use_cache = {HTMLPURIFIER.USE_CACHE}
 
 ; the directory htmlpurifier should use for cached data. The directory has to be
 ; readable/writeable by the webserver
-htmlpurifier.cache_dir =
+htmlpurifier.cache_dir = {HTMLPURIFIER.CACHE_DIR}
 
 ; Twitter specific parameters for the Oauth process.
 twitter.oauth.callbackUrl    = ./service/twitter.account/authorize.okay
