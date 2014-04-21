@@ -144,9 +144,14 @@ If this is not the case, move the folder before you proceed!
 <div class="error_box">
   Please agree to the license terms first before you install/update conjoon.
 </div>
+<?php } else { ?>
+<div class="warning_box">
+    Please agree to the license terms first before you install/update conjoon.
+</div>
 <?php } ?>
 <p>
 <input id="license_agree" type="checkbox" name="license_agree" value="1" /> <label for="license_agree">I have read, understood and agreed to the </label><a href="#" onclick="window.open('./license.php')">terms and conditions of the software license</a>.
+<br />
 <br />
 <?php if ($WELCOME['backup_check_missing']) { ?>
 <div class="error_box">
@@ -154,7 +159,7 @@ If this is not the case, move the folder before you proceed!
 </div>
 <?php } ?>
 <input id="backup_check" type="checkbox" name="backup_check" value="1" /> <label for="backup_check">
-    Alright, I have made a backup of my data! Let's continue!
+    I have made a backup of my data! Let's continue!
 </label>
 </p>
 <input type="hidden" name="welcome_post" value="1" />
