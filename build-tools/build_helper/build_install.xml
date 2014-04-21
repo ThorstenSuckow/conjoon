@@ -375,6 +375,30 @@
 ..............................................................................-->
 
 <!--.............................................................................
+//////////////////////////// rebuild htmlpurifier \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+..............................................................................-->
+<!-- builds htmlpurifier library for build_install -->
+<!-- not to be directly invoked -->
+<target if="global.called.build_install_helper"
+        name="_build_install_htmlpurifier"
+        unless="global.called._build_install_htmlpurifier"
+        >
+    <property file="${file.tmpProperties}" />
+    <property name="global.called._build_install_htmlpurifier" value="1" />
+    <exportallowed targetfile="${file.tmpProperties}" allowed="global"  />
+    <delete dir="./build/build/htdocs/install/files/conjoon_libs/HTMLPurifier/library" />
+    <copy todir="./build/build/htdocs/install/files/conjoon_libs/HTMLPurifier/library" includeemptydirs="true">
+        <fileset dir="./build/export/vendor/htmlpurifier/library" />
+        <filterchain>
+            <filterreader classname="filters.RemoveRequire" />
+        </filterchain>
+    </copy>
+</target>
+<!--.............................................................................
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/////////////////////////////////////////////
+..............................................................................-->
+
+<!--.............................................................................
 //////////////////////////// rebuild datastore\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 ..............................................................................-->
     <!-- builds the datastore files for build-install -->
@@ -518,6 +542,7 @@
         <phingcall target="_build_install_application" />
         <phingcall target="_build_install_zend" />
         <phingcall target="_build_install_doctrine" />
+        <phingcall target="_build_install_htmlpurifier" />
         <phingcall target="_build_install_conjoon_php" />
         <phingcall target="_build_install_datastore" />
         <copy file="./build/export/LICENSE.txt"
