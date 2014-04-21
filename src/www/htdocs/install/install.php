@@ -150,7 +150,13 @@ if (isset($_POST['install_post'])) {
     if ($_SESSION['add_include_path']) {
         $configini = str_replace(
             "{INCLUDE_PATH}",
-            $_SESSION['lib_path'] . "/" . $libFolder,
+            $_SESSION['lib_path'] . "/" . $libFolder .
+            /**
+             * @ticket CN-839
+             */
+            ':' .
+            $_SESSION['lib_path'] . "/" . $libFolder .
+            '/HTMLPurifier/library',
             $configini
         );
     } else {

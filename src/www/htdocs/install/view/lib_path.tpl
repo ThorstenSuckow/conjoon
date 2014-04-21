@@ -56,4 +56,10 @@ The specified folder is not readable. Please check the file permissions or chose
  <br />
  <input id="aipcb" <?php echo ($_SESSION['add_include_path'] ? "checked=\"checked\"" :"" ); ?> type="checkbox" name="add_include_path" value="1" />  <label for="aipcb">Let conjoon add this path to php's include_path (uncheck this if you have access to the php.ini and can edit the include_path setting on your own)</label>
  <input type="hidden" name="lib_path_post" value="1" />
+ <br />
+ <div class="info_box">
+    <b>Note:</b> If you uncheck the checkbox and edit the <i>include_path</i>-setting on your own,
+     make sure to consult the documentation for any additional library paths you have to
+     specify.
+</div>
 </p>
