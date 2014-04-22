@@ -827,7 +827,7 @@ Ext.extend(com.conjoon.groupware.email.view.DefaultViewRenderer, Ext.util.Observ
                 ' tabindex="0" ',
                 'class="com-conjoon-groupware-email-EmailView-attachmentItem ',
                 '{mimeIconCls}" ',
-                ' qtip="{[this.qtipName(values.name)]}"',
+                ' ext:qtip="{[this.qtipName(values.name)]}"',
                 '>{[this.renderName(values.name)]}</div>', {
                     qtipName : function(value) {
                         return value.replace(/"/g, '&quot;');

@@ -60,7 +60,7 @@ com.conjoon.groupware.feeds.FeedGrid = Ext.extend(Ext.grid.GridPanel, {
             sortable: true,
             dataIndex: 'title',
             renderer : function(value, metadata, record){
-                metadata.attr = 'qtip="'+value.replace(/"/g, '&quot;')+'"';
+                metadata.attr = 'ext:qtip="'+value.replace(/"/g, '&quot;')+'"';
                 return value;
             }
           },{

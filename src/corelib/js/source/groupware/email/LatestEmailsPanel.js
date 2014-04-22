@@ -89,7 +89,7 @@ com.conjoon.groupware.email.LatestEmailsPanel = Ext.extend(Ext.ux.grid.livegrid.
             sortable  : false,
             dataIndex : 'subject',
             renderer : function(value, metadata, record){
-                metadata.attr = 'qtip="'+value.replace(/"/g, '&quot;')+'"';
+                metadata.attr = 'ext:qtip="'+value.replace(/"/g, '&quot;')+'"';
                 return value;
             }
           },{
