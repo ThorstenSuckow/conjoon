@@ -329,7 +329,8 @@ com.conjoon.groupware.feeds.FeedViewBaton = function() {
             }
         }, view, {single : true});
 
-
+        // check only one time if contents need to be loaded from
+        // server, then remove listener
         view.on('activate', function(panel) {
             if (panel.cnLoadContentFromServer === true) {
                 var feedItemRecord = panel.feedItemRecord;
@@ -339,8 +340,12 @@ com.conjoon.groupware.feeds.FeedViewBaton = function() {
                     idPrefix+feedItemRecord.id
                 );
             }
-            tbarManager.show('com.conjoon.groupware.feeds.FeedView.toolbar');
         }, view, {single : true});
+
+        // always show toolbar when tab gets activated
+        view.on('activate', function(panel) {
+            tbarManager.show('com.conjoon.groupware.feeds.FeedView.toolbar');
+        }, view);
 
         view.on('deactivate', function(panel) {
             tbarManager.hide('com.conjoon.groupware.feeds.FeedView.toolbar');
