@@ -146,6 +146,21 @@ com.conjoon.groupware.workbench.ContentPanel = Ext.extend(Ext.TabPanel, {
                     // apply remaining state props, such as icon and title
                     panel.applyState(currPanelState);
 
+                    /**
+                     * When state is restored, the tabs do not get rendered when the state
+                     * is applied in this method, since the content panel itself is not rendered
+                     * yet.
+                     * We have to manually call setIconCls and SetTitle for changing the according
+                     * menu item in the start/bookmark menu
+                     * @ticket CN-843
+                     */
+                    if (currPanelState.iconCls) {
+                        panel.setIconClass(currPanelState.iconCls);
+                    }
+                    if (currPanelState.title) {
+                        panel.setTitle(currPanelState.title);
+                    }
+
                 }
 
                 tab = this.getComponent(id);
@@ -463,7 +478,7 @@ com.conjoon.groupware.workbench.ContentPanel = Ext.extend(Ext.TabPanel, {
             });
             item.on('click', function() {
                 this.setActiveTab(component);
-            }, this)
+            }, this);
             component.on('titlechange', function(){
                 item.setText(this.title);
             }, component);
