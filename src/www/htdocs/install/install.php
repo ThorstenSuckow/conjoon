@@ -259,19 +259,19 @@ if (isset($_POST['install_post'])) {
     // Htmlpurifier settings
     $configini = str_replace(
                     '{HTMLPURIFIER.PRELOAD_ALL}',
-                    $_SESSION['htmlpurifier']['preload_all'],
+                    $_SESSION['application']['htmlpurifier.preload_all'],
                     $configini
     );
     $configini = str_replace(
                     '{HTMLPURIFIER.USE_CACHE}',
-                    $_SESSION['htmlpurifier']['use_cache'],
+                    $_SESSION['application']['htmlpurifier.use_cache'],
                     $configini
     );
     $configini = str_replace(
                     '{HTMLPURIFIER.CACHE_DIR}',
-                    $_SESSION['htmlpurifier']['use_cache']
-                    && $_SESSION['htmlpurifier']['cache_dir']
-                    ? $_SESSION['htmlpurifier']['cache_dir']
+                    $_SESSION['application']['htmlpurifier.use_cache']
+                    && $_SESSION['application']['htmlpurifier.cache_dir']
+                    ? $_SESSION['application']['htmlpurifier.cache_dir']
                     : "",
                     $configini
     );
@@ -360,8 +360,12 @@ if (isset($_POST['install_post'])) {
               "
               : "'cache.default.caching' => 0,"
             )."
-
-            'app_credentials'    => array('user' => '".$_SESSION['app_credentials']['user']."')
+            'application.htmlpurifier.preload_all' => " . ($_SESSION['application']['htmlpurifier.preload_all']  ? '1' : '0' ). ", ".
+            "'application.htmlpurifier.use_cache' => " . ($_SESSION['application']['htmlpurifier.use_cache'] ? '1' : '0'). ", ".
+            "'application.htmlpurifier.cache_dir' => " . ($_SESSION['application']['htmlpurifier.use_cache']
+                                                          ? "'" . $_SESSION['application']['htmlpurifier.cache_dir'] . "'"
+                                                          : "''") . ", ".
+            "'app_credentials'    => array('user' => '".$_SESSION['app_credentials']['user']."')
         );
     ";
 
@@ -460,6 +464,19 @@ if (isset($_POST['install_post'])) {
     conjoon_updateHtml5ManifestFilesWithBasePath(
         $_SESSION['app_path'] . "/" . $appFolder, $_SESSION['doc_path']
     );
+
+    // remove old htmlpurifier if needed
+    if (isset($_SESSION['installation_info']['application.htmlpurifier.use_cache'])
+        && isset($_SESSION['installation_info']['application.htmlpurifier.cache_dir'])
+        && file_exists($_SESSION['installation_info']['application.htmlpurifier.cache_dir'])) {
+        @conjoon_rmdir($_SESSION['installation_info']['application.htmlpurifier.cache_dir']);
+        @rmdir($_SESSION['installation_info']['application.htmlpurifier.cache_dir']);
+    }
+    // ... and create new dir if necessary
+    if ($_SESSION['application']['htmlpurifier.use_cache']
+        && $_SESSION['application']['htmlpurifier.cache_dir']) {
+        conjoon_mkdir($_SESSION['application']['htmlpurifier.cache_dir']);
+    }
 
 
     // remove old cache folders

@@ -110,13 +110,16 @@ further updating of conjoon. Please do not remove this file.
     Step 5: Cache settings
               |
               |
-    Step 6: Installing libraries, managing include_path
+    Step 6: Tool Configuration
               |
               |
-    Step 7: Specifying document path
+    Step 7: Installing libraries, managing include_path
               |
               |
-    Step 8: Specifying user credentials - this step is only available
+    Step 8: Specifying document path
+              |
+              |
+    Step 9: Specifying user credentials - this step is only available
     if there is NO root user already in the database
               |
               |

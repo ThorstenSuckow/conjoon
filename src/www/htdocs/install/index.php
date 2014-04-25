@@ -162,18 +162,21 @@ if (isset($_GET['nosession'])) {
         'cache' => array(
             "Step 5", "./index.php?action=cache", "./index.php?action=cache_check"
         ),
+       'lib_settings' => array(
+           "Step 6", "./index.php?action=lib_settings", "./index.php?action=lib_settings_check"
+        ),
         'lib_path' => array(
-            "Step 6", "./index.php?action=lib_path", "./index.php?action=lib_path_check"
+            "Step 7", "./index.php?action=lib_path", "./index.php?action=lib_path_check"
         ),
         'doc_path' => array(
-            "Step 7", "./index.php?action=doc_path", "./index.php?action=doc_path_check"
+            "Step 8", "./index.php?action=doc_path", "./index.php?action=doc_path_check"
         )
    );
 
    $changeAppCredentials = !isset($_SESSION['installation_info']['app_credentials']['user']);
    if ($changeAppCredentials) {
        $VIEW['navigation']['app_credentials'] = array(
-           "Step 8", "./index.php?action=app_credentials", "./index.php?action=app_credentials_check"
+           "Step 9", "./index.php?action=app_credentials", "./index.php?action=app_credentials_check"
        );
    }
 
@@ -269,15 +272,28 @@ if (isset($_GET['nosession'])) {
        // actions for setting up the cache
        case 'cache':
            include_once './cache.php';
-       break;
+           break;
        case 'cache_check':
            $VIEW['action'] = 'cache';
            include_once './cache.php';
-       break;
+           break;
        case 'cache_success':
+           header("Location: ./index.php?action=lib_settings");
+           die();
+           break;
+
+       // actions for setting up lib_settings
+       case 'lib_settings':
+           include_once './lib_settings.php';
+           break;
+       case 'lib_settings_check':
+           $VIEW['action'] = 'lib_settings';
+           include_once './lib_settings.php';
+           break;
+       case 'lib_settings_success':
            header("Location: ./index.php?action=lib_path");
            die();
-       break;
+           break;
 
        // actions for setting path to library folder
        case 'lib_path':
