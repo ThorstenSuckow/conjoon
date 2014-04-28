@@ -426,6 +426,8 @@ if (isset($_POST['install_post'])) {
             );
         }
     }
+    conjoon_copy('./htaccess.deny.txt',
+        $_SESSION['lib_path'] . "/" . $libFolder . '/.htaccess');
 
     // replace $LIBRARY_PATH_BOOTSTRAP in index.php to enable autoloader
     // replace $LOCALE_DEFAULT_TIMEZONE in index.php for local.timezone
@@ -459,6 +461,7 @@ if (isset($_POST['install_post'])) {
             );
         }
     }
+    conjoon_copy('./htaccess.deny.txt', $_SESSION['app_path'] . "/" . $appFolder . '/.htaccess');
 
     // work on HTML5 manifest files. Update them to use the configured base_url.
     conjoon_updateHtml5ManifestFilesWithBasePath(
@@ -476,6 +479,8 @@ if (isset($_POST['install_post'])) {
     if ($_SESSION['application']['htmlpurifier.use_cache']
         && $_SESSION['application']['htmlpurifier.cache_dir']) {
         conjoon_mkdir($_SESSION['application']['htmlpurifier.cache_dir']);
+        conjoon_copy('./htaccess.deny.txt',
+            $_SESSION['application']['htmlpurifier.cache_dir'] . '/.htaccess');
     }
 
 
@@ -549,42 +554,62 @@ if (isset($_POST['install_post'])) {
 
         if ($_SESSION['cache']['db.metadata.caching']) {
             conjoon_mkdir($_SESSION['cache']['db.metadata.backend.cache_dir']);
+            conjoon_copy('./htaccess.deny.txt',
+                $_SESSION['cache']['db.metadata.backend.cache_dir'] . '/.htaccess');
         }
 
         if ($_SESSION['cache']['email.message.caching']) {
             conjoon_mkdir($_SESSION['cache']['email.message.backend.cache_dir']);
+            conjoon_copy('./htaccess.deny.txt',
+                $_SESSION['cache']['email.message.backend.cache_dir'] . '/.htaccess');
         }
 
         if ($_SESSION['cache']['email.accounts.caching']) {
             conjoon_mkdir($_SESSION['cache']['email.accounts.backend.cache_dir']);
+            conjoon_copy('./htaccess.deny.txt',
+                $_SESSION['cache']['email.accounts.backend.cache_dir'] . '/.htaccess');
         }
 
         if ($_SESSION['cache']['email.folders_root_type.caching']) {
             conjoon_mkdir($_SESSION['cache']['email.folders_root_type.backend.cache_dir']);
+            conjoon_copy('./htaccess.deny.txt',
+                $_SESSION['cache']['email.folders_root_type.backend.cache_dir'] . '/.htaccess');
         }
 
         if ($_SESSION['cache']['feed.item.caching']) {
             conjoon_mkdir($_SESSION['cache']['feed.item.backend.cache_dir']);
+            conjoon_copy('./htaccess.deny.txt',
+                $_SESSION['cache']['feed.item.backend.cache_dir'] . '/.htaccess');
         }
 
         if ($_SESSION['cache']['feed.item_list.caching']) {
             conjoon_mkdir($_SESSION['cache']['feed.item_list.backend.cache_dir']);
+            conjoon_copy('./htaccess.deny.txt',
+                $_SESSION['cache']['feed.item_list.backend.cache_dir'] . '/.htaccess');
         }
 
         if ($_SESSION['cache']['feed.reader.caching']) {
             conjoon_mkdir($_SESSION['cache']['feed.reader.backend.cache_dir']);
+            conjoon_copy('./htaccess.deny.txt',
+                $_SESSION['cache']['feed.reader.backend.cache_dir'] . '/.htaccess');
         }
 
         if ($_SESSION['cache']['feed.account.caching']) {
             conjoon_mkdir($_SESSION['cache']['feed.account.backend.cache_dir']);
+            conjoon_copy('./htaccess.deny.txt',
+                $_SESSION['cache']['feed.account.backend.cache_dir'] . '/.htaccess');
         }
 
         if ($_SESSION['cache']['feed.account_list.caching']) {
             conjoon_mkdir($_SESSION['cache']['feed.account_list.backend.cache_dir']);
+            conjoon_copy('./htaccess.deny.txt',
+                $_SESSION['cache']['feed.account_list.backend.cache_dir'] . '/.htaccess');
         }
 
         if ($_SESSION['cache']['twitter.accounts.caching']) {
             conjoon_mkdir($_SESSION['cache']['twitter.accounts.backend.cache_dir']);
+            conjoon_copy('./htaccess.deny.txt',
+                $_SESSION['cache']['twitter.accounts.backend.cache_dir'] . '/.htaccess');
         }
     }
 
@@ -612,6 +637,7 @@ if (isset($_POST['install_post'])) {
 
     // move _configCache to htdocs
     rename('./files/_configCache', '../_configCache');
+    conjoon_copy('./htaccess.deny.txt', '../_configCache/.htaccess');
 
     header("Location: ./?action=install_success");
     die();
