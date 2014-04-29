@@ -443,8 +443,6 @@ if (isset($_POST['install_post'])) {
     );
     file_put_contents('../index.php', $indexFile);
 
-
-
     // move application folders
     $appFolders = explode(",", $_SESSION['setup_ini']['app_path']['delete']);
     for ($i = 0, $len = count($appFolders); $i < $len; $i++) {
@@ -462,6 +460,14 @@ if (isset($_POST['install_post'])) {
         }
     }
     conjoon_copy('./htaccess.deny.txt', $_SESSION['app_path'] . "/" . $appFolder . '/.htaccess');
+
+    // work on Doctrine-ORM files!
+    conjoon_createOrmFiles(
+        $_SESSION['app_path'] . "/" .
+        $appFolder . "/" .
+        $_SESSION['setup_ini']['application']['doctrine.orm.folder_name'],
+        $_SESSION['db_table_prefix']
+    );
 
     // work on HTML5 manifest files. Update them to use the configured base_url.
     conjoon_updateHtml5ManifestFilesWithBasePath(

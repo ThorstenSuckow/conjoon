@@ -21,6 +21,82 @@
 
 
 /**
+ * Moves orm template files to production ready orm files and replaces
+ * table prefix placeholders with its specific counterpart
+ *
+ * @param string $path path to the folder where orm files can be found
+ * @param string $prefix prefix to use for tables found in orm files
+ */
+function conjoon_createOrmFiles($path, $prefix = "") {
+
+    InstallLogger::getInstance()->logMessage(
+        "[ORM FILE CREATOR]: " .
+        "Trying to move orm-template files to production ready files in \"" .
+        $path .
+        "\" using table-prefix \"".$prefix."\""
+    );
+
+    if (is_dir($path)) {
+
+        $d = dir($path);
+
+        while (($entry = $d->read()) !== false) {
+            if ($entry == '.' || $entry == '..') {
+                continue;
+            }
+
+            $_entry = $path . '/' . $entry;
+            if (is_dir($_entry)) {
+                continue;
+            }
+
+            $needle = '.dcm.yml.template';
+
+            // if filename ends with...
+            if (substr($_entry, -strlen($needle)) === $needle) {
+                $target = substr($_entry, 0, strlen($_entry) - strlen($needle)) .
+                          '.dcm.yml';
+
+                InstallLogger::getInstance()->logMessage(
+                    "[ORM FILE CREATOR]: " .
+                        "Renaming \"" .
+                        $_entry .
+                        "\" to \"".$target."\""
+                );
+
+                rename($_entry, $target);
+
+                $ormFile = file_get_contents($target);
+                //replace prefix
+                $ormFile = str_replace('{DATABASE.TABLE.PREFIX}', $prefix, $ormFile);
+
+                InstallLogger::getInstance()->logMessage(
+                    "[ORM FILE CREATOR]: " .
+                        "replacing placeholder with prefix \"" .
+                        $prefix .
+                        "\" in \"".$target."\""
+                );
+
+                file_put_contents($target, $ormFile);
+            }
+        }
+
+        $d->close();
+    } else {
+        InstallLogger::getInstance()->logMessage(
+            "[ORM FILE CREATOR]: " .
+                "\"" . $path . "\" does not seem to be a directory"
+        );
+    }
+
+    InstallLogger::getInstance()->logMessage(
+        "[ORM FILE CREATOR]: Done."
+    );
+
+}
+
+
+/**
  * Searches through the HTML5 manifest files for {BASE_PATH} and replaces it with
  * the value found in $basePath.
  *
