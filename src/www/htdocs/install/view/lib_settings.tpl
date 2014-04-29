@@ -79,7 +79,7 @@ Do you want to enable the HTMLPurifier cache?
  Specify the path where the HTMLPurifier cache should save its files.
 <div class="info_box">
     <strong>Note:</strong> If you do not specify absolute paths, the specified directory will
-    be treated relative to the application path, which was chosen in Step 3, and points to
+    be treated relative to the application path, which was chosen in Step 4, and points to
     <i><strong><?php echo rtrim($_SESSION['app_path']) . '/' . $_SESSION['setup_ini']['app_path']['folder']; ?></strong></i>.
 </div>
  <!-- ERRORS -->

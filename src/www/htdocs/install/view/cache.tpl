@@ -44,7 +44,7 @@ directories for each option.
 
 <div class="info_box">
  <strong>Note:</strong> If you do not specify absolute paths, the specified directories will
- be treated relative to the application path, which was chosen in Step 3, and points to
+ be treated relative to the application path, which was chosen in Step 4, and points to
  <i><strong><?php echo rtrim($_SESSION['app_path']) . '/' . $_SESSION['setup_ini']['app_path']['folder']; ?></strong></i>.
 </div>
 
