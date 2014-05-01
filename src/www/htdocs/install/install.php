@@ -259,12 +259,12 @@ if (isset($_POST['install_post'])) {
     // Htmlpurifier settings
     $configini = str_replace(
                     '{HTMLPURIFIER.PRELOAD_ALL}',
-                    $_SESSION['application']['htmlpurifier.preload_all'],
+                    $_SESSION['application']['htmlpurifier.preload_all'] ? '1' : '0',
                     $configini
     );
     $configini = str_replace(
                     '{HTMLPURIFIER.USE_CACHE}',
-                    $_SESSION['application']['htmlpurifier.use_cache'],
+                    $_SESSION['application']['htmlpurifier.use_cache'] ? '1' : '0',
                     $configini
     );
     $configini = str_replace(
@@ -275,6 +275,40 @@ if (isset($_POST['install_post'])) {
                     : "",
                     $configini
     );
+
+    // Doctrine settings
+    $configini = str_replace(
+        '{DOCTRINE.CACHE.ENABLED}',
+        $_SESSION['application']['doctrine.cache.enabled'] ? '1' : '0',
+        $configini
+    );
+    $doctrineCacheConfigKeys = array('QUERY_CACHE', 'METADATA_CACHE');
+    foreach ($doctrineCacheConfigKeys as $doctrineCacheConfigKey) {
+        $configini = str_replace(
+            '{DOCTRINE.CACHE.' . $doctrineCacheConfigKey . '.ENABLED}',
+            $_SESSION['application']['doctrine.cache.enabled'] &&
+            $_SESSION['application']['doctrine.cache.' . strtolower($doctrineCacheConfigKey) . '.enabled'] ? '1' : '0',
+            $configini
+        );
+        $configini = str_replace(
+            '{DOCTRINE.CACHE.' . $doctrineCacheConfigKey . '.TYPE}',
+            $_SESSION['application']['doctrine.cache.' . strtolower($doctrineCacheConfigKey) . '.enabled']
+            && $_SESSION['application']['doctrine.cache.enabled']
+            ? $_SESSION['application']['doctrine.cache.' . strtolower($doctrineCacheConfigKey) . '.type']
+            : '',
+            $configini
+        );
+        $configini = str_replace(
+            '{DOCTRINE.CACHE.' . $doctrineCacheConfigKey . '.DIR}',
+            ($_SESSION['application']['doctrine.cache.' . strtolower($doctrineCacheConfigKey) . '.enabled']
+            && $_SESSION['application']['doctrine.cache.enabled']
+            && $_SESSION['application']['doctrine.cache.' . strtolower($doctrineCacheConfigKey) . '.type'] == 'file'
+            ? $_SESSION['application']['doctrine.cache.' . strtolower($doctrineCacheConfigKey) . '.dir']
+            : ''),
+            $configini
+        );
+    }
+
 
     // overwrite the file completely, even if it still exists from a previous
     // installation!
@@ -359,13 +393,42 @@ if (isset($_POST['install_post'])) {
 
               "
               : "'cache.default.caching' => 0,"
-            )."
-            'application.htmlpurifier.preload_all' => " . ($_SESSION['application']['htmlpurifier.preload_all']  ? '1' : '0' ). ", ".
-            "'application.htmlpurifier.use_cache' => " . ($_SESSION['application']['htmlpurifier.use_cache'] ? '1' : '0'). ", ".
-            "'application.htmlpurifier.cache_dir' => " . ($_SESSION['application']['htmlpurifier.use_cache']
+            ).
+            "'application.htmlpurifier.preload_all' => " . ($_SESSION['application']['htmlpurifier.preload_all']  ? '1' : '0' ). ",
+            'application.htmlpurifier.use_cache' => " . ($_SESSION['application']['htmlpurifier.use_cache'] ? '1' : '0'). ",
+            'application.htmlpurifier.cache_dir' => " . ($_SESSION['application']['htmlpurifier.use_cache']
                                                           ? "'" . $_SESSION['application']['htmlpurifier.cache_dir'] . "'"
-                                                          : "''") . ", ".
-            "'app_credentials'    => array('user' => '".$_SESSION['app_credentials']['user']."')
+                                                          : "''") . ",
+
+            'application.doctrine.cache.enabled' => " . ($_SESSION['application']['doctrine.cache.enabled']  ? '1' : '0' ). ",
+            'application.doctrine.cache.query_cache.enabled' => " . ($_SESSION['application']['doctrine.cache.enabled']
+                                                                      && $_SESSION['application']['doctrine.cache.query_cache.enabled']
+                                                                      ? '1' : '0'). ",
+            'application.doctrine.cache.query_cache.type' => '" . ($_SESSION['application']['doctrine.cache.enabled']
+                                                                    && $_SESSION['application']['doctrine.cache.query_cache.enabled']
+                                                                    ? $_SESSION['application']['doctrine.cache.query_cache.type']
+                                                                    : ''). "',
+            'application.doctrine.cache.query_cache.dir' => " . ($_SESSION['application']['doctrine.cache.enabled']
+                                                                 && $_SESSION['application']['doctrine.cache.query_cache.enabled']
+                                                                 && $_SESSION['application']['doctrine.cache.query_cache.type'] == 'file'
+                                                                 ? "'" . $_SESSION['application']['doctrine.cache.query_cache.dir'] . "'"
+                                                                 : "''") . ",
+
+            'application.doctrine.cache.metadata_cache.enabled' => " . ($_SESSION['application']['doctrine.cache.enabled']
+                                                                        && $_SESSION['application']['doctrine.cache.metadata_cache.enabled']
+                                                                        ? '1'
+                                                                        : '0'). ",
+            'application.doctrine.cache.metadata_cache.type' => '" . ($_SESSION['application']['doctrine.cache.enabled']
+                                                                        && $_SESSION['application']['doctrine.cache.metadata_cache.enabled']
+                                                                        ? $_SESSION['application']['doctrine.cache.metadata_cache.type']
+                                                                        : ''). "',
+            'application.doctrine.cache.metadata_cache.dir' => " . ($_SESSION['application']['doctrine.cache.enabled']
+                                                                    && $_SESSION['application']['doctrine.cache.metadata_cache.enabled']
+                                                                    && $_SESSION['application']['doctrine.cache.metadata_cache.type'] == 'file'
+                                                                    ? "'" . $_SESSION['application']['doctrine.cache.metadata_cache.dir'] . "'"
+                                                                    : "''") . ",
+
+            'app_credentials'    => array('user' => '".$_SESSION['app_credentials']['user']."')
         );
     ";
 
@@ -489,6 +552,25 @@ if (isset($_POST['install_post'])) {
             $_SESSION['application']['htmlpurifier.cache_dir'] . '/.htaccess');
     }
 
+    // process doctrine cache directories
+    $doctrineCacheConfigKeys = array('query_cache', 'metadata_cache');
+    foreach ($doctrineCacheConfigKeys as $doctrineCacheConfigKey) {
+        // remove old doctrine cache if needed
+        if (isset($_SESSION['installation_info']['application.doctrine.cache.'.$doctrineCacheConfigKey.'.type']) &&
+            $_SESSION['installation_info']['application.doctrine.cache.'.$doctrineCacheConfigKey.'.type'] == 'file' &&
+            isset($_SESSION['installation_info']['application.doctrine.cache.'.$doctrineCacheConfigKey.'.dir']) &&
+            file_exists($_SESSION['installation_info']['application.doctrine.cache.'.$doctrineCacheConfigKey.'.dir'])) {
+            @conjoon_rmdir($_SESSION['installation_info']['application.doctrine.cache.'.$doctrineCacheConfigKey.'.dir']);
+            @rmdir($_SESSION['installation_info']['application.doctrine.cache.'.$doctrineCacheConfigKey.'.dir']);
+        }
+        // ... and create new dir if necessary
+        if ($_SESSION['application']['doctrine.cache.'.$doctrineCacheConfigKey.'.type'] == 'file'
+            && $_SESSION['application']['doctrine.cache.'.$doctrineCacheConfigKey.'.dir']) {
+            conjoon_mkdir($_SESSION['application']['doctrine.cache.'.$doctrineCacheConfigKey.'.dir']);
+            conjoon_copy('./htaccess.deny.txt',
+                $_SESSION['application']['doctrine.cache.'.$doctrineCacheConfigKey.'.dir'] . '/.htaccess');
+        }
+    }
 
     // remove old cache folders
     if (isset($_SESSION['installation_info']['cache.default.caching'])

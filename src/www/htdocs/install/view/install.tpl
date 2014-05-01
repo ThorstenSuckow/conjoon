@@ -356,10 +356,46 @@ if (!$allApply) { ?>
 
 <!-- TOOL CONFIGURATION -->
 <h4>Tool Configuration</h4>
-<?php if (isset($_SESSION['installation_info']['application.htmlpurifier.use_cache'])
-         && isset($_SESSION['installation_info']['application.htmlpurifier.cache_dir'])
-         && $_SESSION['installation_info']['application.htmlpurifier.use_cache']
-         && $_SESSION['installation_info']['application.htmlpurifier.cache_dir']) { ?>
+<?php
+    $showRemoveHtmlPurifier = false;
+    $showRemoveDoctrine     = false;
+if (isset($_SESSION['installation_info']['application.htmlpurifier.use_cache'])
+     && isset($_SESSION['installation_info']['application.htmlpurifier.cache_dir'])
+     && $_SESSION['installation_info']['application.htmlpurifier.use_cache']
+     && $_SESSION['installation_info']['application.htmlpurifier.cache_dir']) {
+    $showRemoveHtmlPurifier = true;
+}
+
+$doctrineCacheConfigKeys = array(
+    'query_cache'    => false,
+    'metadata_cache' => false
+);
+
+$doctrineCacheConfigNames = array(
+    'query_cache'    => 'Query Cache',
+    'metadata_cache' => 'Metadata Cache'
+);
+
+
+foreach ($doctrineCacheConfigKeys as $doctrineCacheConfigKey => $doctrineCacheConfigValue) {
+    if (isset($_SESSION['installation_info']['application.doctrine.cache.enabled'])
+        && isset($_SESSION['installation_info']['application.doctrine.cache.' . $doctrineCacheConfigKey . '.enabled'])
+        && isset($_SESSION['installation_info']['application.doctrine.cache.' . $doctrineCacheConfigKey . '.type'])
+        && isset($_SESSION['installation_info']['application.doctrine.cache.' . $doctrineCacheConfigKey . '.dir'])
+        && $_SESSION['installation_info']['application.doctrine.cache.enabled']
+        && $_SESSION['installation_info']['application.doctrine.cache.' . $doctrineCacheConfigKey . '.enabled']
+        && $_SESSION['installation_info']['application.doctrine.cache.' . $doctrineCacheConfigKey . '.type'] == 'file'
+        && $_SESSION['installation_info']['application.doctrine.cache.' . $doctrineCacheConfigKey . '.dir']
+        ) {
+        $showRemoveDoctrine = true;
+        $doctrineCacheConfigKeys[$doctrineCacheConfigKey] =
+            $_SESSION['installation_info']['application.doctrine.cache.' . $doctrineCacheConfigKey . '.dir'];
+    }
+}
+
+?>
+
+<?php if($showRemoveHtmlPurifier || $showRemoveDoctrine) { ?>
 <div class="warning_box">
     conjoon has detected that caching for HTMLPurifier was enabled in the previous installation.
     The install wizard will remove the entire existing cache.
@@ -367,7 +403,13 @@ if (!$allApply) { ?>
     The following cache directories have been detected and will be removed:
     <ul>
         <li><?php echo $_SESSION['installation_info']['application.htmlpurifier.cache_dir'];?></li>
-
+        <?php foreach ($doctrineCacheConfigKeys as $doctrineCacheConfigKey => $doctrineCacheConfigValue) {
+            if (!$doctrineCacheConfigValue) {
+                continue;
+            }
+        ?>
+        <li><?php echo $doctrineCacheConfigValue;?></li>
+        <?php } ?>
     </ul>
     <strong>Note:</strong> Deleting deeply nested folders usually takes some time. Make sure
     your php.ini settings regarding script execution timeout are set to a high enough value, or
@@ -394,6 +436,37 @@ if (!$allApply) { ?>
         <td><?php echo $_SESSION['application']['htmlpurifier.cache_dir']; ?></td>
     </tr>
     <?php } ?>
+
+    <tr>
+        <td colspan="2"><strong>Doctrine</strong></td>
+    </tr>
+    <tr>
+        <td><i>Use Cache</i>:</td>
+        <td><?php echo $_SESSION['application']['doctrine.cache.enabled'] ? "Yes" : "No"; ?></td>
+    </tr>
+    <?php if ($_SESSION['application']['doctrine.cache.enabled']) {
+        foreach ($doctrineCacheConfigNames as $doctrineCacheConfigKey => $doctrineCacheConfigName) {
+    ?>
+    <tr>
+        <td style="text-decoration:underline;padding-left:12px" colspan="2"><i><?php echo $doctrineCacheConfigName ?></i>:</td>
+    </tr>
+    <tr>
+        <td style="padding-left:12px"><i>Use Cache</i>:</td>
+        <td style="padding-left:12px"><?php echo $_SESSION['application']['doctrine.cache.'.$doctrineCacheConfigKey.'.enabled'] ? "Yes" : "No"; ?></td>
+    </tr>
+    <?php if ($_SESSION['application']['doctrine.cache.'.$doctrineCacheConfigKey.'.enabled']) { ?>
+    <tr>
+        <td style="padding-left:12px"><i>Cache Type</i>:</td>
+        <td style="padding-left:12px"><?php echo $_SESSION['application']['doctrine.cache.'.$doctrineCacheConfigKey.'.type']; ?></td>
+    </tr>
+    <?php if ($_SESSION['application']['doctrine.cache.'.$doctrineCacheConfigKey.'.type'] == 'file') { ?>
+    <tr>
+        <td style="padding-left:12px"><i>Cache Directory</i>:</td>
+        <td style="padding-left:12px"><?php echo $_SESSION['application']['doctrine.cache.'.$doctrineCacheConfigKey.'.dir']; ?></td>
+    </tr>
+    <?php }} ?>
+    <?php }} ?>
+
     </tbody>
 </table>
 <!-- ^^ EO TOOL CONFIGURATION -->
