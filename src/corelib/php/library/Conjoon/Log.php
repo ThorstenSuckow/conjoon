@@ -43,6 +43,18 @@ class Conjoon_Log {
     }
 
     /**
+     * Returns true if this logger instance was already configured,
+     * otherwise false.
+     *
+     * @return bool
+     *
+     * @static
+     */
+    public static function isConfigured() {
+        return self::$_initCalled == true;
+    }
+
+    /**
      * Inits this logger with the configuration provided
      * from $options.
      *
@@ -57,7 +69,7 @@ class Conjoon_Log {
      */
     public static function init(Array $options)
     {
-        if (self::$_initCalled) {
+        if (self::isConfigured()) {
             /**
              * @see Conjoon_Exception
              */
@@ -67,6 +79,7 @@ class Conjoon_Log {
         }
 
         if (!$options['enabled']) {
+            self::$_initCalled = true;
             return;
         }
 
