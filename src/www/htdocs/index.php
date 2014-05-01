@@ -183,14 +183,26 @@ require_once 'Zend/Controller/Exception.php';
 
    // init the logger here!
    if ($config->log) {
+
        /**
         * @see Conjoon_Log
         */
        require_once 'Conjoon/Log.php';
 
-       $cf = $config->toArray();
+       // load Zend/Log for log constants so we don't have to
+       // require this later on
+       /**
+        * @see Zend_Log
+        */
+       require_once 'Zend/Log.php';
 
-       Conjoon_Log::init($cf['log']);
+       if (!Conjoon_Log::isConfigured()) {
+           // we might have already configured the logger when
+           // processing the configuration fle
+           $cf = $config->toArray();
+           Conjoon_Log::init($cf['log']);
+       }
+
    }
 
    // set as default adapter for all db operations
@@ -254,9 +266,62 @@ require_once 'Zend/Controller/Exception.php';
         )
     );
 
-    $doctrineCache  = new \Doctrine\Common\Cache\ArrayCache;
+
+    $doctrineCacheInstances = array(
+        'query_cache' => null,
+        'metadata_cache' => null
+    );
+
+    // doctrine cache settings
+
+    if ($config->application->doctrine->cache->enabled) {
+        $doctrineCacheSections = array(
+            'query_cache'    => $config->application->doctrine->cache->query_cache,
+            'metadata_cache' => $config->application->doctrine->cache->metadata_cache
+        );
+
+        foreach($doctrineCacheSections as $doctrineCacheKey => $doctrineCacheSection) {
+            if ($doctrineCacheSection->enabled) {
+
+                // if we do not find a valid extension, we'll be usind
+                // an array cache later on
+                switch ($doctrineCacheSection->type) {
+                    case 'apc':
+                    case 'memcache':
+                    case 'memcached':
+                            $className = '\Doctrine\Common\Cache\\' .
+                                ucfirst($doctrineCacheSection->type) .
+                                'Cache';
+                            $doctrineCacheInstances[$doctrineCacheKey] =
+                                new $className;
+                        break;
+                    case 'file':
+                        $doctrineCacheInstances[$doctrineCacheKey] =
+                            new \Doctrine\Common\Cache\FilesystemCache(
+                                $doctrineCacheSection->dir
+                            );
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+    }
+
+    if (!$doctrineCacheInstances['query_cache']) {
+        $doctrineCacheInstances['query_cache'] =
+            new \Doctrine\Common\Cache\ArrayCache;
+    }
+
+    if (!$doctrineCacheInstances['metadata_cache']) {
+        $doctrineCacheInstances['metadata_cache'] =
+            new \Doctrine\Common\Cache\ArrayCache;
+    }
+
     $doctrineConfig = new \Doctrine\ORM\Configuration;
-    $doctrineConfig->setMetadataCacheImpl($doctrineCache);
+    $doctrineConfig->setMetadataCacheImpl(
+        $doctrineCacheInstances['metadata_cache']);
 
     $doctrineConfig->setMetadataDriverImpl(
         new \Doctrine\ORM\Mapping\Driver\YamlDriver(
@@ -264,7 +329,8 @@ require_once 'Zend/Controller/Exception.php';
              . '/orm'
         )
     );
-    $doctrineConfig->setQueryCacheImpl($doctrineCache);
+    $doctrineConfig->setQueryCacheImpl(
+        $doctrineCacheInstances['query_cache']);
     $doctrineConfig->setProxyDir(
         /*@REMOVE@*/
         $LIBRARY_PATH_BOOTSTRAP . '/src/corelib/php/library/'
@@ -346,16 +412,6 @@ require_once 'Zend/Controller/Exception.php';
             @BUILD_ACTIVE@*/
 
             if ($config->log) {
-                /**
-                 * @see Conjoon_Log
-                 */
-                require_once 'Conjoon/Log.php';
-
-                /**
-                 * @see Zend_Log
-                 */
-                require_once 'Zend/Log.php';
-
                 Conjoon_Log::log(
                     "\"date_default_timezone_set()\" failed to set application's "
                     . "default timezone \""
@@ -363,7 +419,6 @@ require_once 'Zend/Controller/Exception.php';
                     ." Falling back to \"".$deftz."\" instead.",
                     Zend_Log::NOTICE
                 );
-
             }
 
             // last resort

@@ -139,8 +139,10 @@ doctrine.cache.enabled = {DOCTRINE.CACHE.ENABLED}
 ; - doctrine.cache.*_cache.enabled
 ;   Set this to 1 to enable teh cache, 0 to disable.
 ; - doctrine.cache.*_cache.type
-;   The cache implementation to use. Possible values are "apc", "memcache", "file".
-;   "apc" is recommended.
+;   The cache implementation to use. Possible values are:
+;   "apc", "memcache", "memcached", "file".
+;   We recommend to enable caching. For the best performance, use anything
+;   but the "file" cache.
 ; - doctrine.cache.metadata_cache.dir
 ;   specify the directory the cache should use when doctrine.cache.*_cache.type is set
 ;   to "file"

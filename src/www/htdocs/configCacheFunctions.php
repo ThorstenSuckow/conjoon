@@ -107,9 +107,28 @@
         // config failed to init, so we assume we have to load the config and parse it
         $initialConfig = parse_ini_file('./config.ini.php', true);
 
+        // check if the library_path is set, and adjust the include_path if necessary
+        if (($incPath = $initialConfig['environment']['include_path']) != null) {
+            set_include_path(get_include_path() . PATH_SEPARATOR . $incPath);
+        }
+
         // check whether we need the logging options
         if (isset($initialConfig['log']) && !$initialConfig['log']['enabled']) {
             unset($initialConfig['log']);
+        } else if (isset($initialConfig['log'])) {
+            /**
+             * @see Conjoon_Log
+             */
+            include_once 'Conjoon/Log.php';
+
+            // load Zend/Log for log constants so we don't have to
+            // require this later on
+            /**
+             * @see Zend_Log
+             */
+            include_once 'Zend/Log.php';
+
+            Conjoon_Log::init($initialConfig['log']);
         }
 
         /*@REMOVE@*/
@@ -120,6 +139,52 @@
             unset($initialConfig['application']['connection_check.port']);
         }
         /*@REMOVE@*/
+
+        // take care of doctrine cache settings. make sure we void
+        // caching if apc, memcache or memcached are selected,
+        // but extensions are not loaded
+        if (isset($initialConfig['application']) &&
+            isset($initialConfig['application']['doctrine.cache.enabled']) &&
+            $initialConfig['application']['doctrine.cache.enabled']) {
+            $doctrineApp = &$initialConfig['application'];
+
+            $doctrineTypes = array(
+                'metadata_cache',
+                'query_cache'
+            );
+
+            $disableDoctrineCache = true;
+
+            foreach ($doctrineTypes as $doctrineCacheType) {
+                $doctrineEnabledKey   = 'doctrine.cache.'.$doctrineCacheType.'.enabled';
+                $doctrineCacheTypeKey = 'doctrine.cache.'.$doctrineCacheType.'.type';
+                if ($doctrineApp[$doctrineEnabledKey] &&
+                    $doctrineApp[$doctrineCacheTypeKey] != 'file') {
+                    if (!extension_loaded($doctrineApp[$doctrineCacheTypeKey])) {
+                        $doctrineApp[$doctrineEnabledKey] = false;
+
+                        if ($initialConfig['log'] && $initialConfig['log']['enabled']) {
+                            Conjoon_Log::log(
+                                "\"" . $doctrineApp[$doctrineCacheTypeKey] . "\" for " .
+                                "Doctrine Cache $doctrineCacheType selected, but " .
+                                "extension is not available", Zend_Log::WARN
+                            );
+                        }
+                    } else {
+                        // dont disable cache is extension was loaded
+                        $disableDoctrineCache = false;
+                    }
+                } else {
+                    // dont disable cache if cache type is file
+                    $disableDoctrineCache = false;
+                }
+            }
+
+            // disable doctrine cache if loading extensions for each setting failed
+            $initialConfig['application']['doctrine.cache.enabled'] =
+                $disableDoctrineCache ? 0 : 1;
+        }
+
 
         // take care of default cache
         if (isset($initialConfig['cache'])) {
@@ -214,11 +279,6 @@
                 }
             }
 
-        }
-
-        // check if the library_path is set, and adjust the include_path if necessary
-        if (($incPath = $initialConfig['environment']['include_path']) != null) {
-           set_include_path(get_include_path() . PATH_SEPARATOR . $incPath);
         }
 
         return $initialConfig;
