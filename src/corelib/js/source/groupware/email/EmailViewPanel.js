@@ -374,6 +374,14 @@ com.conjoon.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
             data.item, data.item.id
         );
 
+        /**
+         * @ticket CN-847
+         */
+        this.emailItem = com.conjoon.util.Record.convertTo(
+            com.conjoon.groupware.email.EmailItemRecord,
+            data.item, data.item.id
+        );
+
         this.emailRecord = record;
 
         this.setTitle((record.data.subject || '&#160;'));
