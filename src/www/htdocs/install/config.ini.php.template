@@ -41,8 +41,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   ENVIRONMENT    ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;
-[environment]
 
+[environment]
 ; if your hoster does not allow you to configure php's include path, set this to
 ; the path where the "lib" folder resides.
 ; Notice: since the bootstrapper has to re-set the include path on every request,
@@ -80,9 +80,11 @@ base_url = {BASE_URL}
 edition = {EDITION}
 
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   APPLICATION    ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;
+
 [application]
 ; Set the default timezone for all users here.
 ; For a list of available timezones, see
@@ -92,6 +94,10 @@ edition = {EDITION}
 ; dates depend on the proper setting of this value (for example: date/time for emails being send)
 locale.date.timezone = {LOCALE.DATE.TIMEZONE}
 
+
+; +----------------------------------+
+; |     Zend Framework Settings      |
+; +----------------------------------+
 ; This allows to cache the plugins needed by the Zend Framework; a list of
 ; include_once statements will be added to the bootstrapper, which includes
 ; all found plugins so Zend framework does not have to look them up each time.
@@ -100,6 +106,10 @@ locale.date.timezone = {LOCALE.DATE.TIMEZONE}
 ; include_once statements.
 zf.use_plugin_cache = 1
 
+
+; +--------------------------------+
+; |     HtmlPurifier Settings      |
+; +--------------------------------+
 ; tells whether preloading of htmlpurifiers base classes should be done. This is
 ; helpful if you are running an opcode cache and don't want to rely on autoload
 ; features (which are still used in case a class was not preloaded). It is
@@ -114,6 +124,38 @@ htmlpurifier.use_cache = {HTMLPURIFIER.USE_CACHE}
 ; readable/writeable by the webserver
 htmlpurifier.cache_dir = {HTMLPURIFIER.CACHE_DIR}
 
+
+; +---------------------------+
+; |     Doctrine Settings     |
+; +---------------------------+
+; enables/disables caching for doctrine. It is recommended to enable the doctrine
+; cache by setting this option to "1". Set the option to "0" to disable caching.
+; See cache settings below to fine tune the doctrine cache.
+doctrine.cache.enabled = {DOCTRINE.CACHE.ENABLED}
+
+; The following section lets you fine tune the doctrine cache. This section gets only
+; processed if doctrine.cache.enabled is set to 1.
+;
+; - doctrine.cache.*_cache.enabled
+;   Set this to 1 to enable teh cache, 0 to disable.
+; - doctrine.cache.*_cache.type
+;   The cache implementation to use. Possible values are "apc", "memcache", "file".
+;   "apc" is recommended.
+; - doctrine.cache.metadata_cache.dir
+;   specify the directory the cache should use when doctrine.cache.*_cache.type is set
+;   to "file"
+doctrine.cache.metadata_cache.enabled = {DOCTRINE.CACHE.METADATA_CACHE.ENABLED}
+doctrine.cache.metadata_cache.type = {DOCTRINE.CACHE.METADATA_CACHE.TYPE}
+doctrine.cache.metadata_cache.dir = {DOCTRINE.CACHE.METADATA_CACHE.DIR}
+
+doctrine.cache.query_cache.enabled = {DOCTRINE.CACHE.QUERY_CACHE.ENABLED}
+doctrine.cache.query_cache.type = {DOCTRINE.CACHE.QUERY_CACHE.TYPE}
+doctrine.cache.query_cache.dir = {DOCTRINE.CACHE.QUERY_CACHE.DIR}
+
+
+; +---------------------------+
+; |     Twitter Settings      |
+; +---------------------------+
 ; Twitter specific parameters for the Oauth process.
 twitter.oauth.callbackUrl    = ./service/twitter.account/authorize.okay
 twitter.oauth.siteUrl        = https://api.twitter.com/oauth
@@ -154,9 +196,12 @@ connection_check.ip = 81.169.145.192
 connection_check.port = 80
 ;@REMOVE@;
 
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   DATABASE       ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;
+
 [database]
 ; set this value to the adapter conjoon should use for db connections.
 ; There is currently only support for pdo_mysql, so you should not change
@@ -201,8 +246,8 @@ variables.max_allowed_packet = {DATABASE_MAX_ALLOWED_PACKET}
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;      CACHE       ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;
-[cache]
 
+[cache]
 ; The following settings for caching data is supported in conjoon since V0.1RC1
 ;
 ; [frontend]
@@ -250,10 +295,10 @@ variables.max_allowed_packet = {DATABASE_MAX_ALLOWED_PACKET}
 ;     only when you have many thousands of cache files. Only specific benchs can help you to
 ;     choose the perfect value for you. Maybe, 1 or 2 is a good start.
 
-;;;;;;;;;;;;;;;;;;;
-;;   DEFAULTS    ;;
-;;;;;;;;;;;;;;;;;;;
 
+; +--------------------------------+
+; |     Cache Default Settings     |
+; +--------------------------------+
 ; you can specify the following default options here:
 ;
 ; frontend_type
@@ -294,9 +339,9 @@ default.backend_type = file
 default.backend.hashed_directory_level = 1
 
 
-;;;;;;;;;;;;;;;;;;;;
-;;  CACHE EMAILS  ;;
-;;;;;;;;;;;;;;;;;;;;
+; +--------------------------------+
+; |     Email Cache Settings       |
+; +--------------------------------+
 ; namespace "email.message" for cached email messages
 email.message.caching = {CACHE.EMAIL.MESSAGE.CACHING}
 email.message.frontend.lifetime = 31536000
@@ -312,10 +357,10 @@ email.folders_root_type.caching = {CACHE.EMAIL.FOLDERS_ROOT_TYPE.CACHING}
 email.folders_root_type.frontend.lifetime = 31536000
 email.folders_root_type.backend.cache_dir = {CACHE.EMAIL.FOLDERS_ROOT_TYPE.BACKEND.CACHE_DIR}
 
-;;;;;;;;;;;;;;;;;;;
-;;  CACHE FEEDS  ;;
-;;;;;;;;;;;;;;;;;;;
 
+; +--------------------------------+
+; |     Feed Cache Settings        |
+; +--------------------------------+
 ; namespace "feed.item" for cached feed items (feed entry)
 feed.item.caching = {CACHE.FEED.ITEM.CACHING}
 feed.item.frontend.lifetime = 31536000
@@ -339,10 +384,10 @@ feed.account_list.caching = {CACHE.FEED.ACCOUNT_LIST.CACHING}
 feed.account_list.frontend.lifetime = 31536000
 feed.account_list.backend.cache_dir = {CACHE.FEED.ACCOUNT_LIST.BACKEND.CACHE_DIR}
 
-;;;;;;;;;;;;;;;;
-;; CACHE DB   ;;
-;;;;;;;;;;;;;;;;
 
+; +--------------------------------+
+; |     DB Cache Settings          |
+; +--------------------------------+
 ; namespace "db.metadata" for cached db metadata. This cache has
 ; to be cleaned by hand if the db structure changes
 db.metadata.caching = {CACHE.DB.METADATA.CACHING}
@@ -351,18 +396,19 @@ db.metadata.backend.cache_dir = {CACHE.DB.METADATA.BACKEND.CACHE_DIR}
 db.metadata.backend.hashed_directory_level = 0
 
 
-;;;;;;;;;;;;;;;;;;;;;
-;;  TWITTER CACHE  ;;
-;;;;;;;;;;;;;;;;;;;;;
-
+; +--------------------------------+
+; |     Twitter Cache Settings     |
+; +--------------------------------+
 ; namespace "twitter.accounts" for cached twitter account lists.
 twitter.accounts.caching = {CACHE.TWITTER.ACCOUNTS.CACHING}
 twitter.accounts.backend.cache_dir = {CACHE.TWITTER.ACCOUNTS.BACKEND.CACHE_DIR}
 
 
+
 ;;;;;;;;;;;;;;;;;;;;;
 ;;    FILES/LOB    ;;
 ;;;;;;;;;;;;;;;;;;;;;
+
 [files]
 ; The maximum size allowed for a single file upload. This value should be equal
 ; or less to your php.ini setting post_max_size and the configuration option
@@ -407,9 +453,11 @@ storage.use_filesystem = {FILES.STORAGE.USE_FILESYSTEM}
 storage.files.default.dir = {FILES.STORAGE.FILES.DEFAULT.DIR}
 
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;      LOGGING     ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;
+
 [log]
 
 ; set this to 0 to disable logging
