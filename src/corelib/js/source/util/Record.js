@@ -21,10 +21,17 @@ com.conjoon.util.Record = function(){
 
         convertTo : function(recordClass, data, id)
         {
-            var rec = new recordClass(data, id);
+            var rec = new recordClass({}, id);
             rec.fields.each(
                 function(field) {
-                    rec.data[field.name] = field.type ? field.convert(rec.get(field.name)) : rec.get(field.name);
+                    /**
+                     * @see CN-850
+                     */
+                    rec.set(field.name, data[field.name]);
+
+                    rec.data[field.name] = field.type
+                                           ? field.convert(rec.get(field.name))
+                                           : rec.get(field.name);
                 }
             );
 
