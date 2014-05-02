@@ -137,7 +137,7 @@ doctrine.cache.enabled = {DOCTRINE.CACHE.ENABLED}
 ; processed if doctrine.cache.enabled is set to 1.
 ;
 ; - doctrine.cache.*_cache.enabled
-;   Set this to 1 to enable teh cache, 0 to disable.
+;   Set this to 1 to enable the cache, 0 to disable.
 ; - doctrine.cache.*_cache.type
 ;   The cache implementation to use. Possible values are:
 ;   "apc", "memcache", "memcached", "file".
