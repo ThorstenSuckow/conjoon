@@ -451,6 +451,20 @@ div.aligncenter {
     border-radius:7px;
 }
 
+div.settingsContainer  {
+    border-radius:12px;
+    padding:7px;
+    margin-bottom:16px;
+}
+
+div.settingsContainer.type_1 {
+    background-color:#E8F3FF;
+}
+
+div.settingsContainer.type_2 {
+    background-color:#F3F3F3;
+}
+
 td {
     font-size:12px !important;
     padding:4px;

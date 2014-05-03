@@ -47,7 +47,7 @@
 This step allows for editing settings related to various software tools conjoon uses.
 </p>
 
-
+<div class="settingsContainer type_1">
 <h3>HTMLPurifier</h3>
 <h4>Preload HTMLPurifier library files</h4>
 <p>
@@ -107,11 +107,12 @@ Do you want to enable the HTMLPurifier cache?
 <!-- ^^ EO HTMLPURIFIER CACHE -->
 
 </div>
-
+</div>
 <!-- +--------------+ -->
 <!-- |   DOCTRINE   | -->
 <!-- +--------------+ -->
 
+<div class="settingsContainer type_2">
 <h3>Doctrine</h3>
 <h4>Enable cache</h4>
 <p>
@@ -212,6 +213,7 @@ Do you want to enable the HTMLPurifier cache?
 <!-- ^^ EO Doctrine different cache settings -->
 
 
+</div>
 </div>
 
 <input type="hidden" name="lib_settings_post" value="1" />

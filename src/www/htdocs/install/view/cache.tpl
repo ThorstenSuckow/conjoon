@@ -67,7 +67,9 @@ Do you want to enable caching?
 
 <div id="cacheOptionsContainer" style="<?php echo $CACHE['default.caching'] ? "" : "display:none;" ?>">
 
+
 <!-- DB CACHE -->
+<div class="settingsContainer type_2">
  <h4>1. Database Cache</h4>
  <p>
  This cache is used to store often needed metadata information. It is recommended to enable this
@@ -98,18 +100,16 @@ Do you want to enable caching?
   <input style="width:100%" id="db_cache_path" type="text" name="db.metadata.backend.cache_dir" value="<?php echo $CACHE['db.metadata.backend.cache_dir']; ?>" />
   <?php echo conjoon_cacheDirSnippet('Database metadata cache directory', 'cache.db.metadata.backend.cache_dir'); ?>
  </p>
+ </div>
 <!-- ^^ EO DB CACHE -->
 
 <!-- EMAIL CACHE -->
-<br />
-<br />
  <h4>2. Email Cache</h4>
  <p>
  This option provides caching functionality for email messages and email accounts.
 
  <!-- EMAIL MESSAGES -->
- <br />
- <br />
+<div class="settingsContainer type_1">
  <h5>2.1 Email messages</h5>
  This option allows for caching email messages when they are read. Enabling this cache will
  prevent conjoon from parsing already read email messages over and over again. It is
@@ -139,11 +139,11 @@ Do you want to enable caching?
   <br />
   <input style="width:100%" id="emailmessage_cache_path" type="text" name="email.message.backend.cache_dir" value="<?php echo $CACHE['email.message.backend.cache_dir']; ?>" />
   <?php echo conjoon_cacheDirSnippet('Email message cache directory', 'cache.email.message.backend.cache_dir'); ?>
+    </div>
  <!-- ^^ EO EMAIL MESSAGES -->
 
  <!-- EMAIL ACCOUNTS -->
- <br />
- <br />
+<div class="settingsContainer type_2">
  <h5>2.2 Email accounts</h5>
  Enabling this option speeds up querying the server for email accounts belonging to a specific user.
  No passwords will be stored in this cache. However, the specified folder should not be readable by
@@ -171,11 +171,11 @@ Do you want to enable caching?
   <br />
   <input style="width:100%" id="emailaccounts_cache_path" type="text" name="email.accounts.backend.cache_dir" value="<?php echo $CACHE['email.accounts.backend.cache_dir']; ?>" />
   <?php echo conjoon_cacheDirSnippet('Email accounts cache directory', 'cache.email.accounts.backend.cache_dir'); ?>
+ </div>
  <!-- ^^ EO EMAIL ACCOUNTS -->
 
 <!-- EMAIL FOLDERS ROOT TYPES -->
-<br />
-<br />
+<div class="settingsContainer type_1">
 <h5>2.3 Email Folders' Root Type</h5>
 Enabling this option speeds up querying the type of an email folder's root folder.
 <br />
@@ -201,6 +201,7 @@ Path:
 <br />
 <input style="width:100%" id="emailfoldersroottype_cache_path" type="text" name="email.foldersRootType.backend.cache_dir" value="<?php echo $CACHE['email.folders_root_type.backend.cache_dir']; ?>" />
 <?php echo conjoon_cacheDirSnippet('Email Folders\' Root Type cache directory', 'cache.email.folders_root_type.backend.cache_dir'); ?>
+</div>
 <!-- ^^ EO EMAIL ACCOUNTS -->
 
 
@@ -216,8 +217,7 @@ Path:
  This option provides caching functionality for feed entries and feed accounts.
 
  <!-- FEED ITEMS-->
- <br />
- <br />
+<div class="settingsContainer type_2">
  <h5>3.1 Feed items</h5>
  This option allows for caching feed items when they are read. Enabling this cache will
  prevent conjoon from parsing already read feed items over and over again.
@@ -245,11 +245,11 @@ Path:
   <br />
   <input style="width:100%" id="fi_cache_path" type="text" name="feed.item.backend.cache_dir" value="<?php echo $CACHE['feed.item.backend.cache_dir']; ?>" />
   <?php echo conjoon_cacheDirSnippet('Feed item cache directory', 'cache.feed.item.backend.cache_dir'); ?>
+    </div>
  <!-- ^^ EO FEED ITEMS -->
 
  <!-- FEED LISTS -->
- <br />
- <br />
+<div class="settingsContainer type_1">
  <h5>3.2 Feed lists</h5>
  Enabling this option speeds up querying the server for lists of feed items.
  <br />
@@ -276,12 +276,12 @@ Path:
   <br />
   <input style="width:100%" id="fl_cache_path" type="text" name="feed.itemList.backend.cache_dir" value="<?php echo $CACHE['feed.item_list.backend.cache_dir']; ?>" />
   <?php echo conjoon_cacheDirSnippet('Feed item list cache directory', 'cache.feed.item_list.backend.cache_dir'); ?>
+    </div>
 <!-- ^^ EO FEED LISTS -->
 
 
  <!-- FEED ACCOUNTS -->
- <br />
- <br />
+<div class="settingsContainer type_2">
  <h5>3.3 Feed accounts</h5>
  Enabling this option speeds up querying the server for feed accounts belonging to a specific user.
  <br />
@@ -308,12 +308,12 @@ Path:
   <br />
   <input style="width:100%" id="fa_cache_path" type="text" name="feed.account.backend.cache_dir" value="<?php echo $CACHE['feed.account.backend.cache_dir']; ?>" />
   <?php echo conjoon_cacheDirSnippet('Feed accounts cache directory', 'cache.feed.account.backend.cache_dir'); ?>
+    </div>
 <!-- ^^ EO FEED ACCOUNTS -->
 
 
  <!-- FEED ACCOUNTS -->
- <br />
- <br />
+<div class="settingsContainer type_1">
  <h5>3.4 Feed account lists</h5>
  Enabling this option speeds up querying the server for feed account lists belonging to a specific user.
  <br />
@@ -340,13 +340,13 @@ Path:
   <br />
   <input style="width:100%" id="fal_cache_path" type="text" name="feed.accountList.backend.cache_dir" value="<?php echo $CACHE['feed.account_list.backend.cache_dir']; ?>" />
   <?php echo conjoon_cacheDirSnippet('Feed account list cache directory', 'cache.feed.account_list.backend.cache_dir'); ?>
+    </div>
  <!-- ^^ EO FEED ACCOUNTS -->
 
 
 
  <!-- FEED READER -->
- <br />
- <br />
+<div class="settingsContainer type_2">
  <h5>3.5 Feed Reader</h5>
  The reader responsible for querying servers for feeds is capable of deciding whether it shoould read out
  and parse feeds from a server or not. If it decides to not read out feeds' contents due to the fact that
@@ -376,15 +376,14 @@ Path:
   <br />
   <input style="width:100%" id="fr_cache_path" type="text" name="feed.reader.backend.cache_dir" value="<?php echo $CACHE['feed.reader.backend.cache_dir']; ?>" />
   <?php echo conjoon_cacheDirSnippet('Feed reader cache directory', 'cache.feed.reader.backend.cache_dir'); ?>
+    </div>
  <!-- ^^ EO FEED READER -->
 
  </p>
 <!-- ^^ EO FEED CACHE -->
 
 
-<!-- DB CACHE -->
- <br />
- <br />
+<!-- TWITTER CACHE -->
  <h4>4. Twitter Cache</h4>
  <p>
  When working with the Twitter client, account information will be fetched from the Twitter servers.
@@ -416,7 +415,7 @@ Path:
   <input style="width:100%" id="ta_cache_path" type="text" name="twitter.accounts.backend.cache_dir" value="<?php echo $CACHE['twitter.accounts.backend.cache_dir']; ?>" />
   <?php echo conjoon_cacheDirSnippet('Twitter account cache directory', 'cache.twitter.accounts.backend.cache_dir'); ?>
  </p>
-<!-- ^^ EO DB CACHE -->
+<!-- ^^ EO TWITTER CACHE -->
 
 </div>
 
