@@ -79,8 +79,8 @@ class Conjoon_Modules_Groupware_Files_Facade {
         $upload = new Zend_File_Transfer_Adapter_Http();
 
         // assign and check validators
-        $upload->addValidator('Count', true, array('min' => 1, 'max' => 1));
         $upload->addValidator('Size', true, $this->_getUploadMaxFileSize());
+        $upload->addValidator('Count', true, array('min' => 1, 'max' => 1));
 
         return $upload;
     }
@@ -244,7 +244,7 @@ class Conjoon_Modules_Groupware_Files_Facade {
 
         // allowed filesize is max-filesize - 33-36 % of max filesize,
         // due to base64 encoding which might happen
-        $maxFileSize = $maxFileSize - round($maxFileSize/3);
+        $maxFileSize = $maxFileSize - round(($maxFileSize / 10) * 3.3);
 
         return $maxFileSize;
     }
