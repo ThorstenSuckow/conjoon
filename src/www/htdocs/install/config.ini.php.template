@@ -434,9 +434,9 @@ upload.max_size = {FILES.UPLOAD.MAX_SIZE}
 ; make sure you move all content to the new location (according to the following
 ; *.dir config options) - once data was flagged as stored in the filesystem,
 ; conjoon will try to retrieve this data based on the available information.
-storage.use_filesystem = {FILES.STORAGE.USE_FILESYSTEM}
+storage.filesystem.enabled = {FILES.STORAGE.FILESYSTEM.ENABLED}
 
-; if files.storage.use_filesystem is activated, the following configuration
+; if files.storage.filesystem.enabled is activated, the following configuration
 ; properties tell the application where to store/look up related LOBs.
 ; if you do not provide absolute paths, the application will assume those
 ; directories are relative to the application_path.
@@ -447,12 +447,11 @@ storage.use_filesystem = {FILES.STORAGE.USE_FILESYSTEM}
 ; IF YOU ARE NOT SURE WHAT YOU ARE DOING, SET storage.filesystem TO 0 and
 ; LET conjoon TAKE CARE OF STORING LOBs IN THE DATABASE
 
-; [FILE_MODULE]
 ; the path to the folder where files for a user get stored, for
 ; example when a user uploads a file.  Either absolute or relative to the
 ; application_path setting.
 ; TAKE CARE OF PROPER FILE PERMISSIONS!
-storage.files.default.dir = {FILES.STORAGE.FILES.DEFAULT.DIR}
+storage.filesystem.dir = {FILES.STORAGE.FILESYSTEM.DIR}
 
 
 

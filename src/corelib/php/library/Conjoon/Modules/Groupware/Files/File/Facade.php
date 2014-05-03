@@ -246,7 +246,7 @@ class Conjoon_Modules_Groupware_Files_File_Facade extends Conjoon_Db_LobAccess_S
 
         return (bool)Zend_Registry::get(
             Conjoon_Keys::REGISTRY_CONFIG_OBJECT
-        )->files->storage->use_filesystem;
+        )->files->storage->filesystem->enabled;
     }
 
     /**
@@ -268,7 +268,7 @@ class Conjoon_Modules_Groupware_Files_File_Facade extends Conjoon_Db_LobAccess_S
 
         $dir = trim((string)@Zend_Registry::get(
             Conjoon_Keys::REGISTRY_CONFIG_OBJECT
-        )->files->storage->files->default->dir);
+        )->files->storage->filesystem->dir);
 
         if ($dir && @is_dir($dir)) {
             return $dir;
