@@ -21,6 +21,33 @@
 
 
 /**
+ * Helper function for converting Megabyte values to bytes
+ *
+ * @param integer $filesize
+ *
+ * @return string
+ */
+function conjoon_megaByteToByte($filesize) {
+
+    // allowed units as specified by php
+    $units = array('K' => 1, 'M' => 2, 'G' => 3);
+    $unit  = strtoupper(trim(substr($filesize, -1)));
+
+    if (!in_array($unit, array_keys($units))) {
+        return $filesize;
+    }
+
+    $size = trim(substr($filesize, 0, strlen($filesize) - 1));
+
+    if (!intval($size) == $size) {
+        return $filesize;
+    }
+
+    return $size * pow(1024, $units[$unit]);
+}
+
+
+/**
  * Helps to retrieve a default value for a specific setting.
  * The default value is looked up in the config_ini, then installation_info, then
  * setup_ini.
