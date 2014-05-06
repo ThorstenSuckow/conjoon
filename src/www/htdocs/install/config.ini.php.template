@@ -413,12 +413,15 @@ twitter.accounts.backend.cache_dir = {CACHE.TWITTER.ACCOUNTS.BACKEND.CACHE_DIR}
 
 [files]
 ; The maximum size allowed for a single file upload. This value should be equal
-; or less to your php.ini setting post_max_size and the configuration option
-; database.variables.max_allowed_packet. If the value exceeds those limits,
-; always the minimum of post max size and max_allowed_packet will be used for
-; determing max allowed upload filesize. Please note, that this value is
-; never ignored even if you choose to write LOBs into the local filesystem of
-; your server
+; or less to your php.ini setting post_max_size/upload_max_filesize and the
+; configuration option database.variables.max_allowed_packet. If the value exceeds
+; max_allowed_packet, the minimum  will be used for determing max allowed upload
+; filesize. Please note, that this value is never ignored even if you choose to
+; write LOBs into the local filesystem of your server.
+; conjoon might adjust the max upload size by considering file operations such as
+; base64-encoding, which increases file size.
+; PLEASE NOTE: THE VALUE OF post_max_size/uplaod_max_filesize WILL ALWAYS BE GIVEN
+; PRECEDENCE BY YOUR PHP INSTALLATION
 upload.max_size = {FILES.UPLOAD.MAX_SIZE}
 
 ; Tells whether LOBs (large objects) will be stored in the filesystem. By default,
@@ -448,8 +451,7 @@ storage.filesystem.enabled = {FILES.STORAGE.FILESYSTEM.ENABLED}
 ; LET conjoon TAKE CARE OF STORING LOBs IN THE DATABASE
 
 ; the path to the folder where files for a user get stored, for
-; example when a user uploads a file.  Either absolute or relative to the
-; application_path setting.
+; example when a user uploads a file.
 ; TAKE CARE OF PROPER FILE PERMISSIONS!
 storage.filesystem.dir = {FILES.STORAGE.FILESYSTEM.DIR}
 
