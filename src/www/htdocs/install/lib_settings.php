@@ -38,77 +38,6 @@ $DOCTRINE_CACHE_TYPES = array(
 $DOCTRINE_CACHE_EXTENSIONS = array('apc', 'memcache', 'memcached', 'file');
 
 
-/**
- * Helps to retrieve a default value for a specific setting.
- * The default value is looked up in the config_ini, then installation_info, then
- * setup_ini.
- *
- *
- */
-function cacheSetup_getConfigurationDefaultValue($key, $section, $config = array())
-{
-    $cacheSetup =& $_SESSION['setup_ini'][$section];
-
-    $allowEmpty = isset($config['allowEmpty']) ? $config['allowEmpty'] : true;
-
-    // check first of value is available in config
-    if (isset($_SESSION['config_info']) &&
-        is_array($_SESSION['config_info']) &&
-        isset($_SESSION['config_info'][$section]) &&
-        array_key_exists($key, $_SESSION['config_info'][$section])) {
-        if ($allowEmpty || (!$allowEmpty && $_SESSION['config_info'][$section][$key])) {
-            return $_SESSION['config_info'][$section][$key];
-        }
-    }
-
-    // check if value is available in installation_info
-    if (array_key_exists($section . '.' . $key, $_SESSION['installation_info'])
-        && !empty($_SESSION['installation_info']['application.' . $key])) {
-        if ($allowEmpty || (!$allowEmpty && $_SESSION['installation_info']['application.' . $key])) {
-            return $_SESSION['installation_info']['application.' . $key];
-        }
-    }
-
-    // check if value is available in setup ini
-    if (isset($_SESSION['setup_ini'][$section]) &&
-        array_key_exists($key, $_SESSION['setup_ini'][$section])) {
-        return $_SESSION['setup_ini'][$section][$key];
-    }
-
-    return null;
-}
-
-
-
-/**
- * Helper function to assign setup default values for directory path values.
- *
- * @param $key
- * @param null $value
- * @return null|string
- */
-function cacheSetup_assembleDir($key, $section, $value = null)
-{
-    $cacheSetup =& $_SESSION['setup_ini'][$section];
-
-    if (!$value) {
-        $value = $cacheSetup[$key];
-    }
-
-    if ($value && strpos($value, '/') === 0) {
-        return $value;
-    }
-
-    // fall back to default value from setup.ini, prepending app_path
-    return rtrim($_SESSION['app_path'], '/')
-        . '/'
-        . rtrim($_SESSION['setup_ini']['app_path']['folder'], '/')
-        . '/'
-        . $value;
-
-}
-
-
 $applicationSetup =& $_SESSION['setup_ini']['application'];
 
 if (isset($_SESSION['application'])) {
@@ -131,14 +60,16 @@ if (isset($_SESSION['application'])) {
     foreach ($getMyKeys as $heresYourKey => $heresYourValue) {
 
         // gather default value!
-        $LIB_SETTINGS[$heresYourKey] = cacheSetup_getConfigurationDefaultValue(
+        $LIB_SETTINGS[$heresYourKey] = conjoon_cacheSetup_getConfigurationDefaultValue(
             $heresYourKey, 'application', $getMyKeys[$heresYourKey]
         );
 
         // adjust the value if necessary
         if (strpos($heresYourKey, 'cache_dir') !== false ||
             strpos($heresYourKey, '.dir') !== false) {
-            $LIB_SETTINGS[$heresYourKey] = cacheSetup_assembleDir($heresYourKey, 'application', $LIB_SETTINGS[$heresYourKey]);
+            $LIB_SETTINGS[$heresYourKey] = conjoon_cacheSetup_assembleDir(
+                $heresYourKey, 'application', $LIB_SETTINGS[$heresYourKey]
+            );
         }
 
     }

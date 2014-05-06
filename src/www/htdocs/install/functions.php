@@ -21,6 +21,79 @@
 
 
 /**
+ * Helps to retrieve a default value for a specific setting.
+ * The default value is looked up in the config_ini, then installation_info, then
+ * setup_ini.
+ *
+ * @param string $key
+ * @param string $section
+ * @param array $config
+ *
+ * @return string
+ */
+function conjoon_cacheSetup_getConfigurationDefaultValue($key, $section, $config = array())
+{
+    $allowEmpty = isset($config['allowEmpty']) ? $config['allowEmpty'] : true;
+
+    // check first of value is available in config
+    if (isset($_SESSION['config_info']) &&
+        is_array($_SESSION['config_info']) &&
+        isset($_SESSION['config_info'][$section]) &&
+        array_key_exists($key, $_SESSION['config_info'][$section])) {
+        if ($allowEmpty || (!$allowEmpty && $_SESSION['config_info'][$section][$key])) {
+            return $_SESSION['config_info'][$section][$key];
+        }
+    }
+
+    // check if value is available in installation_info
+    if (array_key_exists($section . '.' . $key, $_SESSION['installation_info'])
+        && !empty($_SESSION['installation_info']['application.' . $key])) {
+        if ($allowEmpty || (!$allowEmpty && $_SESSION['installation_info']['application.' . $key])) {
+            return $_SESSION['installation_info']['application.' . $key];
+        }
+    }
+
+    // check if value is available in setup ini
+    if (isset($_SESSION['setup_ini'][$section]) &&
+        array_key_exists($key, $_SESSION['setup_ini'][$section])) {
+        return $_SESSION['setup_ini'][$section][$key];
+    }
+
+    return null;
+}
+
+
+
+/**
+ * Helper function to assign setup default values for directory path values.
+ *
+ * @param $key
+ * @param null $value
+ *
+ * @return null|string
+ */
+function conjoon_cacheSetup_assembleDir($key, $section, $value = null)
+{
+    $cacheSetup =& $_SESSION['setup_ini'][$section];
+
+    if (!$value) {
+        $value = $cacheSetup[$key];
+    }
+
+    if ($value && strpos($value, '/') === 0) {
+        return $value;
+    }
+
+    // fall back to default value from setup.ini, prepending app_path
+    return rtrim($_SESSION['app_path'], '/')
+        . '/'
+        . rtrim($_SESSION['setup_ini']['app_path']['folder'], '/')
+        . '/'
+        . $value;
+
+}
+
+/**
  * Moves orm template files to production ready orm files and replaces
  * table prefix placeholders with its specific counterpart
  *
@@ -352,8 +425,6 @@ function conjoon_createTables($path, $dbAdapter, Array $config)
 
     $dbType = strtolower(str_replace("pdo_", "", $dbAdapter));
 
-    $bytes = 0;
-
     $prefix = $config['prefix'];
 
     switch ($dbType) {
@@ -484,8 +555,6 @@ function conjoon_insertFixtures($path, $dbAdapter, Array $dbConfig)
 
     $dbType = strtolower(str_replace("pdo_", "", $dbAdapter));
 
-    $bytes = 0;
-
     $prefix = $dbConfig['prefix'];
 
     switch ($dbType) {
@@ -541,8 +610,6 @@ function conjoon_insertFixtures($path, $dbAdapter, Array $dbConfig)
 function conjoon_createAdmin($dbAdapter, $userData, Array $config)
 {
     $dbType = strtolower(str_replace("pdo_", "", $dbAdapter));
-
-    $bytes = 0;
 
     $prefix = $config['prefix'];
 
