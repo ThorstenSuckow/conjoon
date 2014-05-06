@@ -113,13 +113,16 @@ further updating of conjoon. Please do not remove this file.
     Step 6: Tool Configuration
               |
               |
-    Step 7: Installing libraries, managing include_path
+    Step 7: conjoon Application Configuration Options
               |
               |
-    Step 8: Specifying document path
+    Step 8: Installing libraries, managing include_path
               |
               |
-    Step 9: Specifying user credentials - this step is only available
+    Step 9: Specifying document path
+              |
+              |
+    Step 10: Specifying user credentials - this step is only available
     if there is NO root user already in the database
               |
               |
