@@ -19,6 +19,38 @@
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 
+/**
+ * Helps to determine the path of a config option by first looking into
+ * installation info, then falling back to the setup-ini specified
+ * values. Returns either the current configured value or the value
+ * prepended with the application folder.
+ *
+ * @param $key
+ * @param $section
+ * @param null $value
+ *
+ * @return null|string
+ */
+function conjoon_cacheSetup_getCacheDir($key, $section, $value = null)
+{
+    if (isset($_SESSION['installation_info'][$section . '.' . $key])) {
+        return $_SESSION['installation_info'][$section . '.' . $key];
+    }
+
+    $cacheSetup =& $_SESSION['setup_ini'][$section];
+
+    if (strpos($key, 'cache_dir') !== false ||
+        strpos($key, '.dir') !== false) {
+        return rtrim($_SESSION['app_path'], '/')
+        . '/'
+        . rtrim($_SESSION['setup_ini']['app_path']['folder'], '/')
+        . '/'
+        . $cacheSetup[$key];
+    } else {
+        return $value;
+    }
+}
+
 
 /**
  * Helper function for converting Megabyte values to bytes

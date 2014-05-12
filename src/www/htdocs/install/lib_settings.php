@@ -99,7 +99,8 @@ if (isset($_POST['lib_settings_post']) && $_POST['lib_settings_post'] == "1") {
         $tryCacheDir = $_POST['htmlpurifier_cache_dir'];
 
         if (trim($tryCacheDir) == "") {
-            $tryCacheDir = cacheSetup_getCacheDir('htmlpurifier.cache_dir');
+            $tryCacheDir = conjoon_cacheSetup_getCacheDir(
+                'htmlpurifier.cache_dir', 'application');
         }
 
         if (strpos($tryCacheDir, '/') !== 0 && strpos($tryCacheDir, ':') !== 1) {
@@ -151,8 +152,8 @@ if (isset($_POST['lib_settings_post']) && $_POST['lib_settings_post'] == "1") {
                     // check directories
                     $tryCacheDir = $_POST['doctrine_cache_' . $doctrineCacheKey . '_dir'];
                     if (trim($tryCacheDir) == "") {
-                        $tryCacheDir = cacheSetup_getCacheDir(
-                            'doctrine.cache.' . $doctrineCacheKey . '.dir');
+                        $tryCacheDir = conjoon_cacheSetup_getCacheDir(
+                            'doctrine.cache.' . $doctrineCacheKey . '.dir', 'application');
                     }
 
                     if (strpos($tryCacheDir, '/') !== 0 && strpos($tryCacheDir, ':') !== 1) {

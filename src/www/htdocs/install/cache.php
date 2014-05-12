@@ -27,26 +27,6 @@ include('./scripts/check_auth.php');
 
 $CACHE = array();
 
-function cacheSetup_getCacheDir($key, $value = null)
-{
-    if (isset($_SESSION['installation_info']['cache.' . $key])) {
-        return $_SESSION['installation_info']['cache.' . $key];
-    }
-
-    $cacheSetup =& $_SESSION['setup_ini']['cache'];
-
-    if (strpos($key, 'cache_dir') !== false) {
-        return rtrim($_SESSION['app_path'], '/')
-               . '/'
-               . rtrim($_SESSION['setup_ini']['app_path']['folder'], '/')
-               . '/'
-               . $cacheSetup[$key];
-    } else {
-        return $value;
-    }
-}
-
-
 $cacheSetup =& $_SESSION['setup_ini']['cache'];
 
 if (isset($_SESSION['cache'])) {
@@ -58,7 +38,7 @@ if (isset($_SESSION['cache'])) {
                                 : $_SESSION['setup_ini']['cache']['default.caching'];
 
     foreach ($cacheSetup as $key => $value) {
-        $CACHE[$key] = cacheSetup_getCacheDir($key, $value);
+        $CACHE[$key] = conjoon_cacheSetup_getCacheDir($key, 'cache', $value);
     }
 }
 
@@ -99,7 +79,8 @@ if (isset($_POST['cache_post']) && $_POST['cache_post'] == "1") {
                 $tryCacheDir = $POST[str_replace('.', '_', $postedNs) . '_backend_cache_dir'];
 
                 if (trim($tryCacheDir) == "") {
-                    $tryCacheDir = cacheSetup_getCacheDir($namespace . '.backend.cache_dir');
+                    $tryCacheDir = conjoon_cacheSetup_getCacheDir(
+                        $namespace . '.backend.cache_dir', 'cache');
                 }
 
                 if (strpos($tryCacheDir, '/') !== 0 && strpos($tryCacheDir, ':') !== 1) {
