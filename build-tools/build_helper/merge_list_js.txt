@@ -25,8 +25,8 @@ vendor/ext-ux-wiz/src/Card.js
 vendor/ext-ux-grid-gridviewmenuplugin/src/GridViewMenuPlugin.js
 vendor/ext-ux-livegrid/build/livegrid-all-debug.js
 src/corelib/js/source/cudgets/base/Exception.js
-src/corelib/js/source/cudgets/base/InvalidPropertyException.js
 src/corelib/js/source/cudgets/base/RuntimeException.js
+src/corelib/js/source/cudgets/base/InvalidPropertyException.js
 src/corelib/js/source/cudgets/base/InvalidArgumentException.js
 src/corelib/js/source/cudgets/base/MissingPropertyException.js
 src/corelib/js/source/cudgets/util/Registry.js
