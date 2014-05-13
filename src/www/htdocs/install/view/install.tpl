@@ -471,6 +471,62 @@ foreach ($doctrineCacheConfigKeys as $doctrineCacheConfigKey => $doctrineCacheCo
 </table>
 <!-- ^^ EO TOOL CONFIGURATION -->
 
+<!-- CONJOON APP CONFIGURATION -->
+<h4>Conjoon Configuration</h4>
+<?php
+    $showFilesystemWarning = false;
+
+if (isset($_SESSION['installation_info']['files.storage.filesystem.dir'])
+     && isset($_SESSION['installation_info']['files.storage.filesystem.enabled'])
+     && $_SESSION['installation_info']['files.storage.filesystem.dir']
+     && $_SESSION['installation_info']['files.storage.filesystem.enabled']) {
+    $showFilesystemWarning = true;
+}
+
+?>
+
+<?php if($showFilesystemWarning) { ?>
+<div class="warning_box">
+    conjoon has detected that a previous installation used the filesystem
+    for managing files, such as file uploads.
+    <br />
+    The following directory will <strong>not</strong> be deleted:
+    <ul>
+        <li><?php echo $_SESSION['installation_info']['files.storage.filesystem.dir'];?></li>
+    </ul>
+</div>
+<?php } ?>
+
+<table>
+    <tbody>
+    <tr>
+        <td colspan="2"><strong>Files</strong></td>
+    </tr>
+    <tr>
+        <td><i>Max Upload Filesize</i>:</td>
+        <td><?php echo $_SESSION['files']['upload.max_size']; ?> bytes
+          <?php
+            $maxsizebytes = conjoon_bytesToMegaByte(conjoon_megaByteToByte(
+                $_SESSION['files']['upload.max_size']));
+            if( (int) $_SESSION['files']['upload.max_size'] >= 1024 * 1024) { ?>
+            (<?php echo $maxsizebytes; ?>)
+          <?php } ?>
+        </td>
+    </tr>
+    <tr>
+        <td><i>Use Filesystem for storing Files</i>:</td>
+        <td><?php echo $_SESSION['files']['storage.filesystem.enabled'] ? "Yes" : "No"; ?></td>
+    </tr>
+    <?php if ($_SESSION['files']['storage.filesystem.enabled']) { ?>
+    <tr>
+        <td><i>Filesystem Storage Directory</i>:</td>
+        <td><?php echo $_SESSION['files']['storage.filesystem.dir']; ?></td>
+    </tr>
+    <?php } ?>
+    </tbody>
+</table>
+<!-- ^^ EO CONJOON APP CONFIGURATION -->
+
 <h4>Libraries</h4>
 <table>
     <tbody>

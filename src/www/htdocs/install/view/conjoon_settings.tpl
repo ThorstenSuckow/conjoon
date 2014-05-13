@@ -51,13 +51,43 @@ This step allows for editing settings related to conjoon application behavior.
 
 <!-- UPLOAD FILESIZE -->
 <div class="settingsContainer type_1">
-<h5>Max. Upload File Size</h5>
+<h5>Max. Upload File Size (in bytes)</h5>
 <p>
     Set this to the maximum allowed size of uploaded files, in bytes.
     This value should be the minimum value of max. allowed packet (as configured in Step 3) and
     your php's post_max_size/upload_max_filesize.
     <br />
-    Path:
+    <div class="info_box">
+    Current settings:
+        <ul>
+            <li>
+                max allowed packet: <?php echo conjoon_megaByteToByte($_SESSION['max_allowed_packet']); ?> bytes
+                <?php
+                $bytes = conjoon_bytesToMegaByte(conjoon_megaByteToByte($_SESSION['max_allowed_packet']));
+                if((int) conjoon_megaByteToByte($_SESSION['max_allowed_packet']) >= 1024 * 1024) { ?>
+                   (<?php echo $bytes; ?>)
+                <?php } ?>
+            </li>
+            <li>
+                php.ini upload_max_filesize: <?php echo conjoon_megaByteToByte(ini_get('upload_max_filesize')); ?> bytes
+                <?php
+                $bytes = conjoon_bytesToMegaByte(conjoon_megaByteToByte(ini_get('upload_max_filesize')));
+                if( (int) conjoon_megaByteToByte(ini_get('upload_max_filesize')) >= 1024 * 1024) { ?>
+                (<?php echo $bytes; ?>)
+                <?php } ?>
+            </li>
+            <li>
+                php.ini post_max_size: <?php echo conjoon_megaByteToByte(ini_get('post_max_size')); ?> bytes
+                <?php
+                $bytes = conjoon_bytesToMegaByte(conjoon_megaByteToByte(ini_get('post_max_size')));
+                if( (int) conjoon_megaByteToByte(ini_get('post_max_size')) >= 1024 * 1024) { ?>
+                (<?php echo $bytes; ?>)
+                <?php } ?>
+            </li>
+        </ul>
+    </div>
+    <br />
+    Max Upload Filesize:
     <br />
     <input style="width:100%" type="text" name="upload.max_size" value="<?php echo $CN_SETTINGS['upload.max_size']; ?>" />
     <?php echo conjoon_cacheDirSnippet('Max. Upload File Size', 'files.upload.max_size'); ?>
@@ -76,9 +106,9 @@ This step allows for editing settings related to conjoon application behavior.
     <br />
     Do you want to enable the filesystem for files managed by conjoon?
     <div style="margin:5px">
-        <input onclick="showCacheOptions(false, 'filesystem');" id="use_filesystem_radio_no" <?php echo !$LIB_SETTINGS['storage.filesystem.enabled'] ? "checked=\"checked\"" : ""; ?> type="radio" name="storage.filesystem.enabled" value="0" /><label for="use_filesystem_radio_no">No</label>
+        <input onclick="showCacheOptions(false, 'filesystem');" id="use_filesystem_radio_no" <?php echo !$CN_SETTINGS['storage.filesystem.enabled'] ? "checked=\"checked\"" : ""; ?> type="radio" name="storage.filesystem.enabled" value="0" /><label for="use_filesystem_radio_no">No</label>
         <br />
-        <input onclick="showCacheOptions(true, 'filesystem');" id="use_filesystem_radio_yes" <?php echo $LIB_SETTINGS['storage.filesystem.enabled'] ? "checked=\"checked\"" : ""; ?> type="radio" name="storage.filesystem.enabled" value="1" /><label for="use_filesystem_radio_yes">Yes</label>
+        <input onclick="showCacheOptions(true, 'filesystem');" id="use_filesystem_radio_yes" <?php echo $CN_SETTINGS['storage.filesystem.enabled'] ? "checked=\"checked\"" : ""; ?> type="radio" name="storage.filesystem.enabled" value="1" /><label for="use_filesystem_radio_yes">Yes</label>
     </div>
     <?php echo conjoon_cacheEnabledSnippet('Filesystem enabled', 'files.storage.filesystem.enabled'); ?>
 
@@ -93,8 +123,8 @@ This step allows for editing settings related to conjoon application behavior.
  Specify the path where conjoon stores files (e.g. file uploads).
 <?php echo conjoon_getthisinfobox(); ?>
  <!-- ERRORS -->
- <?php if (isset($CN_SETTINGS['storage.filesystem.install_failed'])) { ?>
-     <?php if ($CN_SETTINGS['storage.filesystem.install_failed'] === true) { ?>
+ <?php if (isset($CN_SETTINGS['storage.filesystem.dir.install_failed'])) { ?>
+     <?php if ($CN_SETTINGS['storage.filesystem.dir.install_failed'] === true) { ?>
          <div class="error_box">
          <b>ERROR</b><br />
          <?php echo $FOLDER_CREATE_ERROR; ?>

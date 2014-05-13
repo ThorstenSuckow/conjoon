@@ -51,6 +51,21 @@ function conjoon_cacheSetup_getCacheDir($key, $section, $value = null)
     }
 }
 
+/**
+ * Helper function for converting bytes to megabyte.
+ *
+ * @param integer $filesize
+ *
+ * @return string
+ */
+function conjoon_bytesToMegaByte($filesize) {
+    $filesize = (int) $filesize;
+
+    if ($filesize < 1024 * 1024) {
+        return (string) $filesize;
+    }
+    return round((int) $filesize / (1024 * 1024)) . 'M';
+}
 
 /**
  * Helper function for converting Megabyte values to bytes

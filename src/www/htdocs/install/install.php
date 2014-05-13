@@ -276,6 +276,27 @@ if (isset($_POST['install_post'])) {
                     $configini
     );
 
+    // conjoon settings
+    // file related settings
+    $configini = str_replace(
+        '{FILES.UPLOAD.MAX_SIZE}',
+        $_SESSION['files']['upload.max_size'],
+        $configini
+    );
+    $configini = str_replace(
+        '{FILES.STORAGE.FILESYSTEM.ENABLED}',
+        $_SESSION['files']['storage.filesystem.enabled'] ? '1' : '0',
+        $configini
+    );
+    $configini = str_replace(
+        '{FILES.STORAGE.FILESYSTEM.DIR}',
+        $_SESSION['files']['storage.filesystem.enabled']
+        && $_SESSION['files']['storage.filesystem.dir']
+            ? $_SESSION['files']['storage.filesystem.dir']
+            : "",
+        $configini
+    );
+
     // Doctrine settings
     $configini = str_replace(
         '{DOCTRINE.CACHE.ENABLED}',
@@ -428,6 +449,12 @@ if (isset($_POST['install_post'])) {
                                                                     ? "'" . $_SESSION['application']['doctrine.cache.metadata_cache.dir'] . "'"
                                                                     : "''") . ",
 
+            'files.upload.max_size' => " . $_SESSION['files']['upload.max_size']. ",
+            'files.storage.filesystem.enabled' => " . ($_SESSION['files']['storage.filesystem.enabled'] ? '1' : '0'). ",
+            'files.storage.filesystem.dir' => " . ($_SESSION['files']['storage.filesystem.enabled'] && $_SESSION['files']['storage.filesystem.dir']
+                                                          ? "'" . $_SESSION['files']['storage.filesystem.dir'] . "'"
+                                                          : "''") . ",
+
             'app_credentials'    => array('user' => '".$_SESSION['app_credentials']['user']."')
         );
     ";
@@ -570,6 +597,18 @@ if (isset($_POST['install_post'])) {
             conjoon_copy('./htaccess.deny.txt',
                 $_SESSION['application']['doctrine.cache.'.$doctrineCacheConfigKey.'.dir'] . '/.htaccess');
         }
+    }
+
+    // process file related directory
+    // ... and create new dir if necessary
+    // dont remove previous directories snce it might be needed to
+    // re-store previous files handled by the dirs configured
+    // for previous installations
+    if ($_SESSION['files']['storage.filesystem.enabled']
+        && $_SESSION['files']['storage.filesystem.dir']) {
+        conjoon_mkdir($_SESSION['files']['storage.filesystem.dir']);
+        conjoon_copy('./htaccess.deny.txt',
+            $_SESSION['files']['storage.filesystem.dir'] . '/.htaccess');
     }
 
     // remove old cache folders
