@@ -135,16 +135,34 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
                 stateful : true,
                 stateId : conjoon.state.base.Identifiers.emailModule.contentPanel.bottomPreview,
                 stateEvents : ['show', 'hide', 'resize'],
+                hidden : true,
+                initState : function() {
+
+                    Ext.Container.prototype.initState.call(this);
+
+                    /** defines default behavior so that bottom preview is by
+                     * default the container for the mail preview if no other
+                     * container is explicitely defined.
+                     * provides also a few fallback mechanisms in case state
+                     * data is corrupted
+                     * @ticket CN-856
+                     */
+                    var StateManager = Ext.state.Manager,
+                        contentPanelStateId = conjoon.state.base.Identifiers.emailModule.contentPanel,
+                        bottomState = StateManager.get(contentPanelStateId.bottomPreview),
+                        rightState = StateManager.get(contentPanelStateId.rightPreview);
+
+                    if ((!rightState && !bottomState) ||
+                        (!bottomState && rightState && rightState.hidden)) {
+                        this.add(me.preview);
+                        this.setVisible(true);
+                    }
+
+                },
                 applyState : function(state) {
                     Ext.Container.prototype.applyState.apply(this, arguments);
 
-                    // check for undefined here should make sure that the
-                    // preview is added to this container if no state information is
-                    // available.
-                    // there might be very rare cases when this breaks (state info for right preview
-                    // available, preview added there, right preview visible etc....),
-                    // but for now its okay
-                    if (state.hidden === false || state.hidden === undefined) {
+                    if (state.hidden === false) {
                         this.add(me.preview);
                     }
                 },
