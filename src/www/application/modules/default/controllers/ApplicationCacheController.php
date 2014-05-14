@@ -61,6 +61,7 @@ class ApplicationCacheController extends Zend_Controller_Action {
      */
     public function getManifestAction()
     {
+        $this->_response->setHeader("Cache-Control", "", true);
         $this->_response->setHeader(
             'Content-Type', 'text/cache-manifest', true
         );
