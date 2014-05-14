@@ -59,6 +59,8 @@ Ext.defineClass('conjoon.mail.folder.comp.StatefulFolderPanel', {
 
         // state events gets initialized once root was loaded
         // see installStateEvents
+        // will be installed later on for making sure state can be
+        // initially saved
         me.stateEvents = [];
 
         /**
@@ -361,6 +363,17 @@ Ext.defineClass('conjoon.mail.folder.comp.StatefulFolderPanel', {
         var me = this;
 
         me.getProxyTreeLoaderListener().init();
+
+        /**
+         * Make sure the state events get installed if there
+         * is no initial state available. This is needed since
+         * applyState would install the state events, but applyState
+         * does not get called if there is no initial state
+         * @ticket CN-855
+         */
+        if(!Ext.state.Manager.get(this.getStateId())){
+            this.installStateEvents();
+        }
     },
 
     /**
