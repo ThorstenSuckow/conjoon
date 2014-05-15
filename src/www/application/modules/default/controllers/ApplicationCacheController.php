@@ -61,7 +61,14 @@ class ApplicationCacheController extends Zend_Controller_Action {
      */
     public function getManifestAction()
     {
+        /**
+         * Override cache-control header by hand, or else Firefox does not
+         * update the manifest somehow, even when setting cache-control to
+         * "no-cache"
+         * @ticket CN-857
+         */
         $this->_response->setHeader("Cache-Control", "", true);
+
         $this->_response->setHeader(
             'Content-Type', 'text/cache-manifest', true
         );
