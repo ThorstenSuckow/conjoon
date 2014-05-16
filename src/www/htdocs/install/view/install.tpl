@@ -38,6 +38,7 @@
 <?php } ?>
 </p>
 
+<div class="settingsContainer type_1">
 <h4>Edition</h4>
 <table>
     <tbody>
@@ -92,7 +93,9 @@ if (!$allApply) { ?>
 </tbody>
 </table>
 <?php } ?>
+</div>
 
+<div class="settingsContainer type_2">
 <h4>Localization</h4>
 <table>
     <tbody>
@@ -106,9 +109,9 @@ if (!$allApply) { ?>
 </tr>
 </tbody>
 </table>
+</div>
 
-
-
+<div class="settingsContainer type_1">
 <h4>Database information</h4>
 <table>
     <tbody>
@@ -146,7 +149,9 @@ if (!$allApply) { ?>
 </tr>
 </tbody>
 </table>
+</div>
 
+<div class="settingsContainer type_2">
 <h4>Application folder</h4>
 <table>
     <tbody>
@@ -171,8 +176,9 @@ if (!$allApply) { ?>
 <?php } ?>
 </tbody>
 </table>
+</div>
 
-
+<div class="settingsContainer type_1">
 <h4>Caching options</h4>
 
 <?php if ($INSTALL['CACHE_REMOVE']['WARNING']) { ?>
@@ -353,7 +359,9 @@ if (!$allApply) { ?>
 <?php } ?>
 </tbody>
 </table>
+</div>
 
+<div class="settingsContainer type_2">
 <!-- TOOL CONFIGURATION -->
 <h4>Tool Configuration</h4>
 <?php
@@ -470,7 +478,9 @@ foreach ($doctrineCacheConfigKeys as $doctrineCacheConfigKey => $doctrineCacheCo
     </tbody>
 </table>
 <!-- ^^ EO TOOL CONFIGURATION -->
+</div>
 
+<div class="settingsContainer type_1">
 <!-- CONJOON APP CONFIGURATION -->
 <h4>Conjoon Configuration</h4>
 <?php
@@ -526,7 +536,9 @@ if (isset($_SESSION['installation_info']['files.storage.filesystem.dir'])
     </tbody>
 </table>
 <!-- ^^ EO CONJOON APP CONFIGURATION -->
+</div>
 
+<div class="settingsContainer type_2">
 <h4>Libraries</h4>
 <table>
     <tbody>
@@ -569,7 +581,9 @@ if (isset($_SESSION['installation_info']['files.storage.filesystem.dir'])
 <?php } ?>
 </tbody>
 </table>
+</div>
 
+<div class="settingsContainer type_1">
 <h4>Document path</h4>
 <table>
     <tbody>
@@ -607,6 +621,7 @@ if (isset($_SESSION['installation_info']['files.storage.filesystem.dir'])
 </tbody>
 </table>
 <?php } ?>
+</div>
 
 <?php if ($INSTALL['IMREMOVING']['js'] || $INSTALL['IMREMOVING']['_configCache']) { ?>
 <h4>Deleting old folders</h4>
