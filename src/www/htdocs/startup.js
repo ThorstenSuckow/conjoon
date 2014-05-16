@@ -41,7 +41,7 @@ Ext.onReady(function(){
     var twitterAccountStore = com.conjoon.service.twitter.data.AccountStore.getInstance();
 
     var loadingCont = document.getElementById(
-        'com.conjoon.groupware.Startup.loadingCont'
+        'cn_startup_splash_body_loadingCont'
     );
 
     var loadingInd = null;
@@ -56,16 +56,18 @@ Ext.onReady(function(){
 
     var _showErrorMessage = function(systemMessage)
     {
-        var p = document.getElementById('com-conjoon-groupware-SplashScreen-errorPanel');
+        var p = document.getElementById('cn_startup_splash_errorPanel');
 
         if (!p) {
             return;
         }
 
-        p.style.display = 'block';
+        Ext.fly(p).slideIn('t', {
+           duration : 0.2
+        });
 
-        var noticeP  = document.getElementById('com-conjoon-groupware-SplashScreen-error-notice');
-        var messageP = document.getElementById('com-conjoon-groupware-SplashScreen-error-message');
+        var noticeP  = document.getElementById('cn_startup_splash_errorPanel_errorNotice'),
+           messageP = document.getElementById('cn_startup_splash_errorPanel_errorMessage');
 
         if (!loadingFailed) {
             Ext.fly(noticeP).update(
@@ -97,17 +99,18 @@ Ext.onReady(function(){
             return;
         }
         Ext.fly(div).addClass('fail');
-        div.innerHTML = div.innerHTML + '&nbsp;' + com.conjoon.Gettext.gettext("Failed :(");
+        div.innerHTML = div.innerHTML + '&nbsp;' + com.conjoon.Gettext.gettext("failed");
     };
 
     var _updateIndicator = function(id) {
+
         var div = document.getElementById(id);
         if (!div) {
             return;
         }
 
         Ext.fly(div).addClass('done');
-        div.innerHTML = div.innerHTML + '&nbsp;' + com.conjoon.Gettext.gettext("Done!");
+        div.innerHTML = div.innerHTML + '&nbsp;' + com.conjoon.Gettext.gettext("done");
     };
 
     var _appendIndicator = function(msg, id) {
@@ -122,7 +125,14 @@ Ext.onReady(function(){
         var cn       = loadingInd.cloneNode(true);
         cn.innerHTML = msg;
         cn.id        = id;
+        cn.style.display = "none";
+
         loadingCont.appendChild(cn);
+
+        Ext.fly(cn).fadeIn({
+            endOpacity : 1,
+            duration   : 0.5
+        });
     };
 
     var _beforeLoad = function(store) {
@@ -254,40 +264,67 @@ Ext.onReady(function(){
         })();
 
         (function(){
+
             Ext.fly(document
-                .getElementById('DOM:com.conjoon.groupware.Startup'))
+                    .getElementById('cn_startup_splash_body'))
                 .fadeOut({
                     endOpacity : 0, //can be any value between 0 and 1 (e.g. .5)
                     easing     : 'easeOut',
-                    duration   : 1.0,
+                    duration   : 1.5,
                     remove     : true,
-                    useDisplay : false
-            });
+                    useDisplay : false,
+                    callback : function() {
+                        Ext.ux.util.MessageBus.publish('com.conjoon.groupware.ready')
+                        Ext.fly(document
+                                .getElementById('cn_startup_splash'))
+                            .fadeOut({
+                                endOpacity : 0, //can be any value between 0 and 1 (e.g. .5)
+                                easing     : 'easeOut',
+                                duration   : 2,
+                                remove     : true,
+                                useDisplay : false
+                            })}
+                });
 
             com.conjoon.SystemMessageManager.setContext(
                 groupware.Registry.get(
                     '/client/environment/device'
                 )
             );
-
-            Ext.ux.util.MessageBus.publish('com.conjoon.groupware.ready');
-        }).defer(100);
+        }).defer(1000);
 
     });
 
     reception.init(true);
     reception.onUserLoad(function(){
+
+        var user = reception.getUser(),
+            greetText = user.lastLogin
+                        ? com.conjoon.Gettext.gettext("Welcome back, %s").replace(/\%s/g, user.firstname)
+                        : com.conjoon.Gettext.gettext("Welcome, %s").replace(/\%s/g, user.firstname);
+
+
+        document.getElementById('cn_startup_splash_body_greetingCont').innerHTML = greetText;
         com.conjoon.groupware.Registry.beforeLoad({
             fn : function() {
                 _beforeLoad('registry');
             }
         });
-        com.conjoon.groupware.Registry.load({
-            fn : function() {
-                _updateIndicator('registry');
-            }
-        });
-        preLoader.load();
+
+        Ext.fly(document
+                .getElementById('cn_startup_splash_body'))
+            .fadeIn({
+                endOpacity : 1,
+                duration   : 1.5,
+                callback : function() {
+                    com.conjoon.groupware.Registry.load({
+                        fn : function() {
+                            _updateIndicator('registry');
+                        }
+                    });
+                    preLoader.load();
+                }
+            });
     });
 
 });

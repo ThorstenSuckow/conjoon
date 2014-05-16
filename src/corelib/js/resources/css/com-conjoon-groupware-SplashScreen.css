@@ -15,72 +15,64 @@
 .com-conjoon-groupware-SplashScreen {
     position:absolute;
     height:100%;
+    font-family:'Segoe Ui', Tahoma, Verdana, Arial;
+    font-weight:lighter;
+    color:white;
     width:100%;
     top:0;
     left:0;
-    z-index:999;
+    z-index:999999;
     background-image:url(../images/startup-bg.png);
     background-position:top;
     background-repeat:repeat-x;
     background-color:#355899;
 }
 
-.com-conjoon-groupware-SplashScreen .wrap {
-    height:100%;
+.com-conjoon-groupware-SplashScreen .body {
+    display:none;
+    position:absolute;
+    bottom:120px;
+    left:80px;
     width:100%;
 }
 
-.com-conjoon-groupware-SplashScreen .body {
-    height:315px;
-    width:481px;
-    background-image:url(../images/splash.png);
+
+.com-conjoon-groupware-SplashScreen .body .greetingCont {
+    font-size:64px;
 }
 
-.com-conjoon-groupware-SplashScreen .body .errorPanel {
+
+.com-conjoon-groupware-SplashScreen .body .loadingCont {
+    height:140px;
+    margin-top:24px;
+}
+
+.com-conjoon-groupware-SplashScreen .errorPanel {
     background-image:url(../images/splashscreen-error-bg.png);
     color:#FFFFFF;
     height:85px;
-    left:10px;
     padding:4px;
-    position:absolute;
-    top:220px;
-    width:467px;
     display:none;
 }
 
-.com-conjoon-groupware-SplashScreen .body .errorPanel .textContainer {
+.com-conjoon-groupware-SplashScreen .errorPanel .textContainer {
     background-image:url(../images/32x32/actions/splashscreen-startup-error.png);
     background-repeat:no-repeat;
     height:86px;
     padding:0px 0px 0px 42px;
 }
 
-.com-conjoon-groupware-SplashScreen .body .errorPanel .textContainer .message {
+.com-conjoon-groupware-SplashScreen .errorPanel .textContainer .message {
     overflow:auto;
     height:60px;
 }
 
-.com-conjoon-groupware-SplashScreen .body .errorPanel .textContainer .notice {
-    font-weight:bold;
+.com-conjoon-groupware-SplashScreen .errorPanel .textContainer .notice {
 }
 
-.com-conjoon-groupware-SplashScreen .progressBar {
-    background-image:url(../images/splash-loading-bar.gif);
-    background-repeat:no-repeat;
+
+.com-conjoon-groupware-SplashScreen .loadingCont .loading {
+    font-size:12px;
     height:20px;
 }
 
-.com-conjoon-groupware-SplashScreen .wrap .loadingCont .loading {
-    background-image:url(../images/loading-processing.gif);
-    background-repeat:no-repeat;
-    height:20px;
-    padding-left:20px;
-}
-
-.com-conjoon-groupware-SplashScreen .wrap .loadingCont .loading.done {
-    background-image:url(../images/16x16/actions/groupware-success.png);
-}
-
-.com-conjoon-groupware-SplashScreen .wrap .loadingCont .loading.fail {
-    background-image:url(../images/16x16/actions/groupware-failure.png);
-}
