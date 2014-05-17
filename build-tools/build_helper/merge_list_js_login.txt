@@ -14,6 +14,6 @@ vendor/ext-ux-util-messagebus/src/MessageBus.js
 src/corelib/js/source/groupware/ResponseInspector.js
 src/corelib/js/source/SystemMessage.js
 src/corelib/js/source/SystemMessageManager.js
-src/corelib/js/source/groupware/reception/LoginWindow.js
+src/corelib/js/source/app/reception/comp/LoginContainer.js
 src/corelib/js/source/groupware/Reception.js
-src/corelib/js/source/groupware/reception/StateIndicator.js
+src/corelib/js/source/app/reception/comp/StateIndicator.js

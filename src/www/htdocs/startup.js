@@ -32,27 +32,23 @@ Ext.onReady(function(){
         registry : com.conjoon.groupware.Registry
     }));
 
-    var preLoader           = com.conjoon.util.PreLoader
-    var groupware           = com.conjoon.groupware;
-    var emailAccountStore   = groupware.email.AccountStore.getInstance();
-    var feedsAccountStore   = groupware.feeds.AccountStore.getInstance();
-    var feedsFeedStore      = groupware.feeds.FeedStore.getInstance();
-    var reception           = groupware.Reception;
-    var twitterAccountStore = com.conjoon.service.twitter.data.AccountStore.getInstance();
-
-    var loadingCont = document.getElementById(
-        'cn_startup_splash_body_loadingCont'
-    );
-
-    var loadingInd = null;
-
-    var _load = function(store) {
-        var id = store.storeId;
-        _updateIndicator(id);
-    };
-
-    var loadingFailed = false;
-    var failMessages  = "";
+    var preLoader           = com.conjoon.util.PreLoader,
+        groupware           = com.conjoon.groupware,
+        emailAccountStore   = groupware.email.AccountStore.getInstance(),
+        feedsAccountStore   = groupware.feeds.AccountStore.getInstance(),
+        feedsFeedStore      = groupware.feeds.FeedStore.getInstance(),
+        reception           = groupware.Reception,
+        twitterAccountStore = com.conjoon.service.twitter.data.AccountStore.getInstance(),
+        loadingCont         = document.getElementById(
+                                  'cn_startup_splash_body_loadingCont'
+                              ),
+        loadingInd          = null,
+        _load               = function(store) {
+            var id = store.storeId;
+            _updateIndicator(id);
+        },
+        loadingFailed = false,
+        failMessages  = "";
 
     var _showErrorMessage = function(systemMessage)
     {

@@ -20,6 +20,8 @@ Ext.namespace('com.conjoon.groupware.reception');
  * A window holding a username and password field for submitting password credentials.
  * @constructor
  * @param {Object} config The configuration options.
+ *
+ * @deprecated use conjoon.reception.comp.LoginContainer instead
  */
 com.conjoon.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
 
@@ -168,10 +170,13 @@ com.conjoon.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
         });
 
         Ext.apply(this, {
+            shadow    : false,
             cls       : 'com-conjoon-groupware-reception-LoginWindow',
             closable  : false,
             resizable : false,
             width     : 490,
+            hideBorders : true,
+            plain : true,
             items     : [{
                 xtype  :'box',
                 cls    : 'com-conjoon-groupware-reception-LoginWindow-softwareLabel',
@@ -576,9 +581,10 @@ com.conjoon.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
     _createUsernameField : function()
     {
         return new Ext.form.TextField({
-            fieldLabel  : com.conjoon.Gettext.gettext("User name"),
+            emptyText  : com.conjoon.Gettext.gettext("User name"),
             name        : 'username',
             preventMark : true,
+            hideLabel : true,
             allowBlank  : false,
             listeners   : {
                 specialkey  : {
@@ -619,7 +625,8 @@ com.conjoon.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
             allowBlank  : false,
             preventMark : true,
             name        : 'password',
-            fieldLabel  : com.conjoon.Gettext.gettext("Password"),
+            hideLabel : true,
+            //emptyText  : com.conjoon.Gettext.gettext("Password"),
             listeners   : {
                 specialkey  : {
                     fn    : this._onSpecialKey,
@@ -671,7 +678,7 @@ com.conjoon.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
             url          : this.loginUrl,
             method       : 'post',
             labelAlign   : 'right',
-            cls          : 'x-small-editor com-conjoon-groupware-reception-LoginWindow-formPanel',
+            cls          : 'com-conjoon-groupware-reception-LoginWindow-formPanel',
             labelWidth   : 75,
             defaults     : {
                 anchor     : '100%',

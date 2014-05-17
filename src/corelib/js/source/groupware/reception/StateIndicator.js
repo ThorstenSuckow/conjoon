@@ -21,6 +21,8 @@ Ext.namespace('com.conjoon.groupware.reception');
  * {@see com.conjoon.groupware.reception.LoginWindow}
  * @constructor
  * @param {Object} config The configuration options.
+ *
+ * @deprecated use conjoon.reception.comp.StateIndicator instead
  */
 com.conjoon.groupware.reception.StateIndicator = Ext.extend(Ext.BoxComponent, {
 

@@ -100,9 +100,9 @@ src/corelib/js/source/groupware/workbench/dd/TabDragZone.js
 src/corelib/js/source/groupware/DownloadManager.js
 src/corelib/js/source/groupware/ResponseInspector.js
 src/corelib/js/source/groupware/reception/LogoutWindow.js
-src/corelib/js/source/groupware/reception/LoginWindow.js
+src/corelib/js/source/app/reception/comp/LoginContainer.js
 src/corelib/js/source/groupware/Reception.js
-src/corelib/js/source/groupware/reception/StateIndicator.js
+src/corelib/js/source/app/reception/comp/StateIndicator.js
 src/corelib/js/source/groupware/StatusBar.js
 src/corelib/js/source/groupware/NotificationManager.js
 src/corelib/js/source/groupware/util/LinkInterceptor.js

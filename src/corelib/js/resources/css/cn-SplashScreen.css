@@ -12,7 +12,7 @@
  * $URL$
  */
 
-.com-conjoon-groupware-SplashScreen {
+.cn-splashScreen {
     position:absolute;
     height:100%;
     font-family:'Segoe Ui', Tahoma, Verdana, Arial;
@@ -28,7 +28,7 @@
     background-color:#355899;
 }
 
-.com-conjoon-groupware-SplashScreen .body {
+.cn-splashScreen .body {
     display:none;
     position:absolute;
     bottom:120px;
@@ -37,17 +37,17 @@
 }
 
 
-.com-conjoon-groupware-SplashScreen .body .greetingCont {
+.cn-splashScreen .body .greetingCont {
     font-size:64px;
 }
 
 
-.com-conjoon-groupware-SplashScreen .body .loadingCont {
+.cn-splashScreen .body .loadingCont {
     height:140px;
     margin-top:24px;
 }
 
-.com-conjoon-groupware-SplashScreen .errorPanel {
+.cn-splashScreen .errorPanel {
     background-image:url(../images/splashscreen-error-bg.png);
     color:#FFFFFF;
     height:85px;
@@ -55,23 +55,23 @@
     display:none;
 }
 
-.com-conjoon-groupware-SplashScreen .errorPanel .textContainer {
+.cn-splashScreen .errorPanel .textContainer {
     background-image:url(../images/32x32/actions/splashscreen-startup-error.png);
     background-repeat:no-repeat;
     height:86px;
     padding:0px 0px 0px 42px;
 }
 
-.com-conjoon-groupware-SplashScreen .errorPanel .textContainer .message {
+.cn-splashScreen .errorPanel .textContainer .message {
     overflow:auto;
     height:60px;
 }
 
-.com-conjoon-groupware-SplashScreen .errorPanel .textContainer .notice {
+.cn-splashScreen .errorPanel .textContainer .notice {
 }
 
 
-.com-conjoon-groupware-SplashScreen .loadingCont .loading {
+.cn-splashScreen .loadingCont .loading {
     font-size:12px;
     height:20px;
 }

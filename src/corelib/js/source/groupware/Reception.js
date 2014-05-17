@@ -35,7 +35,7 @@ com.conjoon.groupware.Reception = function() {
      * @param {Object} _options
      */
     var _options = {
-        loginWindowClass : com.conjoon.groupware.reception.LoginWindow
+        loginWindowClass : conjoon.reception.comp.LoginContainer
     };
 
     /**
@@ -176,12 +176,12 @@ com.conjoon.groupware.Reception = function() {
         _listeners = [];
 
         var context = _context;
-        loginWindow.close();
+        loginWindow.close('login');
 
         if (context == this.TYPE_LOGIN || !_applicationStarted) {
             (function(){
                 this.location.href = './';
-            }).defer(10, window);
+            }).defer(1000, window);
         }
     };
 
@@ -323,7 +323,17 @@ com.conjoon.groupware.Reception = function() {
             return;
         }
 
-        window.location.href = exitUrl ? exitUrl : './';
+        if (loginWindow) {
+            loginWindow.close('exit');
+            (function(){
+                this.location.href =  exitUrl ? exitUrl : './';
+            }).defer(1000, window);
+        } else {
+            window.location.href = exitUrl ? exitUrl : './';
+        }
+
+
+
     };
 
     /**
@@ -369,7 +379,7 @@ com.conjoon.groupware.Reception = function() {
         });
 
         loginWindow.setFormIntroLabel(
-            com.conjoon.Gettext.gettext("Sign out")
+            com.conjoon.Gettext.gettext("Already signed in")
         );
 
         loginWindow.setFormIntroText(
@@ -440,7 +450,7 @@ com.conjoon.groupware.Reception = function() {
         });
 
         loginWindow.setFormIntroLabel(
-            com.conjoon.Gettext.gettext("Login")
+            com.conjoon.Gettext.gettext("Session expired")
         );
 
         loginWindow.setFormIntroText(
@@ -466,7 +476,7 @@ com.conjoon.groupware.Reception = function() {
         });
 
         loginWindow.setFormIntroLabel(
-            com.conjoon.Gettext.gettext("Login")
+            com.conjoon.Gettext.gettext("Locked")
         );
 
         loginWindow.setFormIntroText(
