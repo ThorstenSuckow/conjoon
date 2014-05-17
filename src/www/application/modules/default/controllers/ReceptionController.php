@@ -403,7 +403,7 @@ class ReceptionController extends Zend_Controller_Action {
 
             $this->view->success = true;
        } else {
-            $this->view->error   = $result->getMessages();
+            $this->view->error   = 'Wrong username or password';
             $this->view->success = false;
         }
     }
