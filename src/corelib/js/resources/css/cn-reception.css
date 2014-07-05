@@ -1,0 +1,193 @@
+/**
+ * conjoon
+ * (c) 2002-2012 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
+ *
+ * $Author: T. Suckow $
+ * $Id: com-conjoon-groupware-email-form.css 1457 2012-10-28 18:55:17Z T. Suckow $
+ * $Date: 2012-10-28 19:55:17 +0100 (So, 28 Okt 2012) $
+ * $Revision: 1457 $
+ * $LastChangedDate: 2012-10-28 19:55:17 +0100 (So, 28 Okt 2012) $
+ * $LastChangedBy: T. Suckow $
+ * $URL: http://svn.conjoon.org/trunk/src/corelib/js/resources/css/com-conjoon-groupware-email-form.css $
+ */
+
+.cn-reception.body {
+    background:#2e647f url(../images/startup-bg.png) repeat-x scroll 0% 0% !important;
+    height:100%;
+    width:100%;
+}
+
+.cn-reception-logoutContainer,
+.cn-reception-loginContainer {
+    font-family:'Segoe Ui', Tahoma, Verdana, Arial;
+    font-weight:lighter;
+    color:white;
+    z-index:199999999;
+    position:absolute;
+    height:100%;
+    width:100%;
+    top:0px;
+    left:0px;
+    background:#2e647f url(../images/loginContainer-bg.png) repeat-x scroll 0% 0% !important;
+}
+
+.cn-reception-logoutContainer {
+    top  : -1000000px,
+    left :-1000000px
+}
+
+.cn-reception-loginContainer .x-panel-body,
+.cn-reception-loginContainer .x-form-text,
+.cn-reception-loginContainer textarea.x-form-field {
+    background:none;
+}
+
+.cn-reception-loginContainer .x-form-display-field,
+.cn-reception-loginContainer .x-form-text {
+    background:white;
+    height:24px;
+    font-size:18px;
+    font-weight:lighter;
+}
+
+.cn-reception-loginContainer .usernameControl.x-form-display-field {
+    font-family:'Segoe Ui', Tahoma, Verdana, Arial;
+    background:none;
+    color:white;
+    border:none;
+    font-size:28px;
+    opacity:1!important;
+    margin-bottom:26px;
+    margin-top:-8px;
+}
+
+.cn-reception-loginContainer .formPanel {
+    margin-top:12px;
+    height:200px;
+    width : 260px;
+}
+
+.cn-reception-logoutContainer .labelCnt,
+.cn-reception-loginContainer .mainContainer {
+    margin-top:20%;
+    margin-left:42%;
+}
+
+.cn-reception-logoutContainer .labelCnt .label {
+    font-size:32px;
+    line-height:64px;
+}
+
+.cn-reception-loginContainer .softwareInfo {
+    font-size:32px;
+    width:200px;
+}
+
+.cn-reception-loginContainer .usernameControl {
+    margin-bottom:16px;
+}
+
+.cn-reception-loginContainer .passwordControl {
+    margin-bottom:4px;
+}
+
+.cn-reception-loginContainer .exitButton {
+    font-size: 46px;
+    height: 42px;
+    line-height: 42px;
+    padding-right:28px;
+}
+
+.cn-reception-loginContainer .loginButton {
+    font-size:46px;
+    padding-left:32px;
+    height:50px;
+    padding-top:38px;
+}
+
+.cn-reception-loginContainer .rememberMeControl label,
+.cn-reception-loginContainer .loginButton.x-item-disabled,
+.cn-reception-loginContainer .exitButton.x-item-disabled{
+    color:white!important;
+}
+
+.cn-reception-loginContainer .infoPanel {
+    position:absolute;
+    bottom:0px;
+    left:0px;
+}
+
+.cn-reception-loginContainer .formLabel,
+.cn-reception-loginContainer .editionInfo,
+.cn-reception-loginContainer .versionInfo {
+    font-size:10px;
+    padding-right:12px;
+}
+
+.cn-reception-loginContainer .formLabel {
+    font-size:16px;
+}
+
+/**
+ * StateIndicator
+ */
+.cn-reception-stateIndicator {
+    position:absolute;
+    bottom:0px;
+    right:0px;
+    font-size:14px;
+}
+
+.cn-reception-stateIndicator .messageCont.error {
+    color:#F5F233;
+}
+
+.cn-reception-stateIndicator .messageCont.ok {
+    color:white;
+}
+
+/**
+ * Logout Window
+ */
+.com-conjoon-groupware-reception-LogoutWindow .x-window-body {
+    background-color:#ffffff;
+    padding:10px 25px;
+}
+
+.com-conjoon-groupware-reception-LogoutWindow-button {
+    height:100px;
+    width:64px;
+}
+
+.com-conjoon-groupware-reception-LogoutWindow-button .button {
+    height:64px;
+    cursor:pointer;
+    width:64px;
+    background-position:0px 0px;
+}
+
+.com-conjoon-groupware-reception-LogoutWindow-button.over .button {
+    background-position:64px 0px;
+}
+
+.com-conjoon-groupware-reception-LogoutWindow-button .text {
+    height:23px;
+    width:64px;
+    line-height:23px;
+    color:black;
+    font-weight:bold;
+    text-align:center;
+}
+
+.com-conjoon-groupware-reception-LogoutWindow-button.com-conjoon-groupware-reception-LogoutWindow-logoutButton .button {
+    background-image:url(../images/groupware-logout.png);
+}
+
+.com-conjoon-groupware-reception-LogoutWindow-button.com-conjoon-groupware-reception-LogoutWindow-lockButton .button {
+    background-image:url(../images/groupware-lockworkbench.png);
+}
+
+.com-conjoon-groupware-reception-LogoutWindow-button.com-conjoon-groupware-reception-LogoutWindow-restartButton .button {
+    background-image:url(../images/groupware-restart.png);
+}

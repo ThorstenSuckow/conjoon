@@ -17,7 +17,7 @@ Ext.namespace('com.conjoon.groupware');
 /**
  * @class com.conjoon.groupware.Reception
  *
- * The reception takes care of login/logout/lock/unlock processes.
+ * The reception takes care of login/lock/unlock processes.
  *
  * @singleton
  */
@@ -103,14 +103,6 @@ com.conjoon.groupware.Reception = function() {
      * @param {com.conjoon.groupware.reception.LoginWindow}
      */
     var loginWindow = null;
-
-    /**
-     * The logout window that will be shown when a user wants to either lock
-     * the workbench or completely logout of the application.
-     *
-     * @param {com.conjoon.groupware.reception.LogoutWindow}
-     */
-    var _logoutWindow = null;
 
     /**
      * Callback for the receptions user load response.
@@ -211,9 +203,6 @@ com.conjoon.groupware.Reception = function() {
     };
 
     /**
-     * Invoked when either the "Yes" or the "No" button of the logout dialog
-     * is clicked.
-     *
      * Sends a request to the server that tells the backend that the user wishes
      * to logout.
      *
@@ -282,9 +271,6 @@ com.conjoon.groupware.Reception = function() {
     };
 
     /**
-     * Invoked when either the "Yes" or the "No" button of the logout dialog
-     * is clicked.
-     *
      * Tries to reload the application.
      *
      * @param {String} buttonType The type of the button that was clicked. Can be
@@ -917,21 +903,6 @@ com.conjoon.groupware.Reception = function() {
                 width   : 400,
                 fn      : _logout
             });
-        },
-
-        /**
-         * Display the logout window.
-         */
-        showLogout : function()
-        {
-            if (_logoutWindow === null) {
-                _logoutWindow = new com.conjoon.groupware.reception.LogoutWindow();
-                _logoutWindow.on('destroy', function() {
-                    _logoutWindow = null;
-                });
-            }
-
-            _logoutWindow.show();
         },
 
         /**

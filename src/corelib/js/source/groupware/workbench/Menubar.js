@@ -239,10 +239,23 @@ com.conjoon.groupware.workbench.Menubar = function(){
                                 }
                             }))]
                         }, '-', {
-                            text    : com.conjoon.Gettext.gettext("Logout..."),
-                            handler : function() {
-                                com.conjoon.groupware.Reception.showLogout();
-                            }
+                            text    : com.conjoon.Gettext.gettext("Shut down"),
+                            menu : [{
+                                text : com.conjoon.Gettext.gettext("Lock"),
+                                handler : function() {
+                                    com.conjoon.groupware.Reception.lockWorkbench();
+                                }
+                            }, {
+                                text : com.conjoon.Gettext.gettext("Sign out"),
+                                handler : function() {
+                                    com.conjoon.groupware.Reception.logout();
+                                }
+                            }, {
+                                text : com.conjoon.Gettext.gettext("Restart"),
+                                handler : function() {
+                                    com.conjoon.groupware.Reception.restart();
+                                }
+                            }]
                         }]
                     }, _getViewMenu(workbench)
                     , _getEmailMenu(), {

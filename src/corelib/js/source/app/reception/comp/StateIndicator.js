@@ -3,28 +3,26 @@
  * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
- * $Author$
- * $Id$
- * $Date$
- * $Revision$
- * $LastChangedDate$
- * $LastChangedBy$
- * $URL$
+ * $Author: T. Suckow $
+ * $Id: StateIndicator.js 1457 2012-10-28 18:55:17Z T. Suckow $
+ * $Date: 2012-10-28 19:55:17 +0100 (So, 28 Okt 2012) $
+ * $Revision: 1457 $
+ * $LastChangedDate: 2012-10-28 19:55:17 +0100 (So, 28 Okt 2012) $
+ * $LastChangedBy: T. Suckow $
+ * $URL: http://svn.conjoon.org/trunk/src/corelib/js/source/groupware/reception/StateIndicator.js $
  */
-
-Ext.namespace('com.conjoon.groupware.reception');
 
 /**
- * @class com.conjoon.groupware.reception.StateIndicator
+ * @class conjoon.reception.comp.StateIndicator
  * @extends Ext.Component
  * A simple utility class representing a container for showing login processing states in a
- * {@see com.conjoon.groupware.reception.LoginWindow}
+ * {@see conjoon.reception.comp.LoginContainer}
  * @constructor
  * @param {Object} config The configuration options.
- *
- * @deprecated use conjoon.reception.comp.StateIndicator instead
  */
-com.conjoon.groupware.reception.StateIndicator = Ext.extend(Ext.BoxComponent, {
+Ext.defineClass('conjoon.reception.comp.StateIndicator', {
+
+    extend : 'Ext.BoxComponent',
 
     /**
      * @cfg {String} errorCls
@@ -39,13 +37,6 @@ com.conjoon.groupware.reception.StateIndicator = Ext.extend(Ext.BoxComponent, {
     messageCls : 'message',
 
     /**
-     * @param {Ext.Element} _imageContainer
-     * A container for showing larger images, such as a progess bar. The container is
-     * rendered beneath the message container.
-     */
-    _imageContainer : null,
-
-    /**
      * @param {Ext.Element} _messageContainer
      * A container for displaying messages.
      */
@@ -57,7 +48,6 @@ com.conjoon.groupware.reception.StateIndicator = Ext.extend(Ext.BoxComponent, {
      * message elements
      */
     _appliedClasses : {
-        image   : [],
         message : []
     },
 
@@ -69,28 +59,20 @@ com.conjoon.groupware.reception.StateIndicator = Ext.extend(Ext.BoxComponent, {
         Ext.apply(this, {
             autoEl : {
                 tag      : 'div',
-                cls      : 'com-conjoon-groupware-reception-LoginWindow-stateIndicator',
+                cls      : 'cn-reception-stateIndicator',
                 children : [{
                     tag : 'div',
-                    cls : 'com-conjoon-groupware-reception-LoginWindow-stateIndicator-messageCont'
-                }, {
-                    tag : 'div',
-                    cls : 'com-conjoon-groupware-reception-LoginWindow-stateIndicator-imageCont'
+                    cls : 'messageCont'
                 }]
             }
         });
 
         this.on('render', this._onRender, this, {single : true});
 
-        com.conjoon.groupware.reception.StateIndicator.superclass.initComponent.call(this);
+        conjoon.reception.comp.StateIndicator.superclass.initComponent.call(this);
     },
 
 // -------- API
-
-    setImageClass : function(cls)
-    {
-        this._resetContainerClass('image', cls);
-    },
 
     setErrorMessage : function(message)
     {
@@ -111,12 +93,6 @@ com.conjoon.groupware.reception.StateIndicator = Ext.extend(Ext.BoxComponent, {
     _resetContainerClass : function(type, cls)
     {
         switch (type) {
-            case 'image':
-                this._imageContainer.removeClass(this._appliedClasses['image']);
-                this._appliedClasses['image'] = [];
-                this._appliedClasses['image'].push(cls);
-                this._imageContainer.addClass(cls);
-            break;
             case 'message':
                 this._messageContainer.removeClass(this._appliedClasses['message']);
                 this._appliedClasses['message'] = [];
@@ -136,7 +112,6 @@ com.conjoon.groupware.reception.StateIndicator = Ext.extend(Ext.BoxComponent, {
     _onRender : function()
     {
         this._messageContainer = new Ext.Element(this.el.dom.firstChild);
-        this._imageContainer   = new Ext.Element(this.el.dom.lastChild) ;
     }
 
 });

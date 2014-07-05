@@ -99,7 +99,6 @@ src/corelib/js/source/groupware/workbench/dd/TabDropZone.js
 src/corelib/js/source/groupware/workbench/dd/TabDragZone.js
 src/corelib/js/source/groupware/DownloadManager.js
 src/corelib/js/source/groupware/ResponseInspector.js
-src/corelib/js/source/groupware/reception/LogoutWindow.js
 src/corelib/js/source/app/reception/comp/LoginContainer.js
 src/corelib/js/source/groupware/Reception.js
 src/corelib/js/source/app/reception/comp/StateIndicator.js
