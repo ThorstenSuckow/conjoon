@@ -1,24 +1,23 @@
                        conjoon license
-                Version 1, 01 December 2008
+                  Version 2, 05 July 2014
 
- Copyright (C) 2008 conjoon Open Source Project, <http://conjoon.org>
- Everyone is permitted to copy and distribute verbatim copies
- of this license document, but changing it is not allowed.
+Copyright (C) 2014 conjoon Open Source Project, http://conjoon.org
+Everyone is permitted to copy and distribute verbatim copies of this license
+document, but changing it is not allowed.
 
-This software is licensed under the GNU AFFERO GENERAL PUBLIC LICENSE, Version 3. See
-below for the license text.
+This software is licensed under the GNU AFFERO GENERAL PUBLIC LICENSE, Version 3.
 Please respect the individual licenses of the vendor libraries which are used by
 this software.
-Some libraries found in this software project are property of Thorsten Suckow-Homberg
-<tsuckow@conjoon.org> and have special permission to be used both in a AGPL- and
-commercial-licensed version of THIS software.
-A commercial license option will not change the conditions under which individual
-vendor code can be used; their licenses stay the same.
+Some libraries found in this software project are property of
+Thorsten Suckow-Homberg <ts@siteartwork.de> and have special permission to be
+used both in a AGPL- and commercial-licensed version of THIS software.
+A commercial license option will not change the conditions under which
+individual vendor code can be used; their licenses stay the same.
 If you have any questions regarding this license, please send an email to
 <licensing@conjoon.org>.
-For further questions regarding the licenses of the related vendor code, please refer
-to the license informations as supplied within the specific directories in this
-software project.
+For further questions regarding the licenses of the related vendor code, please
+refer to the license informations as supplied within the specific directories in
+this software project.
 
 
                     GNU AFFERO GENERAL PUBLIC LICENSE
