@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2012 siteartwork.de/conjoon.org
+ * (c) 2007-2014 conjoon.org
  * licensing@conjoon.org
  *
  * phing copyright disclaimer:
