@@ -76,6 +76,17 @@ require_once 'Conjoon/Text/Transformer.php';
  */
 class Conjoon_Text_Transformer_MimeDecoder extends Conjoon_Text_Transformer {
 
+    /**
+     * Callback helper for preg_replace_callback
+     *
+     * @param array $matches
+     *
+     * @return string
+     */
+    protected function strtoupperCallback(Array $matches) {
+        return strtoupper($matches[0]);
+    }
+
 
     /**
      * @inherit Conjoon_Text_Transformer::transform
@@ -184,9 +195,9 @@ class Conjoon_Text_Transformer_MimeDecoder extends Conjoon_Text_Transformer {
             $ms = implode("", $ms);
         }
 
-        $s = preg_replace(
-            "/=(\d[a-f]|[a-f]{0,2}|[[:xdigit:]])/e",
-            "strtoupper('\\0')",
+        $s = preg_replace_callback(
+            "/=(\d[a-f]|[a-f]{0,2}|[[:xdigit:]])/",
+            array($this, "strtoupperCallback"),
             $ms
         );
 
