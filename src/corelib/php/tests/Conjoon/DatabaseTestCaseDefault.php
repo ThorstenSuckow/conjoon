@@ -70,9 +70,15 @@ abstract class DatabaseTestCaseDefault extends \PHPUnit_Extensions_Database_Test
 
     protected $myDConn = null;
 
+    /**
+     * @see CN-863
+     */
     protected function setUp()
     {
+        $conn=$this->getConnection();
+        $conn->getConnection()->query("set foreign_key_checks=0");
         parent::setUp();
+        $conn->getConnection()->query("set foreign_key_checks=1");
     }
 
     protected function tearDown()
@@ -80,7 +86,6 @@ abstract class DatabaseTestCaseDefault extends \PHPUnit_Extensions_Database_Test
         parent::tearDown();
         $this->myDConn = null;
     }
-
 
     public function getConnection()
     {
