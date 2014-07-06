@@ -311,7 +311,7 @@ Ext.onReady(function(){
     reception.onUserLoad(function(){
 
         var user = reception.getUser(),
-            greetText = user.lastLogin
+            greetText = user.lastLogin > 0
                         ? com.conjoon.Gettext.gettext("Welcome back, %s").replace(/\%s/g, user.firstname)
                         : com.conjoon.Gettext.gettext("Welcome, %s").replace(/\%s/g, user.firstname);
 
