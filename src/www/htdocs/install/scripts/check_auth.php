@@ -39,5 +39,5 @@ if (!isset($_SESSION)
     || !array_key_exists('com.conjoon.session.install.authorized', $_SESSION)
     || !isset($_SESSION['com.conjoon.session.install.authorized'])
     || $_SESSION['com.conjoon.session.install.authorized'] !== true) {
-    //die("Not authorized.");
+    die("Not authorized.");
 }
