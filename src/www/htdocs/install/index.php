@@ -206,7 +206,7 @@ if (isset($_GET['nosession'])) {
    }
 
    $VIEW['navigation']['install'] = array(
-       "Install!", "./index.php?action=install", "./index.php?action=install_process"
+       "Install!", "./index.php?action=install", "./index.php?action=start_install"
    );
 
    $VIEW['navigation']['finish'] =array("Finish", "./index.php?action=finish");
@@ -395,12 +395,38 @@ if (isset($_GET['nosession'])) {
        case 'install':
            include_once './install.php';
        break;
+       case 'start_install':
+           header("Location: ./index.php?action=install_process");
+           die();
+       break;
+
        case 'install_process':
            $VIEW['action'] = 'install';
-           include_once './install.php';
+           include_once './install_process.php';
        break;
+
        case 'install_success':
            header("Location: ./index.php?action=finish");
+           die();
+       break;
+
+       case 'install_chunk_1':
+       case 'install_chunk_2':
+       case 'install_chunk_3':
+       case 'install_chunk_4':
+       case 'install_chunk_5':
+       case 'install_chunk_6':
+       case 'install_chunk_7':
+
+           $VIEW['content'] = ob_get_contents();
+           ob_end_clean();
+           echo $VIEW['content'];
+           include_once './view/install_chunks/templates/head.tpl';
+           include_once './view/install_chunks/templates/body.tpl';
+           include_once './view/install_chunks/' .
+                        str_replace('install_', '', $action) .
+                        '.php';
+           include_once './view/install_chunks/templates/footer.tpl';
            die();
        break;
 

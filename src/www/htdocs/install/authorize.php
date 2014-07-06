@@ -79,7 +79,6 @@ if (isset($_POST['key'])) {
     }
 
 }
-
 if ($authorized === true) {
     $_SESSION['com.conjoon.session.install.authorized'] = true;
     header("Location: ./index.php?action=authorize_success");

@@ -192,12 +192,12 @@ function conjoon_cacheSetup_assembleDir($key, $section, $value = null)
  */
 function conjoon_createOrmFiles($path, $prefix = "") {
 
-    InstallLogger::getInstance()->logMessage(
+    InstallLogger::stdout(InstallLogger::getInstance()->logMessage(
         "[ORM FILE CREATOR]: " .
         "Trying to move orm-template files to production ready files in \"" .
         $path .
         "\" using table-prefix \"".$prefix."\""
-    );
+    ));
 
     if (is_dir($path)) {
 
@@ -220,12 +220,12 @@ function conjoon_createOrmFiles($path, $prefix = "") {
                 $target = substr($_entry, 0, strlen($_entry) - strlen($needle)) .
                           '.dcm.yml';
 
-                InstallLogger::getInstance()->logMessage(
+                InstallLogger::stdout(InstallLogger::getInstance()->logMessage(
                     "[ORM FILE CREATOR]: " .
                         "Renaming \"" .
                         $_entry .
                         "\" to \"".$target."\""
-                );
+                ));
 
                 rename($_entry, $target);
 
@@ -233,12 +233,12 @@ function conjoon_createOrmFiles($path, $prefix = "") {
                 //replace prefix
                 $ormFile = str_replace('{DATABASE.TABLE.PREFIX}', $prefix, $ormFile);
 
-                InstallLogger::getInstance()->logMessage(
+                InstallLogger::stdout(InstallLogger::getInstance()->logMessage(
                     "[ORM FILE CREATOR]: " .
                         "replacing placeholder with prefix \"" .
                         $prefix .
                         "\" in \"".$target."\""
-                );
+                ));
 
                 file_put_contents($target, $ormFile);
             }
@@ -246,15 +246,15 @@ function conjoon_createOrmFiles($path, $prefix = "") {
 
         $d->close();
     } else {
-        InstallLogger::getInstance()->logMessage(
+        InstallLogger::stdout(InstallLogger::stdout(InstallLogger::getInstance()->logMessage(
             "[ORM FILE CREATOR]: " .
                 "\"" . $path . "\" does not seem to be a directory"
-        );
+        )));
     }
 
-    InstallLogger::getInstance()->logMessage(
+    InstallLogger::stdout(InstallLogger::getInstance()->logMessage(
         "[ORM FILE CREATOR]: Done."
-    );
+    ));
 
 }
 
@@ -298,17 +298,17 @@ function conjoon_updateHtml5ManifestFilesWithBasePath($applicationDir, $basePath
 
         $file = $dir . implode('.', $out[$i]) . '.list';
 
-        InstallLogger::getInstance()->logMessage(
+        InstallLogger::stdout(InstallLogger::getInstance()->logMessage(
             "[HTML5 MANIFEST]: "
             . "Trying to update \"" . $file ."\" "
             . "with basePath \"".$basePath."\""
-        );
+        ));
 
         if (!file_exists($file)) {
-            InstallLogger::getInstance()->logMessage(
+            InstallLogger::stdout(InstallLogger::getInstance()->logMessage(
                 "[HTML5 MANIFEST]: "
                 . "File \"" . $file ."\" not found"
-            );
+            ));
 
             continue;
         }
@@ -326,15 +326,15 @@ function conjoon_updateHtml5ManifestFilesWithBasePath($applicationDir, $basePath
         $ret = file_put_contents($file, $fileContent);
 
         if ($ret !== false) {
-            InstallLogger::getInstance()->logMessage(
+            InstallLogger::stdout(InstallLogger::getInstance()->logMessage(
                 "[HTML5 MANIFEST]: "
                 . "Updated \"" . $file ."\" "
-            );
+            ));
         } else {
-            InstallLogger::getInstance()->logMessage(
+            InstallLogger::stdout(InstallLogger::getInstance()->logMessage(
                 "[HTML5 MANIFEST]: "
                     . "Failed to update \"" . $file ."\" "
-            );
+            ));
         }
 
         $fileContent = "";
@@ -577,13 +577,13 @@ function conjoon_createDatastructure($db, $path, $prefix = "")
             continue;
         }
 
-        InstallLogger::getInstance()->logMessage("[STRUCTURE]: " . $statement);
+        InstallLogger::stdout(InstallLogger::getInstance()->logMessage("[STRUCTURE]: " . $statement));
         if (!$db->query($statement)) {
             $err = $db->errorInfo();
-            InstallLogger::getInstance()->logMessage(
+            InstallLogger::stdout(InstallLogger::getInstance()->logMessage(
                 "[STRUCTURE:FAILED]: "
                     . (!empty($err) ? $err[2] : $statement)
-            );
+            ));
         };
 
     }
@@ -677,13 +677,13 @@ function conjoon_insertFixtures($path, $dbAdapter, Array $dbConfig)
         if ($statement == "") {
             continue;
         }
-        InstallLogger::getInstance()->logMessage("[FIXTURE]: " . $statement);
+        InstallLogger::stdout(InstallLogger::getInstance()->logMessage("[FIXTURE]: " . $statement));
         if (!$db->query($statement)) {
             $err = $db->errorInfo();
-            InstallLogger::getInstance()->logMessage(
+            InstallLogger::stdout(InstallLogger::getInstance()->logMessage(
                 "[FIXTURE:FAILED]: "
                 . (!empty($err) ? $err[2] : $statement)
-            );
+            ));
         };
     }
 
@@ -735,9 +735,9 @@ function conjoon_createAdmin($dbAdapter, $userData, Array $config)
                 )";
                 $sth = $db->prepare($sql);
 
-                InstallLogger::getInstance()->logMessage(
+                InstallLogger::stdout(InstallLogger::getInstance()->logMessage(
                     "[CREATE_ADMIN]: $sql with values " . implode(", ", array_values($userData))
-                );
+                ));
 
                 if (!$sth->execute(array(
                     $userData['firstname'],
@@ -748,15 +748,15 @@ function conjoon_createAdmin($dbAdapter, $userData, Array $config)
                     1
                 ))) {
                     $err = $db->errorInfo();
-                    InstallLogger::getInstance()->logMessage(
+                    InstallLogger::stdout(InstallLogger::getInstance()->logMessage(
                         "[CREATE_ADMIN:FAILED]: Duplicate entry for user name or email address? "
                             . (!empty($err) && isset($err[2]) ? $err[2] : $sql)
-                    );
+                    ));
                 }
             } else {
-                InstallLogger::getInstance()->logMessage(
+                InstallLogger::stdout(InstallLogger::getInstance()->logMessage(
                     "[CREATE_ADMIN:FAILED]: admin already in table"
-                );
+                ));
             }
 
             $db = null;
@@ -791,19 +791,19 @@ function conjoon_rmdir($path)
             if(is_dir($fullpath)) {
                 conjoon_rmdir($fullpath);
                 if (!rmdir($fullpath)) {
-                    InstallLogger::getInstance()
-                        ->logMessage("ERROR: could not rmdir $fullpath");
+                    InstallLogger::stdout(InstallLogger::getInstance()
+                        ->logMessage("ERROR: could not rmdir $fullpath"));
                 } else {
-                    InstallLogger::getInstance()
-                        ->logMessage("rmdir $fullpath");
+                    InstallLogger::stdout(InstallLogger::getInstance()
+                        ->logMessage("rmdir $fullpath"));
                 }
             } else {
                 if (!unlink($fullpath)) {
-                    InstallLogger::getInstance()
-                        ->logMessage("ERROR: could not unlink $fullpath");
+                    InstallLogger::stdout(InstallLogger::getInstance()
+                        ->logMessage("ERROR: could not unlink $fullpath"));
                 } else {
-                    InstallLogger::getInstance()
-                        ->logMessage("unlink $fullpath");
+                    InstallLogger::stdout(InstallLogger::getInstance()
+                        ->logMessage("unlink $fullpath"));
                 }
             }
         }
@@ -955,7 +955,9 @@ class InstallLogger {
         if (!self::$_instance) {
             self::$_instance = new InstallLogger();
             self::$_logFile = $fileName;
-            file_put_contents($fileName, "INSTALL LOG\n==========\n\n");
+            if (!file_exists($fileName)) {
+                file_put_contents($fileName, "INSTALL LOG\n==========\n\n");
+            }
         }
 
         return self::$_instance;
@@ -963,11 +965,23 @@ class InstallLogger {
 
     public function logMessage($message, $date = null)
     {
+        $str = date("H:i:s", time()) . " - " . $message;
+
         file_put_contents(
             self::$_logFile,
-            date("H:i:s", time()) . " - " . $message . "\n",
+            $str . "\n",
             FILE_APPEND
         );
+
+        return $str;
+
+    }
+
+    public function stdout($message) {
+        echo $message . '<br />';
+        echo "<script type=\"text/javascript\">this.scrollTo(0, document.body.offsetHeight);</script>";
+        flush();
+        ob_flush();
     }
 
 }

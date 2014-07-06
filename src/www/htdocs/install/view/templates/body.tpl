@@ -76,17 +76,18 @@ not work as expected.
              break;
           }
       }
-      if ($keys[0] != $VIEW['action'] && $currInd != $navCount-1) {
+      if ($keys[0] != $VIEW['action'] && $currInd != $navCount-1 && $action !== 'install_process') {
           echo "<input id='prevButton' onclick=\"disableButtons();location.href='./?action=".$keys[$currInd-1]."'\" class=\"proceed_button\" type=\"button\" value=\"&lt; Previous\" />";
       }
 
-      if ($keys[count($keys)-1] != $VIEW['action']) {
-
+      if ($keys[count($keys)-1] != $VIEW['action'] && $action !== 'install_process') {
           if (isset($VIEW['navigation'][$VIEW['action']][2])) {
               echo "<input id='nextButton' onclick=\"disableButtons();document.forms[0].action='./".$VIEW['navigation'][$VIEW['action']][2]."';document.forms[0].submit();\" class=\"proceed_button\" type=\"button\" value=\"Next &gt;\" />";
           } else {
               echo "<input id='nextButton' onclick=\"disableButtons();document.forms[0].action='./?action=".$keys[$currInd+1]."';document.forms[0].submit();\" class=\"proceed_button\" type=\"button\" value=\"Next &gt;\" />";
           }
+      } else if ($action === 'install_process') {
+            echo "<input disabled=\"disabled\" onclick=\"document.forms[0].action='./index.php?action=install_success';document.forms[0].submit();\" id='nextButton' class=\"proceed_button\" type=\"button\" value=\"Next &gt;\" />";
       }
   ?>
  </div>
