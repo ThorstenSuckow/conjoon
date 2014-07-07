@@ -72,8 +72,19 @@ com.conjoon.groupware.service.youtube.ViewBaton = function() {
      */
     var buildPlayer = function()
     {
+        var playerId = 'myplayer',
+            protocol = com.conjoon.groupware.Registry.get(
+                '/server/environment/protocol'
+            ),
+            ytprot = protocol && (protocol === 'http' || protocol === 'https')
+                     ? protocol
+                     : 'http';
+
         return new Ext.ux.YoutubePlayer({
-            playerId     : 'myplayer',
+            url          : ytprot + "://www.youtube.com/apiplayer?" +
+                           "&enablejsapi=1&version=3&playerapiid=" +
+                           playerId,
+            playerId     : playerId,
             ratioMode    : 'stretch',
             hideMode     : 'offsets',
             bgColor      : "#000000",
