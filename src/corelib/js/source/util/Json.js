@@ -78,13 +78,15 @@ com.conjoon.util.Json = function() {
 
             if (error === null) {
 
-                if (!response || (Ext.isObject(response) && !response.responseText)) {
+                if (response && !response.responseText) {
                     return {
                         message   : '<b>'
-                                    +com.conjoon.Gettext.gettext("An unexpected error occured. The server returned an empty response, most likely due to a response timeout:")
-                                    +'</b><br />-----<br />'+
-                                      '<b>'+com.conjoon.Gettext.gettext("Additional information:")+'</b><br />'+
-                                      com.conjoon.Gettext.gettext("No data returned by the server. Response was empty."),
+                            +com.conjoon.Gettext.gettext("An unexpected error occured. The server returned an error that could not be parsed as an error object:")
+                            +'</b><br />-----<br />'+
+                            '<b>'+com.conjoon.Gettext.gettext("Additional information:")+'</b><br />'+
+                            (Ext.isObject(response)
+                            ? Ext.util.JSON.encode(response)
+                            : response),
                         code      :  -1,
                         level     : 'critical',
                         title     : options.title || com.conjoon.Gettext.gettext("Unexpected Error")
@@ -92,10 +94,10 @@ com.conjoon.util.Json = function() {
                 } else {
                     return {
                         message   : '<b>'
-                                    +com.conjoon.Gettext.gettext("An unexpected error occured. The server returned an error that could not be parsed as an error object:")
-                                    +'</b><br />-----<br />'+
-                                      '<b>'+com.conjoon.Gettext.gettext("Additional information:")+'</b><br />'+
-                                      response,
+                            +com.conjoon.Gettext.gettext("An unexpected error occured. The server returned an empty response, most likely due to a response timeout:")
+                            +'</b><br />-----<br />'+
+                            '<b>'+com.conjoon.Gettext.gettext("Additional information:")+'</b><br />'+
+                            com.conjoon.Gettext.gettext("No data returned by the server. Response was empty."),
                         code      :  -1,
                         level     : 'critical',
                         title     : options.title || com.conjoon.Gettext.gettext("Unexpected Error")
