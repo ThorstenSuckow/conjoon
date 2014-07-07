@@ -128,6 +128,21 @@ Ext.defineClass('conjoon.reception.comp.LoginContainer', {
     rememberMeCheckbox : null,
 
     /**
+     * @cfg {String} softwareLabel
+     */
+    softwareLabel : "-",
+
+    /**
+     * @cfg {String} editionLabel
+     */
+    editionLabel : "-",
+
+    /**
+     * @cfg {String} versionLabel
+     */
+    versionLabel : "-",
+
+    /**
      * Overrides parent implementation by taking care of rendering the
      * container.
      */
@@ -244,8 +259,8 @@ Ext.defineClass('conjoon.reception.comp.LoginContainer', {
             new Ext.BoxComponent({
                 autoEl : {
                     tag  : 'div',
-                    cls : 'softwareInfo',
-                    html : 'conjoon'
+                    cls  : 'softwareInfo',
+                    html : me.softwareLabel
                 }
             }),
             this.formPanel,
@@ -268,11 +283,11 @@ Ext.defineClass('conjoon.reception.comp.LoginContainer', {
                         id : 'cn_reception_formLabel'
                     }, {
                         tag : 'span',
-                        html : '0.1.6RC1',
+                        html : me.versionLabel,
                         cls : 'versionInfo'
                     }, {
                         tag : 'span',
-                        html : 'web edition',
+                        html : me.editionLabel,
                         cls : 'editionInfo'
                     }]
 
