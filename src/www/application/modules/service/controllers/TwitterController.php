@@ -536,13 +536,25 @@ class Service_TwitterController extends Zend_Controller_Action {
         $consumerKey    = $config->application->twitter->oauth->consumerKey;
         $consumerSecret = $config->application->twitter->oauth->consumerSecret;
 
+        /**
+         * @see Conjoon_Modules_Default_Registry_Facade
+         */
+        require_once 'Conjoon/Modules/Default/Registry/Facade.php';
+
+        $protocolContext = Conjoon_Modules_Default_Registry_Facade::getInstance()
+            ->getValueForKeyAndUserId(
+                '/server/environment/protocol',
+                $this->_helper->registryAccess()->getUserId()
+            );
+
         $twitter = new Conjoon_Service_Twitter_Proxy(array(
             'oauth_token'        => $accountDto->oauthToken,
             'oauth_token_secret' => $accountDto->oauthTokenSecret,
             'user_id'            => $accountDto->twitterId,
             'screen_name'        => $accountDto->name,
-            'consumer_key' => $consumerKey,
-            'consumer_secret' => $consumerSecret
+            'consumer_key'       => $consumerKey,
+            'consumer_secret'    => $consumerSecret,
+            'protocol_context'   => $protocolContext
         ));
 
         $this->twitterProxyCache[$accountId] = $twitter;

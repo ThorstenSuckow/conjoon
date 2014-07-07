@@ -76,7 +76,7 @@ class Conjoon_Modules_Service_Twitter_Account_Builder extends Conjoon_Builder {
     }
 
     /**
-     * Returns either a cahced list of twitter accounts for a user, or
+     * Returns either a cached list of twitter accounts for a user, or
      * the accounts out of the database which will immediately be validated
      * against the twitter service (network access)
      *
@@ -104,6 +104,15 @@ class Conjoon_Modules_Service_Twitter_Account_Builder extends Conjoon_Builder {
          * @see Conjoon_Service_Twitter
          */
         require_once 'Conjoon/Service/Twitter.php';
+
+        /**
+         * @see Conjoon_Modules_Default_Registry_Facade
+         */
+        require_once 'Conjoon/Modules/Default/Registry/Facade.php';
+
+        $protocolContext = Conjoon_Modules_Default_Registry_Facade::getInstance()
+            ->getValueForKeyAndUserId('/server/environment/protocol', $userId);
+
 
         for ($i = 0, $len = count($accounts); $i < $len; $i++) {
             $dto =& $accounts[$i];
@@ -133,11 +142,15 @@ class Conjoon_Modules_Service_Twitter_Account_Builder extends Conjoon_Builder {
 
                 $response = $twitter->userShow($dto->name);
 
+
+
                 $dto->twitterId              = $response->id_str;
                 $dto->twitterName            = $response->name;
                 $dto->twitterScreenName      = $response->screen_name;
                 $dto->twitterLocation        = $response->location;
-                $dto->twitterProfileImageUrl = $response->profile_image_url;
+                $dto->twitterProfileImageUrl = $protocolContext === 'https'
+                                               ? $response->profile_image_url_https
+                                               : $response->profile_image_url;
                 $dto->twitterUrl             = $response->url;
                 $dto->twitterProtected       = $response->protected;
                 $dto->twitterDescription     = $response->description;

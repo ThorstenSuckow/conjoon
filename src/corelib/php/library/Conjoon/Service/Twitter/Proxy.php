@@ -54,6 +54,11 @@ class Conjoon_Service_Twitter_Proxy  {
      */
     private $_twitter;
 
+    /**
+     * @var string $protocolContext The protocol which is used with this twitter
+     * proxy. Can either be http or https. Defaults to 'http'.
+     */
+    private $protocolContext = 'http';
 
     /**
      * Creates a new instance of Conjoon_Service_Twitter_Proxy
@@ -65,6 +70,8 @@ class Conjoon_Service_Twitter_Proxy  {
      * - user_id - id of the user as provided by the twitter service
      * - screen_name - screen name of the user as provided by the twitter
      *                 service
+     * - protocol_context - The protocol used for gatering Twitter API data (images
+     * and such). Can be http or https
      *
      * @throws InvalidArgumentException if $options was not of type
      * array or Zend_Config or if any expected key was missing in $options
@@ -92,7 +99,7 @@ class Conjoon_Service_Twitter_Proxy  {
 
         $whitelist = array(
             'oauth_token', 'oauth_token_secret', 'user_id', 'screen_name',
-            'consumer_key', 'consumer_secret'
+            'consumer_key', 'consumer_secret', 'protocol_context'
         );
 
         $accessTokenOptions = Conjoon_Util_Array::extractByKeys($options, $whitelist);
@@ -108,6 +115,22 @@ class Conjoon_Service_Twitter_Proxy  {
                 "could not extract whitelisted keys from options array"
             );
         }
+
+        $protocolContext = isset($accessTokenOptions['protocol_context'])
+                           ? $accessTokenOptions['protocol_context']
+                           : $this->protocolContext;
+
+        if (isset($accessTokenOptions['protocol_context'])) {
+            unset($accessTokenOptions['protocol_context']);
+        }
+
+        if ($protocolContext !== 'http' && $protocolContext !== 'https') {
+            throw new RuntimeException(
+                "\"protocol_context\" was neither 'http' nor 'https'"
+            );
+        }
+
+        $this->protocolContext = $protocolContext;
 
         /**
          * @see Zend_Oauth_Token_Access
@@ -235,7 +258,9 @@ class Conjoon_Service_Twitter_Proxy  {
                         'name'            => (string)$friend->name,
                         'screenName'      => (string)$friend->screen_name,
                         'location'        => (string)$friend->location,
-                        'profileImageUrl' => (string)$friend->profile_image_url,
+                        'profileImageUrl' => $this->protocolContext === 'https'
+                                             ? (string)$friend->profile_image_url_https
+                                             : (string)$friend->profile_image_url,
                         'url'             => (string)$friend->url,
                         'description'     => (string)$friend->description,
                         'protected'       => (string)$friend->protected,
@@ -280,7 +305,9 @@ class Conjoon_Service_Twitter_Proxy  {
         $dto->twitterName            = (string)$response->name;
         $dto->twitterScreenName      = (string)$response->screen_name;
         $dto->twitterLocation        = (string)$response->location;
-        $dto->twitterProfileImageUrl = (string)$response->profile_image_url;
+        $dto->twitterProfileImageUrl = $this->protocolContext === 'https'
+                                       ? (string)$response->profile_image_url_https
+                                       : (string)$response->profile_image_url;
         $dto->twitterUrl             = (string)$response->url;
         $dto->twitterProtected       = (bool)(string)$response->protected;
         $dto->twitterDescription     = (string)$response->description;
@@ -374,7 +401,9 @@ class Conjoon_Service_Twitter_Proxy  {
             'name'                => (string)$jsonBody->user->name,
             'screenName'          => (string)$jsonBody->user->screen_name,
             'location'            => (string)$jsonBody->user->location,
-            'profileImageUrl'     => (string)$jsonBody->user->profile_image_url,
+            'profileImageUrl'     => $this->protocolContext === 'https'
+                                     ? (string)$jsonBody->user->profile_image_url_https
+                                     : (string)$jsonBody->user->profile_image_url,
             'url'                 => (string)$jsonBody->user->url,
             'description'         => (string)$jsonBody->user->description,
             'protected'           => (string)$jsonBody->user->protected,
@@ -442,7 +471,9 @@ class Conjoon_Service_Twitter_Proxy  {
             'name'                => (string)$jsonBody->user->name,
             'screenName'          => (string)$jsonBody->user->screen_name,
             'location'            => (string)$jsonBody->user->location,
-            'profileImageUrl'     => (string)$jsonBody->user->profile_image_url,
+            'profileImageUrl'     => $this->protocolContext === 'https'
+                                     ? (string)$jsonBody->user->profile_image_url_https
+                                     : (string)$jsonBody->user->profile_image_url,
             'url'                 => (string)$jsonBody->user->url,
             'description'         => (string)$jsonBody->user->description,
             'protected'           => (string)$jsonBody->user->protected,
@@ -531,7 +562,9 @@ class Conjoon_Service_Twitter_Proxy  {
             'name'                => $jsonBody->user->name,
             'screenName'          => $jsonBody->user->screen_name,
             'location'            => $jsonBody->user->location,
-            'profileImageUrl'     => $jsonBody->user->profile_image_url,
+            'profileImageUrl'     => $this->protocolContext === 'https'
+                                     ? $jsonBody->user->profile_image_url_https
+                                     : $jsonBody->user->profile_image_url,
             'url'                 => $jsonBody->user->url,
             'description'         => $jsonBody->user->description,
             'protected'           => $jsonBody->user->protected,
@@ -610,6 +643,7 @@ class Conjoon_Service_Twitter_Proxy  {
         $jsonBody = $response->toValue();
 
         foreach ($jsonBody as $tweet) {
+
             $data = array(
                 'id'                  => $tweet->id_str,
                 'text'                => $tweet->text,
@@ -620,7 +654,9 @@ class Conjoon_Service_Twitter_Proxy  {
                 'name'                => $tweet->user->name,
                 'screenName'          => $tweet->user->screen_name,
                 'location'            => $tweet->user->location,
-                'profileImageUrl'     => $tweet->user->profile_image_url,
+                'profileImageUrl'     => $this->protocolContext === 'https'
+                                         ? $tweet->user->profile_image_url_https
+                                         : $tweet->user->profile_image_url,
                 'url'                 => $tweet->user->url,
                 'description'         => $tweet->user->description,
                 'protected'           => $tweet->user->protected,
@@ -698,7 +734,9 @@ class Conjoon_Service_Twitter_Proxy  {
                 'name'                => $tweet->user->name,
                 'screenName'          => $tweet->user->screen_name,
                 'location'            => $tweet->user->location,
-                'profileImageUrl'     => $tweet->user->profile_image_url,
+                'profileImageUrl'     => $this->protocolContext === 'https'
+                                         ? $tweet->user->profile_image_url_https
+                                         : $tweet->user->profile_image_url,
                 'url'                 => $tweet->user->url,
                 'description'         => $tweet->user->description,
                 'protected'           => $tweet->user->protected,
@@ -807,7 +845,9 @@ class Conjoon_Service_Twitter_Proxy  {
             'name'                => $jsonBody->user->name,
             'screenName'          => $jsonBody->user->screen_name,
             'location'            => $jsonBody->user->location,
-            'profileImageUrl'     => $jsonBody->user->profile_image_url,
+            'profileImageUrl'     => $this->protocolContext === 'https'
+                                     ? $jsonBody->user->profile_image_url_https
+                                     : $jsonBody->user->profile_image_url,
             'url'                 => $jsonBody->user->url,
             'description'         => $jsonBody->user->description,
             'protected'           => $jsonBody->user->protected,

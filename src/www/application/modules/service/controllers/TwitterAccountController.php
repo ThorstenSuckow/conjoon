@@ -141,6 +141,17 @@ class Service_TwitterAccountController extends Zend_Controller_Action {
         $consumerSecret = $config->application->twitter->oauth->consumerSecret;
 
         /**
+         * @see Conjoon_Modules_Default_Registry_Facade
+         */
+        require_once 'Conjoon/Modules/Default/Registry/Facade.php';
+
+        $protocolContext = Conjoon_Modules_Default_Registry_Facade::getInstance()
+                           ->getValueForKeyAndUserId(
+                               '/server/environment/protocol',
+                               $this->_helper->registryAccess()->getUserId()
+                           );
+
+        /**
          * @see Conjoon_Service_Twitter_Proxy
          */
         require_once 'Conjoon/Service/Twitter/Proxy.php';
@@ -151,7 +162,8 @@ class Service_TwitterAccountController extends Zend_Controller_Action {
             'user_id'            => $twitterId,
             'screen_name'        => $name,
             'consumer_key'       => $consumerKey,
-            'consumer_secret'    => $consumerSecret
+            'consumer_secret'    => $consumerSecret,
+            'protocol_context'   => $protocolContext
         ));
 
         $dto = $proxy->accountVerifyCredentials();
@@ -534,6 +546,18 @@ class Service_TwitterAccountController extends Zend_Controller_Action {
 
         require_once 'Conjoon/Service/Twitter/Proxy.php';
 
+        /**
+         * @see Conjoon_Modules_Default_Registry_Facade
+         */
+        require_once 'Conjoon/Modules/Default/Registry/Facade.php';
+
+        $protocolContext = Conjoon_Modules_Default_Registry_Facade::getInstance()
+            ->getValueForKeyAndUserId(
+                '/server/environment/protocol',
+                $this->_helper->registryAccess()->getUserId()
+            );
+
+
         $twitter = new Conjoon_Service_Twitter_Proxy(array(
             'screen_name'        => $screenName,
             'user_id'            => $userId,
@@ -541,6 +565,7 @@ class Service_TwitterAccountController extends Zend_Controller_Action {
             'oauth_token_secret' => $oauthTokenSecret,
             'consumer_key'       => $consumerKey,
             'consumer_secret'    => $consumerSecret,
+            'protocol_context'   => $protocolContext
         ));
 
         $dto = $twitter->accountVerifyCredentials();
