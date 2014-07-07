@@ -448,8 +448,12 @@ function conjoon_configInfoSnippet($wording, $key)
         . "<td class=\"key\">"
         . $wording ." (config.ini.php):</td>"
         . "<td class=\"value\">" . (conjoon_getConfigInfo($key)
-                                              ? conjoon_getConfigInfo($key)
-                                              : '<code> - empty string - </code>')
+                                    /**
+                                     * @ticket CN-865
+                                     */
+                                    && conjoon_getConfigInfo($key) !== '{FILES.UPLOAD.MAX_SIZE}'
+                                    ? conjoon_getConfigInfo($key)
+                                    : '<code> - empty string - </code>')
         . "</td></tr></table><br />";
 }
 

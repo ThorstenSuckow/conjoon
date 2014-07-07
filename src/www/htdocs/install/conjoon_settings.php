@@ -75,7 +75,12 @@ if (isset($_SESSION['files'])) {
         conjoon_megaByteToByte(ini_get('post_max_size'))
     );
 
-    if (!empty($CN_SETTINGS['upload.max_size'])) {
+    if (!empty($CN_SETTINGS['upload.max_size'])
+        /**
+         * @ticket CN-865
+         */
+        && $CN_SETTINGS['upload.max_size'] !== '{FILES.UPLOAD.MAX_SIZE}'
+    ) {
         $sizeComp[] = $CN_SETTINGS['upload.max_size'];
     }
     $CN_SETTINGS['upload.max_size'] =  min($sizeComp);
