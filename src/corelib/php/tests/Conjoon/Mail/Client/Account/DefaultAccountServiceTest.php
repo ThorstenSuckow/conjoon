@@ -146,8 +146,38 @@ class DefaultAccountServiceTest extends \Conjoon\DatabaseTestCaseDefault {
     public function testGetMailAccounts()
     {
         $this->assertTrue(is_array($this->service->getMailAccounts()));
-        $this->assertSame(1, count($this->service->getMailAccounts()));
+        $this->assertSame(2, count($this->service->getMailAccounts()));
     }
+
+    public function testGetMailAccountForMailAddress_Exception() {
+
+        $values = array("", null, 123);
+
+        foreach ($values as $value) {
+            $e = null;
+            try {
+                $this->service->getMailAccountForMailAddress($value);
+            } catch (\Exception $e) {}
+
+            $this->assertTrue(
+                $e instanceof
+                \Conjoon\Mail\Client\Account\AccountServiceException);
+        }
+
+    }
+
+    public function testGetMailAccountForMailAddress()
+    {
+        $this->assertSame(1,
+            $this->service->getMailAccountForMailAddress('reply_address')->getId());
+        $this->assertSame(2,
+            $this->service->getMailAccountForMailAddress('reply_address2')->getId());
+        $this->assertSame(2,
+            $this->service->getMailAccountForMailAddress('address2')->getId());
+        $this->assertNull(
+            $this->service->getMailAccountForMailAddress('something'));
+    }
+
 
 }
 

@@ -79,4 +79,20 @@ interface AccountService {
      */
     public function getMailAccounts();
 
+    /**
+     * Returns the configured mail accounts for the address which is used in the
+     * account as either the replayTo-Address or the address..
+     *
+     * @param string $address A plain email address, i.e. local- and domain-part
+     *        The method is not bound to do a syntax check, but if it does and
+     *        a malformed address is found, an AccountServiceExpection should
+     *        be thrown.
+     *
+     * @return null|\Conjoon\Data\Entity\Mail\MailAccountEntity The account
+     *         entity, or "null" if no matching account was found.
+     *
+     * @throws AccountServiceException
+     */
+    public function getMailAccountForMailAddress($address);
+
 }

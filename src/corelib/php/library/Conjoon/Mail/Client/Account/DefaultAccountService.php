@@ -192,4 +192,39 @@ class DefaultAccountService implements AccountService {
         return $this->mailAccountRepository->getMailAccounts(
             $this->user);
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function getMailAccountForMailAddress($address) {
+
+        $data = array('address' => $address);
+
+        try{
+            ArgumentCheck::check(array(
+                'address' => array(
+                    'type'       => 'string',
+                    'allowEmpty' => false,
+                    'strict'     => true
+                )), $data);
+        } catch (\Conjoon\Argument\InvalidArgumentException $e) {
+            throw new \Conjoon\Mail\Client\Account\AccountServiceException(
+                "mail address \"$address\" does not seem to be a valid " .
+                "mail address.", 0, $e
+            );
+        }
+
+        $address = $data['address'];
+        $accounts = $this->getMailAccounts();
+
+        foreach ($accounts as $account) {
+            if (strtolower($account->getAddress()) === $address ||
+                strtolower($account->getReplyAddress()) === $address) {
+                return $account;
+            }
+        }
+
+        return null;
+    }
+
 }
