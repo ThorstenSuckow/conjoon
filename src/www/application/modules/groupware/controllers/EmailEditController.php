@@ -311,6 +311,23 @@ class Groupware_EmailEditController extends
 
         $draftData['userEmailAddresses'] = $addresses;
 
+        /**
+         * @ticket CN-708
+         * if context is not edit and equals to reply* or forward, read out the
+         * "to" address and find the matching account we'll be using for setting as
+         * account from which the mail gets edited
+         */
+        $matchingAccountId = -1;
+        if ($context !== Conjoon_Modules_Groupware_Email_Draft_Filter_DraftResponse::CONTEXT_EDIT) {
+            $orgTo = $draftData['to'];
+
+            $matchingAccountId = $this->guessMailAccountForAddress($orgTo);
+
+            if ($matchingAccountId > -1) {
+                $draftData['groupwareEmailAccountsId'] = $matchingAccountId;
+            }
+        }
+
         $draftFilter = new Conjoon_Modules_Groupware_Email_Draft_Filter_DraftResponse(
             $draftData,
             $context
@@ -1214,6 +1231,48 @@ class Groupware_EmailEditController extends
         if ($newVersion) {
             $this->view->previousId = $draft->getId();
         }*/
+    }
+
+    /**
+     * Tries to guess the mail account which represents the first found email
+     * address found in the supplied string.
+     *
+     * @param string $address A string containing possible recipient addresses
+     *
+     * @return int The account id of the account that matches any address found
+     *             in the address string. If not fund, -1 will be returned.
+     */
+    protected function guessMailAccountForAddress($address) {
+        /**
+         * @see Conjoon_Text_Parser_Mail_EmailAddressIdentityParser
+         */
+        require_once 'Conjoon/Text/Parser/Mail/EmailAddressIdentityParser.php';
+
+        $addressParser = new Conjoon_Text_Parser_Mail_EmailAddressIdentityParser(array(
+            'addSlashes' => false
+        ));
+        $orgAddresses = $addressParser->parse($address);
+
+        $accountServiceHelper = $this->getAccountServiceHelper();
+        $matchingAccount      = null;
+
+        $matchingAccountId = -1;
+
+        foreach ($orgAddresses as $singleAddress) {
+
+            try {
+                $matchingAccount = $accountServiceHelper->getMailAccountForMailAddress(
+                    $singleAddress[0]);
+            } catch (\Conjoon\Mail\Client\Account\AccountServiceException $ase) {
+                // ignore
+            }
+            if ($matchingAccount) {
+                $matchingAccountId = $matchingAccount->getId();
+                break;
+            }
+        }
+
+        return $matchingAccountId;
     }
 
 }

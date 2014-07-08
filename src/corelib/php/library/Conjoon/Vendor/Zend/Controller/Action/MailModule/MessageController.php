@@ -100,6 +100,22 @@ require_once 'Conjoon/Mail/Client/Service/ServiceResult/Cache/DefaultGetMessageC
  */
 require_once 'Conjoon/Mail/Client/Service/ServiceResult/Cache/DefaultGetMessageCacheKeyGen.php';
 
+/**
+ * @see Conjoon\Mail\Client\Account\DefaultAccountService
+ */
+require_once 'Conjoon/Mail/Client/Account/DefaultAccountService.php';
+
+/**
+ * @see \Conjoon\Mail\Client\Folder\DefaultFolderService
+ */
+require_once 'Conjoon/Mail/Client/Folder/DefaultFolderService.php';
+
+/**
+ * @see \Conjoon\Mail\Client\Folder\DefaultFolderCommons
+ */
+require_once 'Conjoon/Mail/Client/Folder/DefaultFolderCommons.php';
+
+
 use \Conjoon\Vendor\Zend\Controller\Action\BaseController,
     \Conjoon\Argument\ArgumentCheck,
     \Conjoon\Mail\Client\Service\ServiceResult\Cache\GetMessageCacheService,
@@ -187,6 +203,37 @@ abstract class MessageController extends BaseController {
 
     }
 
+    /**
+     * Returns the AccountService to be used with this controller.
+     *
+     * @return \Conjoon\Mail\Client\Account\AccountService
+     */
+    protected function getAccountServiceHelper() {
+
+        $entityManager = \Zend_Registry::get(\Conjoon_Keys::DOCTRINE_ENTITY_MANAGER);
+
+        $mailAccountRepository =
+            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMailAccountEntity');
+
+        $mailFolderRepository =
+            $entityManager->getRepository('\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
+
+        $user = $this->getCurrentAppUser();
+
+        return new \Conjoon\Mail\Client\Account\DefaultAccountService(
+            array(
+                'user'                  => $user,
+                'mailAccountRepository' => $mailAccountRepository,
+                'folderService'         =>
+                    new \Conjoon\Mail\Client\Folder\DefaultFolderService(array(
+                        'user'                 => $user,
+                        'mailFolderRepository' => $mailFolderRepository,
+                        'mailFolderCommons'    =>
+                            new \Conjoon\Mail\Client\Folder\DefaultFolderCommons(array(
+                                'user' => $user,
+                                'mailFolderRepository' => $mailFolderRepository
+            ))))));
+    }
 
     /**
      * Returns the MessageServiceFacade used with this controller.
