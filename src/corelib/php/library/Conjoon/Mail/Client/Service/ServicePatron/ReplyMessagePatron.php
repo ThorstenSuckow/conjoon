@@ -246,7 +246,7 @@ class ReplyMessagePatron
     /**
      * Tries to guess the account being used by comparing recipients
      * adresses with adresses found in the mail accounts configured for the
-     * user. If the account could not be guessed, tdard mail account for
+     * user. If the account could not be guessed, the standard mail account for
      * the user will be returned. If this was not successfull, null is returned.
      *
      * @param array $addressList
@@ -255,19 +255,20 @@ class ReplyMessagePatron
      */
     protected function guessAccountUsed(array $addressList)
     {
-        $accounts = $this->accountService->getMailAccounts();
+        $acc = null;
+        
+        foreach ($addressList as $address) {
+            try {
+                $acc = $this->accountService->getMailAccountForMailAddress(
+                    $address['address']
+                );
+            } catch (\Conjoon\Mail\Client\Account\AccountServiceException $e) {
+                // ignore
+            }
 
-        $addresses = array();
-        $matching = array();
-        for ($i = 0, $len = count($accounts); $i < $len; $i++) {
-            $add = $accounts[$i]->getAddress();
-            $addresses[] = $add;
-            $matching[$add] = $accounts[$i];
-        }
 
-        for ($i = 0, $len = count($addressList); $i < $len; $i++) {
-            if (in_array($addressList[$i]['address'], $addresses)) {
-                return $matching[$addressList[$i]['address']];
+            if ($acc) {
+                return $acc;
             }
         }
 
