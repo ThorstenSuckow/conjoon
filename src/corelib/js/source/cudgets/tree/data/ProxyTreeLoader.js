@@ -514,6 +514,27 @@ Ext.extend(com.conjoon.cudgets.tree.data.ProxyTreeLoader, Ext.tree.TreeLoader, {
     },
 
     /**
+     * Overrides parent implementation by making sure the response object
+     * gets properly forwarded.
+     *
+     * @ticket CN-875
+     *
+     * @inheritdoc
+     */
+    processDirectResponse: function(result, response, args){
+
+        if (response && !response.status) {
+            this.handleFailure(Ext.apply(response, {
+                argument: args
+            }));
+            return;
+        }
+
+        com.conjoon.cudgets.tree.data.ProxyTreeLoader.
+            superclass.processDirectResponse.apply(this, arguments);
+    },
+
+    /**
      * Checks whether any request is still busy to load a proxy node.
      * Returns true if there is currently any proxy loading, otherwise false.
      *
