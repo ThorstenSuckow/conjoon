@@ -402,10 +402,14 @@ com.conjoon.groupware.ResponseInspector = function() {
          *   </ul>
          *  </li>
          *  <li>title : the title displayed in the error-dialogs titlebar</li>
+         *  <li>show : true or false. True to automatically render the failure
+         *  as an informal message on the screen</li>
          * </ul>
          *
          * @param {String|XmlHttpResponse} response The response to inspect for errors
          *
+         * @return {Object} An object with detailed information on the error
+         *                  that occured
          *
          * @see _tryDecode
          *
@@ -430,16 +434,23 @@ com.conjoon.groupware.ResponseInspector = function() {
                 ol.fn.call(ol.scope);
             }
 
+            var ret = {
+                title   : systemMessage.title || com.conjoon.Gettext.gettext("Error"),
+                msg     : systemMessage.text
+            };
+
+            if (options.show === false) {
+                return ret;
+            }
+
             var msg  = Ext.MessageBox;
 
-            com.conjoon.SystemMessageManager.show({
-                title   : systemMessage.title || com.conjoon.Gettext.gettext("Error"),
-                msg     : systemMessage.text,
+            com.conjoon.SystemMessageManager.show(Ext.apply({
                 buttons : msg.OK,
                 icon    : msg[systemMessage.type.toUpperCase()],
                 cls     :'com-conjoon-msgbox-'+systemMessage.type,
                 width   : 400
-            });
+            }, ret));
         }
 
     };
