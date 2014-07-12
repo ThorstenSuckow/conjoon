@@ -34,6 +34,11 @@
  */
 require_once 'Zend/Mail/Message.php';
 
+/**
+ * @see Conjoon_Vendor_Zend_Mime_Decode
+ */
+require_once 'Conjoon/Vendor/Zend/Mime/Decode.php';
+
 
 /**
  * This class is the default Message-class for the conjoon project.
@@ -43,5 +48,52 @@ require_once 'Zend/Mail/Message.php';
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 class Conjoon_Mail_Message extends Zend_Mail_Message {
+
+    /**
+     * This method is almost a 1:1 copy of the original implementation.
+     * It provides a fix for ZF-10168 by utilizing Conjoon_Vendor_Zend_Mime_Decode
+     * @see Conjoon_Vendor_Zend_Mime_Decode
+     *
+     * Cache content and split in parts if multipart
+     *
+     * @return null
+     * @throws Zend_Mail_Exception
+     *
+     * Original licensing information of this code:
+     * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+     * @license    http://framework.zend.com/license/new-bsd     New BSD License
+     */
+    protected function _cacheContent()
+    {
+        // caching content if we can't fetch parts
+        if ($this->_content === null && $this->_mail) {
+            $this->_content = $this->_mail->getRawContent($this->_messageNum);
+        }
+
+        if (!$this->isMultipart()) {
+            return;
+        }
+
+        // split content in parts
+        $boundary = $this->getHeaderField('content-type', 'boundary');
+        if (!$boundary) {
+            /**
+             * @see Zend_Mail_Exception
+             */
+            require_once 'Zend/Mail/Exception.php';
+            throw new Zend_Mail_Exception('no boundary found in content type to split message');
+        }
+
+        $parts = Conjoon_Vendor_Zend_Mime_Decode::splitMessageStruct($this->_content, $boundary);
+        if ($parts === null) {
+            return;
+        }
+        $partClass = $this->getPartClass();
+        $counter = 1;
+        foreach ($parts as $part) {
+            $this->_parts[$counter++] = new $partClass(array('headers' => $part['header'], 'content' => $part['body']));
+        }
+    }
+
 
 }
