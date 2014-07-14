@@ -1,4 +1,23 @@
-﻿Version 0.8.1 (GPL)
+﻿Version 0.8.2 (GPL)
+13-July-2014
+ - enhancement: provided enhanced functionality to try to rebuffer a grid if 
+any buffer request fails; added fallbacks for grid view's properties in 
+case loading/buffer operation was not successfull, so functionality doesn't 
+break
+ - enhancement: made sure livegrid's store contents get removed before the load 
+operation is triggered
+ - fixed: fixed an issue where the grid view would try to render its body, 
+although no data is available
+ - fixed: fixed an issue where the scroll position of the grid would be applied 
+from the browser's internal cache, but it shouldn't
+ - fixed: fixed an issue where the starting parameter for an erroneous loaded 
+state of a grid would not be calculated properly
+ - enhancement: added "reloadFromState()" method as a convenient way to reload a 
+grid from a given state
+ - enhancement: updated copyright information; enhanced toolbar to give more 
+information about the state of load-/buffer-operations
+
+Version 0.8.1 (GPL)
 12-April-2014
  - fixed: fixed an issue where in rare cases "-1" would be sent to the 
 attached data storage as the "start" parameter for the requested range

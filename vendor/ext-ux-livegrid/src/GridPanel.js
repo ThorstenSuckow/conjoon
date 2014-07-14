@@ -1,6 +1,6 @@
 /**
  * Ext.ux.grid.livegrid.GridPanel
- * Copyright (c) 2007-2013, http://www.siteartwork.de
+ * Copyright (c) 2007-2014, http://www.siteartwork.de
  *
  * Ext.ux.grid.livegrid.GridPanel is licensed under the terms of the
  *                  GNU Open Source GPL 3.0
@@ -94,6 +94,31 @@ Ext.ux.grid.livegrid.GridPanel = Ext.extend(Ext.grid.GridPanel, {
     },
 
     /**
+     * A helper frunction that tries to automatically reload the grid
+     * given its state information, if available.
+     * If state information not available, the grid willsimple reload.
+     *
+     * @param {Object} state An object with the state information
+     *
+     * @see applyState/getState
+     */
+    reloadFromState : function(state) {
+
+        var me = this;
+
+        if (!me.stateId || ! state) {
+            me.view.reset(true);
+            return;
+        }
+
+        me.installStateEvents(false);
+        me.applyState.apply(me, arguments);
+        me.installStateEvents(true);
+        me.view.reset(true);
+    },
+
+
+    /**
      * Overriden to make sure that rowIndex and buffer from the livegrid's view/store
      * are considered when returning states.
      *
@@ -129,7 +154,7 @@ Ext.ux.grid.livegrid.GridPanel = Ext.extend(Ext.grid.GridPanel, {
         var me = this,
             selections = state.selections,
             bufferRange = state.bufferRange
-                ? Math.max(state.bufferRange[0], 0)
+                ? Math.max(Math.max(state.bufferRange[0], state.rowIndex), 0)
                 : 0,
             conf = {
                 rowIndex :  state.rowIndex,
@@ -148,6 +173,13 @@ Ext.ux.grid.livegrid.GridPanel = Ext.extend(Ext.grid.GridPanel, {
 
                         me.view.reset(conf);
 
+                        // actually, applyState for the selection model will
+                        // work on the first try when the store gets loaded
+                        // if loading failed, the selection model
+                        // cannot access any records in the store, thus
+                        // not selecting any record.
+                        // the next time the store is loaded, the state
+                        // selections will be gone
                         if (selections) {
                             me.selModel.applyState(selections);
                         }

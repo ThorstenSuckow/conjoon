@@ -1,6 +1,6 @@
 /**
  * Ext.ux.grid.livegrid.Toolbar
- * Copyright (c) 2007-2013, http://www.siteartwork.de
+ * Copyright (c) 2007-2014, http://www.siteartwork.de
  *
  * Ext.ux.grid.livegrid.Toolbar is licensed under the terms of the
  *                  GNU Open Source GPL 3.0
@@ -39,7 +39,7 @@ Ext.namespace('Ext.ux.grid.livegrid');
  */
 Ext.ux.grid.livegrid.Toolbar = Ext.extend(Ext.Toolbar, {
 
-    /**
+     /**
      * @cfg {Ext.grid.GridPanel} grid
      * The grid the toolbar is bound to. If ommited, use the cfg property "view"
      */
@@ -61,10 +61,28 @@ Ext.ux.grid.livegrid.Toolbar = Ext.extend(Ext.Toolbar, {
     displayMsg : 'Displaying {0} - {1} of {2}',
 
     /**
+     * @cfg {String} bufferFailedMsg
+     * The message to display if buffering failed
+     */
+    bufferFailedMsg : 'Could not load data ({0})',
+
+    /**
      * @cfg {String} emptyMsg
      * The message to display when no records are found (defaults to "No data to display")
      */
     emptyMsg : 'No data to display',
+
+    /**
+     * @cfg {String} beforeloadMsg
+     * The message to display when the store is about to load
+     */
+    beforeloadMsg : 'Loading...',
+
+    /**
+     * @cfg {String} loadFailedMsg
+     * The message to display when the store's load operation failed
+     */
+    loadFailedMsg : 'Loading failed.',
 
     /**
      * Value to display as the tooltip text for the refresh button. Defaults to
@@ -72,6 +90,13 @@ Ext.ux.grid.livegrid.Toolbar = Ext.extend(Ext.Toolbar, {
      * @param {String}
      */
     refreshText : "Refresh",
+
+    /**
+     * @type {Object} lastInfo
+     * cached version of last successfull retrieved store information after
+     * the store was loaded
+     */
+    lastInfo : null,
 
     initComponent : function()
     {
@@ -88,15 +113,48 @@ Ext.ux.grid.livegrid.Toolbar = Ext.extend(Ext.Toolbar, {
     },
 
     // private
-    updateInfo : function(rowIndex, visibleRows, totalCount)
+    updateInfo : function(rowIndex, visibleRows, totalCount, context)
     {
-        if(this.displayEl){
-            var msg = totalCount == 0 ?
-                this.emptyMsg :
-                String.format(this.displayMsg, rowIndex+1,
-                              rowIndex+visibleRows, totalCount);
-            this.displayEl.update(msg);
+        if(!this.displayEl) {
+            return;
         }
+
+        if (context) {
+
+            switch (context) {
+                case 'beforeload':
+                    this.displayEl.update(this.beforeloadMsg);
+                return;                    
+            }
+
+        }
+
+
+        if (totalCount == 0 && this.view.ds.bufferRange[0] < 0) {
+
+            if (this.lastInfo && this.lastInfo.totalLength) {
+                this.displayEl.update(
+
+                    String.format(this.bufferFailedMsg, 
+                        String.format(
+                            this.displayMsg, rowIndex+1,
+                            rowIndex+this.view.visibleRows, this.lastInfo.totalLength
+                        )
+                    )
+                );
+                return;
+            }
+
+            this.displayEl.update(this.loadFailedMsg);
+            return;
+        }
+
+        var msg = totalCount == 0
+                ? this.emptyMsg
+                : String.format(this.displayMsg, rowIndex+1,
+                                rowIndex+visibleRows, totalCount);
+        this.displayEl.update(msg);
+
     },
 
     /**
@@ -122,12 +180,15 @@ Ext.ux.grid.livegrid.Toolbar = Ext.extend(Ext.Toolbar, {
         st.un('loadexception', this.enableLoading,  this);
         st.un('beforeload',    this.disableLoading, this);
         st.un('load',          this.enableLoading,  this);
+        st.un('load',          this.onStoreLoad,    this);
+        st.un('beforeload',    this.onStoreBeforeLoad, this);
         vw.un('rowremoved',    this.onRowRemoved,   this);
         vw.un('rowsinserted',  this.onRowsInserted, this);
         vw.un('beforebuffer',  this.beforeBuffer,   this);
         vw.un('cursormove',    this.onCursorMove,   this);
         vw.un('buffer',        this.onBuffer,       this);
         vw.un('bufferfailure', this.enableLoading,  this);
+        vw.un('bufferfailure', this.onBufferFailure, this);
 
         this.view = undefined;
     },
@@ -145,15 +206,35 @@ Ext.ux.grid.livegrid.Toolbar = Ext.extend(Ext.Toolbar, {
         st.on('loadexception',   this.enableLoading,  this);
         st.on('beforeload',      this.disableLoading, this);
         st.on('load',            this.enableLoading,  this);
+        st.on('load',            this.onStoreLoad,    this);
+        st.on('beforeload',      this.onStoreBeforeLoad, this);
         view.on('rowremoved',    this.onRowRemoved,   this);
         view.on('rowsinserted',  this.onRowsInserted, this);
         view.on('beforebuffer',  this.beforeBuffer,   this);
         view.on('cursormove',    this.onCursorMove,   this);
         view.on('buffer',        this.onBuffer,       this);
         view.on('bufferfailure', this.enableLoading,  this);
+        view.on('bufferfailure', this.onBufferFailure, this);
     },
 
 // ----------------------------------- Listeners -------------------------------
+
+    onBufferFailure : function() {
+        this.updateInfo(this.view.rowIndex, this.view.visibleRows, 0);
+
+    },
+
+    onStoreBeforeLoad : function() {
+        this.lastInfo = null;
+        this.updateInfo(undefined, undefined, undefined, 'beforeload');
+    },
+
+    onStoreLoad : function() {
+        this.lastInfo = {
+            totalLength : this.view.ds.totalLength
+        };
+    },
+
     enableLoading : function()
     {
         this.loading.setDisabled(false);
@@ -193,6 +274,12 @@ Ext.ux.grid.livegrid.Toolbar = Ext.extend(Ext.Toolbar, {
     // private
     onBuffer : function(view, store, rowIndex, visibleRows, totalCount)
     {
+        if (totalCount > 0 && this.view.ds.bufferRange[0] >= 0) {
+            this.lastInfo = {
+                totalLength : totalCount
+            };
+        }
+
         this.loading.enable();
         this.updateInfo(rowIndex, visibleRows, totalCount);
     },
