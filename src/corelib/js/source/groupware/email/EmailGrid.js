@@ -181,6 +181,18 @@ com.conjoon.groupware.email.EmailGrid = Ext.extend(Ext.ux.grid.livegrid.GridPane
             ddText         : com.conjoon.Gettext.gettext("{0} selected email(s)")
         });
 
+        me.gridController = Ext.createInstance(
+         'conjoon.mail.grid.comp.controller.GridController', {
+            grid : me,
+            errorMessageCompConfig : {
+                text        : com.conjoon.Gettext.gettext("Reading the folder failed."),
+                controlText : com.conjoon.Gettext.gettext("Click here to try again")
+            }
+        });
+
+        // internal
+        me.on('destroy', me.gridController.destroy, me.gridController)
+
         com.conjoon.groupware.email.EmailGrid.superclass.initComponent.call(this);
     },
 
@@ -256,53 +268,10 @@ com.conjoon.groupware.email.EmailGrid = Ext.extend(Ext.ux.grid.livegrid.GridPane
         this.mon(this.store, 'selectionsload',       this.onSelectionsLoad,       this);
         this.mon(this.store, 'insertindexfound',     this.onInsertIndexFound,     this);
 
-        this.mon(this.store, 'exception', this._onException, this);
-
         if (this.loadMask) {
             this.store.un('beforeload', this.loadMask.onBeforeLoad, this.loadMask);
             this.store.on('beforeload', this.loadMask.onBeforeLoad, this.loadMask, {delay : 1});
         }
-    },
-
-    /**
-     *
-     * @param {Ext.data.Proxy} proxy The proxy that sent the request
-     * @param {String} type The value of this parameter will be either 'response'
-     * or 'remote'.
-     *  - 'response': An invalid response from the server was returned: either 404,
-     *                500 or the response meta-data does not match that defined in
-     *                the DataReader (e.g.: root, idProperty, successProperty).
-     *   - 'remote':  A valid response was returned from the server having
-     *                successProperty === false. This response might contain an
-     *                error-message sent from the server. For example, the user may have
-     *                failed authentication/authorization or a database validation error
-     *                occurred.
-     * @param {String} action Name of the action (see Ext.data.Api.actions)
-     * @param {Object} options The options for the action that were specified in the
-     * request.
-     * @param {Object} response The value of this parameter depends on the value of the
-     * type parameter:
-     *   - 'response': The raw browser response object (e.g.: XMLHttpRequest)
-     *   - 'remote': The decoded response object sent from the server.
-     * @param {Mixed} arg The type and value of this parameter depends on the value of
-     * the type parameter:
-     *   - 'response': Error The JavaScript Error object caught if the configured Reader
-     *                 could not read the data. If the remote request returns
-     *                 success===false, this parameter will be null.
-     *   - 'remote': Record/Record[] This parameter will only exist if the action was a
-     *               write action (Ext.data.Api.actions.create|update|destroy).
-     *
-     */
-    _onException : function(proxy, type, action, options, response, arg)
-    {
-        com.conjoon.groupware.ResponseInspector.handleFailure(response, {
-            onLogin: {
-                fn : function(){
-                    this.view.reset(true);
-                },
-                scope : this
-            }
-        });
     },
 
     /**

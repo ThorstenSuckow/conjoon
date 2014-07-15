@@ -204,6 +204,12 @@ src/corelib/js/source/groupware/service/youtube/FeaturePanel.js
 src/corelib/js/source/groupware/SystemSoundManager.js
 src/corelib/js/source/app/base/Exception.js
 src/corelib/js/source/app/state/base/MissingStateIdException.js
+src/corelib/js/source/app/mail/grid/comp/ErrorMessageComp.js
+src/corelib/js/source/app/mail/grid/comp/controller/GridController.js
+src/corelib/js/source/app/mail/grid/comp/listener/ErrorMessageCompListener.js
+src/corelib/js/source/app/mail/grid/comp/listener/GridListener.js
+src/corelib/js/source/app/mail/grid/comp/listener/GridViewListener.js
+src/corelib/js/source/app/mail/grid/comp/listener/GridStoreListener.js
 src/corelib/js/source/app/mail/folder/base/FolderRelationshipException.js
 src/corelib/js/source/app/mail/folder/base/FolderNotFoundException.js
 src/corelib/js/source/app/mail/folder/base/ParentFolderNotFoundException.js

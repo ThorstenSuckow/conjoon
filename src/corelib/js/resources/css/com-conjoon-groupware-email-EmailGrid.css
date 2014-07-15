@@ -72,6 +72,23 @@
 }
 
 /**
+ * cn-mail-grid-errorComp
+ */
+.com-conjoon-groupware-email-EmailGrid .cn-mail-grid-errorComp {
+    font-size:11px;
+    color:#737373;
+
+    font-family:Tahoma,Verdana,Arial,Helvetica;
+}
+
+.com-conjoon-groupware-email-EmailGrid .cn-mail-grid-errorComp .control {
+    color: #00f;
+    cursor: pointer;
+    padding-left: 5px;
+    text-decoration: underline;
+}
+
+/**
  * Definition for all contaier elements that only hold a background image in either
  * a header or a cell.
  */
