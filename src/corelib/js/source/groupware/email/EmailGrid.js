@@ -155,10 +155,11 @@ com.conjoon.groupware.email.EmailGrid = Ext.extend(Ext.ux.grid.livegrid.GridPane
          * ...Yeah, I pretty much stole this one from the PagingToolbar!
          */
         this.bbar = new Ext.ux.grid.livegrid.Toolbar({
-            view        : this.view,
-            displayInfo : true,
-            displayMsg  : com.conjoon.Gettext.gettext("Emails {0} - {1} of {2}"),
-            emptyMsg    : com.conjoon.Gettext.gettext("No emails available")
+            view            : this.view,
+            displayInfo     : true,
+            displayMsg      : com.conjoon.Gettext.gettext("Emails {0} - {1} of {2}"),
+            emptyMsg        : com.conjoon.Gettext.gettext("No emails available"),
+            bufferFailedMsg : com.conjoon.Gettext.gettext("Could not read folder ({0})")
         });
 
     // ------------------------- ^^ EO set up buffered grid ------------------------
