@@ -1953,23 +1953,19 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
                     proxy.getConnection().abort(ar);
                 }
                 gridPanel.selModel.clearSelections(true);
-                gridPanel.store.removeAll();
 
                 if (!attr.isSelectable && ar) {
                     gridPanel.loadMask.hide();
                 }
 
                 if (attr.isSelectable) {
-
-                    gridPanel.installStateEvents(false);
-                    gridPanel.applyState(
+                    gridPanel.reloadFromState(
                         Ext.state.Manager.get(gridPanel.stateId),
                         this.clkNodeId
                     );
-                    gridPanel.installStateEvents(true);
+                } else {
+                    gridPanel.view.reset(false);
                 }
-
-                gridPanel.view.reset((attr.isSelectable ? true : false));
 
                 this.lastClkNodeId = this.clkNodeId;
             }

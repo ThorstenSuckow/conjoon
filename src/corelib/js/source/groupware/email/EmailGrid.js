@@ -197,6 +197,30 @@ com.conjoon.groupware.email.EmailGrid = Ext.extend(Ext.ux.grid.livegrid.GridPane
     },
 
     /**
+     * @param {Object} state The state information
+     * @param {String} clkNodeId The corresponding id of the tree node/mail
+     * folder for which the entries should be loaded
+     *
+     * @inheritdoc
+     *
+     * @throws cudgets.base.InvalidArgumentException
+     */
+    reloadFromState : function(state, clkNodeId) {
+
+        var me = this;
+
+        if (!clkNodeId) {
+            throw new cudgets.base.InvalidArgumentException(
+                "No valid node-id supplied"
+            );
+        }
+
+        com.conjoon.groupware.email.EmailGrid.superclass.reloadFromState.apply(
+            me, arguments
+        );
+    },
+
+    /**
      * Returns the state for the currently selected folder.
      *
      * @return {Object}
