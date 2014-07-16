@@ -1,4 +1,9 @@
-﻿Version 0.8.2 (GPL)
+﻿Version 0.8.3 (GPL)
+16-July-2014
+ - enhancement: added method "wasLastRequestSuccessful()"  which tells whether 
+the most recent request was successful or not 
+
+Version 0.8.2 (GPL)
 13-July-2014
  - enhancement: provided enhanced functionality to try to rebuffer a grid if 
 any buffer request fails; added fallbacks for grid view's properties in 

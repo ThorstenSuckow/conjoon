@@ -3114,6 +3114,15 @@ Ext.ux.grid.livegrid.Store = function(config) {
 Ext.extend(Ext.ux.grid.livegrid.Store, Ext.data.Store, {
 
     /**
+     * Tells whether the most recent request was successful.
+     * Note: This does not consider ongoing requests.
+     * Optimistic approach, defaults to true.
+     * @see wasLastRequestSuccessful
+     * @param {Boolean} wasRequestSuccessful
+     */
+    wasRequestSuccessful : true,
+
+    /**
      * The version of the data in the store. This value is represented by the
      * versionProperty-property of the BufferedJsonReader.
      * @property
@@ -3547,8 +3556,12 @@ Ext.extend(Ext.ux.grid.livegrid.Store, Ext.data.Store, {
         // the request was loading.
         // if the response didn't make it through, set buffer range to -1,-1
         if (!o) {
+            this.wasRequestSuccessful = false;
+
             this.bufferRange = [-1,-1];
         } else {
+
+            this.wasRequestSuccessful = true;
 
             var pn = this.paramNames;
 
@@ -3587,6 +3600,15 @@ Ext.extend(Ext.ux.grid.livegrid.Store, Ext.data.Store, {
 
         var modelIndex = index - this.bufferRange[0];
         return this.data.itemAt(modelIndex);
+    },
+
+    /**
+     * Returns true if the last request was successfull, otherwise false.
+     *
+     * @return {Boolean}
+     */
+    wasLastRequestSuccessful : function() {
+        return this.wasRequestSuccessful;
     },
 
 //--------------------------------------EMPTY-----------------------------------
