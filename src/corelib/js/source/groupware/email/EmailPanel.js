@@ -2003,13 +2003,22 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
     },
 
 
-    proxyInsert : function(index, record)
+    proxyInsert : function(record)
     {
         if (this.queue == null) {
             return;
         }
-        var ds    = this.gridPanel.store;
-        var index = ds.findInsertIndex(record);
+        var ds = this.gridPanel.store,
+            index;
+
+        /**
+         * @ticket CN-885
+         */
+        if (!ds.wasLastRequestSuccessful()) {
+            return;
+        }
+
+        index = ds.findInsertIndex(record);
 
         ds.insert(index, record);
     },
@@ -2039,9 +2048,8 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
                 pendingRecord.set('pending', pendingRecord.data.pending+1);
                 this.pendingRecords[tp.getNodeById(this.lastClkNodeId).getPath('idForPath')]--;
             }
-            var ds = this.gridPanel.store;
-            var index = 0;
-            this.proxyInsert.defer(0.00001, this, [index, record]);
+
+            this.proxyInsert.defer(0.00001, this, [record]);
         } else {
             this.processQueue.defer(0.00001, this);
         }
