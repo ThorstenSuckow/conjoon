@@ -44,6 +44,28 @@ Ext.namespace('com.conjoon.cudgets.tree');
 com.conjoon.cudgets.tree.AsyncTreeNode = Ext.extend(Ext.tree.AsyncTreeNode, {
 
     /**
+     * Overridden to consider the "loadFailed" attribute of the passed node.
+     * If an exception occured during loading, the node will still be able to be
+     * expanded.
+     *
+     * @inheritdoc
+     * @ticket CN-883
+     */
+    loadComplete : function(deep, anim, callback, scope){
+
+        this.loading = false;
+
+        if (this.attributes.loadFailed) {
+            return;
+        }
+
+        this.loaded = true;
+        this.ui.afterLoad(this);
+        this.fireEvent("load", this);
+        this.expand(deep, anim, callback, scope);
+    },
+
+    /**
      * Similiar to getPath, this method returns the path for this node, but
      * instead of a string it returns the path as an array, whereas the first
      * index points to the root, and the last index to "this" node.

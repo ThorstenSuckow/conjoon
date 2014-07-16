@@ -201,6 +201,7 @@ Ext.extend(com.conjoon.cudgets.tree.data.ProxyTreeLoader, Ext.tree.TreeLoader, {
                 o = o.items;
             }
 
+            node.attributes.loadFailed = false;
             if (!proxyConfig) {
                 // regular node where we assume the node's children should be
                 // appended
@@ -225,9 +226,8 @@ Ext.extend(com.conjoon.cudgets.tree.data.ProxyTreeLoader, Ext.tree.TreeLoader, {
             this.runCallback(callback, scope || node, [node], proxyConfig);
 
         } catch(e) {
-
+            node.attributes.loadFailed = true;
             this.handleFailure(response);
-
         }
     },
 
@@ -524,6 +524,9 @@ Ext.extend(com.conjoon.cudgets.tree.data.ProxyTreeLoader, Ext.tree.TreeLoader, {
     processDirectResponse: function(result, response, args){
 
         if (response && !response.status) {
+            if (args && args.node) {
+                args.node.attributes.loadFailed = true;
+            }
             this.handleFailure(Ext.apply(response, {
                 argument: args
             }));
