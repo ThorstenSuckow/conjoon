@@ -337,19 +337,41 @@ Ext.extend(com.conjoon.cudgets.tree.data.ProxyTreeLoader, Ext.tree.TreeLoader, {
 
                 if (this.fireEvent('beforenodesync', this, node, items) !== false) {
                     node.collapse(false, false);
+                    var nodesRemoved = false;
                     while(node.firstChild){
                         node.removeChild(node.firstChild).destroy();
+                        nodesRemoved = true;
                     }
-                    node.beginUpdate();
-                    for(var i = 0, len = items.length; i < len; i++){
-                        var n = this.createNode(items[i]);
-                        if(n){
-                            node.appendChild(n);
-                            this.fireEvent('nodeloaded', node, n);
+                    // we have removed nodes which means that the proxied node was
+                    // loaded with children.
+                    // lets check the loadFailed attribute to see whether loading
+                    // failed. if this is the case, and if the items.length is
+                    // of zero size, mark the node as "loaded:false" and make sure
+                    // the expand icon is rendered so we can initiate a retry later
+                    // on
+                    // @ticket CN-883
+                    // it is important to delete node.attributes.children, or
+                    // otherwise the TreeLoader.load() method will invoke
+                    // doPreload() which will not trigger a server request if the
+                    // attribute is still there.
+                    if (nodesRemoved && node.attributes.loadFailed && !items.length) {
+                        node.loaded = false;
+                        delete node.attributes.children;
+                        node.getUI().updateExpandIcon();
+                    }
+
+                    if (items.length) {
+                        node.beginUpdate();
+                        for(var i = 0, len = items.length; i < len; i++){
+                            var n = this.createNode(items[i]);
+                            if(n){
+                                node.appendChild(n);
+                                this.fireEvent('nodeloaded', node, n);
+                            }
                         }
+                        node.endUpdate();
+                        node.expand(false, false);
                     }
-                    node.endUpdate();
-                    node.expand(false, false);
 
                     this.fireEvent('nodesync', this, node);
                     synced = true;
