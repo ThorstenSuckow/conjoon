@@ -366,8 +366,14 @@ com.conjoon.groupware.ResponseInspector = function() {
                     title : Ext.util.Format.htmlEncode(error.title) || options.title,
                     text  : options.message
                             ? options.message + "<br />" + Ext.util.Format.htmlEncode(error.message)
-                            : Ext.util.Format.htmlEncode(error.message)
-                              .split("\n").join("<br />"),
+                            : (error.message
+                               ? Ext.util.Format.htmlEncode(error.message)
+                                 .split("\n").join("<br />")
+                               : '<b>' +
+                                  com.conjoon.Gettext.gettext("An unexpected error occurred. The server returned the following response:") +
+                                  '</b><br />-----<br />'+
+                                   Ext.util.JSON.encode(error)
+                            ),
                     type  : error.level
                 };
             }
