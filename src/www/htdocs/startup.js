@@ -297,12 +297,6 @@ Ext.onReady(function(){
                                 useDisplay : false
                             })}
                 });
-
-            com.conjoon.SystemMessageManager.setContext(
-                groupware.Registry.get(
-                    '/client/environment/device'
-                )
-            );
         }).defer(1000);
 
     });
@@ -331,6 +325,11 @@ Ext.onReady(function(){
                 callback : function() {
                     com.conjoon.groupware.Registry.load({
                         fn : function() {
+                            com.conjoon.SystemMessageManager.setContext(
+                                groupware.Registry.get(
+                                    '/client/environment/device'
+                                )
+                            );
                             _updateIndicator('registry');
                         }
                     });
