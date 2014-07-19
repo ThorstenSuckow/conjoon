@@ -132,16 +132,14 @@ if (isset($_GET['nosession'])) {
         /*@REMOVE@*/
 
         /*@BUILD_ACTIVE@
-        if ($action != 'install_success' && $action != 'finish') {
+        if (!isset($_SESSION['current_version'])) {
             $ret = @include_once './files/'.$_SESSION['setup_ini']['lib_path']['folder'].'/Conjoon/Version.php';
             if (!$ret || !file_exists('./files/'.$_SESSION['setup_ini']['app_path']['folder'])) {
                 die("Could not find libraries. ".
                     "Make sure you are working on a ".
                     "fresh copy of the install folder.");
             }
-        }
 
-        if (!isset($_SESSION['current_version'])) {
             $_SESSION['current_version'] = Conjoon_Version::VERSION;
         }
         @BUILD_ACTIVE@*/
