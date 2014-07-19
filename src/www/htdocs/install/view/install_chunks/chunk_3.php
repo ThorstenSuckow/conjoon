@@ -44,8 +44,14 @@ include('./scripts/check_auth.php');
 
     $libFolder = $_SESSION['setup_ini']['lib_path']['folder'];
 
+    $text = "Updating database. Depending on your database size, this can take a while. " .
+            "Please note that progress marked with \"failure\" " .
+            "is not an indication for a failed update attempt... ".
+            "Don\'t worry, we got this.";
+
     InstallLogger::getInstance($_SESSION['install_process']['INSTALL_LOGGER']);
 
+    InstallLogger::stdout(InstallLogger::logMessage($text), true);
     InstallLogger::stdout(InstallLogger::logMessage("Updating database"));
 
     $dbConnInfo = array(

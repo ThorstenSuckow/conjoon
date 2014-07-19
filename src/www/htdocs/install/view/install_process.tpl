@@ -28,8 +28,21 @@
  $URL$
 -->
 
-<p>
-Please wait...
-</p>
+<script type="text/javascript">
+
+    function updateProgressNote(txt) {
+        if (txt) {
+            document.getElementById('progress_info').innerHTML = txt;
+        } else {
+            document.getElementById('progress_info').innerHTML = "Please wait...";
+        }
+
+    }
+
+</script>
+
+<div class="info_box">
+<span id="progress_info">Please wait...</span>
+</div>
 
 <iframe name="install_frame" style="border:0;width:100%;height:500px" src="./index.php?action=install_chunk_1"></iframe>

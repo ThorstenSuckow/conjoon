@@ -47,7 +47,7 @@ include('./scripts/check_auth.php');
 
     InstallLogger::getInstance($_SESSION['install_process']['INSTALL_LOGGER']);
 
-    InstallLogger::stdout(InstallLogger::logMessage("Updating cache system..."));
+    InstallLogger::stdout(InstallLogger::logMessage("Updating cache system..."), true);
 
     // remove old cache folders
     if (isset($_SESSION['installation_info']['cache.default.caching'])

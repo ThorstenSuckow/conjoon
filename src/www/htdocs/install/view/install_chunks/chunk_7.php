@@ -45,7 +45,7 @@ include('./scripts/check_auth.php');
 
     InstallLogger::getInstance($_SESSION['install_process']['INSTALL_LOGGER']);
 
-    InstallLogger::stdout(InstallLogger::logMessage("Cleaning up"));
+    InstallLogger::stdout(InstallLogger::logMessage("Cleaning up"), true);
 
     $INSTALL = array();
     $INSTALL['IMREMOVING'] = array(
@@ -77,4 +77,9 @@ include('./scripts/check_auth.php');
     InstallLogger::stdout(InstallLogger::logMessage("Done!"));
     InstallLogger::stdout("Click \"Next\" to finish!");
 
+    $txt = "Done! You can find a detailed log of the update progress here: ".
+           "<a target=\"_blank\" href=\"".$_SESSION['install_process']['INSTALL_LOGGER']."\">".
+            $_SESSION['install_process']['INSTALL_LOGGER'] ."</a>";
+
+    echo "<script type=\"text/javascript\">parent.updateProgressNote('" . $txt. "');</script>";
     echo "<script type=\"text/javascript\">parent.document.getElementById('nextButton').disabled = false;</script>";

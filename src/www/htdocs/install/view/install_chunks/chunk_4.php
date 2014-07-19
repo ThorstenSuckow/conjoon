@@ -47,15 +47,14 @@ include('./scripts/check_auth.php');
 
     InstallLogger::getInstance($_SESSION['install_process']['INSTALL_LOGGER']);
 
-    InstallLogger::stdout(InstallLogger::logMessage("Moving and generating files..."));
+    InstallLogger::stdout(InstallLogger::logMessage("Moving and generating files..."), true);
 
     // move libs folders
-    InstallLogger::stdout(InstallLogger::logMessage("Moving library folders"));
+    InstallLogger::stdout(InstallLogger::logMessage("Moving library folders"), true);
     $libFolders = explode(",", $_SESSION['setup_ini']['lib_path']['delete']);
     for ($i = 0, $len = count($libFolders); $i < $len; $i++) {
         $libFolders[$i] = trim($libFolders[$i]);
         conjoon_rmdir($_SESSION['lib_path'] . "/" . $libFolder . "/" . $libFolders[$i]);
-        rmdir($_SESSION['lib_path'] . "/" . $libFolder . "/" . $libFolders[$i]);
         if (!file_exists($_SESSION['lib_path'] . "/" . $libFolder)) {
             mkdir($_SESSION['lib_path'] . "/" . $libFolder);
         }
@@ -72,7 +71,7 @@ include('./scripts/check_auth.php');
     // replace $LIBRARY_PATH_BOOTSTRAP in index.php to enable autoloader
     // replace $LOCALE_DEFAULT_TIMEZONE in index.php for local.timezone
     // fallback
-    InstallLogger::stdout(InstallLogger::logMessage("Enabling autoloader in index.php"));
+    InstallLogger::stdout(InstallLogger::logMessage("Enabling autoloader in index.php"), true);
     $indexFile = file_get_contents('../index.php');
     $indexFile = str_replace(
         array('$LIBRARY_PATH_BOOTSTRAP', '$LOCALE_DEFAULT_TIMEZONE'),
@@ -85,12 +84,11 @@ include('./scripts/check_auth.php');
     file_put_contents('../index.php', $indexFile);
 
     // move application folders
-    InstallLogger::stdout(InstallLogger::logMessage("Moving application folders"));
+    InstallLogger::stdout(InstallLogger::logMessage("Moving application folders"), true);
     $appFolders = explode(",", $_SESSION['setup_ini']['app_path']['delete']);
     for ($i = 0, $len = count($appFolders); $i < $len; $i++) {
         $appFolders[$i] = trim($appFolders[$i]);
         conjoon_rmdir($_SESSION['app_path'] . "/" . $appFolder . "/" . $appFolders[$i]);
-        rmdir($_SESSION['app_path'] . "/" . $appFolder . "/" . $appFolders[$i]);
         if (!file_exists($_SESSION['app_path'] . "/" . $appFolder)) {
             mkdir($_SESSION['app_path'] . "/" . $appFolder);
         }
@@ -105,7 +103,7 @@ include('./scripts/check_auth.php');
 
 
     // work on Doctrine-ORM files!
-    InstallLogger::stdout(InstallLogger::logMessage("Creating ORM files"));
+    InstallLogger::stdout(InstallLogger::logMessage("Creating ORM files"), true);
     conjoon_createOrmFiles(
         $_SESSION['app_path'] . "/" .
         $appFolder . "/" .
@@ -114,18 +112,17 @@ include('./scripts/check_auth.php');
     );
 
     // work on HTML5 manifest files. Update them to use the configured base_url.
-    InstallLogger::stdout(InstallLogger::logMessage("Updating HTML5 manifest files"));
+    InstallLogger::stdout(InstallLogger::logMessage("Updating HTML5 manifest files"), true);
     conjoon_updateHtml5ManifestFilesWithBasePath(
         $_SESSION['app_path'] . "/" . $appFolder, $_SESSION['doc_path']
     );
 
     // remove old htmlpurifier if needed
-    InstallLogger::stdout(InstallLogger::logMessage("Updating HTMLPurifier functionality"));
+    InstallLogger::stdout(InstallLogger::logMessage("Updating HTMLPurifier functionality"), true);
     if (isset($_SESSION['installation_info']['application.htmlpurifier.use_cache'])
         && isset($_SESSION['installation_info']['application.htmlpurifier.cache_dir'])
         && file_exists($_SESSION['installation_info']['application.htmlpurifier.cache_dir'])) {
         @conjoon_rmdir($_SESSION['installation_info']['application.htmlpurifier.cache_dir']);
-        @rmdir($_SESSION['installation_info']['application.htmlpurifier.cache_dir']);
     }
     // ... and create new dir if necessary
     if ($_SESSION['application']['htmlpurifier.use_cache']
@@ -136,7 +133,7 @@ include('./scripts/check_auth.php');
     }
 
     // process doctrine cache directories
-    InstallLogger::stdout(InstallLogger::logMessage("Processing Doctrine cache directories"));
+    InstallLogger::stdout(InstallLogger::logMessage("Processing Doctrine cache directories"), true);
     $doctrineCacheConfigKeys = array('query_cache', 'metadata_cache');
     foreach ($doctrineCacheConfigKeys as $doctrineCacheConfigKey) {
         // remove old doctrine cache if needed
@@ -145,7 +142,6 @@ include('./scripts/check_auth.php');
             isset($_SESSION['installation_info']['application.doctrine.cache.'.$doctrineCacheConfigKey.'.dir']) &&
             file_exists($_SESSION['installation_info']['application.doctrine.cache.'.$doctrineCacheConfigKey.'.dir'])) {
             @conjoon_rmdir($_SESSION['installation_info']['application.doctrine.cache.'.$doctrineCacheConfigKey.'.dir']);
-            @rmdir($_SESSION['installation_info']['application.doctrine.cache.'.$doctrineCacheConfigKey.'.dir']);
         }
         // ... and create new dir if necessary
         if ($_SESSION['application']['doctrine.cache.'.$doctrineCacheConfigKey.'.type'] == 'file'
@@ -161,7 +157,7 @@ include('./scripts/check_auth.php');
     // dont remove previous directories snce it might be needed to
     // re-store previous files handled by the dirs configured
     // for previous installations
-    InstallLogger::stdout(InstallLogger::logMessage("Processing file system functionality"));
+    InstallLogger::stdout(InstallLogger::logMessage("Processing file system functionality"), true);
     if ($_SESSION['files']['storage.filesystem.enabled']
         && $_SESSION['files']['storage.filesystem.dir']) {
         conjoon_mkdir($_SESSION['files']['storage.filesystem.dir']);

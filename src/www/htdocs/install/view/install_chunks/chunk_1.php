@@ -46,7 +46,7 @@ include('./scripts/check_auth.php');
 
     InstallLogger::getInstance($_SESSION['install_process']['INSTALL_LOGGER']);
 
-    InstallLogger::stdout(InstallLogger::logMessage("Generating htaccess"));
+    InstallLogger::stdout(InstallLogger::logMessage("Generating htaccess"), true);
 
     // proceed installation. First of, generate .htaccess
     $htaccess = file_get_contents('./htaccess.template');
@@ -56,7 +56,7 @@ include('./scripts/check_auth.php');
 
 
     // generate config.ini.php
-    InstallLogger::stdout(InstallLogger::logMessage("Generating config.ini.php"));
+    InstallLogger::stdout(InstallLogger::logMessage("Generating config.ini.php"), true);
     $configini = file_get_contents('./config.ini.php.template');
 
     if ($_SESSION['add_include_path']) {
@@ -81,7 +81,7 @@ include('./scripts/check_auth.php');
         $configini
     );
 
-    InstallLogger::stdout(InstallLogger::logMessage("Adding database information to config.ini.php"));
+    InstallLogger::stdout(InstallLogger::logMessage("Adding database information to config.ini.php"), true);
     $configini = str_replace("{BASE_URL}", $_SESSION['doc_path'], $configini);
     $configini = str_replace("{EDITION}", '"' . $_SESSION['edition']. '"', $configini);
     $configini = str_replace("{DATABASE.ADAPTER}", $_SESSION['db_adapter'], $configini);
@@ -94,11 +94,11 @@ include('./scripts/check_auth.php');
     $configini = str_replace("{DATABASE_MAX_ALLOWED_PACKET}", $_SESSION['max_allowed_packet'], $configini);
 
     // localization
-    InstallLogger::stdout(InstallLogger::logMessage("Adding localization information to config.ini.php"));
+    InstallLogger::stdout(InstallLogger::logMessage("Adding localization information to config.ini.php"), true);
     $configini = str_replace("{LOCALE.DATE.TIMEZONE}", $_SESSION['locale_timezone_default'], $configini);
 
     // caching
-    InstallLogger::stdout(InstallLogger::logMessage("Adding database caching to config.ini.php"));
+    InstallLogger::stdout(InstallLogger::logMessage("Adding database caching to config.ini.php"), true);
     $configini = str_replace("{CACHE.DEFAULT.CACHING}", $_SESSION['cache']['default.caching'] ? '1' : '0', $configini);
 
     $configini = str_replace("{CACHE.DB.METADATA.CACHING}", $_SESSION['cache']['db.metadata.caching'] ? '1' : '0', $configini);
@@ -172,7 +172,7 @@ include('./scripts/check_auth.php');
         $configini);
 
     // Htmlpurifier settings
-    InstallLogger::stdout(InstallLogger::logMessage("Adding htmlpurifier information to config.ini.php"));
+    InstallLogger::stdout(InstallLogger::logMessage("Adding htmlpurifier information to config.ini.php"), true);
     $configini = str_replace(
         '{HTMLPURIFIER.PRELOAD_ALL}',
         $_SESSION['application']['htmlpurifier.preload_all'] ? '1' : '0',
@@ -194,7 +194,7 @@ include('./scripts/check_auth.php');
 
     // conjoon settings
     // file related settings
-    InstallLogger::stdout(InstallLogger::logMessage("Adding file related information to config.ini.php"));
+    InstallLogger::stdout(InstallLogger::logMessage("Adding file related information to config.ini.php"), true);
     $configini = str_replace(
         '{FILES.UPLOAD.MAX_SIZE}',
         $_SESSION['files']['upload.max_size'],
@@ -215,7 +215,7 @@ include('./scripts/check_auth.php');
     );
 
     // Doctrine settings
-    InstallLogger::stdout(InstallLogger::logMessage("Adding doctrine information to config.ini.php"));
+    InstallLogger::stdout(InstallLogger::logMessage("Adding doctrine information to config.ini.php"), true);
     $configini = str_replace(
         '{DOCTRINE.CACHE.ENABLED}',
         $_SESSION['application']['doctrine.cache.enabled'] ? '1' : '0',
@@ -251,13 +251,13 @@ include('./scripts/check_auth.php');
 
     // overwrite the file completely, even if it still exists from a previous
     // installation!
-    InstallLogger::stdout(InstallLogger::logMessage("Writing config.ini"));
+    InstallLogger::stdout(InstallLogger::logMessage("Writing config.ini"), true);
     file_put_contents('../config.ini.php', $configini);
     $configini = "";
 
 
     // generate and update install.info.php
-    InstallLogger::stdout(InstallLogger::logMessage("Writing installation.info.php"));
+    InstallLogger::stdout(InstallLogger::logMessage("Writing installation.info.php"), true);
     if (!file_exists('../installation.info.php')) {
         $installationinfo = file_get_contents('./installation.info.php.template');
     } else {
@@ -288,11 +288,12 @@ include('./scripts/check_auth.php');
             'doc_path'           => '".$_SESSION['doc_path']."',
             'applied_patches'    => array(".(empty($_SESSION['applied_patches']) ? "" : "'").implode(
         "','",
-        array_values($_SESSION['applied_patches'])
+            (isset($_SESSION['applied_patches']) && is_array($_SESSION['applied_patches'])
+                ? array_values($_SESSION['applied_patches']) : array())
     ).(empty($_SESSION['applied_patches']) ? "" : "'")."),
             'ignored_patches'    => array(".(empty($_SESSION['ignored_patches']) ? "" : "'").implode(
         "','",
-        array_values($_SESSION['ignored_patches'])
+            (isset($_SESSION['ignored_patches']) && is_array($_SESSION['ignored_patches']) ? array_values($_SESSION['ignored_patches']) : array())
     ).(empty($_SESSION['ignored_patches']) ? "" : "'")."),
 
 

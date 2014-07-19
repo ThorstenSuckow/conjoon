@@ -45,7 +45,7 @@ include('./scripts/check_auth.php');
 
     InstallLogger::getInstance($_SESSION['install_process']['INSTALL_LOGGER']);
 
-    InstallLogger::stdout(InstallLogger::logMessage("Applying patches"));
+    InstallLogger::stdout(InstallLogger::logMessage("Applying patches"), true);
     InstallLogger::stdout(InstallLogger::logMessage("Final run!"));
 
     // PREPARE PATCHES, IF ANY!
@@ -53,7 +53,7 @@ include('./scripts/check_auth.php');
 
         // apply patches, if any
         foreach ($_SESSION['patches'] as $patch => $doApply) {
-            InstallLogger::stdout(InstallLogger::logMessage("Applying patch $patch"));
+            InstallLogger::stdout(InstallLogger::logMessage("Applying patch $patch"), true);
             if ($doApply) {
                 if (file_exists('./patches/'.$patch.'/run.php')) {
                     InstallLogger::stdout(InstallLogger::logMessage("Running $patch..."));
@@ -64,7 +64,7 @@ include('./scripts/check_auth.php');
             }
         }
     } else {
-        InstallLogger::stdout(InstallLogger::logMessage("Nothing to do here..."));
+        InstallLogger::stdout(InstallLogger::logMessage("Nothing to do here..."), true);
     }
 
 

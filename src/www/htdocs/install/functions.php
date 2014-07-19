@@ -813,6 +813,16 @@ function conjoon_rmdir($path)
         }
     }
     closedir($handle);
+
+    if(file_exists($path) &&  is_dir($path)) {
+        if (!rmdir($path)) {
+            InstallLogger::stdout(InstallLogger::getInstance()
+                ->logMessage("ERROR: could not rmdir $path"));
+        } else {
+            InstallLogger::stdout(InstallLogger::getInstance()
+                ->logMessage("rmdir $path"));
+        }
+    }
 }
 
 /**
@@ -981,8 +991,12 @@ class InstallLogger {
 
     }
 
-    public function stdout($message) {
+    public function stdout($message, $parentNote = false) {
         echo $message . '<br />';
+        if ($parentNote === true) {
+            echo "<script type=\"text/javascript\">parent.updateProgressNote('".$message."');</script>";
+        }
+
         echo "<script type=\"text/javascript\">this.scrollTo(0, document.body.offsetHeight);</script>";
         flush();
         ob_flush();
