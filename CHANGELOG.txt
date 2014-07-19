@@ -1,6 +1,6 @@
-﻿2012-12-18 0.1.6EAP1
+﻿2014-07-19 0.1.6EAP2
 ====================
-Release Notes - conjoon - Version 0.1.6EAP1
+Release Notes - conjoon - Version 0.1.6EAP2
 
 ** Bug
     * [CN-595] - Cannot dive into nested folders of IMAP account
@@ -41,16 +41,152 @@ Release Notes - conjoon - Version 0.1.6EAP1
                  folder level
     * [CN-717] - Adding new email accounts does not work
     * [CN-718] - Minor issues related to pendingItem/email item stores
+    * [CN-719] - References between latest email grid and main email grid need
+                 to be updated
     * [CN-725] - Updating an email account gives error: undefined index
                  "protocol"
     * [CN-726] - Wrong error message for missing draft folder mapping
     * [CN-727] - AttachmentResponse filter throws error
                  "class Zend_Filter_Htmlentities" not found
+    * [CN-728] - "cannot create panel without path" error message when trying to
+                 reply to a message
+    * [CN-739] - "startedit" event not properly triggered for option dialogs
+    * [CN-740] - "startedit" event of options dialog should also be triggered
+                 for radiogroups
+    * [CN-742] - "saveConfiguration" in container not properly returning false
+    * [CN-744] - getConnection() in DatabaseTestCaseDefault returns difference
+                 instances per call
+    * [CN-745] - flush() in DataRepository should only consider entities managed
+                 by/registered to this repository
+    * [CN-749] - change z-index of startup layer since components shine through
+    * [CN-753] - Ext.ux.FlexAccord does not allow for rendering initial
+                 collapsed panels with a fixed height
+    * [CN-755] - state identifiers for state manager not considered in js merge
+                 list
+    * [CN-756] - splashscreen hides fallback dialog if application cannot be
+                 loaded
+    * [CN-757] - fallback for auth token failure cannot use direct registry for
+                 loading
+    * [CN-766] - Exit Button not rendered when recovering from "standby" and
+                 reload
+    * [CN-768] - Twitter client/API broken
+    * [CN-772] - Downloading IMAP message triggers error
+    * [CN-773] - Actual childCount of remote mail folders not properly retrieved
+    * [CN-779] - Sorting after "recipients" in grid representing remote IMAP
+                 folders does not work
+    * [CN-785] - ImapMessageEntity not created with "date" as DateTime Object
+    * [CN-786] - EmailAccountController still uses "persist" instead of
+                 "register" when working with DataRepositories
+    * [CN-793] - ArgumentCheck does not consider "null" values for "default"
+                 if argument was not mandatory
+    * [CN-794] - ArgumentCheck does not continue with checking if default value
+                 for none mandatory arguments was provided
+    * [CN-796] - \Conjoon\Net\Uri must not lowercase path component
+    * [CN-801] - prefix missing in sql-statement at first attempt to fetch email
+                 by imap
+    * [CN-803] - Attachment indicator not properly shown for inline attachments
+                 in IMAP messages
+    * [CN-805] - Folder context menu shows "deleted" option for root nodes
+    * [CN-806] - Cannot download existing attachments when saving a draft of a
+                 local mail message
+    * [CN-807] - Empty files created for remote IMAP messages when file system
+                 is used for strogin LOBs
+    * [CN-811] - Make sure path does not contain invalid characters for
+                 zend_Cache_Core when assembling cache key
+    * [CN-813] - Make sure EmailGrid's getState/applyState void if state-config
+                 for Grid is not valid
+    * [CN-814] - livegrid triggers "Limit argument -1 is invalid" error message
+                 when re-applying state
+    * [CN-815] - Trying to download an attachment from a draft (type: forward)
+                 triggers error
+    * [CN-816] - Possible bug during installation with email templates not
+                 properly copied
+    * [CN-817] - Some SMTP server quit with "Syntax error - line too long" on
+                 some messages with certain attachments
+    * [CN-818] - EmailPanel triggers error when forwarding a draft IMAP message
+                 without a "Sent" mapping
+    * [CN-819] - Folder Facade returns "unexpected result" when latest emails
+                 grid's store is loaded
+    * [CN-820] - "path" property of email messages loaded into latest email
+                 grid is empty
+    * [CN-821] - "Ext.fly() is null" error is triggered when selecting email
+                 item in latest emails grid
+    * [CN-822] - Latest email preview window does not get properly rendered when
+                 "show external resources" for an html email is clicked
+    * [CN-823] - Latest email preview is not rendered when latest email grid's
+                 store is reloaded during scrolling
+    * [CN-824] - Namespace mismatch in LatestEmailsGridListener
+    * [CN-825] - Emails should not be droppable on target folder which equals
+                 the source folder
+    * [CN-827] - TreeEditor behavior for mail folder tree is broken when editor
+                 shows
+    * [CN-828] - feed name validator does not allow for "-" when adding feeds,
+                 but feed options dialog does
+    * [CN-830] - d&d for tab header does not work properly on left/right align
+                 tabs
+    * [CN-833] - "name" property in feed panel not properly rendered
+    * [CN-834] - Feed content is loaded from state restored feeds, although it
+                 is available
+    * [CN-836] - Wrong js file references from "app" folder in merge list
+    * [CN-840] - HTMLPurifier lib not copied during install process
+    * [CN-842] - qtips for grid rows broken
+    * [CN-843] - Start menu does not show proper menu items for tabs restored
+                 from state
+    * [CN-844] - Toolbar for feed tabs broken
+    * [CN-845] - install wizard refers to "Step 3" when stating that application
+                 path was chosen
+    * [CN-847] - Long email message tab titles not saved in state
+    * [CN-848] - Closing inactive tab does not trigger state save for workbench
+    * [CN-851] - installed version of conjoon does not start
+    * [CN-854] - Leaving htmlpurifier-dir empty triggers error
+    * [CN-855] - State of TreeFolder not restored in fresh installations
+    * [CN-856] - mail preview not properly displayed when opening mail module
+                 without existing state
+    * [CN-857] - Firefox does not use the application cache if data in manifest
+                 file is provided
+    * [CN-862] - Login process shows wrong error message when login failed
+    * [CN-863] - Mysql 5.5 throws errors during unittesting: Cannot truncate a
+                 table referenced in a foreign key constraint...
+    * [CN-864] - UnitTests fail with preg_replace(): The /e modifier is
+                 deprecated, use preg_replace_callback instead
+    * [CN-865] - {FILES.UPLOAD.MAX_SIZE} is left in the setup wizard as a
+                 fragment of a previous installation
+    * [CN-866] - LoginContainer.js shows hardcoded version/software info
+    * [CN-867] - Loading IMAP email gives error message "response was empty"
+                 when response was full of error information
+    * [CN-868] - network timeouts when installing conjoon
+    * [CN-870] - check_auth script does not exist if session information is not
+                 available
+    * [CN-871] - Greeting message upon login is not showing proper text for
+                 first time users
+    * [CN-873] - Load youtube API from http or https based on
+                 server/environment/protocol information
+    * [CN-874] - Provide workaround for ZF-10168
+    * [CN-875] - Synchronizing state-restored mail folders throws error if
+                 load-action for a node is not successful
+    * [CN-878] - Make sure livegrid does not attempt to render any data if
+                 bufferRange is not valid
+    * [CN-879] - State is not properly re-applied if buffer range does not equal
+                 to a proper value
+    * [CN-884] - Sorting a grid once buffering failed shows buffer and load
+                 mask, where it should only show the load mask
+    * [CN-886] - Context of SystemMessageManager not set when registry
+                 information is available
+    * [CN-887] - No error information displayed if backend throws exception
+                 without a "message"
+    * [CN-888] - Install Wizard checks for "files/" folder upon each request
+                 which will fail if any of the install chunks is loaded
+    * [CN-889] - cache folders not properly created
+    * [CN-893] - conjoon_rmdir tries to remove directories which have already
+                 been deleted by itself
+    * [CN-894] - remove calls to rmdir() in chunk 7
 
 ** Improvement
+    * [CN-14]  - Make it possible to add/remove/edit attachments to/from/in
+                 email(draft)s
     * [CN-417] - Resize the Make a Suggestion- and Report a Bug-dialog
-    * [CN-629] - Constructor for  Conjoon_Text_Parser should throw exceptions
-                 of the type Conjoon_Argument_Exception
+    * [CN-629] - Constructor for  Conjoon_Text_Parser should throw exceptions of
+                 the type Conjoon_Argument_Exception
     * [CN-630] - Add "previous" exception argument to Conjoon_Exception for <
                  PHP 5.3
     * [CN-636] - Change
@@ -61,16 +197,87 @@ Release Notes - conjoon - Version 0.1.6EAP1
                  should alos return each UID for every message
     * [CN-640] - Change filters and client item record properties for message
                  id's from int to string
+    * [CN-651] - Conjoon_Argument_Check's "instanceof" should operate on class
+                 names, not classes itself
     * [CN-652] - Conjoon_Argument_Check's "bool" should test for object/array
                  and throw an error if test passes
     * [CN-694] - Add "mandatory" configuration option to
                  Conjoon\Argument\ArgumentCheck
     * [CN-704] - ArgumentCheck should be strict for boolean types
-    * [CN-711] - Read out folder types from mappings when IMAP folder get loaded
+    * [CN-708] - Detect the mail account connected to the message a user replies
+                 to and use this as the standard mail account
+    * [CN-711] - Read out folder types from mappings when IMAP folder get
+                 loaded
     * [CN-712] - Improve header list and meta information retrieval for IMAP
                  server and enable limit parameter support
+    * [CN-741] - it should be possible to render the options dialog without any
+                 remove/add button
+    * [CN-750] - Refactor com.conjoon.groupware.Registry into cudgets namespace
+    * [CN-752] - Remove dependencies from component registry in Youtube
+                 ViewBaton
+    * [CN-754] - Create auto login functionality
+    * [CN-763] - Create function which mimics ExtJS4 "Ext.getClassName"
+    * [CN-764] - Add warn() to SystemMessageManager and create new namespace for
+                 migration
+    * [CN-770] - Remove the "expand all" button from the mail folder panel
+    * [CN-775] - Introduce "buffer" options for config object for
+                 Direct.Registry
+    * [CN-780] - DirectRegistry should create new delayed task if a new buffered
+                 request is coming in
+    * [CN-790] - change registry key for saving email options
+    * [CN-791] - Add "default" option to ArgumentCheck to provide default value
+    * [CN-795] - Add URI class to \Conjoon\Net and change
+                 \Conjoon\Net\Environment to return Uri instances
+    * [CN-797] - Add "query" component to \Conjoon\Net\Uri
+    * [CN-800] - Extract code from Email Controllers working with Mail Messages
+                 into abstract base controller
+    * [CN-804] - DownloadAttachmentPatron should not expose information about
+                 the content's encoding
+    * [CN-810] - Add option "strict" to ArgumentCheck for strict checking of
+                 simple datatypes
+    * [CN-831] - Add doctrine cache settings to setupwizard
+    * [CN-832] - Change icon and title of state restored feed tabs when their
+                 content gets loaded from the server
+    * [CN-841] - change wording for the "i have read, understood..."-license
+                 agreement text
+    * [CN-846] - place "deny from all" htaccess-Files into directories specified
+                 by default paths
+    * [CN-849] - Add "isConfigured()" method to Conjoon_Log
+    * [CN-850] - Make sure com.conjoon.util.Record.convertTo() only copies field
+                 values which exist in target class
+    * [CN-852] - Change naming of "files.storage"-related options in
+                 configuration
+    * [CN-853] - Add css style to long lists of setup options so sections are
+                 grouped visually
+    * [CN-858] - Group setup options on "Finish" page visually
+    * [CN-859] - Revamp "loading" screen to match time needed for restoring the
+                 application's state
+    * [CN-860] - Revamp Login Process visually to match loading window
+    * [CN-861] - Update UI of "logout" dialog to match revamped login screen
+    * [CN-869] - Check if twitter profile images can be loaded from https
+                 instead of http URL
+    * [CN-876] - Provide an option for the Response Inspector to not
+                 automatically render error messages on the screen
+    * [CN-877] - Provide a more elegant UI control for reloading the livegrid if
+                 loading a folder's contents fail
+    * [CN-880] - Make sure mail grid does remove entries if buffer result was
+                 erroneous and let the user still scroll through the grid to
+                 init buffer retries
+    * [CN-881] - Refactor logic for reloading a steful livegrid from state and
+                 place into livegrid directly
+    * [CN-882] - Update toolbar for mail grid with enhanced information about
+                 the current state, i.e.load failures, buffer failures and such
+    * [CN-883] - Failed loading of (proxy) nodes should not result in a
+                 collapsed leaf
+    * [CN-885] - Records must not be added to the livegrid if a previous load
+                 operation failed
+    * [CN-890] - Provide information in db-install chunk about meaning of errors
+                 and failures
+    * [CN-892] - consider "status:0, statusText: communication failure" for
+                 load-/request-exceptions
 
 ** New Feature
+    * [CN-410] - Add StateProvider finally to make UI components state aware
     * [CN-600] - Create code to read out and display IMAP Email Items from
                  remote Server without using cache/db
     * [CN-646] - Enable deleting of IMAP folders
@@ -85,12 +292,19 @@ Release Notes - conjoon - Version 0.1.6EAP1
                  forwarding messages using IMAP accounts
     * [CN-706] - Add method to MailAccountRepository for returning all accounts
                  which belong to a specific user
+    * [CN-792] - Bring Conjoon\Net package into API for querying environment
+                 informations
 
 ** Task
+    * [CN-117] - Check NodeEditor and various related mouse events
     * [CN-363] - Check for SSL support
     * [CN-365] - Check naming conventions for IMAP folders
+    * [CN-392] - Check how PDO stream support behaves against emails that exceed
+                 max_allowed_packet size
     * [CN-489] - Bring Server Type Card back into Email Account Assistant
     * [CN-571] - Bring back "Folder mappings" menu item
+    * [CN-572] - Bring Attachment Grid back into Email Form
+    * [CN-573] - Bring sources for Attachment Panel into javascript merge lists
     * [CN-587] - Update wording in Settings Tab in Email Accounts Dialog
     * [CN-593] - Update client code to consider new "root_remote" folder type
     * [CN-614] - Conjoon_Text_Transformer::transform must also order subclasses
@@ -103,21 +317,47 @@ Release Notes - conjoon - Version 0.1.6EAP1
     * [CN-663] - Remove AllTests.php from UnitTests
     * [CN-664] - Add method to ClientFolderService to check whether a specific
                  folder may be accessed by a user
+    * [CN-676] - Check if accountVerifyCredentials still returns an error when
+                 calling Twitter API
     * [CN-678] - Conjoon\Mail\Server\response\ResponseBody should hold an array
                  by default
     * [CN-679] - Remove SuccessResponse/ErrorResponseBody since tagging a
                  successfull response is not needed
     * [CN-680] - Conjoon\Mail\Server\Request\Request needs access to params for
                  forwarding to protocol commands as arguments
+    * [CN-681] - Add Doctrine Table Prefix Features
     * [CN-683] - Add tests for email recipients filters to make sure they work
                  with refactorings
     * [CN-687] - Update email accounts data structure with foreign key relations
+    * [CN-691] - Invalidate message item selections if user is in a different
+                 root folder
     * [CN-692] - Load IMAP message into preview panel
+    * [CN-696] - Add association to attachment table for email message entity
     * [CN-697] - Attachments must be downloadable from a remote server
     * [CN-715] - Remove obsolete Folder Mapping code
     * [CN-722] - Update prerequisites with PHP 5.3
     * [CN-723] - Remove version check from index.php
     * [CN-724] - Update autoloader to consider new PHP 5.3 namespaces
+    * [CN-746] - Add __toString methods to DataEntities
+    * [CN-747] - Override __call in doctrine data repositories in Conjoon\Data
+    * [CN-748] - Refactor MessageAttachmentEntity into AttachmentEntity
+    * [CN-751] - Add unit test to DoctrineMessageRepository to make sure
+                 flushing message with newly added folder fails
+    * [CN-762] - Create overrides in Ext namespace for ExtJS4's "Ext.create" and
+                 "Ext.define"
+    * [CN-765] - Move conjoon.mail.ui into conjoon.mail.view Namespace
+    * [CN-774] - Update namespace changes for existing sources
+    * [CN-781] - Remove debug output from ProxyTreeLoader
+    * [CN-784] - Update copyright information
+    * [CN-798] - Replace deprecated "_redirect()" method with "redirect()" in
+                 ActionController
+    * [CN-829] - check if generated manifest file is complete
+    * [CN-835] - Add htmlpurifier to build process
+    * [CN-837] - Update Install Wizard with include path to HTMLPurifier
+    * [CN-839] - Update "lib path" step in Install Wizard with info about
+                 HTMLPurifier path
+    * [CN-891] - Check for updated indizes on production and compare to dev
+                 regarding mail tables
 
 ** Sub-task
     * [CN-601] - The path to the requested folder should be submitted to the
@@ -140,8 +380,8 @@ Release Notes - conjoon - Version 0.1.6EAP1
                  for parsing text input
     * [CN-634] - Add parser for mailbox folder paths as sent by the client
     * [CN-635] - Add MessageHeaderParser for parsing email message header
-    * [CN-653] - DefaultClientMessageFlagColelction does not assign flag objects
-                 properly
+    * [CN-653] - DefaultClientMessageFlagColelction does not assign flag
+                 objects properly
     * [CN-654] - ClientMailboxFolder should also provide access to the client
                  folder's root id
     * [CN-655] - Update groupware_email_folders with foreign key for parent_id
@@ -156,6 +396,38 @@ Release Notes - conjoon - Version 0.1.6EAP1
                  settings
     * [CN-662] - Create entities and repositories for email message items/flags
                  and users
+    * [CN-758] - create RegistryProvider for saving component states in direct
+                 registry
+    * [CN-771] - Update documentation regarding removed "expand all" button
+    * [CN-776] - Make mail grid state aware
+    * [CN-777] - Make viewContainer state aware
+    * [CN-778] - Make sure RegistryProvider buffers its requests to the
+                 DirectRegistry when changing state values
+    * [CN-808] - Add File Module Settings to Install Wizard
+
+** Technical task
+    * [CN-730] - Reading POP3 emails should not use the MessageResponse Filter
+    * [CN-731] - Create default configuration files for HTMLPurifier
+                 configurations
+    * [CN-732] - Create factory for HTMLPurifier instances
+    * [CN-733] - Apply HTMLPurifier setup options to install wizard
+    * [CN-734] - Create registry values for saving preferred email message
+                 format for reading
+    * [CN-735] - Create frontend option dialog for choosing preferred format for
+                 reading emails
+    * [CN-736] - An email message with external resources should prompt the user
+                 if the resources should be loaded
+    * [CN-737] - Update ReadMessagePatron for displaying emails in html format
+    * [CN-743] - create separate attachment content table
+    * [CN-759] - update fixtures and state identifiers with component ids from
+                 workbench and email modules
+    * [CN-760] - Save state of active panel and loaded email messages (read
+                 only)
+    * [CN-761] - Save state of email folder tree
+    * [CN-787] - Update mail cache to consider reading format
+    * [CN-788] - Make twitter widget state aware
+    * [CN-789] - Make Feed grid state aware
+    * [CN-802] - Downloading from Attachment Grid throws error
 
 
 2012-12-03 0.1.5.1
