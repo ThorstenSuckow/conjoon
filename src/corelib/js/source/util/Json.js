@@ -83,12 +83,20 @@ com.conjoon.util.Json = function() {
                     if ((response.status === 0 && response.statusText === 'communication failure') ||
                         (response.status === -1 && response.statusText === 'transaction aborted')) {
 
-                        var isAbort = response.isAbort && !response.isTimeout;
+                        var isAbort       = response.isAbort && !response.isTimeout,
+                            isCommFailure = !response.isAbort &&
+                                            response.statusText === 'communication failure',
+                            errorMsg = isAbort
+                                  ? com.conjoon.Gettext.gettext("A communication failure occurred, due to an aborted HTTP request.")
+                                  : (isCommFailure
+                                     ? com.conjoon.Gettext.gettext("A communication failure occurred. Is the network and the server available?")
+                                     : com.conjoon.Gettext.gettext("A communication failure occurred, most likely due to a response timeout.")),
+                            title = isAbort || isCommFailure
+                                    ? com.conjoon.Gettext.gettext("Communication failure")
+                                    : com.conjoon.Gettext.gettext("Response Timeout");
+
                         return {
-                            message   : '<b>' +
-                                (isAbort
-                                ? com.conjoon.Gettext.gettext("A communication failure occurred, due to an aborted HTTP request.")
-                                : com.conjoon.Gettext.gettext("A communication failure occurred, most likely due to a response timeout.")) +
+                            message   : '<b>' + errorMsg +
                                 '</b><br />-----<br />'+
                                 '<b>'+com.conjoon.Gettext.gettext("Additional information:")+'</b><br />'+
                                 (Ext.isObject(response)
@@ -96,10 +104,7 @@ com.conjoon.util.Json = function() {
                                     : response),
                             code      :  -1,
                             level     : 'critical',
-                            title     : options.title || (
-                                        isAbort
-                                            ? com.conjoon.Gettext.gettext("Communication failure")
-                                            : com.conjoon.Gettext.gettext("Response Timeout"))
+                            title     : options.title || title
                         };
                     }
 
