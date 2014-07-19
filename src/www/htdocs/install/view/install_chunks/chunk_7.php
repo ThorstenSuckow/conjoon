@@ -57,12 +57,10 @@ include('./scripts/check_auth.php');
     if ($INSTALL['IMREMOVING']['js']) {
         InstallLogger::stdout(InstallLogger::logMessage("Removing js from previous installation"));
         conjoon_rmdir('../js');
-        rmdir('../js');
     }
     if ($INSTALL['IMREMOVING']['_configCache']) {
         InstallLogger::stdout(InstallLogger::logMessage("Removing _configCache from previous installation"));
         conjoon_rmdir('../_configCache');
-        rmdir('../_configCache');
     }
 
     // move js folder to htdocs
