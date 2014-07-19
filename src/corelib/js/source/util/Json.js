@@ -79,9 +79,33 @@ com.conjoon.util.Json = function() {
             if (error === null) {
 
                 if (response && !response.responseText) {
+
+                    if ((response.status === 0 && response.statusText === 'communication failure') ||
+                        (response.status === -1 && response.statusText === 'transaction aborted')) {
+
+                        var isAbort = response.isAbort && !response.isTimeout;
+                        return {
+                            message   : '<b>' +
+                                (isAbort
+                                ? com.conjoon.Gettext.gettext("A communication failure occurred, due to an aborted HTTP request.")
+                                : com.conjoon.Gettext.gettext("A communication failure occurred, most likely due to a response timeout.")) +
+                                '</b><br />-----<br />'+
+                                '<b>'+com.conjoon.Gettext.gettext("Additional information:")+'</b><br />'+
+                                (Ext.isObject(response)
+                                    ? Ext.util.JSON.encode(response)
+                                    : response),
+                            code      :  -1,
+                            level     : 'critical',
+                            title     : options.title || (
+                                        isAbort
+                                            ? com.conjoon.Gettext.gettext("Communication failure")
+                                            : com.conjoon.Gettext.gettext("Response Timeout"))
+                        };
+                    }
+
                     return {
                         message   : '<b>'
-                            +com.conjoon.Gettext.gettext("An unexpected error occured. The server returned an error that could not be parsed as an error object:")
+                            +com.conjoon.Gettext.gettext("An unexpected error occurred. The server returned an error that could not be parsed as an error object:")
                             +'</b><br />-----<br />'+
                             '<b>'+com.conjoon.Gettext.gettext("Additional information:")+'</b><br />'+
                             (Ext.isObject(response)
