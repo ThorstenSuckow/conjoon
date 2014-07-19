@@ -709,3 +709,7 @@ UPDATE `{DATABASE.TABLE.PREFIX}users` SET `remember_me_token` = NULL;
 ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments` CHANGE
 `content_id` `content_id` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_bin
 NULL DEFAULT NULL;
+
+-- CN-891
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_folders`
+ADD INDEX `meta_info` ( `meta_info` );
