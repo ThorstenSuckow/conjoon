@@ -782,7 +782,12 @@ function conjoon_rmdir($path)
 {
     $path = rtrim(str_replace("\\", "/", $path), '/').'/';
 
+    InstallLogger::stdout(InstallLogger::getInstance()
+        ->logMessage("[INFO] recursively deleting $path"));
+
     if (!file_exists($path)) {
+        InstallLogger::stdout(InstallLogger::getInstance()
+            ->logMessage("[WARNING] rmdir $path: directory does not exist"));
         return;
     }
 
@@ -794,20 +799,22 @@ function conjoon_rmdir($path)
 
             if(is_dir($fullpath)) {
                 conjoon_rmdir($fullpath);
-                if (!rmdir($fullpath)) {
-                    InstallLogger::stdout(InstallLogger::getInstance()
-                        ->logMessage("ERROR: could not rmdir $fullpath"));
-                } else {
-                    InstallLogger::stdout(InstallLogger::getInstance()
-                        ->logMessage("rmdir $fullpath"));
+                if (file_exists($fullpath) && is_dir($fullpath)) {
+                    if (!rmdir($fullpath)) {
+                        InstallLogger::stdout(InstallLogger::getInstance()
+                            ->logMessage("[ERROR] could not rmdir $fullpath"));
+                    } else {
+                        InstallLogger::stdout(InstallLogger::getInstance()
+                            ->logMessage("[SUCCESS] rmdir $fullpath"));
+                    }
                 }
             } else {
                 if (!unlink($fullpath)) {
                     InstallLogger::stdout(InstallLogger::getInstance()
-                        ->logMessage("ERROR: could not unlink $fullpath"));
+                        ->logMessage("[ERROR] could not unlink $fullpath"));
                 } else {
                     InstallLogger::stdout(InstallLogger::getInstance()
-                        ->logMessage("unlink $fullpath"));
+                        ->logMessage("[SUCCESS] unlink $fullpath"));
                 }
             }
         }
@@ -817,11 +824,14 @@ function conjoon_rmdir($path)
     if(file_exists($path) &&  is_dir($path)) {
         if (!rmdir($path)) {
             InstallLogger::stdout(InstallLogger::getInstance()
-                ->logMessage("ERROR: could not rmdir $path"));
+                ->logMessage("[ERROR] could not rmdir $path"));
         } else {
             InstallLogger::stdout(InstallLogger::getInstance()
-                ->logMessage("rmdir $path"));
+                ->logMessage("[SUCCESS] rmdir $path"));
         }
+    } else {
+        InstallLogger::stdout(InstallLogger::getInstance()
+            ->logMessage("[WARNING] rmdir $path: directory does not exist"));
     }
 }
 
