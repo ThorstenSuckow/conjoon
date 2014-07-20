@@ -57,9 +57,11 @@ class Conjoon_Filter_UrlToATag implements Zend_Filter_Interface
     public function __construct(Array $attributes = array())
     {
         if (!empty($attributes)) {
+            $keyValues = array();
             foreach ($attributes as $key => $value) {
-                $this->_attributeString = $key . '="'.$value.'" ';
+                $keyValues[] = $key . '="'.$value.'"';
             }
+            $this->_attributeString = implode(' ', $keyValues);
         }
     }
 
@@ -122,9 +124,9 @@ class Conjoon_Filter_UrlToATag implements Zend_Filter_Interface
 
         // now work on remaining links
         $pattern = "/(?:(ftp:\/\/|https:\/\/|http:\/\/)|(www\.))([a-zA-Z0-9-:\.\/\_\?\%\#\&\=\;\~\!\+]+)/i";
-        $value = preg_replace(
+        $value = preg_replace_callback(
             $pattern,
-            "'<a ".$this->_attributeString." href=\"'.('\\1' ? '\\1' : 'http://').'$2$3\">$1$2$3</a>'",
+            array ($this, 'replaceScheme'),
             $value
         );
 
@@ -136,4 +138,23 @@ class Conjoon_Filter_UrlToATag implements Zend_Filter_Interface
         return $value;
     }
 
+    /**
+     * Helper for preg_replace_callback
+     */
+    protected function replaceScheme(array $matches) {
+
+        $scheme = !empty($matches[1]) ? $matches[1] : 'http://';
+
+        $str = "<a ".
+                ($this->_attributeString
+                 ? $this->_attributeString.' '
+                 : '').
+                "href=\"".
+                $scheme . $matches[2] . $matches[3] ."\">".
+                (!empty($matches[1]) ? $scheme : '').
+                 $matches[2] . $matches[3]
+                ."</a>";
+
+        return $str;
+    }
 }
