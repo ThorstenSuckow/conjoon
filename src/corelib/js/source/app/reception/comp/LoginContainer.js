@@ -662,6 +662,10 @@ Ext.defineClass('conjoon.reception.comp.LoginContainer', {
             password : this.getPasswordControl().getValue()
         };
 
+        if (this.rememberMeCookie && this.rememberMeControl) {
+            params.rememberMe = this.rememberMeControl.getValue() ? 1 : 0;
+        }
+
         if (this.lastUserRequest) {
             params.lastUserRequest = this.lastUserRequest;
         }
