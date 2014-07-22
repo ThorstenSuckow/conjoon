@@ -40,5 +40,5 @@ final class Conjoon_Version {
     /**
      * Current version.
      */
-    const VERSION = '0.1.6RC2r@REV@';
+    const VERSION = '0.1.6RC3r@REV@';
 }
