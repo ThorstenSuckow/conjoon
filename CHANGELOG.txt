@@ -1,6 +1,6 @@
-﻿2014-07-21 0.1.6RC1
+﻿2014-07-22 0.1.6RC2
 ====================
-Release Notes - conjoon - Version 0.1.6RC1
+Release Notes - conjoon - Version 0.1.6RC2
 
 ** Bug
     * [CN-595] - Cannot dive into nested folders of IMAP account
@@ -183,6 +183,7 @@ Release Notes - conjoon - Version 0.1.6RC1
     * [CN-895] - Links in emails broken
     * [CN-896] - "Remember me" checkbox not considered when signing in using the
                  revamped login screen
+    * [CN-897] - Error when trying to send mail via quickpanel
 
 ** Improvement
     * [CN-14]  - Make it possible to add/remove/edit attachments to/from/in
