@@ -84,15 +84,6 @@ com.conjoon.groupware.forms.QuickEmailForm = function() {
             vtype        : 'email',
             displayField : 'address'
         });
-
-        /*return new Ext.form.TextField({
-            fieldLabel : com.conjoon.Gettext.gettext("To"),
-            name       : 'emailaddress',
-            emptyText  : com.conjoon.Gettext.gettext("<Email address>"),
-            vtype      : 'email',
-            anchor     : '100%',
-            allowBlank : false
-        });*/
     };
 
     var getMessageField = function()
@@ -135,7 +126,17 @@ com.conjoon.groupware.forms.QuickEmailForm = function() {
             cc                       : '',
             bcc                      : '',
             groupwareEmailFoldersId  : -1,
-            groupwareEmailAccountsId : accountId
+            groupwareEmailAccountsId : accountId,
+            /**
+             * @ticket CN-897
+             * This might be better placed in a service which returns or fills
+             * an array with default values the MailSender in the backend
+             * expects
+             */
+            path                     : '[]',
+            referencedData           : '{"uId" : -1, "path" : []}',
+            removedAttachments       : '[]',
+            attachments              : '[]'
         };
 
         var rec = new com.conjoon.groupware.email.data.Draft(
