@@ -278,45 +278,62 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
 
     var onBeforeClose = function(container, component)
     {
-        var id = component.el.dom.id;
-        var grp = id.split('_');
-
-        if (grp[0] == 'DOM:com.conjoon.groupware.email.EmailEditor.tab') {
-
-            if (!activePanel || activePanel.id != id) {
-                container.setActiveTab(component);
-            }
-
-            if (formValues[id].pending) {
-                return false;
-            }
-
-            recipientsGrid.stopEditing();
-
-            if (formValues[id].dirty) {
-                var msg   = Ext.MessageBox;
-                msg.show({
-                    title   : com.conjoon.Gettext.gettext("Confirm - close message"),
-                    msg     : com.conjoon.Gettext.gettext("You did not send this message. Do you really want to close this message without saving?"),
-                    buttons : msg.YESNO,
-                    fn      : function(btn){
-                                  if (btn == 'yes') {
-                                      contentPanel.un('beforeremove',  onBeforeClose, com.conjoon.groupware.email.EmailEditorManager);
-                                      container.remove(component);
-                                      if (tabCount > 0) {
-                                        contentPanel.on('beforeremove',  onBeforeClose, com.conjoon.groupware.email.EmailEditorManager);
-                                      }
-                                  }
-                              },
-                    icon    : msg.QUESTION,
-                    cls     :'com-conjoon-msgbox-question',
-                    width   : 375
-                });
-
-                return false;
-           }
+        /**
+         * @ticket CN-898
+         * not an editor - return;
+         */
+        if (!component.el) {
+            return true;
         }
 
+        var id = component.el.dom.id,
+            grp = id.split('_');
+
+        if (!grp.length ||
+            grp[0] != 'DOM:com.conjoon.groupware.email.EmailEditor.tab') {
+            return true;
+        }
+
+        if (!activePanel || activePanel.id != id) {
+            container.setActiveTab(component);
+        }
+
+        if (formValues[id].pending) {
+            return false;
+        }
+
+        recipientsGrid.stopEditing();
+
+        if (formValues[id].dirty) {
+            var msg   = Ext.MessageBox;
+            msg.show({
+                title   : com.conjoon.Gettext.gettext("Confirm - close message"),
+                msg     : com.conjoon.Gettext.gettext("You did not send this message. Do you really want to close this message without saving?"),
+                buttons : msg.YESNO,
+                fn      : function(btn){
+                              if (btn == 'yes') {
+                                  contentPanel.un(
+                                      'beforeremove',
+                                      onBeforeClose,
+                                      com.conjoon.groupware.email.EmailEditorManager
+                                  );
+                                  container.remove(component);
+                                  if (tabCount > 0) {
+                                    contentPanel.on(
+                                        'beforeremove',
+                                        onBeforeClose,
+                                        com.conjoon.groupware.email.EmailEditorManager
+                                    );
+                                  }
+                              }
+                          },
+                icon    : msg.QUESTION,
+                cls     :'com-conjoon-msgbox-question',
+                width   : 375
+            });
+
+            return false;
+       }
 
         return true;
     };
