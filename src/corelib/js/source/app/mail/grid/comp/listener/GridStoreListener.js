@@ -162,7 +162,7 @@ Ext.defineClass('conjoon.mail.grid.comp.listener.GridStoreListener', {
         com.conjoon.groupware.ResponseInspector.handleFailure(response, {
             onLogin: {
                 fn : function(){
-                    this.view.reset(true);
+                    this.gridController.reloadCurrentGridView();
                 },
                 scope : this
             },
