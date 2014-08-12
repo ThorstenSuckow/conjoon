@@ -1,6 +1,6 @@
-﻿2014-07-22 0.1.6RC3
+﻿2014-08-12 0.1.6RC4
 ====================
-Release Notes - conjoon - Version 0.1.6RC3
+Release Notes - conjoon - Version 0.1.6RC4
 
 ** Bug
     * [CN-595] - Cannot dive into nested folders of IMAP account
@@ -186,6 +186,8 @@ Release Notes - conjoon - Version 0.1.6RC3
     * [CN-897] - Error when trying to send mail via quickpanel
     * [CN-898] - Rare issue when trying to close inactive email tab if email
                  editor is open
+    * [CN-899] - Issue with re-login when workbench is locked after Session is
+                 expired
 
 ** Improvement
     * [CN-14]  - Make it possible to add/remove/edit attachments to/from/in
