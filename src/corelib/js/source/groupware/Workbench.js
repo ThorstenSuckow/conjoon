@@ -69,11 +69,6 @@ com.conjoon.groupware.Workbench = Ext.extend(Ext.Viewport, {
     _dropTargetWest : null,
 
     /**
-     * @type {Number} _focusTimeoutId
-     */
-    _focusTimeoutId : null,
-
-    /**
      * @type {Object} widgets
      */
     widgets : null,
@@ -90,9 +85,6 @@ com.conjoon.groupware.Workbench = Ext.extend(Ext.Viewport, {
         });
 
         this.getCenterPanel().on('resize', this.doLayout, this);
-
-        this.on('focus', this._onFocus, this);
-        this.on('blur',  this._onBlur, this);
 
         this.on('afterlayout', this._calcBorder, this, {single : true});
 
@@ -127,74 +119,6 @@ com.conjoon.groupware.Workbench = Ext.extend(Ext.Viewport, {
     },
 
 // -------- listeners
-
-    /**
-     * Listener for the focus event of the workbench.
-     *
-     * @param {Ext.Viewport}
-        * @param {HtmlElement}
-        */
-    _onBlur : function(viewport, lastActiveElement)
-    {
-        window.clearTimeout(this._focusTimeoutId);
-        this._focusTimeoutId = null;
-
-        if (!this._focusLayer) {
-            var div = document.createElement('div');
-            div.className = 'com-conjoon-groupware-workbench-FocusLayer';
-            document.body.appendChild(div);
-            Ext.fly(div).on('mousedown', function() {
-                if (lastActiveElement) {
-                    try {
-                        lastActiveElement.focus();
-                    } catch (e) {
-                        // in FF, this might throw an error on some elements,
-                        // for example the HtmlFileChooserButton may throw that
-                        // setting focus from a none chrome context is forbidden
-                        // so we will silently ignore this
-                        // ignore
-                    }
-                }
-                (function(){
-                    if (!this._focusLayer) {
-                        return;
-                    }
-                    Ext.fly(this._focusLayer).removeAllListeners();
-                    this._focusLayer.parentNode.removeChild(this._focusLayer);
-                    this._focusLayer = null;
-                }).defer(1, this);
-            }, this);
-            this._focusLayer = div;
-        }
-    },
-
-    /**
-     * Listener for the focus event of the workbench.
-     *
-     * @param {Ext.Viewport}
-        * @param {HtmlElement}
-        */
-    _onFocus : function(viewport, lastActiveElement)
-    {
-        if (lastActiveElement != this._focusLayer) {
-            (function() {
-                try {lastActiveElement.focus();}catch(e){}
-            }).defer(100);
-        }
-
-        window.clearTimeout(this._focusTimeoutId);
-        this._focusTimeoutId = null;
-
-        this._focusTimeoutId = (function() {
-            if (this._focusLayer) {
-                Ext.fly(this._focusLayer).removeAllListeners();
-                this._focusLayer.parentNode.removeChild(this._focusLayer);
-                this._focusLayer = null;
-            }
-        }).defer(1000, this);
-
-    },
-
     _onQuickPanelVisibilityChange : function(panel)
     {
         this._calcBorder();

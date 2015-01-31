@@ -683,57 +683,72 @@ Ext.lib.Ajax = function() {
  */
 Ext.Viewport.prototype.initComponent = Ext.Viewport.prototype.initComponent.createInterceptor(
     function() {
-       this.addEvents(
+
+        this.addEvents(
             /**
              * @event blur
              * Fires when the viewport loses its focus, i.e. when the browser window/tab
-             * loses its focus
+             * is not _VISIBLE_ to the user (browser minified or tab changed)
              * @param {Ext.Viewport}
              * @param {HTMLElement} lastActiveElement
              */
             'blur',
             /**
              * @event focus
-             * @event blur
              * Fires when the viewport gains focus, i.e. when the browser window/tab
-             * gains focus
+             * switches from hidden to visible again
              * @param {Ext.Viewport}
              * @param {HTMLElement} lastActiveElement
              */
             'focus'
         );
 
-        var focusEl    = window;
-        var eventNames = ['focus', 'blur'];
 
-        if (Ext.isIE) {
-            focusEl    = document;
-            eventNames = ['focusin', 'focusout'];
+        var hidden,
+            visibilityState,
+            visibilityChange,
+            isDocumentHidden;
+
+        switch (true) {
+
+            case (typeof document.mozHidden !== "undefined"):
+                hidden           = "mozHidden",
+                visibilityChange = "mozvisibilitychange",
+                visibilityState  = "mozVisibilityState";
+                break;
+
+            case (typeof document.hidden !== "undefined"):
+                hidden           = "hidden",
+                visibilityChange = "visibilitychange",
+                visibilityState  = "visibilityState";
+                break;
+
+            case (typeof document.msHidden !== "undefined"):
+                hidden           = "msHidden",
+                visibilityChange = "msvisibilitychange",
+                visibilityState  = "msVisibilityState";
+                break;
+
+            case (typeof document.webkitHidden !== "undefined"):
+                hidden           = "webkitHidden",
+                visibilityChange = "webkitvisibilitychange",
+                visibilityState  = "webkitVisibilityState";
+                break;
+
         }
 
-        Ext.EventManager.on(focusEl, eventNames[0], function(e) {
-            if (this._hasFocus) {
-                return;
-            }
-            this._hasFocus = true;
-            this.fireEvent('focus', this, this._activeElement);
-        }, this, {stopPropagation : true});
+        isDocumentHidden = document[hidden];
 
-        Ext.EventManager.on(focusEl, eventNames[1], function(e) {
-            if (this._activeElement != document.activeElement) {
-                this._activeElement = document.activeElement;
-                // ie detects focus loss if current activeElement
-                // equals to last active element
-                if (Ext.isIE) {
-                    return;
+        Ext.EventManager.on(document, visibilityChange, function() {
+            if (isDocumentHidden != document[hidden]) {
+                if(document[hidden]) {
+                    this.fireEvent('blur', this, document.activeElement);
+                } else {
+                    this.fireEvent('focus', this, document.activeElement);
                 }
+                isDocumentHidden = document[hidden];
             }
-
-            this._hasFocus = false;
-            this.fireEvent('blur', this, this._activeElement);
-        }, this, {stopPropagation : true});
-
-        this._activeElement = document.activeElement;
+        }, this);
     }
 );
 
