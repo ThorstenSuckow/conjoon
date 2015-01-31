@@ -1,4 +1,4 @@
-﻿2014-08-12 0.1.6RC4
+﻿2015-01-31 0.1.6RC5
 ====================
 Release Notes - conjoon - Version 0.1.6RC4
 
@@ -188,6 +188,10 @@ Release Notes - conjoon - Version 0.1.6RC4
                  editor is open
     * [CN-899] - Issue with re-login when workbench is locked after Session is
                  expired
+    * [CN-902] - Focus/Blur handler of Workbench/Viewport breaks in Chrome when
+                 Iframe of Email Editor is used
+    * [CN-904] - Applying state to Email Grid sometimes results in an error when
+                 mail folder could not be read
 
 ** Improvement
     * [CN-14]  - Make it possible to add/remove/edit attachments to/from/in
@@ -366,6 +370,7 @@ Release Notes - conjoon - Version 0.1.6RC4
                  HTMLPurifier path
     * [CN-891] - Check for updated indizes on production and compare to dev
                  regarding mail tables
+    * [CN-903] - Update copyright year
 
 ** Sub-task
     * [CN-601] - The path to the requested folder should be submitted to the
