@@ -1,6 +1,6 @@
 /**
  * Ext.ux.grid.livegrid.GridPanel
- * Copyright (c) 2007-2014, http://www.siteartwork.de
+ * Copyright (c) 2007-2015, http://www.siteartwork.de
  *
  * Ext.ux.grid.livegrid.GridPanel is licensed under the terms of the
  *                  GNU Open Source GPL 3.0
@@ -151,13 +151,21 @@ Ext.ux.grid.livegrid.GridPanel = Ext.extend(Ext.grid.GridPanel, {
      */
     applyState : function(state) {
 
+
+        // are we recovering from an invalid bufferState?
+        if (state.bufferRange && state.bufferRange[0] == -1) {
+            state.bufferRange[0] = state.rowIndex;
+        }
+
         var me = this,
             selections = state.selections,
             bufferRange = state.bufferRange
-                ? Math.max(Math.max(state.bufferRange[0], state.rowIndex), 0)
+                  ? Math.max(
+                      Math.max(state.rowIndex - state.bufferRange[0], state.rowIndex),
+                  0)
                 : 0,
             conf = {
-                rowIndex :  state.rowIndex,
+                rowIndex : state.rowIndex,
                 lastScrollPos : state.lastScrollPos,
                 lastRowIndex : state.lastRowIndex,
                 lastIndex : state.lastIndex

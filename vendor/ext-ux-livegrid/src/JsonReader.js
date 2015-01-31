@@ -1,6 +1,6 @@
 /**
  * Ext.ux.grid.livegrid.JsonReader
- * Copyright (c) 2007-2014, http://www.siteartwork.de
+ * Copyright (c) 2007-2015, http://www.siteartwork.de
  *
  * Ext.ux.grid.livegrid.JsonReader is licensed under the terms of the
  *                  GNU Open Source GPL 3.0

@@ -1,4 +1,11 @@
-﻿Version 0.8.3 (GPL)
+﻿Version 0.8.4 (GPL)
+31-January-2015
+ - fixed: fixed an issue where re-applying the state to the grid would not 
+ render the grid's content properly
+ - fixed: fixed an issue where recovering from an invalid bufferState would 
+ cause errors when rendering grid contents
+
+Version 0.8.3 (GPL)
 16-July-2014
  - enhancement: added method "wasLastRequestSuccessful()"  which tells whether 
 the most recent request was successful or not 

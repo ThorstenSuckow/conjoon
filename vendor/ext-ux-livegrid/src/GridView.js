@@ -1,6 +1,6 @@
 /**
  * Ext.ux.grid.livegrid.GridView
- * Copyright (c) 2007-2014, http://www.siteartwork.de
+ * Copyright (c) 2007-2015, http://www.siteartwork.de
  *
  * Ext.ux.grid.livegrid.GridView is licensed under the terms of the
  *                  GNU Open Source GPL 3.0
@@ -1095,21 +1095,27 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
 
             return;
         } else {
-            this.fireEvent('bufferfailure', this, this.ds, options);
-            this.ds.removeAll();
-            this.removeRows(0, this.visibleRows);
-
             this.isBuffering    = false;
             this.isPrebuffering = false;
 
             if (this.requestQueue >= 0) {
                 var offset = this.requestQueue;
                 this.requestQueue = -1;
+
                 // force reload and skip predictive buffer index
                 // when an error occured
                 this.updateLiveRows(offset);
                 return;
             }
+
+            this.fireEvent('bufferfailure', this, this.ds, options);
+            this.ds.removeAll();
+            this.removeRows(0, this.visibleRows);
+
+            // take care of hiding the scrollbar.
+            // implementing user is responsible for 
+            // appropriate reload mechanism
+            this.adjustBufferInset();
         }
 
         this.isBuffering    = false;
@@ -1704,6 +1710,13 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
 
         // compute the last possible renderindex
         var lpIndex = Math.min(cursorBuffer+this.visibleRows-1, bufferRange[1]-bufferRange[0]);
+
+        // last resort: To prevent issues, check for the current state of the
+        // main body, which might not be rendered yet due to issuses (load errors and such).
+        if (!this.mainBody.dom.firstChild) {
+            spill = 0;
+        }
+
         // we can skip checking for append or prepend if the spill is larger than
         // visibleRows. We can paint the whole rows new then-
         if (spill >= this.visibleRows || spill == 0) {
