@@ -1,6 +1,6 @@
 /**
  * conjoon
- * (c) 2007-2014 conjoon.org
+ * (c) 2007-2015 conjoon.org
  * licensing@conjoon.org
  *
  * conjoon
@@ -76,7 +76,7 @@ com.conjoon.groupware.workbench.tools.FeedbackDialog = Ext.extend(Ext.ux.Wiz, {
                 values[a] = formValues[a];
             }
         }
-        
+
         if (values['public']) {
             values['public'] = 1;
         } else {

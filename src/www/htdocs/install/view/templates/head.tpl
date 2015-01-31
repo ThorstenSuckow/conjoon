@@ -2,7 +2,7 @@
 
 <!--
  conjoon
- (c) 2007-2014 conjoon.org
+ (c) 2007-2015 conjoon.org
  licensing@conjoon.org
 
  conjoon

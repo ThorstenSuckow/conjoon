@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2007-2014 conjoon.org
+ * (c) 2007-2015 conjoon.org
  * licensing@conjoon.org
  *
  * conjoon
@@ -256,7 +256,7 @@ class ReplyMessagePatron
     protected function guessAccountUsed(array $addressList)
     {
         $acc = null;
-        
+
         foreach ($addressList as $address) {
             try {
                 $acc = $this->accountService->getMailAccountForMailAddress(
