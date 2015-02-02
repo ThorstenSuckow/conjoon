@@ -1,6 +1,6 @@
-﻿2015-01-31 0.1.6RC5
-====================
-Release Notes - conjoon - Version 0.1.6RC4
+﻿2015-02-02 0.1.6
+================
+Release Notes - conjoon - Version 0.1.6
 
 ** Bug
     * [CN-595] - Cannot dive into nested folders of IMAP account
