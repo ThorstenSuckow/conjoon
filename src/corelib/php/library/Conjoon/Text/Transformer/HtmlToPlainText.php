@@ -65,7 +65,7 @@ use \Conjoon\Argument\ArgumentCheck as ArgumentCheck;
  *
  * Output:
  * =======
- * --------Original Message:-----------\n\n Subject: Test\n Date: 03.02.2015\n\n>Text which is in here does not\n>conform to\n
+ * --------Original Message:-----------\n Subject: Test\n Date: 03.02.2015\n\n>Text which is in here does not\n>conform to\n
  *
  *
  * @uses Conjoon_Text_Transformer
@@ -169,7 +169,7 @@ class HtmlToPlainText extends \Conjoon_Text_Transformer {
 
         // add some linebreaks to a few block elements
         $value = str_replace(
-            array('<tr>', '<TR>', '<table>', '<TABLE>', '</table>', '</TABLE>'),
+            array('<table><tr>', '<table><tbody><tr>', '</tr></tbody>','<tr>', '<TR>', '<table>', '<TABLE>', '</table>', '</TABLE>'),
             "\n",
             $value
         );

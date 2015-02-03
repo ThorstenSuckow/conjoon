@@ -277,25 +277,40 @@ class Conjoon_Modules_Groupware_Email_Draft_Filter_DraftInput extends Conjoon_Fi
         if (trim($message) != "") {
 
             /**
-             * @see Conjoon_Filter_DraftToText
+             * @see \Conjoon\Text\Transformer\HtmlToPlainText
              */
-            require_once 'Conjoon/Filter/DraftToText.php';
-
-            $draftToTextFilter = new Conjoon_Filter_DraftToText();
+            require_once 'Conjoon/Text/Transformer/HtmlToPlainText.php';
 
             /**
-             * @see Conjoon_Filter_BlockquoteToQuote
+             * @see \Conjoon\Text\Transformer\BlockquoteToQuote
              */
-            require_once 'Conjoon/Filter/BlockquoteToQuote.php';
-
-            $blockquoteToQuoteFilter = new Conjoon_Filter_BlockquoteToQuote();
+            require_once 'Conjoon/Text/Transformer/BlockquoteToQuote.php';
 
             /**
-             * @see Conjoon_Filter_NormalizeLineFeeds
+             * @see \Conjoon\Text\Transformer\NormalizeLineFeeds
              */
-            require_once 'Conjoon/Filter/NormalizeLineFeeds.php';
+            require_once 'Conjoon/Text/Transformer/NormalizeLineFeeds.php';
 
-            $normalizeLineFeedsFilter = new Conjoon_Filter_NormalizeLineFeeds();
+            /**
+             * @see \Conjoon\Text\Transformer\MultipleWhiteSpaceRemover
+             */
+            require_once 'Conjoon/Text/Transformer/MultipleWhiteSpaceRemover.php';
+
+            /**
+             * @see \Conjoon\Text\Transformer\TagWhiteSpaceRemover
+             */
+            require_once 'Conjoon/Text/Transformer/TagWhiteSpaceRemover.php';
+
+            $htmlToPlainTextTransformer = new \Conjoon\Text\Transformer\HtmlToPlainText(array(
+                'blockquoteToQuote'
+                => new \Conjoon\Text\Transformer\BlockquoteToQuote(),
+                'normalizeLineFeeds'
+                => new \Conjoon\Text\Transformer\NormalizeLineFeeds(),
+                'multipleWhiteSpaceRemover'
+                => new  \Conjoon\Text\Transformer\MultipleWhiteSpaceRemover(),
+                'tagWhiteSpaceRemover'
+                => new \Conjoon\Text\Transformer\TagWhiteSpaceRemover()
+            ));
 
             /**
              * @see Conjoon_Filter_DraftToHtml
@@ -306,16 +321,8 @@ class Conjoon_Modules_Groupware_Email_Draft_Filter_DraftInput extends Conjoon_Fi
 
             switch ($format) {
                 case Conjoon_Modules_Groupware_Email_Keys::FORMAT_TEXT_PLAIN:
-                    $data['contentTextPlain'] = $draftToTextFilter->filter(
-                        $blockquoteToQuoteFilter->filter(
-                            $normalizeLineFeedsFilter->filter(
-                                str_replace(
-                                    array("&nbsp;", "<br>", "<br/>", "<br />", "<BR>", "<BR/>", "<BR />"),
-                                    array(" ", "\n", "\n", "\n", "\n", "\n", "\n"),
-                                    $message
-                                )
-                            )
-                        )
+                    $data['contentTextPlain'] = $htmlToPlainTextTransformer->transform(
+                        $message
                     );
                 break;
                 case Conjoon_Modules_Groupware_Email_Keys::FORMAT_TEXT_HTML:
@@ -323,16 +330,8 @@ class Conjoon_Modules_Groupware_Email_Draft_Filter_DraftInput extends Conjoon_Fi
                 break;
                 case Conjoon_Modules_Groupware_Email_Keys::FORMAT_MULTIPART:
                     $data['contentTextHtml']  = $draftToHtmlFilter->filter($message);
-                    $data['contentTextPlain'] = $draftToTextFilter->filter(
-                        $blockquoteToQuoteFilter->filter(
-                            $normalizeLineFeedsFilter->filter(
-                                str_replace(
-                                    array("&nbsp;", "<br>", "<br/>", "<br />", "<BR>", "<BR/>", "<BR />"),
-                                    array(" ", "\n", "\n", "\n", "\n", "\n", "\n"),
-                                    $message
-                                )
-                            )
-                        )
+                    $data['contentTextPlain'] = $htmlToPlainTextTransformer->transform(
+                        $message
                     );
                 break;
             }

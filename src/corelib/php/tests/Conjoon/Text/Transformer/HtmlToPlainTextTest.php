@@ -95,7 +95,7 @@ class HtmlToPlainTextTest extends \PHPUnit_Framework_TestCase {
               </table>
               <blockquote>Text which is in here does not <br> conform to </blockquote>
               </pre>"
-            => "--------Original Message:-----------\n\n Subject: Test\n Date: 03.02.2015\n\n>Text which is in here does not\n>conform to\n"
+            => "--------Original Message:-----------\n Subject: Test\n Date: 03.02.2015\n\n>Text which is in here does not\n>conform to\n"
         );
 
     }

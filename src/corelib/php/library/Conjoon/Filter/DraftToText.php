@@ -40,6 +40,8 @@ require_once 'Zend/Filter/Interface.php';
  * @package    Conjoon_Filter
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ *
+ * @deprecated use \Conjoon\Text\Transformer\HtmlToPlainText
  */
 class Conjoon_Filter_DraftToText implements Zend_Filter_Interface
 {
