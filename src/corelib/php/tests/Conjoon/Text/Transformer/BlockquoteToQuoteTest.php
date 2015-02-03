@@ -59,8 +59,8 @@ class BlockquoteToQuoteTest extends \PHPUnit_Framework_TestCase {
         $this->_inputs = array(
             "<blockquote>test</blockquote>"
             => "&gt;test",
-            "<blockquote>test<blockquote>test</blockquote></blockquote>"
-            => "&gt;test\n&gt;&gt;test"
+            "<blockquote>test<blockquote>test\n me</blockquote></blockquote>"
+            => "&gt;test\n&gt;&gt;test\n&gt;&gt; me"
         );
 
     }
