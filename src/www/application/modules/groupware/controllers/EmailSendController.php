@@ -30,16 +30,16 @@
  */
 
 /**
- * @see \Conjoon\Vendor\Zend\Controller\Action\BaseController
+ * @see \Conjoon\Vendor\Zend\Controller\Action\MailModule\BaseController
  */
-require_once 'Conjoon/Vendor/Zend/Controller/Action/BaseController.php';
+require_once 'Conjoon/Vendor/Zend/Controller/Action/MailModule/BaseController.php';
 
 /**
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 class Groupware_EmailSendController extends
-    \Conjoon\Vendor\Zend\Controller\Action\BaseController {
+    \Conjoon\Vendor\Zend\Controller\Action\MailModule\BaseController {
 
     const CONTEXT_JSON = 'json';
 
@@ -233,9 +233,13 @@ class Groupware_EmailSendController extends
 
         try {
 
+            $transport = $this->getTransportForAccount($account);
+
             $assembleInformation = Conjoon_Modules_Groupware_Email_Sender::getAssembledMail(
                 $message, $account, $postedAttachments, $removeAttachmentIds,
-                $this->getCurrentAppUser()->getId(), $data['type']
+                $this->getCurrentAppUser()->getId(),
+                $transport,
+                $data['type']
             );
 
             $assembledMail = $assembleInformation['message'];
@@ -872,9 +876,15 @@ class Groupware_EmailSendController extends
 
             try {
 
+                $transport = $this->getTransportForAccount($account);
+
                 $assembleInformation = Conjoon_Modules_Groupware_Email_Sender::getAssembledMail(
-                    $message, $account, $remoteAttachments, array(),
-                    $this->getCurrentAppUser()->getId(), true
+                    $message,
+                    $account,
+                    $remoteAttachments,
+                    array(),
+                    $this->getCurrentAppUser()->getId(),
+                    $transport
                 );
 
                 $assembledMail = $assembleInformation['message'];

@@ -32,9 +32,9 @@
 namespace Conjoon\Vendor\Zend\Controller\Action\MailModule;
 
 /**
- * @see \Conjoon\Vendor\Zend\Controller\Action\BaseController
+ * @see \Conjoon\Vendor\Zend\Controller\Action\MailModule\BaseController
  */
-require_once 'Conjoon/Vendor/Zend/Controller/Action/BaseController.php';
+require_once 'Conjoon/Vendor/Zend/Controller/Action/MailModule/BaseController.php';
 
 /**
  * @see \Conjoon\Argument\ArgumentCheck
@@ -132,8 +132,7 @@ require_once 'Conjoon/Mail/Client/Folder/DefaultFolderService.php';
 require_once 'Conjoon/Mail/Client/Folder/DefaultFolderCommons.php';
 
 
-use \Conjoon\Vendor\Zend\Controller\Action\BaseController,
-    \Conjoon\Argument\ArgumentCheck,
+use \Conjoon\Argument\ArgumentCheck,
     \Conjoon\Mail\Client\Service\ServiceResult\Cache\GetMessageCacheService,
     \Conjoon\Mail\Client\Service\ServiceResult\Cache\DefaultGetMessageCache,
     \Conjoon\Mail\Client\Service\ServiceResult\Cache\DefaultGetMessageCacheKeyGen;

@@ -924,11 +924,11 @@ class Groupware_EmailEditController extends
         require_once 'Conjoon/Modules/Groupware/Email/Sender.php';
 
         $assembleInformation = Conjoon_Modules_Groupware_Email_Sender::getAssembledMail(
-            $draft, $account, $postedAttachments, $removeAttachmentIds, $userId
+            $draft, $account, $postedAttachments, $removeAttachmentIds, $userId,
+            $this->getTransportForAccount($account)
         );
 
         $mail = $assembleInformation['message'];
-        $postedAttachments =  $assembleInformation['postedAttachments'];
 
         /**
          * @see Conjoon_Mail_Storage_Imap
@@ -1111,11 +1111,11 @@ class Groupware_EmailEditController extends
         require_once 'Conjoon/Modules/Groupware/Email/Sender.php';
 
         $assembleInformation = Conjoon_Modules_Groupware_Email_Sender::getAssembledMail(
-            $draft, $account, $postedAttachments, $removeAttachmentIds, $userId
+            $draft, $account, $postedAttachments, $removeAttachmentIds, $userId,
+            $this->getTransportForAccount($account)
         );
 
         $mail = $assembleInformation['message'];
-        $postedAttachments =  $assembleInformation['postedAttachments'];
 
         /**
          * @see Conjoon_Mail_Storage_Imap

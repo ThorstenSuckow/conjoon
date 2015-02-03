@@ -35,11 +35,6 @@
 require_once 'Conjoon/Mail.php';
 
 /**
- * @see Zend_Mail_Transport_Smtp
- */
-require_once 'Zend/Mail/Transport/Smtp.php';
-
-/**
  * @see Conjoon_Modules_Groupware_Email_Address
  */
 require_once 'Conjoon/Modules/Groupware/Email/Address.php';
@@ -118,6 +113,8 @@ class Conjoon_Modules_Groupware_Email_Sender {
      *                                 'postedAttachments'
      * @param array $removeAttachmentIds
      * @param $userId
+     * @param \Conjoon\Mail\Transport\Smtp $transport The transport used for the
+     *        mail, if any
      * @param string $type Type of the action the draft was created for, e.g. "forward"
      * if the message gets assembled from a forwarded mail
      *
@@ -127,8 +124,13 @@ class Conjoon_Modules_Groupware_Email_Sender {
      *         edited
      */
     public static function getAssembledMail(
-        Conjoon_Modules_Groupware_Email_Draft $draft, Conjoon_Modules_Groupware_Email_Account $account,
-        $postedAttachments = array(), $removeAttachmentIds = array(), $userId, $type = null
+        Conjoon_Modules_Groupware_Email_Draft $draft,
+        Conjoon_Modules_Groupware_Email_Account $account,
+        $postedAttachments = array(),
+        $removeAttachmentIds = array(),
+        $userId,
+        \Conjoon\Mail\Transport\Smtp $transport,
+        $type = null
     )
     {
         $returnData = array(
@@ -204,35 +206,6 @@ class Conjoon_Modules_Groupware_Email_Sender {
 
         $returnData['postedAttachments'] = self::_applyAttachments(
             $draft, $mail, $postedAttachments, $removeAttachmentIds, $userId, $account, $type
-        );
-
-        // send!
-        $config = array();
-        if ($account->isOutboxAuth()) {
-            $config = array(
-                /**
-                 * @todo allow for other auth methods as provided by ZF
-                 */
-                'auth'     => 'login',
-                'username' => $account->getUsernameOutbox(),
-                'password' => $account->getPasswordOutbox(),
-                'port'     => $account->getPortOutbox()
-            );
-
-            $ssl = $account->getOutboxConnectionType();
-
-            if ($ssl == 'SSL' || $ssl == 'TLS') {
-                $config['ssl'] = $ssl;
-            }
-        }
-
-        /**
-         * @see \Conjoon\Mail\Transport\Smtp
-         */
-        require_once 'Conjoon/Mail/Transport/Smtp.php';
-
-        $transport = new \Conjoon\Mail\Transport\Smtp(
-            $account->getServerOutbox(), $config
         );
 
         $returnData['message'] = new Conjoon_Mail_Sent($mail, $transport);

@@ -102,6 +102,19 @@ edition = {EDITION}
 ;;;;;;;;;;;;;;;;;;;;;;;;
 
 [application]
+
+; +----------------------------------+
+; |         Mail Settings            |
+; +----------------------------------+
+; Used as the name to introduce conjoon to the connected mail servers when
+; speaking SMTP (HELO command). This defaults to "localhost".
+; Some mailservers require a correctly formatted, fully-qualified, valid hostname
+mail.smtp.client_name = localhost
+
+
+; +---------------------------+
+; |       i18n Settings       |
+; +---------------------------+
 ; Set the default timezone for all users here.
 ; For a list of available timezones, see
 ; http://unicode.org/repos/cldr-tmp/trunk/diff/supplemental/territory_containment_un_m_49.html
