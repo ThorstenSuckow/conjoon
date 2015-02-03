@@ -40,6 +40,8 @@ require_once 'Zend/Filter/Interface.php';
  * @package    Conjoon_Filter
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ *
+ * @deprecated use Conjoon_Text_Transformer_BlockquoteToQuote
  */
 class Conjoon_Filter_BlockquoteToQuote implements Zend_Filter_Interface
 {
@@ -65,7 +67,7 @@ class Conjoon_Filter_BlockquoteToQuote implements Zend_Filter_Interface
             $value = " ". $value;
         }
 
-       $value = str_replace(
+        $value = str_replace(
             array("\n&gt;", ">&gt;"),
             array("\n &gt;", "> &gt;"),
             $value
