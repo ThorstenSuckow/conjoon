@@ -208,6 +208,52 @@ class ArgumentCheckTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @ticket CN-910
+     */
+    public function testNotForceEmptyString() {
+
+        $data = array('str' => " \n");
+
+        $ee = null;
+
+        try {
+            ArgumentCheck::check(array(
+                'str' => array(
+                    'type' => 'string',
+                    'allowEmpty' => false
+                )
+            ), $data);
+        } catch (\Exception $ee) {
+            // ignore
+        }
+
+        $this->assertTrue($ee instanceof \Conjoon\Argument\InvalidArgumentException);
+
+        $cmpStr = "\ntest\n";
+        $data = array('str' => $cmpStr);
+        ArgumentCheck::check(array(
+            'str' => array(
+                'type' => 'string',
+                'allowEmpty' => true
+            )
+        ), $data);
+
+        $this->assertEquals($cmpStr, $data['str']);
+
+        $cmpStr = " \n";
+        $data = array('str' => $cmpStr);
+        ArgumentCheck::check(array(
+            'str' => array(
+                'type' => 'string',
+                'allowEmpty' => true
+            )
+        ), $data);
+
+        $this->assertEquals($cmpStr, $data['str']);
+
+    }
+
+    /**
      * @ticket CN-651
      */
     public function testInstanceOfClassAndString() {

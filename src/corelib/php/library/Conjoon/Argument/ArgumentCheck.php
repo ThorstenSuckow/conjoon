@@ -178,10 +178,10 @@ class ArgumentCheck {
                         }
                     }
 
-                    $val = trim((string)$data[$argumentName]);
+                    $val = (string)$data[$argumentName];
                     $org = $data[$argumentName];
 
-                    if ($allowEmpty === false && $val === "") {
+                    if ($allowEmpty === false && trim($val) === "") {
                         throw new InvalidArgumentException(
                             "empty value provided for $argumentName"
                         );
