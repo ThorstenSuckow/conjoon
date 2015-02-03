@@ -437,6 +437,7 @@ class Conjoon_Modules_Groupware_Email_Item_ItemListRequestFacade {
 
         for ($u = 0, $lenu = count($bodystructure); $u < $lenu; $u++) {
             if (isset($bodystructure[$u][5])
+                && is_string($bodystructure[$u][5])
                 && strtolower($bodystructure[$u][5]) == 'base64') {
 
                 $bodystructurePart = &$bodystructure[$u];
