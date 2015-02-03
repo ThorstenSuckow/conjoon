@@ -44,7 +44,9 @@ require_once 'Conjoon/Argument/ArgumentCheck.php';
 use \Conjoon\Argument\ArgumentCheck as ArgumentCheck;
 
 /**
- * Returns a (multilevel, HTML) Blockquote-Text quoted to plain text.
+ * Returns a (multilevel, HTML) Blockquote-Text quoted to plain text. The
+ * transformer expects all other html tags to be stripped already, except
+ * for blockquote tags
  *
  * Example:
  *
