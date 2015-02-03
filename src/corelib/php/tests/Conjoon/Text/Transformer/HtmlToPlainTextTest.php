@@ -88,14 +88,25 @@ class HtmlToPlainTextTest extends \PHPUnit_Framework_TestCase {
         $this->_inputs = array(
             "<pre>--------Original Message:-----------
              <table><tbody>
-              <tr><td>Subject:    </td> <td>             Test</td></tr>
+              <tr><td>   Subject:    </td> <td>             Test</td></tr>
+               <tr><td> Date:</td> <td>03.02.2015</td></tr>
+              </tbody>
+
+              </table>
+              <blockquote>Text which is in here does not <br> conform to </blockquote>
+              <div>-- <br />send with conjoon</div>
+              </pre>"
+            => "--------Original Message:----------- \nSubject: Test\nDate: 03.02.2015\n\n>Text which is in here does not \n> conform to \n-- \nsend with conjoon",
+            "<pre>--------Original Message:-----------
+              <table><tbody>
+               <tr><td>Subject:    </td> <td>             Test</td></tr>
                <tr><td> Date: </td> <td>03.02.2015</td></tr>
               </tbody>
 
               </table>
               <blockquote>Text which is in here does not <br> conform to </blockquote>
               </pre>"
-            => "--------Original Message:-----------\n Subject: Test\n Date: 03.02.2015\n\n>Text which is in here does not\n>conform to\n"
+            => "--------Original Message:----------- \nSubject: Test\nDate: 03.02.2015\n\n>Text which is in here does not \n> conform to \n"
         );
 
     }

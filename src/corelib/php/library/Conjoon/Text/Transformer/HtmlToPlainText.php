@@ -65,7 +65,7 @@ use \Conjoon\Argument\ArgumentCheck as ArgumentCheck;
  *
  * Output:
  * =======
- * --------Original Message:-----------\n Subject: Test\n Date: 03.02.2015\n\n>Text which is in here does not\n>conform to\n
+ * "--------Original Message:----------- \nSubject: Test\nDate: 03.02.2015\n\n>Text which is in here does not \n> conform to \n"
  *
  *
  * @uses Conjoon_Text_Transformer
@@ -149,19 +149,21 @@ class HtmlToPlainText extends \Conjoon_Text_Transformer {
         $value = $data['input'];
 
         $value = $this->blockquoteToQuoteTransformer->transform(
-            str_replace('&nbsp;', '',
-                str_replace(
-                    array("<br>", "<br/>", "<br />", "<BR>", "<BR/>", "<BR />"),
-                    "\n",
-                    // remove opening/closing tag followed by whitespace
-                    str_replace(array('> ', ' <'), array('>', '<'),
-                        $this->multipleWhiteSpaceRemover->transform(
-                            $this->tagWhiteSpaceRemover->transform(
-                                $this->normalizeLineFeedsTransformer->transform(
-                                    $value
+                str_replace('&nbsp;', ' ',
+                    str_replace(
+                        array("<br>", "<br/>", "<br />", "<BR>", "<BR/>", "<BR />"),
+                        "\n",
+
+                        preg_replace('/\s+<\/td>/', '</td>',
+                            preg_replace('/<td>\s+/', '<td>',
+                                $this->multipleWhiteSpaceRemover->transform(
+                                    $this->tagWhiteSpaceRemover->transform(
+                                        $this->normalizeLineFeedsTransformer->transform(
+                                            $value
+                                        )
+                                    )
                                 )
                             )
-                        )
                     )
                 )
             )
@@ -169,18 +171,17 @@ class HtmlToPlainText extends \Conjoon_Text_Transformer {
 
         // add some linebreaks to a few block elements
         $value = str_replace(
-            array('<table><tr>', '<table><tbody><tr>', '</tr></tbody>','<tr>', '<TR>', '<table>', '<TABLE>', '</table>', '</TABLE>'),
+            array('<table><tr>', '<table><tbody><tr>', '</tr></tbody></table>',
+                '<TABLE><TR>', '<TABLE><TBODY><TR>', '</TR></TBODY></TABLE>',
+                '</tr></table>', '</TR></TABLE>',
+                '<tr>', '<TR>',
+                '<table>', '<TABLE>',
+                '</table>', '</TABLE>'),
             "\n",
             $value
         );
 
-        // add some whitespaces to cell elements and such to make sure
-        // formatting is nice
-        $value = str_replace(
-            array('<td>', '<TD>'),
-            "<td> ",
-            $value
-        );
+        $value = preg_replace('/<\/td><td>/', '</td><td> ', $value);
 
         // now strip all tags!
         $value = strip_tags($value);
