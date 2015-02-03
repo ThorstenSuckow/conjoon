@@ -94,8 +94,6 @@ $LIBRARY_PATH_BOOTSTRAP = dirname(__FILE__) . '/../../../';
         die($e->getMessage());
     }
 
-   $config = conjoon_initConfigCache();
-
 /**
  * @see Zend_Controller_Front
  */
@@ -162,6 +160,8 @@ require_once 'Zend/Controller/Exception.php';
 // | Welcome! Start the session!
 // +----------------------------------------------------------------------------
    Zend_Session::start();
+
+
 
 // +----------------------------------------------------------------------------
 // | Apply default configs to objects
