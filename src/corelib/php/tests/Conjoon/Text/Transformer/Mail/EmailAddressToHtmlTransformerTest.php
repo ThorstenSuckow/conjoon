@@ -84,6 +84,17 @@ class Conjoon_Text_Transformer_Mail_EmailAddressToHtmlTransformerTest extends PH
 // +---------------------------------------------------------------------------
 
     /**
+     * @ticket CN-915
+     */
+    public function test_CN915()
+    {
+        $input = "address@without.education";
+        $output = "<a href=\"mailto:address@without.education\">address@without.education</a>";
+
+        $this->assertEquals($output, $this->_transformer->transform($input));
+    }
+
+    /**
      * Ensure everythign works as expected.
      *
      */

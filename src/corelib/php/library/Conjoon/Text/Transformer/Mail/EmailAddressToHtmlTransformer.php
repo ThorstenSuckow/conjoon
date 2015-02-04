@@ -65,7 +65,7 @@ class Conjoon_Text_Transformer_Mail_EmailAddressToHtmlTransformer
     {
         $output = "";
 
-        $pattern = "/([_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.([a-z]){2,6}))/is";
+        $pattern = "/([_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.([a-z]){2,}))/is";
 
         $output = preg_replace(
             $pattern,
