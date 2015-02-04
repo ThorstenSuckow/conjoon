@@ -96,7 +96,7 @@ class HtmlToPlainTextTest extends \PHPUnit_Framework_TestCase {
               <blockquote>Text which is in here does not <br> conform to </blockquote>
               <div>-- <br />send with conjoon</div>
               </pre>"
-            => "--------Original Message:----------- \nSubject: Test\nDate: 03.02.2015\n\n>Text which is in here does not \n> conform to \n-- \nsend with conjoon",
+            => "--------Original Message:----------- \nSubject: Test\nDate: 03.02.2015\n\n> Text which is in here does not \n> conform to \n-- \nsend with conjoon",
             "<pre>--------Original Message:-----------
               <table><tbody>
                <tr><td>Subject:    </td> <td>             Test</td></tr>
@@ -106,7 +106,7 @@ class HtmlToPlainTextTest extends \PHPUnit_Framework_TestCase {
               </table>
               <blockquote>Text which is in here does not <br> conform to </blockquote>
               </pre>"
-            => "--------Original Message:----------- \nSubject: Test\nDate: 03.02.2015\n\n>Text which is in here does not \n> conform to \n"
+            => "--------Original Message:----------- \nSubject: Test\nDate: 03.02.2015\n\n> Text which is in here does not \n> conform to \n"
         );
 
     }

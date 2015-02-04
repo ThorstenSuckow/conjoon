@@ -93,12 +93,6 @@ class BlockquoteToQuote extends \Conjoon_Text_Transformer {
             $value = " ". $value;
         }
 
-        $value = str_replace(
-            array("\n&gt;", ">&gt;"),
-            array("\n &gt;", "> &gt;"),
-            $value
-        );
-
         // normalize blockquote
         $value = preg_replace("/(<\/?)(blockquote)[^>]*>/i",
             "$1blockquote>",
@@ -150,7 +144,11 @@ class BlockquoteToQuote extends \Conjoon_Text_Transformer {
                 } else if ($tline == "") {
                     continue;
                 } else {
-                    $final[] = implode("", $quotes) . $tline;
+
+                    $newL = implode("", $quotes);
+
+                    $final[] = ($newL ? $newL . ' ' : '') . ltrim($tline, ' ');
+
                 }
             }
         }

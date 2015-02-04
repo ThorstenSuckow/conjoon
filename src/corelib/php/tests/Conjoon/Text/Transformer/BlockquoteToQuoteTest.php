@@ -57,10 +57,37 @@ class BlockquoteToQuoteTest extends \PHPUnit_Framework_TestCase {
         $this->_transformer = new BlockquoteToQuote();
 
         $this->_inputs = array(
+            "<blockquote>&lt;<a href=''>test@test.de</a>&gt;</blockquote>"
+            =>  "&gt; &lt;<a href=''>test@test.de</a>&gt;",
             "<blockquote>test</blockquote>"
-            => "&gt;test",
+            => "&gt; test",
             "<blockquote>test<blockquote>test\n me</blockquote></blockquote>"
-            => "&gt;test\n&gt;&gt;test\n&gt;&gt; me"
+            => "&gt; test\n&gt;&gt; test\n&gt;&gt; me",
+            "<blockquote> test<blockquote>test\n me</blockquote></blockquote>"
+            => "&gt; test\n&gt;&gt; test\n&gt;&gt; me",
+            "<blockquote>".
+            "test".
+              "<blockquote>".
+                "test\n".
+                "me".
+              "</blockquote>".
+              "this\n".
+              "is\n".
+              "another\n".
+              "separate\n".
+              "block\n".
+              "here\n".
+            "</blockquote>"
+            => "&gt; test\n".
+                "&gt;&gt; test\n".
+                "&gt;&gt; me\n".
+                "&gt; this\n".
+                "&gt; is\n".
+                "&gt; another\n".
+                "&gt; separate\n".
+                "&gt; block\n".
+                "&gt; here\n".
+                "&gt;"
         );
 
     }
