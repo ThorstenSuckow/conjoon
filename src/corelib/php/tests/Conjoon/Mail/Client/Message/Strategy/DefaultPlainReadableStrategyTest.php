@@ -86,6 +86,33 @@ class DefaultPlainReadableStrategyTest extends \PHPUnit_Framework_TestCase {
         $this->strategy->execute(array());
     }
 
+
+    /**
+     * @ticket CN-914
+     */
+    public function test_CN914() {
+
+        $input = array(
+            'message' => array(
+                'contentTextPlain' =>
+                    " <\n adresse@me.com>"
+            )
+        );
+
+        $output = " &lt;<a href=\"mailto:adresse@me.com\">adresse@me.com</a>&gt;";
+
+        $result = $this->strategy->execute($input);
+        $this->assertTrue($result instanceof \Conjoon\Mail\Client\Message\Strategy\ReadableStrategyResult);
+
+
+        $this->assertSame(
+            $output,
+            $result->getBody()
+        );
+
+    }
+
+
     /**
      * Ensures everything works as expected
      */

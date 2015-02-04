@@ -176,21 +176,25 @@ class DefaultPlainReadableStrategy implements PlainReadableStrategy {
                 )
             );
 
+            return new ReadableStrategyResult(
 
-            return new ReadableStrategyResult($transformer->transform(
-                $plainToHtmlFilter->filter(
-                    $signatureFilter->filter(
-                        $quoteFilter->filter(
-                            $urlFilter->filter(
-                                $emoticonFilter->filter(
-                                    $lineFeedFilter->filter(
-                                        $zfe->filter($text)
+                preg_replace("/ &lt;<br \/>\s*<a/", ' &lt;<a',
+                    $transformer->transform(
+
+                    $plainToHtmlFilter->filter(
+                        $signatureFilter->filter(
+                            $quoteFilter->filter(
+                                $urlFilter->filter(
+                                    $emoticonFilter->filter(
+                                        $lineFeedFilter->filter(
+                                            $zfe->filter($text)
+                                        )
                                     )
                                 )
                             )
                         )
                     )
-                )
+                    )
             ), false, false);
 
         } catch (\Exception $e) {
