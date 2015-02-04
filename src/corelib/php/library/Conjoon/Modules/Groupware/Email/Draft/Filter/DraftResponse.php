@@ -445,10 +445,40 @@ class Conjoon_Modules_Groupware_Email_Draft_Filter_DraftResponse extends Conjoon
             break;
         }
 
+        /**
+         * @see \Conjoon_Text_Transformer_Mail_EmailAddressToHtmlTransformer
+         */
+        require_once 'Conjoon/Text/Transformer/Mail/EmailAddressToHtmlTransformer.php';
+
+        $transformer = new \Conjoon_Text_Transformer_Mail_EmailAddressToHtmlTransformer();
+
+        /**
+         * @see \Conjoon_Filter_UrlToATag
+         */
+        require_once 'Conjoon/Filter/UrlToATag.php';
+
+        $urlFilter = new \Conjoon_Filter_UrlToATag(array(
+            'target' => '_blank'
+        ));
+
+        /**
+         * @see \Conjoon\Text\Transformer\Html\SanitizeOpeningBracketForLinkTransformer
+         */
+        require_once 'Conjoon/Text/Transformer/Html/SanitizeOpeningBracketForLinkTransformer.php';
+
+        $openingBracketForLinkTransformer =
+            new \Conjoon\Text\Transformer\Html\SanitizeOpeningBracketForLinkTransformer();
+
         $data['contentTextPlain'] = $startTag.
-            $plainToHtmlFilter->filter(
-                $quoteFilter->filter(
-                    $data['contentTextPlain']
+            $openingBracketForLinkTransformer->transform(
+                $transformer->transform(
+                    $plainToHtmlFilter->filter(
+                        $quoteFilter->filter(
+                            $urlFilter->filter(
+                                $data['contentTextPlain']
+                            )
+                        )
+                    )
                 )
             )
          . $endTag;
