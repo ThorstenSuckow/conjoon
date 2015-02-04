@@ -96,9 +96,9 @@ class Conjoon_Filter_QuoteToBlockquote implements Zend_Filter_Interface
 
         // normalize ">" - this will group all ">" and remove whitespaces in
         // between them
-        $value = preg_replace(
-            "/^((\Q&gt;\E)+)(( (\Q&gt;\E)*)*)/em",
-            "'$1'.str_replace(' &gt;', '&gt;', '\\3').''",
+        $value = preg_replace_callback(
+            "/^((\Q&gt;\E)+)(( (\Q&gt;\E)*)*)/m",
+            array ($this, 'normalizeGtCharacters'),
             $value
         );
 
@@ -134,6 +134,13 @@ class Conjoon_Filter_QuoteToBlockquote implements Zend_Filter_Interface
         }
 
         return $quoted;
+    }
+
+    /**
+     * Helper function fpr preg_replace_callback in _quote
+     */
+    protected function normalizeGtCharacters(array $matches) {
+        return $matches[1] . str_replace(' &gt;', '&gt;', $matches[3]);
     }
 
 }
