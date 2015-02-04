@@ -48,4 +48,27 @@ class Conjoon_Mail_Protocol_Pop3Test extends PHPUnit_Framework_TestCase {
 
     }
 
+    /**
+     * @ticket CN-916
+     */
+    public function test_CN916() {
+
+        $host = 'my.fqdn.com';
+
+        $expected = file_get_contents(dirname(__FILE__) . '/files/CN-916_expected.txt');
+
+        $class = new \ReflectionClass('Conjoon_Mail_Protocol_Pop3');
+        $prop = $class->getProperty('_socket');
+        $prop->setAccessible(true);
+
+        $protocol = new Conjoon_Mail_Protocol_Pop3;
+        $prop->setValue($protocol, fopen(dirname(__FILE__) . '/files/CN-916_input.txt', 'r'));
+
+        $message = $protocol->readResponse(true);
+
+        $this->assertSame($message, $expected);
+
+    }
+
+
 }
