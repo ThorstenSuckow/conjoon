@@ -158,11 +158,20 @@ class DefaultPlainReadableStrategy implements PlainReadableStrategy {
                 ));
 
             /**
-             * @see \Conjoon_Text_Transformer_EmailAddressToHtml
+             * @see \Conjoon_Text_Transformer_Mail_EmailAddressToHtmlTransformer
              */
-            require_once 'Conjoon/Text/Transformer/EmailAddressToHtml.php';
+            require_once 'Conjoon/Text/Transformer/Mail/EmailAddressToHtmlTransformer.php';
 
-            $transformer = new \Conjoon_Text_Transformer_EmailAddressToHtml();
+            $transformer = new \Conjoon_Text_Transformer_Mail_EmailAddressToHtmlTransformer();
+
+            /**
+             * @see \Conjoon\Text\Transformer\Html\SanitizeOpeningBracketForLinkTransformer
+             */
+            require_once 'Conjoon/Text/Transformer/Html/SanitizeOpeningBracketForLinkTransformer.php';
+
+            $openingBracketForLinkTransformer =
+                new \Conjoon\Text\Transformer\Html\SanitizeOpeningBracketForLinkTransformer();
+
 
             /**
              * @see \Zend_Filter_HtmlEntities
@@ -176,24 +185,24 @@ class DefaultPlainReadableStrategy implements PlainReadableStrategy {
                 )
             );
 
+
+
             return new ReadableStrategyResult(
-
-                preg_replace("/ &lt;<br \/>\s*<a/", ' &lt;<a',
+                $openingBracketForLinkTransformer->transform(
                     $transformer->transform(
-
-                    $plainToHtmlFilter->filter(
-                        $signatureFilter->filter(
-                            $quoteFilter->filter(
-                                $urlFilter->filter(
-                                    $emoticonFilter->filter(
-                                        $lineFeedFilter->filter(
-                                            $zfe->filter($text)
+                        $plainToHtmlFilter->filter(
+                            $signatureFilter->filter(
+                                $quoteFilter->filter(
+                                    $urlFilter->filter(
+                                        $emoticonFilter->filter(
+                                            $lineFeedFilter->filter(
+                                                $zfe->filter($text)
+                                            )
                                         )
                                     )
                                 )
                             )
                         )
-                    )
                     )
             ), false, false);
 
