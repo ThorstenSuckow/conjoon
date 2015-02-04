@@ -55,7 +55,7 @@ require_once 'Conjoon/Text/Transformer.php';
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  *
- * @deprecated use Conjoon_Text_Transformer_Email_EmailAddressToHtmlTransformer
+ * @deprecated use Conjoon_Text_Transformer_Mail_EmailAddressToHtmlTransformer
  */
 class Conjoon_Text_Transformer_EmailAddressToHtml extends Conjoon_Text_Transformer {
 
