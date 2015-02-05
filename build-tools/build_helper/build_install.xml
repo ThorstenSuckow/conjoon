@@ -405,9 +405,6 @@
     <delete dir="./build/build/htdocs/install/files/conjoon_libs/HTMLPurifier/library" />
     <copy todir="./build/build/htdocs/install/files/conjoon_libs/HTMLPurifier/library" includeemptydirs="true">
         <fileset dir="./build/export/vendor/htmlpurifier/library" />
-        <filterchain>
-            <filterreader classname="filters.RemoveRequire" />
-        </filterchain>
     </copy>
 </target>
 <!--.............................................................................
