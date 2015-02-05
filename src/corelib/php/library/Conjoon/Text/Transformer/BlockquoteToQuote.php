@@ -76,7 +76,8 @@ class BlockquoteToQuote extends \Conjoon_Text_Transformer {
         ArgumentCheck::check(array(
             'input' => array(
                 'type'       => 'string',
-                'allowEmpty' => false
+                'allowEmpty' => true,
+                'strict'     => true
              )
         ), $data);
 

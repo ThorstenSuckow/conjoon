@@ -125,6 +125,18 @@ class HtmlToPlainTextTest extends \PHPUnit_Framework_TestCase {
 // +---------------------------------------------------------------------------
 
     /**
+     * @ticket CN-919
+     */
+    public function test_CN919() {
+
+        $input  = "";
+        $output = "";
+
+        $this->assertEquals($output, $this->_transformer->transform($input));
+
+    }
+
+    /**
      * Ensure everything works as expected.
      *
      */
