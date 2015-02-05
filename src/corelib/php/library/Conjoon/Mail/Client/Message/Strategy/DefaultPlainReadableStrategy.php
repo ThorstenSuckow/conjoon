@@ -85,7 +85,10 @@ class DefaultPlainReadableStrategy implements PlainReadableStrategy {
 
             $text = $data['message']['contentTextPlain'];
 
-            if ($text == "") {
+            /**
+             * @ticket CN-920
+             */
+            if (trim($text) == "") {
                 return new ReadableStrategyResult("", false, false);
             }
 

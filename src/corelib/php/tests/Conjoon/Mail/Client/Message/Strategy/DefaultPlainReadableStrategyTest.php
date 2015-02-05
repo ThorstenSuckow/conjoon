@@ -86,6 +86,29 @@ class DefaultPlainReadableStrategyTest extends \PHPUnit_Framework_TestCase {
         $this->strategy->execute(array());
     }
 
+    /**
+     * @ticket CN-920
+     */
+    public function test_CN920() {
+
+        $data = array(
+            'message' => array(
+                'contentTextPlain' => ' '
+            )
+        );
+
+
+        $result = $this->strategy->execute($data);
+
+        $this->assertTrue(
+            $result instanceof \Conjoon\Mail\Client\Message\Strategy\ReadableStrategyResult);
+
+        $this->assertSame(
+            $result->getBody(),
+            ''
+        );
+
+    }
 
     /**
      * @ticket CN-914

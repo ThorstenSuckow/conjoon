@@ -77,6 +77,24 @@ class SanitizeOpeningBracketForLinkTransformerTest extends \PHPUnit_Framework_Te
 // +---------------------------------------------------------------------------
 
     /**
+     * @ticket CN-920
+     */
+    public function test_CN920()
+    {
+        $input = " ";
+        $output = " ";
+
+        $this->assertEquals($output, $this->_transformer->transform($input));
+
+        $input = "";
+        $output = "";
+
+        $this->assertEquals($output, $this->_transformer->transform($input));
+
+    }
+
+
+    /**
      * Ensure everything works as expected.
      *
      */
