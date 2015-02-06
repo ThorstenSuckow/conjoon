@@ -1,4 +1,33 @@
-﻿2015-02-02 0.1.6
+﻿2015-02-06 0.1.6.1
+==================
+Release Notes - conjoon - Version 0.1.6.1
+
+** Bug
+    * [CN-908] - Parsing IMAP message fails with error
+    * [CN-909] - plain/text of email messages broken when forwarding email
+                 messages
+    * [CN-910] - ArgumentCheck alters value of string if leading or trailing
+                 none printabel chars can be found
+    * [CN-911] - configCache init is called multiple times
+    * [CN-912] - issues with BlockquoteToQuote Filter
+    * [CN-913] - preg_replace called with e modifier triggers deprecated warning
+    * [CN-914] - Formatting issue with DefaultPlainReadableStrategy
+    * [CN-915] - EmailAddressToHtmlTransformer not cosnidering overly long tld
+    * [CN-916] - Previous implementation of Conjoon/Mail/Protocol/Pop3 leads to
+                 double dot issues
+    * [CN-918] - phing plugin "RemoveRequire" breaks HTMLPurifier autoload
+                 functionality
+    * [CN-919] - Cannot send email messages with empty body
+    * [CN-920] - Cannot read email messages which have an empty body
+
+** Improvement
+    * [CN-907] - SMTP server denies connection with "Helo command rejected: need
+                 fully-qualified hostname Error"
+    * [CN-917] - Render URLs and mail addresses with their appropriate HTML tags
+                 in draft responses
+
+
+2015-02-02 0.1.6
 ================
 Release Notes - conjoon - Version 0.1.6
 
