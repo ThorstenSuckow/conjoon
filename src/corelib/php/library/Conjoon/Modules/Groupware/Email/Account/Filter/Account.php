@@ -109,7 +109,8 @@ class Conjoon_Modules_Groupware_Email_Account_Filter_Account extends Conjoon_Fil
                 'portInbox',
                 'portOutbox',
                 'inboxConnectionType',
-                'outboxConnectionType'
+                'outboxConnectionType',
+                'hasSeparateFolderHierarchy'
         )
     );
 
@@ -177,7 +178,10 @@ class Conjoon_Modules_Groupware_Email_Account_Filter_Account extends Conjoon_Fil
         ),
         'isCopyLeftOnServer' => array(
             'FormBoolToInt'
-        )
+        ),
+        'hasSeparateFolderHierarchy' => array(
+            'FormBoolToInt'
+        ),
     );
 
     protected $_validators = array(
@@ -262,6 +266,10 @@ class Conjoon_Modules_Groupware_Email_Account_Filter_Account extends Conjoon_Fil
         'isCopyLeftOnServer' => array(
             'allowEmpty' => true,
             'default'    => 0
+        ),
+        'hasSeparateFolderHierarchy' => array(
+            'allowEmpty' => true,
+            'default'    => 0
         )
     );
 
@@ -320,6 +328,14 @@ class Conjoon_Modules_Groupware_Email_Account_Filter_Account extends Conjoon_Fil
 
         if (isset($data['protocol']) && $data['protocol'] == 'POP') {
             $data['protocol'] = 'POP3';
+        }
+
+        if (!array_key_exists('protocol', $data) ||
+            $data['protocol'] != 'POP3') {
+            // make sure we unset the data for hasSeparateFolderHierarchy here.
+            // API is advised to ignore the value entirely later on when
+            // dealing with remote/IMAP folders
+            unset($data['hasSeparateFolderHierarchy']);
         }
 
         if (str_replace("*", "", $data['passwordInbox']) == "") {

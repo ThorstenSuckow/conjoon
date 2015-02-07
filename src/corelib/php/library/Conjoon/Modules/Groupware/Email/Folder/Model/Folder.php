@@ -677,15 +677,68 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
      * This method will also store the relation of the user and the created folders
      * in the folders_users table.
      *
+     * The folder hierarchy created will be used to store messages for
+     * a single local account, thus the type forwarded is root.
+     *
+     * @param $userId
+     * @param $name The name which should be used for the root folder
+     *
+     * @see createLocalRootHierarchy
+     * @see addAccountsRootBaseHierarchy
+     */
+    protected function addLocalRootBaseHierarchy($userId, $name) {
+        return $this->createLocalRootHierarchy(
+            $userId, 'root', $name
+        );
+    }
+
+    /**
+     * Adds a default folder hierarchy and returns all the id's added
+     * in a flat numeric array.
+     *
+     * This method will also store the relation of the user and the created folders
+     * in the folders_users table.
+     *
+     * The folder hierarchy created will be used to store messages from
+     * multiple accounts, thus the type forwarded is accounts_root.
+     *
      * @param integer $userId
      *
      * @return array
+     *
+     * @see createLocalRootHierarchy
+     * @see addLocalRootBaseHierarchy
      */
-    protected function _addAccountsRootBaseHierarchy($userId)
-    {
-        $userId = (int)$userId;
+    protected function addAccountsRootBaseHierarchy($userId) {
+        return $this->createLocalRootHierarchy(
+            $userId, 'accounts_root', 'Local Folders'
+        );
+    }
 
-        if ($userId == 0) {
+    /**
+     * Adds a default folder hierarchy and returns all the id's added
+     * in a flat numeric array.
+     *
+     * This method will also store the relation of the user and the created folders
+     * in the folders_users table.
+     *
+     * @param integer $userId
+     * @param string $rootTpye The type of root folder - either root or
+     *                         accounts_root
+     * @param string $name The name which should be used for the root folder
+     *
+     * @return array
+     */
+    protected function createLocalRootHierarchy($userId, $rootType, $name)
+    {
+        $rootTypeValues = array('accounts_root', 'root');
+
+        $rootType = strtolower(trim((string)$rootType));
+        $userId   = (int)$userId;
+        $name     = trim((string)$name);
+
+        if ($userId == 0 || $name == "" ||
+            !in_array($rootType, $rootTypeValues)) {
             return array();
         }
 
@@ -699,10 +752,10 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
 
             // root folder
             $parentId = $this->insert(array(
-                'name'             => 'Local Folders',
+                'name'             => $name,
                 'is_child_allowed' => 0,
                 'is_locked'        => 1,
-                'type'             => 'accounts_root',
+                'type'             => $rootType,
                 'meta_info'        => 'inbox',
                 'parent_id'        => null
             ));
@@ -1417,6 +1470,41 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
     }
 
     /**
+     * Creates a local folder hierarchy for a single account.
+     * Multiple accounts which should be managed in one and teh same hierarchy
+     * should be managed by folders created by
+     * @see createFolderBaseHierarchyAndMapAccountIdForUserId
+     *
+     * @param integer $accountId
+     * @param integer $userId
+     * @param string  $name
+     *
+     * @return integer The total number of data inserted
+     */
+    public function createFolderHierarchyAndMapAccountIdForUserId(
+        $accountId, $userId, $name) {
+
+        $accountId = (int)$accountId;
+        $userId    = (int)$userId;
+        $name      = trim((string)$name);
+
+        if ($accountId == 0 || $userId == 0 || $name == "") {
+            return 0;
+        }
+
+        $folderIds = $this->addLocalRootBaseHierarchy($userId, $name);
+
+        /**
+         * @see Conjoon_Modules_Groupware_Email_Folder_Model_FoldersAccounts
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/Folder/Model/FoldersAccounts.php';
+
+        $foldersAccountsModel = new Conjoon_Modules_Groupware_Email_Folder_Model_FoldersAccounts();
+        return $foldersAccountsModel->mapFolderIdsToAccountId($folderIds, $accountId);
+    }
+
+
+    /**
      * Maps the account id for the user to the users list of folders.
      * This method will check if the user already has a folder
      * root hierarchy. If that is not the case, one will be created.
@@ -1442,7 +1530,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
             // user creates his very first email account.
             // create base folder hierarchy and map them to the
             // account later on
-            $folderIds = $this->_addAccountsRootBaseHierarchy($userId);
+            $folderIds = $this->addAccountsRootBaseHierarchy($userId);
         }
 
         // map all existing folders from the accounts_root hierarchy to the new account
@@ -1452,7 +1540,6 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
         require_once 'Conjoon/Modules/Groupware/Email/Folder/Model/FoldersAccounts.php';
 
         $foldersAccountsModel = new Conjoon_Modules_Groupware_Email_Folder_Model_FoldersAccounts();
-
         return $foldersAccountsModel->mapFolderIdsToAccountId($folderIds, $accountId);
     }
 

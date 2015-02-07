@@ -1820,17 +1820,10 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
                 }
             }
 
-            // check first if there are already IMAP folders, but no
-            // accounts_root
-            if (folder.type == 'accounts_root') {
-                var node = this.treeLoader.createNode(folder);
-                this.root.appendChild(node);
-                return;
-            }
-
-            // for now, only IMAP will be considered.
-            if (account.get('protocol') === 'IMAP') {
-                // append a new node!
+            // add the folders!
+            if (folder.type == 'accounts_root' ||
+                folder.type == 'root' ||
+                folder.type == 'root_remote') {
                 var node = this.treeLoader.createNode(folder);
                 this.root.appendChild(node);
                 return;

@@ -68,6 +68,11 @@ com.conjoon.groupware.email.EmailAccountWizard = Ext.extend(Ext.ux.Wiz, {
     serverTypeCard : null,
 
     /**
+     * @type new com.conjoon.groupware.email.wizard.AccountNameCard
+     */
+    accountNameCard : null,
+
+    /**
      * Inits this component.
      */
     initComponent : function()
@@ -78,6 +83,10 @@ com.conjoon.groupware.email.EmailAccountWizard = Ext.extend(Ext.ux.Wiz, {
         this.serverTypeCard = new com.conjoon.groupware.email.wizard.ServerTypeCard();
 
         this.serverOutboxCard = new com.conjoon.groupware.email.wizard.ServerOutboxCard();
+
+        this.accountNameCard = new com.conjoon.groupware.email.EmailAccountWizardAccountNameCard({
+            pendingRemovedRecords : this.pendingRemovedRecords
+        });
 
         this.cards = [
             new Ext.ux.Wiz.Card({
@@ -98,9 +107,7 @@ com.conjoon.groupware.email.EmailAccountWizard = Ext.extend(Ext.ux.Wiz, {
             new com.conjoon.groupware.email.EmailAccountWizardNameCard(),
             this.serverInboxCard,
             this.serverOutboxCard,
-            new com.conjoon.groupware.email.EmailAccountWizardAccountNameCard({
-                pendingRemovedRecords : this.pendingRemovedRecords
-            }),
+            this.accountNameCard,
             new com.conjoon.groupware.email.EmailAccountWizardFinishCard()
         ];
         this.cls = 'com-conjoon-groupware-email-EmailAccountWizard-panelBackground';
@@ -117,8 +124,12 @@ com.conjoon.groupware.email.EmailAccountWizard = Ext.extend(Ext.ux.Wiz, {
         com.conjoon.groupware.email.EmailAccountWizard.superclass.onCardShow
             .call(this, card);
 
-        if (card === this.serverInboxCard || card === this.serverOutboxCard) {
+        if (card === this.serverInboxCard ||
+            card === this.serverOutboxCard ||
+            card === this.accountNameCard) {
+
             var prot = 'POP', values;
+
             if (this.serverTypeCard) {
                 values = this.serverTypeCard.form.getValues(false);
                 prot   = values['protocol'];
@@ -296,6 +307,10 @@ com.conjoon.groupware.email.EmailAccountWizardAccountNameCard = Ext.extend(Ext.u
     nameField    : null,
     accountStore : null,
 
+    separateFolderHierarchyCheckbox : null,
+
+    separateFolderHierarchyFormIntro : null,
+
     templateContainer : null,
 
     invalidTemplate : null,
@@ -314,11 +329,23 @@ com.conjoon.groupware.email.EmailAccountWizardAccountNameCard = Ext.extend(Ext.u
         this.defaultType = 'textfield';
         this.title = com.conjoon.Gettext.gettext("Account name");
         this.defaults = {
-            labelStyle : 'width:75px;font-size:11px',
             anchor: '100%'
          };
 
+        this.separateFolderHierarchyFormIntro =  new com.conjoon.groupware.util.FormIntro({
+            style     : 'margin:20px 0 15px 0;',
+            labelText : com.conjoon.Gettext.gettext("Separate Folder Hierarchy"),
+            text      : com.conjoon.Gettext.gettext("Creates a separate folder hierarchy for this account if checked, otherwise the emails will be managed using the global \"Local Folders\" hierarchy.")
+        }),
+
+        this.separateFolderHierarchyCheckbox = new Ext.form.Checkbox({
+            fieldLabel : com.conjoon.Gettext.gettext("Create separate folders"),
+            name       : 'hasSeparateFolderHierarchy',
+            labelStyle : 'width:170px;font-size:11px'
+        });
+
         this.nameField = new Ext.form.TextField({
+            labelStyle : 'width:75px;font-size:11px',
             fieldLabel : com.conjoon.Gettext.gettext("Name"),
             allowBlank : false,
             validator  : this.validateAccountName.createDelegate(this),
@@ -371,10 +398,24 @@ com.conjoon.groupware.email.EmailAccountWizardAccountNameCard = Ext.extend(Ext.u
                 text      : com.conjoon.Gettext.gettext("Specify a unique name for this account. This name will be used later on to identify this account. The name must not be already existing.")
             }),
             this.nameField,
-            this.templateContainer
+            this.templateContainer,
+            this.separateFolderHierarchyFormIntro,
+            this.separateFolderHierarchyCheckbox
         ];
 
         com.conjoon.groupware.email.EmailAccountWizardAccountNameCard.superclass.initComponent.call(this);
+    },
+
+    /**
+     * Called when the card is shown. Shows or hide the "create separate
+     * hierarchy" option. (show for POP, otherwise hide)
+     *
+     * @param protocol
+     */
+    setProtocol : function(protocol)
+    {
+        this.separateFolderHierarchyCheckbox.setVisible(protocol !== 'IMAP');
+        this.separateFolderHierarchyFormIntro.setVisible(protocol !== 'IMAP');
     },
 
     validateAccountName : function(value)
@@ -420,10 +461,11 @@ com.conjoon.groupware.email.EmailAccountWizardFinishCard = Ext.extend(Ext.ux.Wiz
     {
         this.templates =  {
             master : new Ext.Template(
-                '<table style="margin-top:15px;" border="0", cellspacing="2" cellpadding="2">'+
+                '<table style="margin-top:10px;" border="0", cellspacing="2" cellpadding="2">'+
                     '<tbody>'+
                     '<tr><td>'+com.conjoon.Gettext.gettext("Server type")+':</td><td>{protocol}</td></tr>'+
                     '<tr><td>'+com.conjoon.Gettext.gettext("Account name")+':</td><td>{name:htmlEncode}</td></tr>'+
+                    '{separateFolderHierarchyTemplate}'+
                     '<tr><td>'+com.conjoon.Gettext.gettext("Your name")+':</td><td>{userName:htmlEncode}</td></tr>'+
                     '<tr><td>'+com.conjoon.Gettext.gettext("Email address")+':</td><td>{address:htmlEncode}</td></tr>'+
                     '<tr><td>'+com.conjoon.Gettext.gettext("Inbox host")+':</td><td>{serverInbox:htmlEncode}:{portInbox}</td></tr>'+
@@ -436,6 +478,9 @@ com.conjoon.groupware.email.EmailAccountWizardFinishCard = Ext.extend(Ext.ux.Wiz
                     '<tr><td>'+com.conjoon.Gettext.gettext("Secure connection for outbox")+':</td><td>{outboxConnectionType}</td></tr>'+
                     '</tbody>'+
                 '</table>'
+            ),
+            separateFolderHierarchyTemplate : new Ext.Template(
+                '<tr><td>'+com.conjoon.Gettext.gettext("Separate folder hierarchy")+':</td><td>{separateFolderHierarchy}</td></tr>'
             ),
             auth : new Ext.Template(
                 '<tr><td>'+com.conjoon.Gettext.gettext("Outbox user name")+':</td><td>{usernameOutbox:htmlEncode}</td></tr>'+
@@ -476,7 +521,8 @@ com.conjoon.groupware.email.EmailAccountWizardFinishCard = Ext.extend(Ext.ux.Wiz
     {
         var ts = this.templates;
 
-        var authTemplate = "";
+        var authTemplate = "",
+            separateFolderHierarchyTemplate = "";
 
         var items = this.ownerCt.items;
 
@@ -493,6 +539,14 @@ com.conjoon.groupware.email.EmailAccountWizardFinishCard = Ext.extend(Ext.ux.Wiz
             authTemplate = ts.auth.apply({
                 usernameOutbox       : values.usernameOutbox,
                 passwordOutbox       : "****"
+            });
+        }
+
+        if (values.protocol !== 'IMAP') {
+            separateFolderHierarchyTemplate = ts.separateFolderHierarchyTemplate.apply({
+                separateFolderHierarchy :  values.hasSeparateFolderHierarchy == 'on'
+                                           ? com.conjoon.Gettext.gettext("Yes")
+                                           : com.conjoon.Gettext.gettext("No")
             });
         }
 
@@ -517,8 +571,8 @@ com.conjoon.groupware.email.EmailAccountWizardFinishCard = Ext.extend(Ext.ux.Wiz
                                          values.inboxConnectionType
                                      )
                                    : com.conjoon.Gettext.gettext("No"),
+            separateFolderHierarchyTemplate : separateFolderHierarchyTemplate,
             auth_template : authTemplate,
-
             outboxConnectionType : values.outboxConnectionType == 'SSL'
                 || values.outboxConnectionType == 'TLS'
                 ? String.format(

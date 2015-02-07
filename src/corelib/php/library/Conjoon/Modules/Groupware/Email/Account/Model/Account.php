@@ -304,6 +304,17 @@ class Conjoon_Modules_Groupware_Email_Account_Model_Account
             return 0;
         }
 
+        // leave null. Set to FALSE or TRUE explicitely for remote folders
+        $createSeparateFolderHierarchy = null;
+
+        // check for protocol and whether separateFolderHierarchy should be
+        // created
+        if (strtolower($addData['protocol']) === 'pop3' &&
+            array_key_exists('has_separate_folder_hierarchy', $data)) {
+            $createSeparateFolderHierarchy =
+                (bool)(int)$data['has_separate_folder_hierarchy'];
+        }
+
         // check here if there is currently a standard account
         // configured for the user - if none could be found, set this
         // account as standard
@@ -331,7 +342,12 @@ class Conjoon_Modules_Groupware_Email_Account_Model_Account
         if ($addData['protocol'] == 'IMAP') {
             $folderModel->createFolderHierarchyForImapAccount($id, $userId, $addData['name']);
         } else {
-            $folderModel->createFolderBaseHierarchyAndMapAccountIdForUserId($id, $userId);
+            if ($createSeparateFolderHierarchy === true) {
+                $folderModel->createFolderHierarchyAndMapAccountIdForUserId($id, $userId, $addData['name']);
+            } else {
+                $folderModel->createFolderBaseHierarchyAndMapAccountIdForUserId($id, $userId);
+            }
+
         }
 
 

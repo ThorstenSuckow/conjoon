@@ -81,6 +81,7 @@ class Conjoon_Modules_Groupware_Email_Account implements Conjoon_BeanContext, Se
     private $isCopyLeftOnServer;
     private $_isDeleted;
     private $folderMappings;
+    private $_hasSeparateFolderHierarchy;
 
     /**
      * Constructor.
@@ -128,6 +129,7 @@ class Conjoon_Modules_Groupware_Email_Account implements Conjoon_BeanContext, Se
     public function isCopyLeftOnServer(){return $this->isCopyLeftOnServer;}
     public function isDeleted(){return $this->_isDeleted;}
     public function getFolderMappings(){return $this->folderMappings;}
+    public function getHasSeparateFolderHierarchy(){return $this->_hasSeparateFolderHierarchy;}
 
     public function setId($id){$this->id = $id;}
     public function setUserId($userId){$this->userId = $userId;}
@@ -149,6 +151,7 @@ class Conjoon_Modules_Groupware_Email_Account implements Conjoon_BeanContext, Se
     public function setSignature($signature){$this->signature = $signature;}
     public function setSignatureUsed($isSignatureUsed){$this->isSignatureUsed = $isSignatureUsed;}
     public function setFolderMappings(array $folderMappings){$this->folderMappings = $folderMappings;}
+    public function setHasSeparateFolderHierarchy($hasSeparateFolderHierarchy){$this->_hasSeparateFolderHierarchy = $hasSeparateFolderHierarchy;}
 
     public function setPortInbox($portInbox)
     {
