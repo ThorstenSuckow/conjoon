@@ -1346,7 +1346,7 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
     {
         button.setDisabled(true);
 
-        if (this.valuesValid(true, true)) {
+        if (this.clkRecord === null || this.valuesValid(true, true)) {
             this.saveConfiguration();
         }
     },
