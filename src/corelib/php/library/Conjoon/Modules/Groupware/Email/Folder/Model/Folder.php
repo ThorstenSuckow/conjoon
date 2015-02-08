@@ -235,6 +235,28 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
     }
 
     /**
+     * Returns the base data for the root folder mapped to a specific account
+     *
+     * @param integer $accountId
+     * @param integer $userId
+     *
+     * @return Zend_Db_Table_Row or null
+     */
+    public function getRootMailFolderBaseData($accountId, $userId) {
+
+        $accountId = (int)$accountId;
+        $userId    = (int)$userId;
+
+        if ($accountId <= 0 || $userId <= 0) {
+            return null;
+        }
+
+        $folderId = $this->getAccountsRootOrRootFolderId($accountId, $userId);
+
+        return $this->getFolderBaseData($folderId);
+    }
+
+    /**
      * Returns the base root/ folder id for the specified account
      * and the specified user, i.e. the folder with type "root".
      * Returns 0 if the folder could not be found

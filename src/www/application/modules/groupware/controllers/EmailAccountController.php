@@ -399,6 +399,9 @@ class Groupware_EmailAccountController extends Zend_Controller_Action {
             }
         }
 
+        $createdLocalRootMailFolders = array();
+        $removedLocalRootMailFolders = array();
+
         for ($i = 0, $len = count($data); $i < $len; $i++) {
             $id = $data[$i]['id'];
             unset($data[$i]['id']);
@@ -479,6 +482,105 @@ class Groupware_EmailAccountController extends Zend_Controller_Action {
                     $fmRep->flush();
                 }
 
+                // take care of folder heirarchies
+                if ($affected != -1) {
+
+                    /**
+                     * @todo Facade
+                     */
+                    $hasSeparateFolderHierarchy =
+                        array_key_exists('has_separate_folder_hierarchy', $data[$i])
+                            ? (bool)(int)$data[$i]['has_separate_folder_hierarchy']
+                            : null;
+                    // get org protocol of account so it cannot be changed from
+                    // the outside
+                    $orgAccount  = $model->getAccount($id, $userId);
+                    $orgProtocol = $orgAccount['protocol'];
+
+                    if ($hasSeparateFolderHierarchy !== null &&
+                        strtolower($orgProtocol) !== 'imap') {
+
+                        /**
+                         * @see Conjoon_Modules_Groupware_Email_Folder_Model_Folder
+                         */
+                        require_once 'Conjoon/Modules/Groupware/Email/Folder/Model/Folder.php';
+
+                        $folderModel = new Conjoon_Modules_Groupware_Email_Folder_Model_Folder();
+
+                        /**
+                         * @see Conjoon_Modules_Groupware_Email_Folder_Model_FoldersAccounts
+                         */
+                        require_once 'Conjoon/Modules/Groupware/Email/Folder/Model/FoldersAccounts.php';
+
+                        $foldersAccounts = new Conjoon_Modules_Groupware_Email_Folder_Model_FoldersAccounts();
+
+                        // the original folder ids, before remapping occures
+                        $oldAccountFolderIds = $foldersAccounts->getFolderIdsForAccountId($id);
+
+                        // read out folder base data of folder for associated account
+                        $rootFolderBaseData = $folderModel->getRootMailFolderBaseData(
+                            $id, $userId);
+
+                        if (!$hasSeparateFolderHierarchy) {
+
+                            // do nothing if type is already accounts_root and
+                            // separateFolderHierarchy = false is submitted;
+                            // but if the type is root and the folderHierarchy
+                            // (i.e. "root) should be removed,
+                            // we need to switch from root to accounts_root
+                            if ($rootFolderBaseData->type == 'root') {
+                                // check first if accounts_root exist!
+                                $accountsRootFolderId =
+                                    $folderModel->getAccountsRootFolderId($id, $userId);
+                                /**
+                                 * NEED TO GET THE ACCOUNTS_ROOT FOR A USER. NOT
+                                 * DEPENDING OF AN ACCOUNT ID HERE! SINCE WE NEED TO
+                                 * KNOW IF THE ACCOUNTS_ROOT EXISTS FOR _ANY_ ACCOUNT
+                                 */
+
+                                // accounts root not yet existing
+                                if (!$accountsRootFolderId) {
+                                    $folderModel->createFolderBaseHierarchyAndMapAccountIdForUserId($id, $userId);
+                                } else {
+                                    $newFolderIds = $folderModel->getFoldersForAccountsRoot($userId);
+                                    // accounts root already existing.
+                                    // remove the root and remap to accounts_root
+                                    foreach ($oldAccountFolderIds as $oldFolderId) {
+                                        $folderModel->deleteFolder($oldFolderId, $userId, false);
+                                    }
+                                    $removedLocalRootMailFolders[$id] =
+                                        $rootFolderBaseData->toArray();
+                                    $foldersAccounts->mapFolderIdsToAccountId($newFolderIds, $id);
+                                }
+
+                                $createdLocalRootMailFolders[$id] =
+                                    $folderModel->getRootMailFolderBaseData($id, $userId)
+                                                ->toArray();
+                            }
+
+                        } else {
+
+                            // do nothing if the type is already root which means
+                            // there already exists a separate folder hierarchy
+                            // if the type is accounts_root, we need to switch
+                            // to a root hierarchy
+                            if ($rootFolderBaseData->type == 'accounts_root') {
+
+                                // remove old mappings
+                                $foldersAccounts->deleteForAccountId($id);
+                                $folderModel->createFolderHierarchyAndMapAccountIdForUserId(
+                                    $id, $userId, $data[$i]['name']
+                                );
+                                $createdLocalRootMailFolders[$id] =
+                                    $folderModel->getRootMailFolderBaseData($id, $userId)
+                                                ->toArray();
+                            }
+
+                        }
+                    }
+
+                }
+
             }
 
             if ($affected == -1) {
@@ -486,10 +588,14 @@ class Groupware_EmailAccountController extends Zend_Controller_Action {
             }
         }
 
-        $this->view->success        = empty($updatedFailed) ? true : false;
+        $this->view->success       = empty($updatedFailed) ? true : false;
         $this->view->updatedFailed = $updatedFailed;
         $this->view->deletedFailed = $deletedFailed;
         $this->view->error         = null;
+
+        $this->view->createdLocalRootMailFolders = $createdLocalRootMailFolders;
+        $this->view->removedLocalRootMailFolders = $removedLocalRootMailFolders;
+
 
     }
 

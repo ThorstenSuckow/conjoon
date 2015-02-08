@@ -333,6 +333,10 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
                 labelStyle : 'width:165px;font-size:11px',
                 fieldLabel : com.conjoon.Gettext.gettext("Delete messages from server")
             }),
+            'hasSeparateFolderHierarchy' : new Checkbox({
+                labelStyle : 'width:220px;font-size:11px',
+                fieldLabel : com.conjoon.Gettext.gettext("Use separate folder hierarchy for account")
+            }),
             'isSignatureUsed' : new Checkbox({
                 fieldLabel : com.conjoon.Gettext.gettext("Use signature"),
                 labelStyle : 'width:105px;font-size:11px'
@@ -452,12 +456,19 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
             defaultType : 'textfield',
             baseCls     : 'x-small-editor',
             labelAlign : 'left',
-            items       : [new com.conjoon.groupware.util.FormIntro({
-                style     : 'margin:10px 0 10px 0;',
-                labelText : com.conjoon.Gettext.gettext("Fetch messages"),
-                text      : com.conjoon.Gettext.gettext("You can delete each message from the inbox server after downloading them. If you use additional software to organize your emails, it is suggested to leave this option off.<br />Note:<br />This option is not available for IMAP based accounts.")
-            }),
-            fields['isCopyLeftOnServer']
+            items       : [
+                new com.conjoon.groupware.util.FormIntro({
+                    style     : 'margin:10px 0 10px 0;',
+                    labelText : com.conjoon.Gettext.gettext("Fetch messages"),
+                    text      : com.conjoon.Gettext.gettext("You can delete each message from the inbox server after downloading them. If you use additional software to organize your emails, it is suggested to leave this option off.<br />Note:<br />This option is not available for IMAP based accounts.")
+                }),
+                fields['isCopyLeftOnServer'],
+                new com.conjoon.groupware.util.FormIntro({
+                    style     : 'margin:25px 0 10px 0;',
+                    labelText : com.conjoon.Gettext.gettext("Separate Folder Hierarchy"),
+                    text      : com.conjoon.Gettext.gettext("This account can be managed in the \"Local Folders\" together with other Email Accounts, or you can create a separate folder hierarchy for this account.")
+                }),
+                fields['hasSeparateFolderHierarchy']
             ]
         });
 
@@ -1040,6 +1051,7 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         }, this);
 
         this.mon(fields['isCopyLeftOnServer'], 'check', this.onConfigChange, this);
+        this.mon(fields['hasSeparateFolderHierarchy'], 'check', this.onConfigChange, this);
 
         var lConfig = {
             keyup    : this.onConfigChange,
@@ -1232,7 +1244,8 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
                 signature            : currUpd.get('signature'),
                 inboxConnectionType  : currUpd.get('inboxConnectionType'),
                 outboxConnectionType : currUpd.get('outboxConnectionType'),
-                folderMappings       : currUpd.get('folderMappings')
+                folderMappings       : currUpd.get('folderMappings'),
+                hasSeparateFolderHierarchy : currUpd.get('hasSeparateFolderHierarchy')
             });
         }
 
@@ -1587,6 +1600,7 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         var fields = this.fields;
 
         fields['isCopyLeftOnServer'].suspendEvents();
+        fields['hasSeparateFolderHierarchy'].suspendEvents();
         fields['isOutboxAuth'].suspendEvents();
         fields['isSignatureUsed'].suspendEvents();
 
@@ -1615,6 +1629,9 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         fields['usernameOutbox'].setValue(data.usernameOutbox);
         fields['passwordOutbox'].setValue(data.passwordOutbox);
         fields['isCopyLeftOnServer'].setValue(!data.isCopyLeftOnServer);
+        fields['hasSeparateFolderHierarchy'].setValue(
+            data.localRootMailFolder.type === 'root'
+        );
 
         if (data.outboxConnectionType == 'SSL') {
             fields['outboxConnectionTypeSsl'].setValue(true);
@@ -1634,8 +1651,10 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
 
         if (data.protocol === 'IMAP') {
             fields['isCopyLeftOnServer'].setDisabled(true);
+            fields['hasSeparateFolderHierarchy'].setDisabled(true);
         } else {
             fields['isCopyLeftOnServer'].setDisabled(false);
+            fields['hasSeparateFolderHierarchy'].setDisabled(false);
         }
 
         fields['isSignatureUsed'].setValue(data.isSignatureUsed);
@@ -1654,6 +1673,7 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         fields['inboxConnectionTypeTls'].resumeEvents();
 
         fields['isCopyLeftOnServer'].resumeEvents();
+        fields['hasSeparateFolderHierarchy'].resumeEvents();
         fields['isOutboxAuth'].resumeEvents();
         fields['isSignatureUsed'].resumeEvents();
     },
@@ -1690,6 +1710,7 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         record.set('portOutbox',         fields['portOutbox'].getValue());
         record.set('isOutboxAuth',       isOutboxAuth);
         record.set('isCopyLeftOnServer', !fields['isCopyLeftOnServer'].getValue());
+        record.set('hasSeparateFolderHierarchy', fields['hasSeparateFolderHierarchy'].getValue());
         record.set('isSignatureUsed',    fields['isSignatureUsed'].getValue());
         record.set('signature',          fields['signature'].getValue());
 
