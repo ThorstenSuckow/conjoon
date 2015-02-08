@@ -1806,17 +1806,17 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
             this.root.reload();
         } else {
 
-            var childs  = this.root.childNodes;
-            var folder  = message.rootFolder;
-            var account = message.account;
+            var childs  = this.root.childNodes,
+                account = message.account,
+                folder  = account.get('localRootMailFolder');
 
-            // for now, only IMAP will be considered.
-            // do a check first and throw an exception, this can be removed
-            // later on when full support for multiple folder hierarchies is given
-            for (var i = 0, len = childs.length; i < len; i++) {
-                if (childs[i].id == folder.id) {
-                    // assume multiple accounts in one folder
-                    return;
+            // chere here if an accounts_root already exists, and
+            // a new account managed by accounts_root is to be added
+            if (folder.type == 'accounts_root') {
+                for (var i = 0, len = childs.length; i < len; i++) {
+                    if (childs[i].attributes.type == 'accounts_root') {
+                        return;
+                    }
                 }
             }
 
