@@ -1982,7 +1982,12 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
 
     onNodeRemove : function(tree, parent, node)
     {
-        if (node.id == this.clkNodeId) {
+        if (node.id == this.clkNodeId ||
+            // check if clkNode is an child of the removed node,
+            // because removing an account might remove a parent root node
+            // of the currrently selected node
+           (this.clkNodeId && node.findChild('id', this.clkNodeId, true))) {
+
             this.clkNodeId = null;
             this.gridPanel.loadMask.hide();
             var proxy = this.gridPanel.store.proxy;
@@ -1990,6 +1995,9 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
                 proxy.getConnection().abort(proxy.activeRequest[Ext.data.Api.actions.read]);
             }
             this.gridPanel.store.removeAll();
+
+            // make sure we void the selection
+            this.treePanel.getSelectionModel().clearSelections();
         }
     },
 
