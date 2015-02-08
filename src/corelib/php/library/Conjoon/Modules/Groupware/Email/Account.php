@@ -82,6 +82,8 @@ class Conjoon_Modules_Groupware_Email_Account implements Conjoon_BeanContext, Se
     private $_isDeleted;
     private $folderMappings;
     private $_hasSeparateFolderHierarchy;
+    public $rootFolderId;
+
 
     /**
      * Constructor.
@@ -130,6 +132,7 @@ class Conjoon_Modules_Groupware_Email_Account implements Conjoon_BeanContext, Se
     public function isDeleted(){return $this->_isDeleted;}
     public function getFolderMappings(){return $this->folderMappings;}
     public function getHasSeparateFolderHierarchy(){return $this->_hasSeparateFolderHierarchy;}
+    public function getRootFolderId(){return $this->rootFolderId;}
 
     public function setId($id){$this->id = $id;}
     public function setUserId($userId){$this->userId = $userId;}
@@ -152,6 +155,7 @@ class Conjoon_Modules_Groupware_Email_Account implements Conjoon_BeanContext, Se
     public function setSignatureUsed($isSignatureUsed){$this->isSignatureUsed = $isSignatureUsed;}
     public function setFolderMappings(array $folderMappings){$this->folderMappings = $folderMappings;}
     public function setHasSeparateFolderHierarchy($hasSeparateFolderHierarchy){$this->_hasSeparateFolderHierarchy = $hasSeparateFolderHierarchy;}
+    public function setRootFolderId($rootFolderId){$this->rootFolderId = $rootFolderId;}
 
     public function setPortInbox($portInbox)
     {
@@ -256,7 +260,8 @@ class Conjoon_Modules_Groupware_Email_Account implements Conjoon_BeanContext, Se
             'inboxConnectionType'  => $this->inboxConnectionType,
             'outboxConnectionType' => $this->outboxConnectionType,
             'isCopyLeftOnServer'   => $this->isCopyLeftOnServer,
-            'folderMappings'       => $this->folderMappings
+            'folderMappings'       => $this->folderMappings,
+            'rootFolderId'         => $this->rootFolderId
         );
     }
 
@@ -291,6 +296,7 @@ class Conjoon_Modules_Groupware_Email_Account implements Conjoon_BeanContext, Se
             'inboxConnectionType: '.$data['inboxConnectionType'].', '.
             'outboxConnectionType: '.$data['outboxConnectionType'].', '.
             'isCopyLeftOnServer: '.$data['isCopyLeftOnServer'].', '.
-            'folderMappings: '.$data['folderMappings'].';';
+            'folderMappings: '.$data['folderMappings'].', ' .
+            'rootFolderId: ' . $data['rootFolderId'];
     }
 }

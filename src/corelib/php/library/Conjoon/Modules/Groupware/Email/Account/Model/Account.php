@@ -547,7 +547,19 @@ class Conjoon_Modules_Groupware_Email_Account_Model_Account
         $rows = $rows->toArray();
         $adapter = $this->getDefaultAdapter();
 
-        foreach ($rows as $index => $row) {
+        /**
+         * @see Conjoon_Modules_Groupware_Email_Folder_Model_Folder
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/Folder/Model/Folder.php';
+
+        $folderModel = new Conjoon_Modules_Groupware_Email_Folder_Model_Folder();
+
+        foreach ($rows as &$row) {
+
+            // add information related to the accounts root folder here
+            $row['rootFolderId'] =
+                $folderModel->getAccountsRootOrRootFolderId($row['id'], $id);
+
 
             $mappings = $adapter->fetchAll(
                     $adapter->select()
@@ -558,7 +570,7 @@ class Conjoon_Modules_Groupware_Email_Account_Model_Account
                     ->where('mappings.groupware_email_accounts_id=?', $row['id'])
             );
 
-            $rows[$index]['folderMappings'] = $mappings;
+            $row['folderMappings'] = $mappings;
         }
 
         return $rows;

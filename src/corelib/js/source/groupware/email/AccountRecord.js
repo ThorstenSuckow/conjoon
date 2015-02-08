@@ -53,5 +53,12 @@ com.conjoon.groupware.email.AccountRecord = Ext.data.Record.create([
     {name : 'outboxConnectionType', type : 'string'},
     {name : 'isCopyLeftOnServer',   type : 'bool'},
     {name : 'folderMappings'},
-    {name : ''}
+    /**
+     * This is a helper property which will be returned when querying for
+     * all accounts of a user and holds the root folder id which is used
+     * for managing this account. Whether the root folder denotes
+     * an accounts_root, root or root_remote folder has to be queried
+     * accordingly.
+     */
+    {name : 'rootFolderId', type : 'string'}
 ]);
