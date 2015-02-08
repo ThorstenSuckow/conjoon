@@ -1144,6 +1144,14 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         }
 
         if (!failureDel) {
+
+            for (var i in this.deletedRecords) {
+                Ext.ux.util.MessageBus.publish(
+                    'com.conjoon.groupware.email.account.removed',
+                    {account : this.deletedRecords[i]}
+                );
+            }
+
             this.deletedRecords = {};
         }
 
@@ -1396,9 +1404,18 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
             return;
         }
 
+        var msgTxt = "",
+            folder = record.get('localRootMailFolder');
+
+        if (folder && folder.type == 'root' || folder.type == 'root_remote') {
+            msgTxt = String.format(com.conjoon.Gettext.gettext("Do you really want to remove the account \"{0}\"? <br />All related folders and messages which are stored locally will be removed, too!"), record.get('name'));
+        } else {
+            msgTxt = String.format(com.conjoon.Gettext.gettext("Do you really want to remove the account \"{0}\"?"), record.get('name'));
+        }
+
         msg.show({
             title   : com.conjoon.Gettext.gettext("Remove email account"),
-            msg     : String.format(com.conjoon.Gettext.gettext("Do you really want to remove the account \"{0}\"?"), record.get('name')),
+            msg     : msgTxt,
             buttons : msg.YESNO,
             fn      : function(b) {
                         if (b == 'yes') {

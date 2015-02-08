@@ -404,12 +404,6 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
 
         var store = com.conjoon.groupware.email.AccountStore.getInstance();
 
-        Ext.ux.util.MessageBus.subscribe(
-            'com.conjoon.groupware.email.account.added',
-            this._onAccountAdded,
-            this
-        );
-
         /**
          * The top toolbar for the tree panel
          * @param {Ext.Toolbar}
@@ -472,12 +466,16 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
         me.mon(me.treeLoader, 'beforeload', me._onTreeLoaderBeforeLoad, me);
         me.mon(me.treeLoader, 'load', me._onTreeLoaderLoad, me);
 
-
-
         Ext.ux.util.MessageBus.subscribe(
             'com.conjoon.groupware.email.account.added',
             me._onAccountAdded,
             me
+        );
+
+        Ext.ux.util.MessageBus.subscribe(
+            'com.conjoon.groupware.email.account.removed',
+            this._onAccountRemoved,
+            this
         );
 
         me.mon(me.getFolderMenu(), 'itemclick', me.contextMenuItemClicked, me);
@@ -1787,6 +1785,49 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
 
     },
 
+
+    /**
+     * Listener for the com.conjoon.groupware.email.account.removed message.
+     * Will try to remove the folder associated with the removed account
+     * available in message.account, if the associated folder is not of the
+     * type accounts_root.
+     *
+     * @param subject
+     * @param message
+     * @private
+     */
+    _onAccountRemoved : function(subject, message) {
+
+        var me = this,
+            account = message.account,
+            localRootMailFolder = account.get('localRootMailFolder');
+
+        if (!me.rendered) {
+            return;
+        }
+
+        if (this.root.firstChild == null) {
+            return;
+        }
+
+        var root   = this.root,
+            child,
+            account = message.account,
+            folder  = account.get('localRootMailFolder');
+
+        // chere here if an accounts_root already exists, and
+        // a new account managed by accounts_root is to be added
+        if (folder.type == 'accounts_root') {
+            return;
+        }
+
+        child = this.root.findChild('id', folder.id);
+
+        if (child) {
+            this.root.removeChild(child);
+        }
+    },
+
     /**
      * Listener for the com.conjoon.groupware.email.account.added message.
      * Tries to reload this tree if no email accounts where configured
@@ -1831,7 +1872,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
 
             // this should not happen
             throw(
-                "com.conjoon.groupware.email.EmailTree._onAccountAdd() - "
+                "com.conjoon.groupware.email.EmailTree._onAccountAdded() - "
                 + "could not add folder for new account"
             );
         }

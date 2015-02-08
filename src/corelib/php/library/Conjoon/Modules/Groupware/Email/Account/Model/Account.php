@@ -213,8 +213,6 @@ class Conjoon_Modules_Groupware_Email_Account_Model_Account
 
         $folderModel = new Conjoon_Modules_Groupware_Email_Folder_Model_Folder();
 
-        $rootId = $folderModel->getRootFolderId($accountId, $userId);
-
         /**
          * @see Conjoon_Modules_Groupware_Email_Folder_Model_FoldersAccounts
          */
@@ -224,8 +222,10 @@ class Conjoon_Modules_Groupware_Email_Account_Model_Account
 
         $folders = $foldersAccounts->getFolderIdsForAccountId($accountId);
 
-        // rootID found - delete all!
-        if ($rootId) {
+        // check if account is of type "root" or
+        // if account is of type "root_remote"
+        if ($folderModel->getRootFolderId($accountId, $userId) ||
+            $folderModel->getRootRemoteFolderId($accountId, $userId)) {
             // no folders or root - we can remove the account entirely
             $where   = $this->getAdapter()->quoteInto('id = ?', $accountId, 'INTEGER');
             $deleted = $this->delete($where);
