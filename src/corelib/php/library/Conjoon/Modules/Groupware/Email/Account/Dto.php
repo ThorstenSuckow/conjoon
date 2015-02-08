@@ -59,7 +59,7 @@ class Conjoon_Modules_Groupware_Email_Account_Dto extends Conjoon_Dto {
     public $isCopyLeftOnServer;
     public $folderMappings;
     private $_hasSeparateFolderHierarchy;
-    public $rootFolderId;
+    public $localRootMailFolder;
 
 
 }

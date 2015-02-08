@@ -557,9 +557,14 @@ class Conjoon_Modules_Groupware_Email_Account_Model_Account
         foreach ($rows as &$row) {
 
             // add information related to the accounts root folder here
-            $row['rootFolderId'] =
-                $folderModel->getAccountsRootOrRootFolderId($row['id'], $id);
-
+            $row['localRootMailFolder'] = array();
+            $rootId = $folderModel->getAccountsRootOrRootFolderId($row['id'], $id);
+            if ($rootId) {
+                $row['localRootMailFolder'] = $folderModel->getFolderBaseData($rootId);
+                if ($row['localRootMailFolder']) {
+                    $row['localRootMailFolder'] = $row['localRootMailFolder']->toArray();
+                }
+            }
 
             $mappings = $adapter->fetchAll(
                     $adapter->select()
