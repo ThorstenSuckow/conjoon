@@ -381,7 +381,6 @@ class Conjoon_Modules_Groupware_Email_Account_Model_Account
             'address',
             'reply_address',
             'is_standard',
-            'protocol',
             'server_inbox',
             'server_outbox',
             'username_inbox',
