@@ -213,19 +213,25 @@ com.conjoon.groupware.email.EmailAccountWizard = Ext.extend(Ext.ux.Wiz, {
         var responseValues = json.getResponseValues(response.responseText),
             account        = responseValues.account,
             rootFolder     = account.localRootMailFolder,
-            accountStore   = com.conjoon.groupware.email.AccountStore.getInstance();
+            accountStore   = com.conjoon.groupware.email.AccountStore.getInstance(),
+            // create copy to prevent passed references
+            recCopyData    = null;
 
         var rec = com.conjoon.util.Record.convertTo(
             com.conjoon.groupware.email.AccountRecord,
             account, account.id
         );
 
+        recCopyData = rec.copy();
+        recCopyData = recCopyData.data;
+        recCopyData.localRootMailFolder = Ext.apply({}, rootFolder);
+
         accountStore.addSorted(rec);
 
         if (rootFolder && rootFolder.id) {
             Ext.ux.util.MessageBus.publish(
                 'com.conjoon.groupware.email.account.added',
-                {account : rec}
+                {account : recCopyData}
             );
         }
 

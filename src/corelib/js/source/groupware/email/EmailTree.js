@@ -478,6 +478,18 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
             this
         );
 
+        Ext.ux.util.MessageBus.subscribe(
+            'com.conjoon.groupware.email.account.localRootMailFolderRemoved',
+            me._onLocalRootMailFolderRemoved,
+            me
+        );
+
+        Ext.ux.util.MessageBus.subscribe(
+            'com.conjoon.groupware.email.account.localRootMailFolderAdded',
+            me._onLocalRootMailFolderAdded,
+            me
+        );
+
         me.mon(me.getFolderMenu(), 'itemclick', me.contextMenuItemClicked, me);
         me.on('contextmenu', me.onContextMenu, me);
         me.on('mousedown', me.onMouseDown, me);
@@ -1798,9 +1810,11 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
      */
     _onAccountRemoved : function(subject, message) {
 
-        var me = this,
+        var me      = this,
             account = message.account,
-            localRootMailFolder = account.get('localRootMailFolder');
+            root    = this.root,
+            localRootMailFolder = account.localRootMailFolder,
+            child;
 
         if (!me.rendered) {
             return;
@@ -1810,21 +1824,16 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
             return;
         }
 
-        var root   = this.root,
-            child,
-            account = message.account,
-            folder  = account.get('localRootMailFolder');
-
         // chere here if an accounts_root already exists, and
         // a new account managed by accounts_root is to be added
-        if (folder.type == 'accounts_root') {
+        if (localRootMailFolder.type == 'accounts_root') {
             return;
         }
 
-        child = this.root.findChild('id', folder.id);
+        child = root.findChild('id', localRootMailFolder.id);
 
         if (child) {
-            this.root.removeChild(child);
+            root.removeChild(child);
         }
     },
 
@@ -1849,7 +1858,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
 
             var childs  = this.root.childNodes,
                 account = message.account,
-                folder  = account.get('localRootMailFolder');
+                folder  = account.localRootMailFolder;
 
             // chere here if an accounts_root already exists, and
             // a new account managed by accounts_root is to be added
@@ -1865,7 +1874,8 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
             if (folder.type == 'accounts_root' ||
                 folder.type == 'root' ||
                 folder.type == 'root_remote') {
-                var node = this.treeLoader.createNode(folder);
+                // create copy to prevent references
+                var node = this.treeLoader.createNode(Ext.apply({}, folder));
                 this.root.appendChild(node);
                 return;
             }
@@ -1876,6 +1886,82 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
                 + "could not add folder for new account"
             );
         }
+    },
+
+    /**
+     * Callback for the message 'com.conjoon.groupware.email.account.localRootMailFolderRemoved'
+     * Will remove any tree nodes, if necessary and applicable.
+     *
+     * @param {String} subject The message's subject
+     * @param {Object} message The message' message, containing the account id in
+     *                         "accountId" and the removed folder in
+     *                         "localRootMailFolder"
+     */
+    _onLocalRootMailFolderRemoved : function(subject, message) {
+
+        var localRootMailFolder = message.localRootMailFolder,
+            me = this;
+
+        if (!me.rendered) {
+            return;
+        }
+
+        if (localRootMailFolder.type == 'accounts_root') {
+            // do nothing!
+            return;
+        }
+
+        if (this.root.firstChild == null) {
+            return;
+        }
+
+        var root = me.root,
+            child;
+
+        child = root.findChild('id', localRootMailFolder.id);
+
+        if (child) {
+           root.removeChild(child);
+        }
+
+    },
+
+    /**
+     * Callback for the message 'com.conjoon.groupware.email.account.localRootMailFolderAdded'
+     * Will add any tree nodes, if necessary and applicable.
+     *
+     * @param {String} subject The message's subject
+     * @param {Object} message The message' message, containing the account id in
+     *                         "accountID" and the added folder in
+     *                         "localRootMailFolder"
+     */
+    _onLocalRootMailFolderAdded : function(subject, message) {
+
+        var localRootMailFolder = message.localRootMailFolder,
+            me   = this,
+            root = me.root,
+            child;
+
+        if (!me.rendered) {
+            return;
+        }
+
+        // check if a local root mail folder with the id exists! Maybe we're
+        // just (re)mapping accounts_root to an email account. Then return.
+        child = this.root.findChild('id', localRootMailFolder.id);
+        if (child) {
+            if (child.attributes.type == 'accounts_root') {
+                return;
+            }
+            throw new cudgets.base.RuntimeException(
+                "localRootMailFolder (id: " + child.id + ") to add is " +
+                "already existing, and not of type accounts_root"
+            );
+        }
+
+        // prevent references by creating copy
+        var node = this.treeLoader.createNode(Ext.apply({}, localRootMailFolder));
+        root.appendChild(node);
     }
 
 });

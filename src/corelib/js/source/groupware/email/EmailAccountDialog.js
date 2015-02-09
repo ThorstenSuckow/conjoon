@@ -1112,12 +1112,20 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         // deleted
         var responseValue = json.getResponseValues(response.responseText);
 
-        var deletedFailed = responseValue['deletedFailed'];
-        var updatedFailed = responseValue['updatedFailed'];
-        var failureDel  = false;
-        var failureUpd  = false;
-        var failureBoth = false;
-        var message     = "";
+        var deletedFailed = responseValue['deletedFailed'],
+            updatedFailed = responseValue['updatedFailed'],
+            failureDel    = false,
+            failureUpd    = false,
+            failureBoth   = false,
+            message       = "",
+            accountStore  = this.accountStore,
+            /**
+             * folders which have been removed/created due to hasSeparateFolderHierarchy
+             * setting.
+             */
+            createdLocalRootMailFolders = responseValue['createdLocalRootMailFolders'],
+            removedLocalRootMailFolders = responseValue['removedLocalRootMailFolders'];
+
         if (deletedFailed.length > 0) {
             failureDel = true;
         }
@@ -1157,17 +1165,85 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
 
         if (!failureDel) {
 
+            var accountId,
+                localRootMailFolder,
+                ind,
+                accountRec;
+
+
+            for (var i in removedLocalRootMailFolders) {
+
+                if (!removedLocalRootMailFolders.hasOwnProperty(i)) {
+                    continue;
+                }
+
+                accountId = parseInt(i, 10);
+
+                ind = accountStore.findExact('id', accountId);
+
+                if (ind !== -1) {
+                    accountRec = accountStore.getAt(ind);
+                    accountRec.set('localRootMailFolder', {});
+                    Ext.ux.util.MessageBus.publish(
+                        /**
+                         * This message tells that an account record has lost its
+                         * localRootMailFolder. the passed account is not guaranteed to
+                         * hold the actual or new localRootMailFolder
+                         */
+                        'com.conjoon.groupware.email.account.localRootMailFolderRemoved',
+                        {accountId : accountRec.get('id'),
+                         // create new object, otherwise references will be passes
+                        localRootMailFolder : Ext.apply({}, removedLocalRootMailFolders[i])}
+                    );
+                }
+            }
+
+            for (var i in createdLocalRootMailFolders) {
+
+                if (!createdLocalRootMailFolders.hasOwnProperty(i)) {
+                    continue;
+                }
+
+                accountId = parseInt(i, 10);
+
+                ind = accountStore.findExact('id', accountId);
+                if (ind !== -1) {
+                    accountRec = accountStore.getAt(ind);
+                    accountRec.set('localRootMailFolder', createdLocalRootMailFolders[i]);
+                    Ext.ux.util.MessageBus.publish(
+                        /**
+                         * This message tells that an account record has gained a
+                         * new localRootMailFolder. the passed account is not
+                         * guaranteed to hold the actual or new localRootMailFolder
+                         */
+                        'com.conjoon.groupware.email.account.localRootMailFolderAdded',
+                        {accountId : accountRec.get('id'),
+                         // create new object, otherwise references will be passes
+                         localRootMailFolder : Ext.apply({}, createdLocalRootMailFolders[i])}
+                    );
+                }
+            }
+
+            var delRecCopyData;
+
             for (var i in this.deletedRecords) {
+
+                // create copy to prevent passing references
+                delRecCopyData = this.deletedRecords[i].copy();
+                delRecCopyData = delRecCopyData.data;
+                delRecCopyData.localRootMailFolder =
+                    Ext.apply({}, this.deletedRecords[i].get('localRootMailFolder'));
+
                 Ext.ux.util.MessageBus.publish(
                     'com.conjoon.groupware.email.account.removed',
-                    {account : this.deletedRecords[i]}
+                    {account : delRecCopyData}
                 );
             }
 
             this.deletedRecords = {};
         }
 
-        this.accountStore.commitChanges();
+        accountStore.commitChanges();
 
         this.switchDialogState(true);
         if (options.closeAfterSuccess === true) {

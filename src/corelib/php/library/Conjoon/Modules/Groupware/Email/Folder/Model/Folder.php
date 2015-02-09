@@ -1618,7 +1618,8 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
         return array(
             'getFolderForId',
             'getFolders',
-            'getFolderBaseData'
+            'getFolderBaseData',
+            'getAnyRootMailFolderBaseData'
         );
     }
 }

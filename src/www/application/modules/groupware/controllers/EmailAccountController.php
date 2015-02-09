@@ -402,6 +402,34 @@ class Groupware_EmailAccountController extends Zend_Controller_Action {
         $createdLocalRootMailFolders = array();
         $removedLocalRootMailFolders = array();
 
+        /**
+         * @see Conjoon_BeanContext_Decorator
+         */
+        require_once 'Conjoon/BeanContext/Decorator.php';
+
+        $decoratedFolderModel = new Conjoon_BeanContext_Decorator(
+            'Conjoon_Modules_Groupware_Email_Folder_Model_Folder',
+            null, false
+        );
+
+        $decoratedAccountModel = new Conjoon_BeanContext_Decorator(
+            'Conjoon_Modules_Groupware_Email_Account_Model_Account'
+        );
+
+        /**
+         * @see Conjoon_Modules_Groupware_Email_Folder_Model_Folder
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/Folder/Model/Folder.php';
+
+        $folderModel = new Conjoon_Modules_Groupware_Email_Folder_Model_Folder();
+
+        /**
+         * @see Conjoon_Modules_Groupware_Email_Folder_Model_FoldersAccounts
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/Folder/Model/FoldersAccounts.php';
+
+        $foldersAccounts = new Conjoon_Modules_Groupware_Email_Folder_Model_FoldersAccounts();
+
         for ($i = 0, $len = count($data); $i < $len; $i++) {
             $id = $data[$i]['id'];
             unset($data[$i]['id']);
@@ -451,16 +479,8 @@ class Groupware_EmailAccountController extends Zend_Controller_Action {
                              */
                             require_once 'Conjoon/Modules/Groupware/Email/ImapHelper.php';
 
-                            /**
-                             * @see Conjoon_BeanContext_Decorator
-                             */
-                            require_once 'Conjoon/BeanContext/Decorator.php';
-
-                            $decoratedModel = new Conjoon_BeanContext_Decorator(
-                                'Conjoon_Modules_Groupware_Email_Account_Model_Account'
-                            );
-
-                            $accDto = $decoratedModel->getAccountAsDto($id, $userId);
+                            $accDto = $decoratedAccountModel->getAccountAsDto(
+                                $id, $userId);
 
                             $delim = Conjoon_Modules_Groupware_Email_ImapHelper
                             ::getFolderDelimiterForImapAccount($accDto);
@@ -500,26 +520,13 @@ class Groupware_EmailAccountController extends Zend_Controller_Action {
                     if ($hasSeparateFolderHierarchy !== null &&
                         strtolower($orgProtocol) !== 'imap') {
 
-                        /**
-                         * @see Conjoon_Modules_Groupware_Email_Folder_Model_Folder
-                         */
-                        require_once 'Conjoon/Modules/Groupware/Email/Folder/Model/Folder.php';
-
-                        $folderModel = new Conjoon_Modules_Groupware_Email_Folder_Model_Folder();
-
-                        /**
-                         * @see Conjoon_Modules_Groupware_Email_Folder_Model_FoldersAccounts
-                         */
-                        require_once 'Conjoon/Modules/Groupware/Email/Folder/Model/FoldersAccounts.php';
-
-                        $foldersAccounts = new Conjoon_Modules_Groupware_Email_Folder_Model_FoldersAccounts();
 
                         // the original folder ids, before remapping occures
                         $oldAccountFolderIds = $foldersAccounts->getFolderIdsForAccountId($id);
 
                         // read out folder base data of folder for associated account
-                        $rootFolderBaseData = $folderModel->getAnyRootMailFolderBaseData(
-                            $id, $userId);
+                        $rootFolderBaseData = $decoratedFolderModel
+                            ->getAnyRootMailFolderBaseDataAsDto($id, $userId);
 
                         if (!$rootFolderBaseData) {
                             throw new RuntimeException("No root folder base data available.");
@@ -548,13 +555,13 @@ class Groupware_EmailAccountController extends Zend_Controller_Action {
                                         $folderModel->deleteFolder($oldFolderId, $userId, false);
                                     }
                                     $removedLocalRootMailFolders[$id] =
-                                        $rootFolderBaseData->toArray();
+                                        $rootFolderBaseData;
                                     $foldersAccounts->mapFolderIdsToAccountId($newFolderIds, $id);
                                 }
 
                                 $createdLocalRootMailFolders[$id] =
-                                    $folderModel->getAnyRootMailFolderBaseData($id, $userId)
-                                                ->toArray();
+                                    $decoratedFolderModel
+                                        ->getAnyRootMailFolderBaseDataAsDto($id, $userId);
                             }
 
                         } else {
@@ -571,8 +578,8 @@ class Groupware_EmailAccountController extends Zend_Controller_Action {
                                     $id, $userId, $data[$i]['name']
                                 );
                                 $createdLocalRootMailFolders[$id] =
-                                    $folderModel->getAnyRootMailFolderBaseData($id, $userId)
-                                                ->toArray();
+                                    $decoratedFolderModel
+                                        ->getAnyRootMailFolderBaseDataAsDto($id, $userId);
                             }
 
                         }
