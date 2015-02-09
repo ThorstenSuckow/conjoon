@@ -518,8 +518,12 @@ class Groupware_EmailAccountController extends Zend_Controller_Action {
                         $oldAccountFolderIds = $foldersAccounts->getFolderIdsForAccountId($id);
 
                         // read out folder base data of folder for associated account
-                        $rootFolderBaseData = $folderModel->getRootMailFolderBaseData(
+                        $rootFolderBaseData = $folderModel->getAnyRootMailFolderBaseData(
                             $id, $userId);
+
+                        if (!$rootFolderBaseData) {
+                            throw new RuntimeException("No root folder base data available.");
+                        }
 
                         if (!$hasSeparateFolderHierarchy) {
 
@@ -531,12 +535,7 @@ class Groupware_EmailAccountController extends Zend_Controller_Action {
                             if ($rootFolderBaseData->type == 'root') {
                                 // check first if accounts_root exist!
                                 $accountsRootFolderId =
-                                    $folderModel->getAccountsRootFolderId($id, $userId);
-                                /**
-                                 * NEED TO GET THE ACCOUNTS_ROOT FOR A USER. NOT
-                                 * DEPENDING OF AN ACCOUNT ID HERE! SINCE WE NEED TO
-                                 * KNOW IF THE ACCOUNTS_ROOT EXISTS FOR _ANY_ ACCOUNT
-                                 */
+                                    $folderModel->getAccountsRootMailFolderBaseData($userId);
 
                                 // accounts root not yet existing
                                 if (!$accountsRootFolderId) {
@@ -554,7 +553,7 @@ class Groupware_EmailAccountController extends Zend_Controller_Action {
                                 }
 
                                 $createdLocalRootMailFolders[$id] =
-                                    $folderModel->getRootMailFolderBaseData($id, $userId)
+                                    $folderModel->getAnyRootMailFolderBaseData($id, $userId)
                                                 ->toArray();
                             }
 
@@ -572,7 +571,7 @@ class Groupware_EmailAccountController extends Zend_Controller_Action {
                                     $id, $userId, $data[$i]['name']
                                 );
                                 $createdLocalRootMailFolders[$id] =
-                                    $folderModel->getRootMailFolderBaseData($id, $userId)
+                                    $folderModel->getAnyRootMailFolderBaseData($id, $userId)
                                                 ->toArray();
                             }
 

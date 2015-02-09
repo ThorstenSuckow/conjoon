@@ -242,7 +242,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
      *
      * @return Zend_Db_Table_Row or null
      */
-    public function getRootMailFolderBaseData($accountId, $userId) {
+    public function getAnyRootMailFolderBaseData($accountId, $userId) {
 
         $accountId = (int)$accountId;
         $userId    = (int)$userId;
@@ -1070,6 +1070,46 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
 
         return $id;
    }
+
+    /**
+     * Returns the base data for the accounts_root folder for the specified user.
+     * Returns null if no accounts_root folder is available for this user yet
+     *
+     * @param integer $userId
+     *
+     * @return Zend_db_Table_Row or null if not available
+     */
+    public function getAccountsRootMailFolderBaseData($userId) {
+
+        $userId = (int)$userId;
+
+        if ($userId <= 0) {
+            return null;
+        }
+
+        $where = $this->getAdapter()->quoteInto('folders.type=?', 'accounts_root');
+
+        // check first if the folder may get deleted
+        $select = $this->select()
+                  ->from(array('folders' => self::getTablePrefix() . 'groupware_email_folders'),
+                         array('*', 'id AS id_for_path', '(1) as is_selectable'))
+                  ->join(
+                      array('folders_users' => self::getTablePrefix() . 'groupware_email_folders_users'),
+                      'folders_users.groupware_email_folders_id=folders.id' .
+                      ' AND ' .
+                      'folders_users.users_id=' . $userId .
+                      ' AND ' .
+                      'folders_users.relationship=\'owner\'',
+                      array()
+                  )
+                  //**//
+                  ->where('folders.is_deleted = ?', 0)
+                  ->where($where);
+
+        $row = $this->fetchRow($select);
+
+        return $row;
+    }
 
     /**
      * Returns all the ids of the folder hierarchy marked as accounts_root
