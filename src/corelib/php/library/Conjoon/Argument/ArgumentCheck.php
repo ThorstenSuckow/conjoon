@@ -93,6 +93,34 @@ class ArgumentCheck {
 
             switch ($entityConfig['type']) {
 
+                case 'arrayType':
+
+                    if (!$allowEmpty && !isset($data[$argumentName])) {
+                        throw new InvalidArgumentException(
+                            "\"$argumentName\" not set"
+                        );
+                    }
+
+                    $className = $entityConfig['class'];
+
+                    if (!is_array($data[$argumentName])) {
+                        throw new InvalidArgumentException(
+                            "\"$argumentName\" is not an array"
+                        );
+                    }
+
+                    foreach ($data[$argumentName] as $arrKey => $arrValue) {
+                        if (!($arrValue instanceof $className)) {
+                            throw new InvalidArgumentException(
+                                "\"$argumentName\" not instanceof " .
+                                $entityConfig['class'] ." at index " .
+                                $arrKey
+                            );
+                        }
+                    }
+
+                    break;
+
                 case 'instanceof':
 
                     if (!$allowEmpty && !isset($data[$argumentName])) {
@@ -112,6 +140,8 @@ class ArgumentCheck {
 
 
                     break;
+
+
 
                 case 'inArray':
                     $values = &$entityConfig['values'];

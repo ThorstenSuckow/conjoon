@@ -208,6 +208,68 @@ class ArgumentCheckTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @ticket CN-925
+     */
+    public function test_CN925() {
+
+        $dataOk = array('values' => array(
+            0 => new \stdClass(),
+            110 => new \stdClass(),
+            12 => new \stdClass(),
+            2220 => new \stdClass(),
+            '0' => new \stdClass()
+        ));
+        $ee = null;
+        try {
+            ArgumentCheck::check(array(
+                'values' => array(
+                    'type'  => 'arrayType',
+                    'class' => '\stdClass'
+                )
+            ), $dataOk);
+        } catch (\Exception $ee) {
+            $this->fail("Unexpected exception");
+        }
+
+
+        $notOkayValues = array('values' => 'meh.');
+        $ee = null;
+        try {
+            ArgumentCheck::check(array(
+                'values' => array(
+                    'type'  => 'arrayType',
+                    'class' => '\stdClass'
+                )
+            ), $notOkayValues);
+        } catch (\Exception $ee) {
+            //
+        }
+        $this->assertTrue($ee instanceof \Conjoon\Argument\InvalidArgumentException);
+
+
+        $dataNotOk = array('values' => array(
+            0 => new \stdClass(),
+            110 => new \stdClass(),
+            12 => new \stdClass(),
+            2220 => 'new \stdClass()',
+            '0' => new \stdClass()
+        ));
+        $ee = null;
+        try {
+            ArgumentCheck::check(array(
+                'values' => array(
+                    'type'  => 'arrayType',
+                    'class' => '\stdClass'
+                )
+            ), $dataNotOk);
+        } catch (\Exception $ee) {
+            //
+        }
+        $this->assertTrue($ee instanceof \Conjoon\Argument\InvalidArgumentException);
+
+    }
+
+    /**
      * @ticket CN-910
      */
     public function testNotForceEmptyString() {
