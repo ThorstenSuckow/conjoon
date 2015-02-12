@@ -32,7 +32,7 @@
 namespace Conjoon\Mail\Client\Folder;
 
 /**
- * A class to mediate between meail fodler services. It's purpose is to
+ * A class to mediate between mail folder services. It's purpose is to
  * represent a collection of methods that are needed by different Client
  * Folder services at the same time, to avoid cross references.
  *
