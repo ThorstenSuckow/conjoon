@@ -33,21 +33,21 @@
 namespace Conjoon\Mail\Client\Folder;
 
 /**
- * @see Conjoon\Mail\Client\Folder\FolderException
+ * @see Conjoon_Mail_Client_MailClientException
  */
-require_once 'Conjoon/Mail/Client/Folder/FolderException.php';
+require_once 'Conjoon/Mail/Client/MailClientException.php';
 
 
 /**
  * @category   Conjoon
  * @package    Exception
  *
- * @uses Conjoon\Mail\Client\Folder\FolderException
+ * @uses \Conjoon_Mail_Client_MailClientException
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class FolderServiceException
-    extends FolderException {
+class FolderException
+    extends \Conjoon_Mail_Client_MailClientException {
 
 }
 

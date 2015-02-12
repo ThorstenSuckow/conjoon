@@ -19,7 +19,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*
+ *
  * $Author$
  * $Id$
  * $Date$
@@ -29,7 +29,6 @@
  * $URL$
  */
 
-
 namespace Conjoon\Mail\Client\Folder;
 
 /**
@@ -37,17 +36,26 @@ namespace Conjoon\Mail\Client\Folder;
  */
 require_once 'Conjoon/Mail/Client/Folder/FolderException.php';
 
-
-/**
- * @category   Conjoon
- * @package    Exception
- *
- * @uses Conjoon\Mail\Client\Folder\FolderException
+/** @category   Conjoon
+ * @package    Conjoon_Mail
+ * @subpackage UnitTests
+ * @group      Conjoon_Mail
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class FolderServiceException
-    extends FolderException {
+class FolderExceptionTest extends \PHPUnit_Framework_TestCase {
+
+
+    /**
+     * Ensures everything works as expected
+     *
+     * @expectedException \Conjoon\Mail\Client\Folder\FolderException
+     *
+     * @return void
+     */
+    public function testException()
+    {
+        throw new FolderException();
+    }
 
 }
-
