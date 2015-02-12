@@ -208,6 +208,55 @@ class ArgumentCheckTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @ticket CN-926
+     */
+    public function test_CN926() {
+
+        $dataOk = array('values' => array(
+            1, 2, 3, 4, 5
+        ));
+
+        $emptyArray = array('values' => array());
+
+        $emptyValue = array('values' => null);
+
+        ArgumentCheck::check(array(
+            'values' => array(
+                'type'  => 'array'
+            )
+        ), $dataOk);
+
+        ArgumentCheck::check(array(
+            'values' => array(
+                'type'  => 'array',
+                'allowEmpty' => false
+            )
+        ), $emptyArray);
+
+        ArgumentCheck::check(array(
+            'values' => array(
+                'type'  => 'array',
+                'allowEmpty' => true,
+            )
+        ), $emptyValue);
+
+        $ee = null;
+
+        try {
+            ArgumentCheck::check(array(
+                'values' => array(
+                    'type'  => 'array',
+                    'allowEmpty' => false,
+                )
+            ), $emptyValue);
+        } catch (\Exception $ee) {
+            // ignore
+        }
+        $this->assertTrue($ee instanceof \Conjoon\Argument\InvalidArgumentException);
+
+    }
+
+    /**
      * @ticket CN-925
      */
     public function test_CN925() {

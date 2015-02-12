@@ -141,6 +141,22 @@ class ArgumentCheck {
 
                     break;
 
+                case 'array':
+
+                    if (!$allowEmpty && !isset($data[$argumentName])) {
+                        throw new InvalidArgumentException(
+                            "\"$argumentName\" not set"
+                        );
+                    }
+
+                    if (isset($data[$argumentName]) &&
+                        !is_array($data[$argumentName])) {
+                        throw new InvalidArgumentException(
+                            "Not an array passed for $argumentName"
+                        );
+                    }
+
+                    break;
 
 
                 case 'inArray':
