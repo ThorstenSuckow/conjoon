@@ -46,7 +46,7 @@ require_once 'Conjoon/Mail/Client/Message/Strategy/StrategyException.php';
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class ServicePatronExceptionTest
+class StrategyExceptionTest
     extends \PHPUnit_Framework_TestCase {
 
 
