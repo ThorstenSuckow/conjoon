@@ -77,6 +77,30 @@ interface FolderService {
     public function isFolderRepresentingRemoteMailbox(Folder $folder);
 
     /**
+     * Returns true if the specified folder represents an "accounts_root" folder,
+     * otherwise false.
+     *
+     * @param Folder $folder
+     *
+     * @return boolean
+     *
+     * @throws FolderServiceException
+     */
+    public function isFolderAccountsRootFolder(Folder $folder);
+
+    /**
+     * Returns true if the specified folder represents a "root" folder,
+     * otherwise false.
+     *
+     * @param Folder $folder
+     *
+     * @return boolean
+     *
+     * @throws FolderServiceException
+     */
+    public function isFolderRootFolder(Folder $folder);
+
+    /**
      * Returns the folder entity for the secified folder. The repository used
      * for retrieving the entity is the repository configured for an instance of
      * this class.

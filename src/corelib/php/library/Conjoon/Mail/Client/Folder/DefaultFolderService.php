@@ -81,6 +81,16 @@ class DefaultFolderService implements FolderService {
     const ROOT_REMOTE = 'root_remote';
 
     /**
+     * @const ROOT_REMOTE
+     */
+    const ACCOUNTS_ROOT = 'accounts_root';
+
+    /**
+     * @const ROOT
+     */
+    const ROOT = 'root';
+
+    /**
      * @var DoctrineMailFolderRepository
      */
     protected $folderRepository;
@@ -132,12 +142,39 @@ class DefaultFolderService implements FolderService {
     /**
      * @inheritdoc
      */
-    public function isFolderRepresentingRemoteMailbox(Folder $folder)
+    public function isFolderAccountsRootFolder(Folder $folder) {
+        $path = $folder->getPath();
+        return $folder->getNodeId() === null &&
+               empty($path) &&
+               $this->getFolderType($folder->getRootId()) === self::ACCOUNTS_ROOT;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isFolderRootFolder(Folder $folder) {
+        $path = $folder->getPath();
+        return $folder->getNodeId() === null &&
+                empty($path) &&
+               $this->getFolderType($folder->getRootId()) === self::ROOT;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isFolderRepresentingRemoteMailbox(Folder $folder) {
+        return $this->getFolderType($folder->getRootId()) === self::ROOT_REMOTE;
+    }
+
+    /**
+     * Returns the type of the folder, i.e. the "type" property.
+     *
+     * @return string
+     */
+    protected function getFolderType($folderId)
     {
         try {
-            $entity = $this->folderRepository->findById(
-                $folder->getRootId()
-            );
+            $entity = $this->folderRepository->findById($folderId);
         } catch (\Exception $e) {
 
             throw new FolderServiceException(
@@ -149,11 +186,11 @@ class DefaultFolderService implements FolderService {
         if ($entity === null) {
 
             throw new FolderServiceException(
-                "Client folder with id " . $folder->getRootId() . " was not found"
+                "Client folder with id " . $folderId . " was not found"
             );
         }
 
-        return $entity->getType() === self::ROOT_REMOTE;
+        return $entity->getType();
     }
 
     /**

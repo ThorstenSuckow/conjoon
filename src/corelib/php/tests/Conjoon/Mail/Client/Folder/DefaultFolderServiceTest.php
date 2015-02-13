@@ -73,6 +73,10 @@ class DefaultClientMailFolderServiceTest extends \Conjoon\DatabaseTestCaseDefaul
 
     protected $clientMailFolderNoRemote;
 
+    protected $rootMailFolder;
+
+    protected $accountsRootMailFolder;
+
     protected $user;
 
     protected $userAccessibleFail;
@@ -110,6 +114,20 @@ class DefaultClientMailFolderServiceTest extends \Conjoon\DatabaseTestCaseDefaul
                 )
             );
 
+        $this->rootMailFolder =
+            new Folder(
+                new DefaultFolderPath(
+                    '["root", "2"]'
+                )
+            );
+
+        $this->accountsRootMailFolder =
+            new Folder(
+                new DefaultFolderPath(
+                    '["root", "3"]'
+                )
+            );
+
         $this->clientMailFolder =
             new Folder(
                 new DefaultFolderPath(
@@ -140,11 +158,66 @@ class DefaultClientMailFolderServiceTest extends \Conjoon\DatabaseTestCaseDefaul
             ));
 
         $this->assertEquals(
-            2,
+            3,
             $this->getConnection()->getRowCount('groupware_email_folders'),
             "Pre-Condition"
         );
     }
+
+
+    /**
+     * Ensure everything works as expected.
+     */
+    public function testIsFolderAccountsRootFolder() {
+        $this->assertSame(
+            true,
+            $this->service->isFolderAccountsRootFolder(
+                $this->accountsRootMailFolder
+            )
+        );
+
+        $this->assertSame(
+            false,
+            $this->service->isFolderAccountsRootFolder(
+                $this->clientMailFolder
+            )
+        );
+
+    }
+
+    /**
+     * Ensure everything works as expected.
+     */
+    public function testIsFolderRootFolder() {
+        $this->assertSame(
+            true,
+            $this->service->isFolderRootFolder(
+                $this->rootMailFolder
+            )
+        );
+
+        $this->assertSame(
+            false,
+            $this->service->isFolderRootFolder(
+                $this->clientMailFolder
+            )
+        );
+    }
+
+    /**
+     * Ensure everything works as expected.
+     */
+    public function testIsFolderRepresentingRootRemoteMailbox() {
+        $this->assertSame(
+            true,
+            $this->service->isFolderRepresentingRemoteMailbox(
+                $this->clientMailFolder
+            )
+        );
+    }
+
+
+
 
     /**
      * Ensure everything works as expected
@@ -168,20 +241,6 @@ class DefaultClientMailFolderServiceTest extends \Conjoon\DatabaseTestCaseDefaul
             false,
             $this->service->isFolderRepresentingRemoteMailbox(
                 $this->clientMailFolderNoRemote
-            )
-        );
-    }
-
-    /**
-     * Ensure everything works as expected
-     *
-     */
-    public function testFind()
-    {
-        $this->assertSame(
-            true,
-            $this->service->isFolderRepresentingRemoteMailbox(
-                $this->clientMailFolder
             )
         );
     }
@@ -223,7 +282,7 @@ class DefaultClientMailFolderServiceTest extends \Conjoon\DatabaseTestCaseDefaul
 
         $this->assertNull(
             $this->service->getFolderEntity(new Folder(
-                new DefaultFolderPath('["root", "3", "2"]')
+                new DefaultFolderPath('["root", "4", "2"]')
             ))
         );
 

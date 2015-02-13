@@ -29,5 +29,15 @@
             <value>1</value>
             <value>0</value>
         </row>
+        <row>
+            <value>3</value>
+            <value>Accounts Root</value>
+            <value>1</value>
+            <value>0</value>
+            <value>accounts_root</value>
+            <value>inbox</value>
+            <value>0</value>
+            <value>0</value>
+        </row>
     </table>
 </dataset>
