@@ -36,6 +36,15 @@ namespace Conjoon\Mail\Client\Folder;
  */
 require_once 'Conjoon/Mail/Client/Folder/DefaultFolderCommons.php';
 
+/**
+ * @see Conjoon\DatabaseTestCaseDefault
+ */
+require_once 'Conjoon/DatabaseTestCaseDefault.php';
+
+/**
+ * @see Conjoon_Modules_Default_User
+ */
+require_once 'Conjoon/Modules/Default/User.php';
 
 /**
  * @category   Conjoon
@@ -45,7 +54,7 @@ require_once 'Conjoon/Mail/Client/Folder/DefaultFolderCommons.php';
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class DefaultMailFolderCommonsTest extends \Conjoon\DatabaseTestCaseDefault {
+class DefaultFolderCommonsTest extends \Conjoon\DatabaseTestCaseDefault {
 
     protected $user;
 

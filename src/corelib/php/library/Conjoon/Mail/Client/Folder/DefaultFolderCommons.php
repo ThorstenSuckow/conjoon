@@ -114,9 +114,16 @@ class DefaultFolderCommons implements FolderCommons {
 
         $entity = $this->folderRepository->find($id);
 
-        while ($entity && $entity->getParent()) {
-            $entity = $entity->getParent();
+        try {
+            while ($entity && $entity->getParent()) {
+                $entity = $entity->getParent();
+            }
+        } catch (\Exception $e) {
+            // if an exception occurs, we assume the folder does
+            // not exists
+            return false;
         }
+
 
         return $entity !== null && ($folder->getRootId() == $entity->getId());
     }
