@@ -42,15 +42,17 @@ require_once 'Conjoon/Mail/Client/Folder/Folder.php';
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class ClientMailFolderTest extends \PHPUnit_Framework_TestCase {
+class FolderTest extends \PHPUnit_Framework_TestCase {
 
+
+    protected $className = '\Conjoon\Mail\Client\Folder\Folder';
 
     /**
      * Ensures everything works as expected
      */
     public function testOk()
     {
-        $folder = new Folder(
+        $folder = new $this->className(
             new DefaultFolderPath(
                 '["root", "79", "INBOXtttt", "rfwe2", "New folder (7)"]'
             )
@@ -74,7 +76,7 @@ class ClientMailFolderTest extends \PHPUnit_Framework_TestCase {
      */
     public function testNodeId()
     {
-        $folder = new Folder(
+        $folder = new $this->className(
             new DefaultFolderPath(
                 '["root", "79"]'
             )
