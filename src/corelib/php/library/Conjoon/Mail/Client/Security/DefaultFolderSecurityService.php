@@ -120,6 +120,14 @@ class DefaultFolderSecurityService implements FolderSecurityService {
     /**
      * @inheritdoc
      */
+    public function isFolderMovable(
+        \Conjoon\Mail\Client\Folder\Folder $folder){
+        return $this->isFolderAccessible($folder);
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function isFolderAccessible(
         \Conjoon\Mail\Client\Folder\Folder $folder)
     {

@@ -82,5 +82,21 @@ interface FolderSecurityService {
     public function isFolderAccessible(
         \Conjoon\Mail\Client\Folder\Folder $folder);
 
+    /**
+     * Checks whether the user bound to this service may access the specified
+     * folder for moving.
+     * Moving means appending this folder and its child folders to a new parent
+     * folder
+     * This method does not need to check whether the target folder may be used
+     * for appending folders security-wise.
+     *
+     * @param \Conjoon\Mail\Client\Folder\MailFolder $folder The folder to check
+     *
+     * @return boolean true on success, false if access is forbidden
+     *
+     * @throws SecurityServiceException
+     */
+    public function isFolderMovable(
+        \Conjoon\Mail\Client\Folder\Folder $folder);
 
 }

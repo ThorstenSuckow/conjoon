@@ -40,6 +40,15 @@ use Conjoon\Mail\Client\Folder\Folder,
  */
 require_once 'Conjoon/Mail/Client/Security/DefaultFolderSecurityService.php';
 
+/**
+ * @see Conjoon\DatabaseTestCaseDefault
+ */
+require_once 'Conjoon/DatabaseTestCaseDefault.php';
+
+/**
+ * @see Conjoon_Modules_Default_User
+ */
+require_once 'Conjoon/Modules/Default/User.php';
 
 /**
  * @category   Conjoon
@@ -110,6 +119,23 @@ class DefaultFolderSecurityServiceTest
         ));
 
 
+    }
+
+    /**
+     * Ensures everything works as expected
+     */
+    public function testIsFolderMovable() {
+        $this->assertTrue(
+            $this->securityService->isFolderMovable(
+                $this->mailFolderOk
+            )
+        );
+
+        $this->assertFalse(
+            $this->securityService->isFolderMovable(
+                $this->mailFolderFail
+            )
+        );
     }
 
     /**
