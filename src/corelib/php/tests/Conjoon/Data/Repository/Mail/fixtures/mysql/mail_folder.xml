@@ -168,6 +168,16 @@
             <value>2</value>
             <value>0</value>
         </row>
+        <row>
+            <value>4</value>
+            <value>folder 4</value>
+            <value>1</value>
+            <value>0</value>
+            <value>root</value>
+            <value>inbox</value>
+            <value>1</value>
+            <value>0</value>
+        </row>
     </table>
     <table name="groupware_email_items">
         <column>id</column>

@@ -62,4 +62,26 @@ class DoctrineMailFolderRepository
         return '\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity';
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function getChildFolders(\Conjoon\Data\Entity\Mail\MailFolderEntity $folder) {
+
+        $em = $this->getEntityManager();
+
+        $query = $em->createQuery(
+            "SELECT a FROM \Conjoon\Data\Entity\Mail\DefaultMailFolderEntity a" .
+            " WHERE a.parent=?1"
+        );
+        $query->setParameter(1, $folder->getId());
+
+        try {
+            $res = $query->getResult();
+        } catch (\Doctrine\ORM\NoResultException $e) {
+            return array();
+        }
+
+        return $res;
+    }
+
 }

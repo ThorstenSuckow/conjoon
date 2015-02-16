@@ -48,7 +48,7 @@ require_once 'Conjoon/DatabaseTestCaseDefault.php';
  */
 class DoctrineMailFolderRepositoryTest extends \Conjoon\DatabaseTestCaseDefault {
 
-    protected $mailFolderCount = 3;
+    protected $mailFolderCount = 4;
 
     public function getDataSet()
     {
@@ -387,4 +387,41 @@ class DoctrineMailFolderRepositoryTest extends \Conjoon\DatabaseTestCaseDefault 
 
     }
 
+    /**
+     * Ensure everything works as expected.
+     */
+    public function testGetChildFolders() {
+
+        $repository = $this->_entityManager->getRepository(
+            '\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
+
+        $entity = $repository->findById(1);
+
+        $entities = $repository->getChildFolders($entity);
+
+        $this->assertSame(2, count($entities));
+
+        $ids = array($entities[0]->getId(), $entities[1]->getId());
+
+        $this->assertTrue(in_array(2, $ids));
+        $this->assertTrue(in_array(4, $ids));
+    }
+
+    /**
+     * Ensure everything works as expected.
+     */
+    public function testGetChildFoldersNone() {
+
+        $repository = $this->_entityManager->getRepository(
+            '\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
+
+        $entity = $repository->findById(4);
+
+        $entities = $repository->getChildFolders($entity);
+
+        $this->assertTrue(empty($entities));
+
+        $this->assertSame(0, count($entities));
+
+    }
 }

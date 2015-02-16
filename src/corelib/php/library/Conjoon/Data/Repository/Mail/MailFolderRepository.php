@@ -47,4 +47,16 @@ require_once 'Conjoon/Data/Repository/DataRepository.php';
  */
 interface MailFolderRepository extends \Conjoon\Data\Repository\DataRepository {
 
+    /**
+     * Returns all the direct child folders of the specified folder.
+     *
+     * @param \Conjoon\Data\Entity\Mail\MailFolderEntity $folder The folder for
+     *        which the child folders should be returned
+     *
+     * @return array An array with all the child folders as data entities. Might
+     *               be empty
+     *
+     */
+    public function getChildFolders(\Conjoon\Data\Entity\Mail\MailFolderEntity $folder);
+
 }
