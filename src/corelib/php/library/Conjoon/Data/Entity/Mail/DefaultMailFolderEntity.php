@@ -262,6 +262,23 @@ class DefaultMailFolderEntity implements MailFolderEntity {
     /**
      * @inheritdoc
      */
+    public function addMailAccount(\Conjoon\Data\Entity\Mail\MailAccountEntity $mailAccount)
+    {
+        $this->mailAccounts[] = $mailAccount;
+        return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function removeMailAccount(\Conjoon\Data\Entity\Mail\MailAccountEntity $mailAccount)
+    {
+        $this->mailAccounts->removeElement($mailAccount);
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function __toString()
     {
         return get_class($this) . '@' . spl_object_hash($this);

@@ -136,6 +136,18 @@ class DefaultMailFolderEntity extends \Conjoon\Data\Entity\Mail\DefaultMailFolde
         return parent::getMailAccounts();
     }
 
+    public function addMailAccount(\Conjoon\Data\Entity\Mail\MailAccountEntity $mailAccount)
+    {
+        $this->__load();
+        return parent::addMailAccount($mailAccount);
+    }
+
+    public function removeMailAccount(\Conjoon\Data\Entity\Mail\MailAccountEntity $mailAccount)
+    {
+        $this->__load();
+        return parent::removeMailAccount($mailAccount);
+    }
+
     public function setIsDeleted($isDeleted)
     {
         $this->__load();

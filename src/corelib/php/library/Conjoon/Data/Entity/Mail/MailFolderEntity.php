@@ -86,4 +86,19 @@ interface MailFolderEntity extends \Conjoon\Data\Entity\DataEntity {
      */
     public function getMailAccounts();
 
+    /**
+     * Adds another mail account to this folder entity.
+     *
+     * @param \Conjoon\Data\Entity\Mail\MailAccountEntity $mailAccount
+     */
+    public function addMailAccount(\Conjoon\Data\Entity\Mail\MailAccountEntity $mailAccount);
+
+    /**
+     * Remove the specified mail account from this entity.
+     *
+     * @param \Conjoon\Data\Entity\Mail\MailAccountEntity $mailAccount
+     */
+    public function removeMailAccount(\Conjoon\Data\Entity\Mail\MailAccountEntity $mailAccount);
+
+
 }

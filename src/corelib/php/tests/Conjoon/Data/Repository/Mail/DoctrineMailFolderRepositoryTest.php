@@ -48,6 +48,8 @@ require_once 'Conjoon/DatabaseTestCaseDefault.php';
  */
 class DoctrineMailFolderRepositoryTest extends \Conjoon\DatabaseTestCaseDefault {
 
+    protected $mailFolderCount = 3;
+
     public function getDataSet()
     {
         return $this->createXMLDataSet(
@@ -69,7 +71,7 @@ class DoctrineMailFolderRepositoryTest extends \Conjoon\DatabaseTestCaseDefault 
 
 
         $this->assertEquals(
-            3,
+            $this->mailFolderCount,
             $this->getConnection()->getRowCount('groupware_email_folders'),
             "Pre-Condition"
         );
@@ -93,7 +95,7 @@ class DoctrineMailFolderRepositoryTest extends \Conjoon\DatabaseTestCaseDefault 
 
 
         $this->assertEquals(
-            3,
+            $this->mailFolderCount,
             $this->getConnection()->getRowCount('groupware_email_folders'),
             "Pre-Condition"
         );
@@ -159,7 +161,7 @@ class DoctrineMailFolderRepositoryTest extends \Conjoon\DatabaseTestCaseDefault 
 
 
         $this->assertEquals(
-            3,
+            $this->mailFolderCount,
             $this->getConnection()->getRowCount('groupware_email_folders'),
             "Pre-Condition"
         );
@@ -176,7 +178,7 @@ class DoctrineMailFolderRepositoryTest extends \Conjoon\DatabaseTestCaseDefault 
         // PERSIST
         $repository->register($entity);
         $this->assertEquals(
-            3,
+            $this->mailFolderCount,
             $this->getConnection()->getRowCount('groupware_email_folders'),
             "Pre-Condition"
         );
@@ -190,7 +192,7 @@ class DoctrineMailFolderRepositoryTest extends \Conjoon\DatabaseTestCaseDefault 
 
         // FLUSH
         $repository->flush();
-        $this->assertEquals(4,
+        $this->assertEquals($this->mailFolderCount + 1,
             $this->getConnection()->getRowCount('groupware_email_folders'),
             "Post-Condition"
         );
@@ -223,7 +225,7 @@ class DoctrineMailFolderRepositoryTest extends \Conjoon\DatabaseTestCaseDefault 
         $repository->register($entity);
 
         $this->assertEquals(
-            3,
+            $this->mailFolderCount,
             $this->getConnection()->getRowCount('groupware_email_folders'),
             "Pre-Condition"
         );
@@ -264,7 +266,7 @@ class DoctrineMailFolderRepositoryTest extends \Conjoon\DatabaseTestCaseDefault 
         $repository->remove($entity);
 
         $this->assertEquals(
-            3,
+            $this->mailFolderCount,
             $this->getConnection()->getRowCount('groupware_email_folders'),
             "Pre-Condition"
         );
@@ -297,7 +299,91 @@ class DoctrineMailFolderRepositoryTest extends \Conjoon\DatabaseTestCaseDefault 
             $this->getConnection()->getRowCount('groupware_email_folders'),
             "Post-Condition"
         );
+    }
 
+    /**
+     * Ensure everything works as expected
+     */
+    public function testRemoveAndAddMailAccount() {
+
+        $this->createXMLDataSet(
+            dirname(__FILE__) . '/fixtures/mysql/mail_folder.xml'
+        );
+        $accountRepository = $this->_entityManager->getRepository(
+            '\Conjoon\Data\Entity\Mail\DefaultMailAccountEntity');
+
+
+        $repository = $this->_entityManager->getRepository(
+            '\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
+
+        $this->assertTrue($repository
+            instanceof \Conjoon\Data\Repository\Mail\DoctrineMailFolderRepository);
+
+        $this->assertTrue($accountRepository
+            instanceof \Conjoon\Data\Repository\Mail\DoctrineMailAccountRepository);
+
+        $entity = $repository->findById(1);
+        $entity2 = $repository->findById(3);
+
+        $accountEntity = $accountRepository->findById(2);
+
+        $entity->removeMailAccount($accountEntity);
+        $entity2->removeMailAccount($accountEntity);
+
+        $repository->register($entity);
+        $repository->register($entity2);
+
+
+        $this->assertEquals(
+            4,
+            $this->getConnection()->getRowCount('groupware_email_folders_accounts'),
+            "Pre-Condition"
+        );
+        $this->assertEquals(
+            2,
+            $this->getConnection()->getRowCount('groupware_email_accounts'),
+            "Pre-Condition 2"
+        );
+
+        $queryTable = $this->getConnection()->createQueryTable(
+            'groupware_email_folders_accounts', 'SELECT * FROM groupware_email_folders_accounts'
+        );
+        $expectedTable = $this->createXmlDataSet(
+            dirname(__FILE__) . '/fixtures/mysql/mail_folder.xml'
+        )->getTable("groupware_email_folders_accounts");
+        $this->assertTablesEqual($expectedTable, $queryTable);
+
+        // FLUSH
+        $repository->flush();
+        $queryTable = $this->getConnection()->createQueryTable(
+            'groupware_email_folders_accounts', 'SELECT * FROM groupware_email_folders_accounts'
+        );
+        $expectedTable = $this->createXmlDataSet(
+            dirname(__FILE__) . '/fixtures/mysql/mail_folder.removeAccountResult.xml'
+        )->getTable("groupware_email_folders_accounts");
+        $this->assertTablesEqual($expectedTable, $queryTable);
+        $this->assertEquals(
+            2,
+            $this->getConnection()->getRowCount('groupware_email_accounts')
+        );
+
+
+        // add the accounts again
+        $entity->addMailAccount($accountEntity);
+        $entity2->addMailAccount($accountEntity);
+
+        $repository->register($entity);
+        $repository->register($entity2);
+
+
+        $repository->flush();
+        $queryTable = $this->getConnection()->createQueryTable(
+            'groupware_email_folders_accounts', 'SELECT * FROM groupware_email_folders_accounts'
+        );
+        $expectedTable = $this->createXmlDataSet(
+            dirname(__FILE__) . '/fixtures/mysql/mail_folder.xml'
+        )->getTable("groupware_email_folders_accounts");
+        $this->assertTablesEqual($expectedTable, $queryTable);
 
     }
 

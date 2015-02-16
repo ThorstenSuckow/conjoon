@@ -37,6 +37,12 @@ namespace Conjoon\Data\Entity\Mail;
 require_once 'Conjoon/Data/Entity/Mail/DefaultMailFolderEntity.php';
 
 /**
+ * @see Conjoon\Data\Entity\Mail\DefaultMailAccountEntity
+ */
+require_once 'Conjoon/Data/Entity/Mail/DefaultMailAccountEntity.php';
+
+
+/**
  * @package    Conjoon/Tests
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
@@ -46,6 +52,7 @@ class DefaultMailFolderEntityTest extends \PHPUnit_Framework_TestCase {
     protected $_input;
 
     protected $_parent;
+
 
     protected function setUp()
     {
@@ -59,6 +66,32 @@ class DefaultMailFolderEntityTest extends \PHPUnit_Framework_TestCase {
             'isDeleted' => false,
             'parent' => null
         );
+    }
+
+
+    /**
+     * Ensures everything works as expected
+     */
+    public function testAddAndRemoveMailAccount() {
+
+        $mailAccount = new DefaultMailAccountEntity();
+
+        $folder = new DefaultMailFolderEntity();
+
+        $folder->addMailAccount($mailAccount);
+
+        $this->assertSame(1, count($folder->getMailAccounts()));
+
+        $mA = $folder->getMailAccounts();
+
+        $this->assertSame($mailAccount, $mA[0]);
+
+        $folder->removeMailAccount($mA[0]);
+
+        $this->assertSame(0, count($folder->getMailAccounts()));
+
+        $mA = $folder->getMailAccounts();
+        $this->assertTrue($mA instanceof \Doctrine\Common\Collections\ArrayCollection);
     }
 
     /**
