@@ -32,9 +32,7 @@
 namespace Conjoon\Mail\Client\Folder;
 
 /**
- * A class to mediate between mail folder services. It's purpose is to
- * represent a collection of methods that are needed by different Client
- * Folder services at the same time, to avoid cross references.
+ * A base service for operations on folders and related entities.
  *
  * @category   Conjoon_Mail
  * @package    Folder
@@ -71,5 +69,92 @@ interface FolderCommons {
      * @throws FolderServiceException
      */
     public function doesMailFolderExist(Folder $folder);
+
+    /**
+     * Returns true if the specified folder allows for adding child folders,
+     * otherwise false.
+     *
+     * @param MailFolder $folder
+     *
+     * @return boolean
+     *
+     * @throws FolderServiceException
+     * @throws FolderDoesNotExistException
+     */
+    public function doesFolderAllowChildFolders(Folder $folder);
+
+    /**
+     * Returns true if the specified folder represents a remote folder,
+     * otherwise false.
+     *
+     * @param Folder $folder
+     *
+     * @return boolean
+     *
+     * @throws FolderServiceException
+     * @throws FolderDoesNotExistException
+     */
+    public function isFolderRepresentingRemoteMailbox(Folder $folder);
+
+    /**
+     * Returns true if the specified folder represents an "accounts_root" folder,
+     * otherwise false.
+     *
+     * @param Folder $folder
+     *
+     * @return boolean
+     *
+     * @throws FolderServiceException
+     * @throws FolderDoesNotExistException
+     */
+    public function isFolderAccountsRootFolder(Folder $folder);
+
+    /**
+     * Returns true if the specified folder represents a "root" folder,
+     * otherwise false.
+     *
+     * @param Folder $folder
+     *
+     * @return boolean
+     *
+     * @throws FolderServiceException
+     * @throws FolderDoesNotExistException
+     */
+    public function isFolderRootFolder(Folder $folder);
+
+    /**
+     * Returns the folder entity for the secified folder. The repository used
+     * for retrieving the entity is the repository configured for an instance of
+     * this class.
+     * Note: Implementing classes should be aware of the fact that a remote folder
+     * might be submitted where the folder name is parsed as an integer, thus
+     * being found in the local data storage and wrongly identified as a local
+     * folder. Implementing classes MUST traverse the parent hierarchy to make sure
+     * the rootId of the passed folder matches the root id of the root folder
+     * of the passed folder.
+     *
+     * @param Folder $folder
+     *
+     * @return \Conjoon\Data\Entity\Mail\MailFolderEntity|null
+     *
+     * @throws FolderServiceException
+     * @throws FolderDoesNotExistException
+     */
+    public function getFolderEntity(Folder $folder);
+
+    /**
+     * Returns a list of child folder entities of the specified folder.
+     *
+     * @param Folder $folder
+     *
+     * @return array An array of \Conjoon\Data\Entity\Mail\MailFolderEntity
+     *               instances; an empty array if no child folders are
+     *               available
+     *
+     * @throws FolderServiceException
+     * @throws FolderDoesNotExistException
+     * @throws NoChildFoldersAllowedException
+     */
+    public function getChildFolderEntities(Folder $folder);
 
 }

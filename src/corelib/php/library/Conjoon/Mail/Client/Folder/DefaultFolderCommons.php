@@ -41,6 +41,21 @@ use Conjoon\Argument\ArgumentCheck,
 require_once 'Conjoon/Mail/Client/Folder/FolderCommons.php';
 
 /**
+ * @see FolderDoesNotExistException
+ */
+require_once 'Conjoon/Mail/Client/Folder/FolderDoesNotExistException.php';
+
+/**
+ * @see NoChildFoldersAllowedException
+ */
+require_once 'Conjoon/Mail/Client/Folder/NoChildFoldersAllowedException.php';
+
+/**
+ * @see FolderServiceException
+ */
+require_once 'Conjoon/Mail/Client/Folder/FolderServiceException.php';
+
+/**
  * @see Conjoon\Argument\ArgumentCheck
  */
 require_once 'Conjoon/Argument/ArgumentCheck.php';
@@ -49,6 +64,8 @@ require_once 'Conjoon/Argument/ArgumentCheck.php';
  * @see Conjoon\Argument\InvalidArgumentException
  */
 require_once 'Conjoon/Argument/InvalidArgumentException.php';
+
+
 
 /**
  * A default implementation for FolderCommons.
@@ -59,6 +76,21 @@ require_once 'Conjoon/Argument/InvalidArgumentException.php';
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 class DefaultFolderCommons implements FolderCommons {
+
+    /**
+     * @const ROOT_REMOTE
+     */
+    const ROOT_REMOTE = 'root_remote';
+
+    /**
+     * @const ROOT_REMOTE
+     */
+    const ACCOUNTS_ROOT = 'accounts_root';
+
+    /**
+     * @const ROOT
+     */
+    const ROOT = 'root';
 
     /**
      * @var DoctrineMailFolderRepository
@@ -124,8 +156,151 @@ class DefaultFolderCommons implements FolderCommons {
             return false;
         }
 
-
         return $entity !== null && ($folder->getRootId() == $entity->getId());
+    }
+
+
+    /**
+     * @inheritdoc
+     */
+    public function isFolderAccountsRootFolder(Folder $folder) {
+        $path = $folder->getPath();
+        return $folder->getNodeId() === null &&
+        empty($path) &&
+        $this->getFolderType($folder->getRootId()) === self::ACCOUNTS_ROOT;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isFolderRootFolder(Folder $folder) {
+        $path = $folder->getPath();
+        return $folder->getNodeId() === null &&
+        empty($path) &&
+        $this->getFolderType($folder->getRootId()) === self::ROOT;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isFolderRepresentingRemoteMailbox(Folder $folder) {
+        return $this->getFolderType($folder->getRootId()) === self::ROOT_REMOTE;
+    }
+
+    /**
+     * Returns the type of the folder, i.e. the "type" property.
+     *
+     * @return string
+     *
+     * @throws FolderServiceException
+     * @throws FolderDoesNotExistException
+     */
+    protected function getFolderType($folderId)
+    {
+        try {
+            $entity = $this->folderRepository->findById($folderId);
+        } catch (\Exception $e) {
+
+            throw new FolderServiceException(
+                "Exception thrown by previous exception: "
+                . $e->getMessage(), 0, $e
+            );
+        }
+
+        if ($entity === null) {
+
+            throw new FolderDoesNotExistException(
+                "Client Folder with id " . $folderId . " was not found"
+            );
+        }
+
+        return $entity->getType();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getChildFolderEntities(Folder $folder) {
+
+        $entity = $this->getFolderEntity($folder);
+
+        if (!$entity->getIsChildAllowed())  {
+            throw new NoChildFoldersAllowedException();
+        }
+
+
+        $folders = array();
+
+        try {
+            $folders = $this->folderRepository->getChildFolders($entity);
+        } catch (\Exception $e) {
+            throw new FolderServiceException(
+                "Exception thrown by previous exception", 0, $e
+            );
+        }
+
+        return $folders;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getFolderEntity(Folder $folder)
+    {
+        $id = $folder->getNodeId()
+              ? $folder->getNodeId()
+              : $folder->getRootId();
+
+        $rootId = $folder->getRootId();
+
+
+        try {
+            $orgEntity = $this->folderRepository->findById($id);
+        } catch (InvalidArgumentException $e) {
+            throw new FolderServiceException(
+                "Exception thrown by previous exception", 0, $e
+            );
+        }
+
+        if (!$orgEntity) {
+            throw new FolderDoesNotExistException(
+                "Folder $folder was not found"
+            );
+        }
+
+        // we might have found a folder.
+        // but we have to make sure that the node id we are inspecting is actually
+        // an id in the data storage, and not simply the name of a folder (e.g. "2")
+        $entity = $orgEntity;
+        while (true) {
+            if ($entity && $entity->getParent()) {
+                $entity = $entity->getParent();
+            } else {
+                break;
+            }
+        }
+
+        if ($entity->getId() != $rootId) {
+            throw new FolderDoesNotExistException(
+                "Folder $folder was not found"
+            );
+        }
+
+        return $orgEntity;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function doesFolderAllowChildFolders(Folder $folder) {
+
+        $entity = $this->getFolderEntity($folder);
+
+        if (!$entity->getIsChildAllowed()) {
+            return false;
+        }
+
+        return true;
     }
 
 }

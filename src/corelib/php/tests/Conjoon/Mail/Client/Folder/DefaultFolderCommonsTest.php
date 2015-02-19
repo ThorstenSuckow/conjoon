@@ -58,6 +58,22 @@ class DefaultFolderCommonsTest extends \Conjoon\DatabaseTestCaseDefault {
 
     protected $user;
 
+    protected $commons;
+
+    protected $rootMailFolder;
+
+    protected $accountsRootMailFolder;
+
+    protected $clientMailFolder;
+
+    protected $notExistingFolder;
+
+    protected $argumentExceptionFolder;
+
+    protected $noChildFoldersAlowedFolder;
+
+    protected $childFoldersAllowedFolder;
+
     public function getDataSet()
     {
         return $this->createXMLDataSet(
@@ -69,6 +85,10 @@ class DefaultFolderCommonsTest extends \Conjoon\DatabaseTestCaseDefault {
     {
         parent::setUp();
 
+        $repository = $this->_entityManager->getRepository(
+            '\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
+
+
         $user = new \Conjoon_Modules_Default_User();
         $user->setId(1);
         $user->setFirstName("f");
@@ -77,6 +97,57 @@ class DefaultFolderCommonsTest extends \Conjoon\DatabaseTestCaseDefault {
         $user->setEmailAddress("ea");
 
         $this->user = new \Conjoon\User\AppUser($user);
+
+        $this->commons = new DefaultFolderCommons(array(
+            'mailFolderRepository' => $repository,
+            'user'                 => $this->user
+        ));
+
+        $this->rootMailFolder =
+            new Folder(
+                new DefaultFolderPath(
+                    '["root", "2"]'
+                )
+            );
+
+        $this->accountsRootMailFolder =
+            new Folder(
+                new DefaultFolderPath(
+                    '["root", "3"]'
+                )
+            );
+
+        $this->clientMailFolder =
+            new Folder(
+                new DefaultFolderPath(
+                    '["root", "1", "INBOXtttt", "rfwe2", "New folder (7)"]'
+                )
+            );
+
+        $this->notExistingFolder = new Folder(
+            new DefaultFolderPath(
+                '["root", "4"]'
+            )
+        );
+
+        $this->argumentExceptionFolder = new Folder(
+            new DefaultFolderPath(
+                '["root", "sdds"]'
+            )
+        );
+
+        $this->noChildFoldersAllowedFolder = new Folder(
+            new DefaultFolderPath(
+                '["root", "5", "6" ]'
+            )
+        );
+
+        $this->childFoldersAllowedFolder = new Folder(
+            new DefaultFolderPath(
+                '["root", "5", "7" ]'
+            )
+        );
+
     }
 
     /**
@@ -88,18 +159,250 @@ class DefaultFolderCommonsTest extends \Conjoon\DatabaseTestCaseDefault {
     }
 
     /**
-     * Ensures everythingworks as expected
+     * Ensures everything works as expected
+     */
+    public function testIsFolderRepresentingRemoteMailbox() {
+        $this->assertSame(
+            true,
+            $this->commons->isFolderRepresentingRemoteMailbox(
+                $this->clientMailFolder
+            )
+        );
+    }
+
+    /**
+     * @expectedException \Conjoon\Mail\Client\Folder\FolderDoesNotExistException
+     */
+    public function testIsFolderRepresentingRemoteMailbox_FolderDoesNotExistException() {
+        $this->commons->isFolderRepresentingRemoteMailbox(
+            $this->notExistingFolder
+        );
+    }
+
+    /**
+     * @expectedException \Conjoon\Mail\Client\Folder\FolderServiceException
+     */
+    public function testIsFolderRepresentingRemoteMailbox_FolderServiceException() {
+        $this->commons->isFolderRepresentingRemoteMailbox(
+            $this->argumentExceptionFolder
+        );
+    }
+
+
+    /**
+     * Ensures everything works as expected
+     */
+    public function testIsFolderAccountsRootFolder() {
+        $this->assertSame(
+            true,
+            $this->commons->isFolderAccountsRootFolder(
+                $this->accountsRootMailFolder
+            )
+        );
+
+        $this->assertSame(
+            false,
+            $this->commons->isFolderAccountsRootFolder(
+                $this->clientMailFolder
+            )
+        );
+    }
+
+    /**
+     * @expectedException \Conjoon\Mail\Client\Folder\FolderDoesNotExistException
+     */
+    public function testIsFolderAccountsRootFolder_FolderDoesNotExistException() {
+        $this->commons->isFolderAccountsRootFolder(
+            $this->notExistingFolder
+        );
+    }
+
+    /**
+     * @expectedException \Conjoon\Mail\Client\Folder\FolderServiceException
+     */
+    public function testIsFolderAccountsRootFolder_FolderServiceException() {
+        $this->commons->isFolderAccountsRootFolder(
+            $this->argumentExceptionFolder
+        );
+    }
+
+    /**
+     * Ensures everything works as expected
+     */
+    public function testIsFolderRootFolder() {
+        $this->assertSame(
+            true,
+            $this->commons->isFolderRootFolder(
+                $this->rootMailFolder
+            )
+        );
+
+        $this->assertSame(
+            false,
+            $this->commons->isFolderRootFolder(
+                $this->clientMailFolder
+            )
+        );
+    }
+
+    /**
+     * @expectedException \Conjoon\Mail\Client\Folder\FolderDoesNotExistException
+     */
+    public function testIsFolderRootFolder_FolderDoesNotExistException() {
+        $this->commons->isFolderRootFolder(
+            $this->notExistingFolder
+        );
+    }
+
+    /**
+     * @expectedException \Conjoon\Mail\Client\Folder\FolderServiceException
+     */
+    public function testIsFolderRootFolder_FolderServiceException() {
+        $this->commons->isFolderRootFolder(
+            $this->argumentExceptionFolder
+        );
+    }
+
+    /**
+     * @expectedException \Conjoon\Mail\Client\Folder\FolderDoesNotExistException
+     */
+    public function testGetFolderEntity_FolderDoesNotExistException() {
+
+        $this->commons->getFolderEntity(new Folder(
+            new DefaultFolderPath('["root", "4334", "22", "2422424", "2424224"]')
+        ));
+
+    }
+
+    /**
+     * @expectedException \Conjoon\Mail\Client\Folder\FolderDoesNotExistException
+     */
+    public function testGetFolderEntity_ExistingIdNotExistingRootId() {
+        $this->commons->getFolderEntity(new Folder(
+            new DefaultFolderPath('["root", "4", "2"]')
+        ));
+    }
+
+    /**
+     * @expectedException \Conjoon\Mail\Client\Folder\FolderServiceException
+     */
+    public function testGetFolderEntity_FolderServiceException() {
+
+        $this->commons->getFolderEntity(new Folder(
+            new DefaultFolderPath('["root", "sfa", "sdg", "dsgsdg", "sdgsgd"]')
+        ));
+    }
+
+    /**
+     * Ensures everything works as expected
+     */
+    public function testGetFolderEntity() {
+
+        $this->assertSame(1,
+            $this->commons->getFolderEntity(new Folder(
+                new DefaultFolderPath('["root", "1"]')
+            ))->getId()
+        );
+
+        $this->assertSame(2,
+            $this->commons->getFolderEntity(new Folder(
+                new DefaultFolderPath('["root", "1", "2"]')
+            ))->getId()
+        );
+
+    }
+
+    /**
+     * Ensures everything works as expected
+     */
+    public function testGetChildFolderEntities() {
+
+        $entities = $this->commons->getChildFolderEntities(new Folder(
+            new DefaultFolderPath('["root", "5"]')
+        ));
+
+        $this->assertSame(2, count($entities));
+
+        $ids = array(6, 7);
+
+        foreach ($entities as $entity) {
+            $this->assertTrue(in_array($entity->getId(), $ids));
+        }
+    }
+
+    /**
+     * @expectedException \Conjoon\Mail\Client\Folder\FolderServiceException
+     */
+    public function testGetChildFolderEntities_FolderServiceException() {
+        $this->commons->getChildFolderEntities(
+            $this->argumentExceptionFolder
+        );
+    }
+
+    /**
+     * @expectedException \Conjoon\Mail\Client\Folder\FolderDoesNotExistException
+     */
+    public function testGetChildFolderEntities_FolderDoesNotExistException() {
+        $this->commons->getChildFolderEntities(
+            $this->notExistingFolder
+        );
+    }
+
+    /**
+     * @expectedException \Conjoon\Mail\Client\Folder\NoChildFoldersAllowedException
+     */
+    public function testGetChildFolderEntities_NoChildFoldersAllowedException() {
+        $this->commons->getChildFolderEntities(
+            $this->noChildFoldersAllowedFolder
+        );
+    }
+
+
+    /**
+     * Ensure everything works as expected.
+     */
+    public function testDoesFolderAllowChildFolders() {
+
+        $this->assertTrue($this->commons->doesFolderAllowChildFolders(
+            $this->childFoldersAllowedFolder
+        ));
+
+
+        $this->assertFalse($this->commons->doesFolderAllowChildFolders(
+            $this->noChildFoldersAllowedFolder
+        ));
+
+    }
+
+    /**
+     * @expectedException \Conjoon\Mail\Client\Folder\FolderDoesNotExistException
+     */
+    public function testDoesFolderAllowChildFolders_FolderDoesNotExistException() {
+
+        $this->commons->doesFolderAllowChildFolders(
+            $this->notExistingFolder
+        );
+
+    }
+
+    /**
+     * @expectedException \Conjoon\Mail\Client\Folder\FolderServiceException
+     */
+    public function testDoesFolderAllowChildFolders_FolderServiceException() {
+
+        $this->commons->doesFolderAllowChildFolders(
+            $this->argumentExceptionFolder
+        );
+
+    }
+
+
+    /**
+     * Ensures everything works as expected
      */
     public function testDoesMailFolderExist()
     {
-        $repository = $this->_entityManager->getRepository(
-            '\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
-
-
-        $commons = new DefaultFolderCommons(array(
-            'mailFolderRepository' => $repository,
-            'user'                 => $this->user
-        ));
+        $commons = $this->commons;
 
         $this->assertTrue($commons->doesMailFolderExist(
             new Folder(

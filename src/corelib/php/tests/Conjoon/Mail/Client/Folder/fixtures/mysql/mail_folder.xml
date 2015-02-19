@@ -30,6 +30,36 @@
             <value>0</value>
         </row>
         <row>
+            <value>5</value>
+            <value>folder 5</value>
+            <value>1</value>
+            <value>0</value>
+            <value>root</value>
+            <value>inbox</value>
+            <null />
+            <value>0</value>
+        </row>
+        <row>
+            <value>6</value>
+            <value>folder 6</value>
+            <value>0</value>
+            <value>0</value>
+            <value>inbox</value>
+            <value>inbox</value>
+            <value>5</value>
+            <value>0</value>
+        </row>
+        <row>
+            <value>7</value>
+            <value>folder 7</value>
+            <value>1</value>
+            <value>0</value>
+            <value>inbox</value>
+            <value>inbox</value>
+            <value>5</value>
+            <value>0</value>
+        </row>
+        <row>
             <value>3</value>
             <value>Accounts Root</value>
             <value>1</value>
