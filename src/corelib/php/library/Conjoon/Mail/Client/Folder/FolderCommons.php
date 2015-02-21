@@ -145,16 +145,17 @@ interface FolderCommons {
     /**
      * Returns a list of child folder entities of the specified folder.
      *
-     * @param Folder $folder
+     * @param Folder|\Conjoon\Data\Entity\Mail\MailFolderEntity $folder
      *
      * @return array An array of \Conjoon\Data\Entity\Mail\MailFolderEntity
      *               instances; an empty array if no child folders are
      *               available
      *
      * @throws FolderServiceException
+     * @throws \Conjoon\Argument\InvalidArgumentException
      * @throws FolderDoesNotExistException
      * @throws NoChildFoldersAllowedException
      */
-    public function getChildFolderEntities(Folder $folder);
+    public function getChildFolderEntities($folder);
 
 }

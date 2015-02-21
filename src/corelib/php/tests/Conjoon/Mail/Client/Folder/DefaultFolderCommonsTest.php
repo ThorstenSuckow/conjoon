@@ -47,6 +47,11 @@ require_once 'Conjoon/DatabaseTestCaseDefault.php';
 require_once 'Conjoon/Modules/Default/User.php';
 
 /**
+ * @see Conjoon\Data\Entity\Mail\DefaultMailFolderEntity
+ */
+require_once 'Conjoon/Data/Entity/Mail/DefaultMailFolderEntity.php';
+
+/**
  * @category   Conjoon
  * @package    Conjoon_Mail
  * @subpackage UnitTests
@@ -147,6 +152,25 @@ class DefaultFolderCommonsTest extends \Conjoon\DatabaseTestCaseDefault {
                 '["root", "5", "7" ]'
             )
         );
+
+    }
+
+    /**
+     * @expectedException \Conjoon\Argument\InvalidArgumentException
+     */
+    public function test_CN943_InvalidArgumentException()
+    {
+        $this->commons->getChildFolderEntities(3);
+    }
+
+    /**
+     * Ensure everything works as expected
+     */
+    public function test_CN943_EntityAsArgument()
+    {
+        $folder = new \Conjoon\Data\Entity\Mail\DefaultMailFolderEntity;
+        $folder->setIsChildAllowed(true);
+        $this->commons->getChildFolderEntities($folder);
 
     }
 
@@ -325,6 +349,19 @@ class DefaultFolderCommonsTest extends \Conjoon\DatabaseTestCaseDefault {
 
         $ids = array(6, 7);
 
+        foreach ($entities as $entity) {
+            $this->assertTrue(in_array($entity->getId(), $ids));
+        }
+
+        /**
+         * @ticket CN-943
+         */
+        $entities = $this->commons->getChildFolderEntities(
+            $this->commons->getFolderEntity(new Folder(
+                new DefaultFolderPath('["root", "5"]')
+        )));
+        $this->assertSame(2, count($entities));
+        $ids = array(6, 7);
         foreach ($entities as $entity) {
             $this->assertTrue(in_array($entity->getId(), $ids));
         }

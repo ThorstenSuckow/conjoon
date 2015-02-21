@@ -220,14 +220,35 @@ class DefaultFolderCommons implements FolderCommons {
     /**
      * @inheritdoc
      */
-    public function getChildFolderEntities(Folder $folder) {
+    public function getChildFolderEntities($folder) {
 
-        $entity = $this->getFolderEntity($folder);
+        $data = array('folder' => $folder);
+
+        $config = array(
+            'folder' => array(
+                array(
+                    'type'  => 'instanceof',
+                    'class' => '\Conjoon\Mail\Client\Folder\Folder'
+                ),
+                'OR',
+                array(
+                    'type'  => 'instanceof',
+                    'class' => '\Conjoon\Data\Entity\Mail\MailFolderEntity'
+                )
+            )
+        );
+
+        ArgumentCheck::check($config, $data);
+
+        $entity = $folder;
+
+        if ($entity instanceof \Conjoon\Mail\Client\Folder\Folder) {
+            $entity = $this->getFolderEntity($folder);
+        }
 
         if (!$entity->getIsChildAllowed())  {
             throw new NoChildFoldersAllowedException();
         }
-
 
         $folders = array();
 
