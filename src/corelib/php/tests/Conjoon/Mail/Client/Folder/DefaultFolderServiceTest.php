@@ -33,6 +33,11 @@
 namespace Conjoon\Mail\Client\Folder;
 
 /**
+ * @see Conjoon\Mail\Client\Security\DefaultFolderSecurityService
+ */
+require_once 'Conjoon/Mail/Client/Security/DefaultFolderSecurityService.php';
+
+/**
  * @see Conjoon\Mail\Client\Service\DefaultFolderService
  */
 require_once 'Conjoon/Mail/Client/Folder/DefaultFolderService.php';
@@ -145,23 +150,140 @@ class DefaultClientMailFolderServiceTest extends \Conjoon\DatabaseTestCaseDefaul
         $repository = $this->_entityManager->getRepository(
             '\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
 
-
-        $this->service = new DefaultFolderService(array(
-            'mailFolderRepository' => $repository,
-            'user'                 => $this->user,
-            'mailFolderCommons'    =>
-                new \Conjoon\Mail\Client\Folder\DefaultFolderCommons(
-                    array(
-                        'mailFolderRepository' => $repository,
-                        'user'                 => $this->user
-                    ))
+        $mailFolderCommons = new \Conjoon\Mail\Client\Folder\DefaultFolderCommons(
+            array(
+                'mailFolderRepository' => $repository,
+                'user'                 => $this->user
             ));
 
-        $this->assertEquals(
-            3,
-            $this->getConnection()->getRowCount('groupware_email_folders'),
-            "Pre-Condition"
+        $folderSecurityService =
+            new \Conjoon\Mail\Client\Security\DefaultFolderSecurityService(array(
+                'mailFolderRepository' => $repository,
+                'user'                 => $this->user,
+                'mailFolderCommons'    => $mailFolderCommons
+        ));
+
+
+        $this->service = new DefaultFolderService(array(
+            'folderSecurityService' => $folderSecurityService,
+            'mailFolderRepository' => $repository,
+            'user'                 => $this->user,
+            'mailFolderCommons'    => $mailFolderCommons
+        ));
+
+    }
+
+    /**
+     * @expectedException \Conjoon\Mail\Client\Folder\FolderServiceException
+     */
+    public function testMoveFolder_FolderServiceException() {
+        $folderToMove = new Folder(
+            new DefaultFolderPath('["root", "1", "18"]')
         );
+
+        $targetFolder = new Folder(
+            new DefaultFolderPath('["root", "4"]')
+        );
+
+        $this->service->moveFolder($folderToMove, $targetFolder);
+    }
+
+    /**
+     * @expectedException \Conjoon\Mail\Client\Folder\FolderTypeMismatchException
+     */
+    public function testMoveFolder_FolderTypeMismatchException() {
+        $folderToMove = new Folder(
+            new DefaultFolderPath('["root", "10", "18"]')
+        );
+
+        $targetFolder = new Folder(
+            new DefaultFolderPath('["root", "14"]')
+        );
+
+        $this->service->moveFolder($folderToMove, $targetFolder);
+    }
+
+    /**
+     * @expectedException \Conjoon\Mail\Client\Folder\NoChildFoldersAllowedException
+     */
+    public function testMoveFolder_NoChildFoldersAllowedException() {
+        $folderToMove = new Folder(
+            new DefaultFolderPath('["root", "10", "11"]')
+        );
+
+        $targetFolder = new Folder(
+            new DefaultFolderPath('["root", "10", "17"]')
+        );
+
+        $this->service->moveFolder($folderToMove, $targetFolder);
+    }
+
+    /**
+     * @expectedException \Conjoon\Mail\Client\Security\FolderMoveException
+     */
+    public function testMoveFolder_FolderMoveException() {
+        $folderToMove = new Folder(
+            new DefaultFolderPath('["root", "15", "16"]')
+        );
+
+        $targetFolder = new Folder(
+            new DefaultFolderPath('["root", "10", "11"]')
+        );
+
+        $this->service->moveFolder($folderToMove, $targetFolder);
+    }
+
+    /**
+     * @expectedException \Conjoon\Mail\Client\Security\FolderAddException
+     */
+    public function testMoveFolder_FolderAddException() {
+
+        $folderToMove = new Folder(
+            new DefaultFolderPath('["root", "10"]')
+        );
+
+        $targetFolder = new Folder(
+            new DefaultFolderPath('["root", "15"]')
+        );
+
+        $this->service->moveFolder($folderToMove, $targetFolder);
+    }
+
+    /**
+     * Ensure everything works as expected
+     */
+    public function testMoveFolder() {
+
+        $folderToMove = new Folder(
+            new DefaultFolderPath('["root", "10"]')
+        );
+
+        $targetFolder = new Folder(
+            new DefaultFolderPath('["root", "14"]')
+        );
+
+        $this->service->moveFolder($folderToMove, $targetFolder);
+
+        $queryTable = $this->getConnection()->createQueryTable(
+            'groupware_email_folders',
+            'SELECT * FROM groupware_email_folders'
+        );
+        $expectedTable = $this->createXmlDataSet(
+            dirname(__FILE__) . '/fixtures/mysql/mail_folder.moveFolderResult.xml'
+        )->getTable("groupware_email_folders");
+
+        $this->assertTablesEqual($expectedTable, $queryTable);
+
+        $queryTable = $this->getConnection()->createQueryTable(
+            'groupware_email_folders_accounts',
+            'SELECT * FROM groupware_email_folders_accounts'
+        );
+        $expectedTable = $this->createXmlDataSet(
+            dirname(__FILE__) . '/fixtures/mysql/mail_folder.moveFolderResult.xml'
+        )->getTable("groupware_email_folders_accounts");
+
+        $this->assertTablesEqual($expectedTable, $queryTable);
+
     }
 
 
@@ -250,24 +372,6 @@ class DefaultClientMailFolderServiceTest extends \Conjoon\DatabaseTestCaseDefaul
      */
     public function testGetFolderEntity()
     {
-        $this->assertNull(
-            $this->service->getFolderEntity(new Folder(
-                new DefaultFolderPath('["root", "4334", "22", "2422424", "2424224"]')
-            ))
-        );
-
-        $this->assertNull(
-            $this->service->getFolderEntity(new Folder(
-                new DefaultFolderPath('["root", "sfa", "sdg", "dsgsdg", "sdgsgd"]')
-            ))
-        );
-
-        $this->assertNull(
-            $this->service->getFolderEntity(new Folder(
-                new DefaultFolderPath('["root", "1", "22"]')
-            ))
-        );
-
         $this->assertSame(1,
             $this->service->getFolderEntity(new Folder(
                 new DefaultFolderPath('["root", "1"]')
@@ -280,12 +384,52 @@ class DefaultClientMailFolderServiceTest extends \Conjoon\DatabaseTestCaseDefaul
             ))->getId()
         );
 
+
+    }
+
+    /**
+     * @expectedException \Conjoon\Mail\Client\Folder\FolderDoesNotExistException
+     */
+    public function testGetFolderEntity_FolderDoesNotExistException() {
         $this->assertNull(
             $this->service->getFolderEntity(new Folder(
                 new DefaultFolderPath('["root", "4", "2"]')
             ))
         );
-
     }
+
+    /**
+     * @expectedException \Conjoon\Mail\Client\Folder\FolderDoesNotExistException
+     */
+    public function testGetFolderEntity_FolderDoesNotExistException_2() {
+        $this->assertNull(
+            $this->service->getFolderEntity(new Folder(
+                new DefaultFolderPath('["root", "4334", "22", "2422424", "2424224"]')
+            ))
+        );
+    }
+
+    /**
+     * @expectedException \Conjoon\Mail\Client\Folder\FolderServiceException
+     */
+    public function testGetFolderEntity_FolderServiceException() {
+        $this->assertNull(
+            $this->service->getFolderEntity(new Folder(
+                new DefaultFolderPath('["root", "sfa", "sdg", "dsgsdg", "sdgsgd"]')
+            ))
+        );
+    }
+
+    /**
+     * @expectedException \Conjoon\Mail\Client\Folder\FolderDoesNotExistException
+     */
+    public function testGetFolderEntity_FolderDoesNotExistException_3() {
+        $this->assertNull(
+            $this->service->getFolderEntity(new Folder(
+                new DefaultFolderPath('["root", "1", "22"]')
+            ))
+        );
+    }
+
 
 }

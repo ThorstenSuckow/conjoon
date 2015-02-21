@@ -60,60 +60,43 @@ interface FolderService {
      *                       Conjoon\Data\Repository\Mail\MailFolderRepository
      *                       - mailFolderCommons: an instance of
      *                       Conjoon\Mail\Client\Folder\FolderCommons
+     *                       - folderSecurityService: an instance of
+     *                       Conjoon\Mail\Client\Security\FolderSecurityService
      *
      */
     public function __construct(Array $options);
 
     /**
-     * Returns true if the specified folder represents a remote folder,
-     * otherwise false.
+     * Moves a folder hierarchy represented by the source folder into the folder
+     * represented by target.
+     * All folders of the source will be moved into the folder of the target
+     * with the same type.
+     * Implementing classes should make sure that the passed source folder and
+     * target older are representing folders with the matching type.
+     * Furthermore, security checks should occur for every folder that is
+     * being moved/read.
+     * The folders get moved for the user which is bound to the current instance
+     * of this class.
+     * Moved folders need to inherit the account of the target folders.
+     * Folders may be moved across different accounts. Remote_root Folders must
+     * not be moved to root or accounts_root folder hierarchies.
      *
-     * @param Folder $folder
+     * @param Folder $sourceFolder The source folder to move
+     * @param Folder $targetFolder The target folder where the source folder
+     *                             should be appended to.
      *
-     * @return boolean
      *
-     * @throws FolderServiceException
+     * @return ServiceResult
+     *
+     * @throws \Conjoon\Mail\Client\Folder\FolderServiceException
+     * @throws \Conjoon\Mail\Client\Folder\FolderTypeMismatchException
+     * @throws \Conjoon\Mail\Client\Folder\NoChildFoldersAllowedException
+     * @throws \Conjoon\Mail\Client\Security\FolderMoveException
+     * @throws \Conjoon\Mail\Client\Security\FolderAddException
      */
-    public function isFolderRepresentingRemoteMailbox(Folder $folder);
+    public function moveFolder(
+        \Conjoon\Mail\Client\Folder\Folder $sourceFolder,
+        \Conjoon\Mail\Client\Folder\Folder $targetRootFolder);
 
-    /**
-     * Returns true if the specified folder represents an "accounts_root" folder,
-     * otherwise false.
-     *
-     * @param Folder $folder
-     *
-     * @return boolean
-     *
-     * @throws FolderServiceException
-     */
-    public function isFolderAccountsRootFolder(Folder $folder);
-
-    /**
-     * Returns true if the specified folder represents a "root" folder,
-     * otherwise false.
-     *
-     * @param Folder $folder
-     *
-     * @return boolean
-     *
-     * @throws FolderServiceException
-     */
-    public function isFolderRootFolder(Folder $folder);
-
-    /**
-     * Returns the folder entity for the secified folder. The repository used
-     * for retrieving the entity is the repository configured for an instance of
-     * this class.
-     * Note: If the specified folder represents a remote mailbox, the id passed
-     * int he folder might not exist in the local data storage. If this is the
-     * case, null will be returned.
-     *
-     * @param Folder $folder
-     *
-     * @return \Conjoon\Data\Entity\Mail\MailFodlerEntity|null
-     *
-     * @throws FolderServiceException
-     */
-    public function getFolderEntity(Folder $folder);
 
 }

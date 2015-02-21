@@ -1,38 +1,5 @@
 <?xml version="1.0" ?>
 <dataset>
-    <table name="users">
-        <column>id</column>
-        <column>firstname</column>
-        <column>lastname</column>
-        <column>email_address</column>
-        <column>user_name</column>
-        <column>password</column>
-        <column>is_root</column>
-        <column>auth_token</column>
-        <column>last_login</column>
-        <row>
-            <value>1</value>
-            <value>Firstname</value>
-            <value>Lastname</value>
-            <value>EmailAddress</value>
-            <value>UserName1</value>
-            <value>Password</value>
-            <value>1</value>
-            <value>AuthToken</value>
-            <value>2</value>
-        </row>
-        <row>
-            <value>2</value>
-            <value>Firstname</value>
-            <value>Lastname</value>
-            <value>EmailAddress</value>
-            <value>UserName2</value>
-            <value>Password</value>
-            <value>1</value>
-            <value>AuthToken</value>
-            <value>2</value>
-        </row>
-    </table>
     <table name="groupware_email_folders">
         <column>id</column>
         <column>name</column>
@@ -60,6 +27,16 @@
             <value>root</value>
             <value>inbox</value>
             <value>1</value>
+            <value>0</value>
+        </row>
+        <row>
+            <value>3</value>
+            <value>Accounts Root</value>
+            <value>1</value>
+            <value>0</value>
+            <value>accounts_root</value>
+            <value>inbox</value>
+            <value>0</value>
             <value>0</value>
         </row>
         <row>
@@ -93,23 +70,13 @@
             <value>0</value>
         </row>
         <row>
-            <value>3</value>
-            <value>Accounts Root</value>
-            <value>1</value>
-            <value>0</value>
-            <value>accounts_root</value>
-            <value>inbox</value>
-            <value>0</value>
-            <value>0</value>
-        </row>
-        <row>
             <value>10</value>
             <value>folder 10</value>
             <value>1</value>
             <value>0</value>
             <value>root</value>
             <value>inbox</value>
-            <null />
+            <value>14</value>
             <value>0</value>
         </row>
         <row>
@@ -193,6 +160,39 @@
             <value>0</value>
         </row>
     </table>
+    <table name="groupware_email_folders_accounts">
+        <column>groupware_email_folders_id</column>
+        <column>groupware_email_accounts_id</column>
+        <row>
+            <value>10</value>
+            <value>2</value>
+        </row>
+        <row>
+            <value>11</value>
+            <value>2</value>
+        </row>
+
+        <row>
+            <value>12</value>
+            <value>2</value>
+        </row>
+        <row>
+            <value>13</value>
+            <value>2</value>
+        </row>
+        <row>
+            <value>14</value>
+            <value>2</value>
+        </row>
+        <row>
+            <value>17</value>
+            <value>2</value>
+        </row>
+        <row>
+            <value>18</value>
+            <value>2</value>
+        </row>
+    </table>
     <table name="groupware_email_folders_users">
         <column>groupware_email_folders_id</column>
         <column>users_id</column>
@@ -206,41 +206,6 @@
             <value>14</value>
             <value>1</value>
             <value>owner</value>
-        </row>
-        <row>
-            <value>15</value>
-            <value>2</value>
-            <value>owner</value>
-        </row>
-        <row>
-            <value>16</value>
-            <value>2</value>
-            <value>owner</value>
-        </row>
-    </table>
-    <table name="groupware_email_folders_accounts">
-        <column>groupware_email_folders_id</column>
-        <column>groupware_email_accounts_id</column>
-        <row>
-            <value>14</value>
-            <value>2</value>
-        </row>
-        <row>
-            <value>10</value>
-            <value>1</value>
-        </row>
-        <row>
-            <value>11</value>
-            <value>1</value>
-        </row>
-
-        <row>
-            <value>12</value>
-            <value>1</value>
-        </row>
-        <row>
-            <value>13</value>
-            <value>1</value>
         </row>
     </table>
     <table name="groupware_email_accounts">
