@@ -135,7 +135,7 @@ interface FolderCommons {
      *
      * @param Folder $folder
      *
-     * @return \Conjoon\Data\Entity\Mail\MailFolderEntity|null
+     * @return \Conjoon\Data\Entity\Mail\MailFolderEntity
      *
      * @throws FolderServiceException
      * @throws FolderDoesNotExistException
