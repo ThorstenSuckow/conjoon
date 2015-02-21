@@ -14,7 +14,7 @@
             <value>folder 1</value>
             <value>1</value>
             <value>0</value>
-            <value>root</value>
+            <value>root_remote</value>
             <value>inbox</value>
             <null />
             <value>0</value>
@@ -42,11 +42,21 @@
         <row>
             <value>4</value>
             <value>folder 4</value>
-            <value>1</value>
+            <value>0</value>
             <value>0</value>
             <value>root</value>
             <value>inbox</value>
             <null />
+            <value>0</value>
+        </row>
+        <row>
+            <value>14</value>
+            <value>folder 14</value>
+            <value>0</value>
+            <value>0</value>
+            <value>inbox</value>
+            <value>inbox</value>
+            <value>1</value>
             <value>0</value>
         </row>
     </table>

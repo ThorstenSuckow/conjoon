@@ -60,6 +60,27 @@ require_once 'Conjoon/Mail/Client/Security/SecurityServiceException.php';
 require_once 'Conjoon/Modules/Groupware/Email/Folder/Model/FoldersUsers.php';
 
 /**
+ * @see \Conjoon\Mail\Client\Folder\FolderDoesNotExistException
+ */
+ require_once 'Conjoon/Mail/Client/Folder/FolderDoesNotExistException.php';
+
+/**
+ * @see \Conjoon\Mail\Client\Folder\NoChildFoldersAllowedException
+ */
+require_once 'Conjoon/Mail/Client/Folder/NoChildFoldersAllowedException.php';
+
+/**
+ * @see \Conjoon\Mail\Client\Folder\Folder
+ */
+require_once 'Conjoon/Mail/Client/Folder/Folder.php';
+
+/**
+ * @see \Conjoon\Mail\Client\Folder\DefaultFolderPath
+ */
+require_once 'Conjoon/Mail/Client/Folder/DefaultFolderPath.php';
+
+
+/**
  * @category   Conjoon_Mail
  * @package    Folder
  *
@@ -128,6 +149,21 @@ class DefaultFolderSecurityService implements FolderSecurityService {
     /**
      * @inheritdoc
      */
+    public function mayAppendFolderTo(
+        \Conjoon\Mail\Client\Folder\Folder $folder) {
+
+        if (!$this->folderCommons->doesFolderAllowChildFolders($folder)) {
+            throw new \Conjoon\Mail\Client\Folder\NoChildFoldersAllowedException(
+                "Folder " . $folder . " does not allow child folders"
+            );
+        }
+
+        return $this->isFolderAccessible($folder);
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function isFolderAccessible(
         \Conjoon\Mail\Client\Folder\Folder $folder)
     {
@@ -141,27 +177,21 @@ class DefaultFolderSecurityService implements FolderSecurityService {
 
         $checkNodeId = null;
 
+        $checkForRoot = false;
+
         switch (true) {
 
             // only root id available, check only root
             case (empty($path) && empty($nodeId)):
 
                 $checkNodeId = $rootId;
-
+                $checkForRoot = true;
                 break;
 
             // paths set, node id avilable.
             case (!empty($path) && !empty($nodeId)):
 
-                try {
-                    $doesMailFolderExist =
-                        $this->folderCommons->doesMailFolderExist($folder);
-                } catch (\Conjoon\Mail\Client\Folder\FolderServiceException $e) {
-                    throw new SecurityServiceException(
-                        "Exception thrown by previous exception: "
-                        . $e->getMessage, 0, $e
-                    );
-                }
+                $doesMailFolderExist = $this->checkClientMailFolderExists($folder);
 
                 // check if node id exists client side
                 if ($doesMailFolderExist) {
@@ -170,7 +200,16 @@ class DefaultFolderSecurityService implements FolderSecurityService {
 
                 } else {
                     // check if root node is accessible
+                    // if remote, check for rootID
+                    if (!$this->folderCommons->isFolderRepresentingRemoteMailbox(
+                        $folder)) {
+                        throw new \Conjoon\Mail\Client\Folder\FolderDoesNotExistException(
+                            "The folder $folder does not seem to exist"
+                        );
+                    }
+
                     $checkNodeId = $rootId;
+                    $checkForRoot = true;
                 }
 
                 break;
@@ -184,6 +223,23 @@ class DefaultFolderSecurityService implements FolderSecurityService {
 
         }
 
+        if ($checkForRoot) {
+            // assemble new folder to check for availability of checkNodeId
+            $folderCheck = new \Conjoon\Mail\Client\Folder\Folder(
+                new \Conjoon\Mail\Client\Folder\DefaultFolderPath(
+                    '["root", "' . $checkNodeId . '"]'
+                )
+            );
+
+            $doesMailFolderExist = $this->checkClientMailFolderExists($folderCheck);
+
+            if (!$doesMailFolderExist) {
+                throw new \Conjoon\Mail\Client\Folder\FolderDoesNotExistException(
+                    "The folder $folder does not seem to exist"
+                );
+            }
+        }
+
         $foldersUsers =
             new \Conjoon_Modules_Groupware_Email_Folder_Model_FoldersUsers();
 
@@ -193,9 +249,28 @@ class DefaultFolderSecurityService implements FolderSecurityService {
 
         return $rel ===
             \Conjoon_Modules_Groupware_Email_Folder_Model_FoldersUsers::OWNER;
-
-
     }
 
 
+    /**
+     * Checks whether the specified folder exists locally.
+     *
+     * @param \Conjoon\Mail\Client\Folder\Folder $folder
+     *
+     * @throws SecurityServiceException
+     */
+    protected function checkClientMailFolderExists(\Conjoon\Mail\Client\Folder\Folder $folder) {
+
+        try {
+            $doesMailFolderExist =
+                $this->folderCommons->doesMailFolderExist($folder);
+        } catch (\Conjoon\Mail\Client\Folder\FolderServiceException $e) {
+            throw new SecurityServiceException(
+                "Exception thrown by previous exception: "
+                . $e->getMessage, 0, $e
+            );
+        }
+
+        return $doesMailFolderExist;
+    }
 }

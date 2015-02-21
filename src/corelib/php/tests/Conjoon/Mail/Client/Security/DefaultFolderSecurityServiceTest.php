@@ -68,6 +68,8 @@ class DefaultFolderSecurityServiceTest
 
     protected $mailFolderFail;
 
+    protected $mailFolderNotThere;
+
     public function getDataSet()
     {
         return $this->createXMLDataSet(
@@ -107,6 +109,29 @@ class DefaultFolderSecurityServiceTest
                 )
             );
 
+        $this->mailFolderNotThere = array(
+            new Folder(
+                new DefaultFolderPath(
+                    '["root", "4323"]'
+                )
+            ),
+
+            new Folder(
+                new DefaultFolderPath(
+                    '["root", "4232", "khklkhlhk", "kjllkhlkh"]'
+                )
+            )
+        );
+
+        $this->mailFolderNoChildFolders = array(
+            new Folder(
+                new DefaultFolderPath(
+                    '["root", "1", "14"]'
+                )
+            )
+        );
+
+
         $this->securityService = new DefaultFolderSecurityService(array(
             'mailFolderRepository' => $repository,
             'user'                 => $user,
@@ -119,6 +144,79 @@ class DefaultFolderSecurityServiceTest
         ));
 
 
+    }
+
+
+    /**
+     * Ensure everything works as expected
+     */
+    public function testMayAppendFolderTo_NoChildFoldersAllowedException() {
+        foreach ($this->mailFolderNoChildFolders as $mailFolderNoChildFolders) {
+            $ee = null;
+            try {
+                $this->securityService->mayAppendFolderTo(
+                    $mailFolderNoChildFolders
+                );
+            } catch (\Exception $e) {
+                $ee = $e;
+            }
+
+            $this->assertTrue($ee instanceof \Conjoon\Mail\Client\Folder\NoChildFoldersAllowedException);
+        }
+    }
+
+    /**
+     * Ensure everything works as expected
+     */
+    public function testMayAppendFolderTo_FolderDoesNotExistException() {
+        foreach ($this->mailFolderNotThere as $mailFolderNotThere) {
+            $ee = null;
+            try {
+                $this->securityService->isFolderMovable(
+                    $mailFolderNotThere
+                );
+            } catch (\Exception $e) {
+                $ee = $e;
+            }
+
+            $this->assertTrue($ee instanceof \Conjoon\Mail\Client\Folder\FolderDoesNotExistException);
+        }
+    }
+
+    /**
+     * Ensure everything works as expected
+     */
+    public function testIsFolderMovable_FolderDoesNotExistException() {
+        foreach ($this->mailFolderNotThere as $mailFolderNotThere) {
+            $ee = null;
+            try {
+                $this->securityService->isFolderMovable(
+                    $mailFolderNotThere
+                );
+            } catch (\Exception $e) {
+                $ee = $e;
+            }
+
+            $this->assertTrue($ee instanceof \Conjoon\Mail\Client\Folder\FolderDoesNotExistException);
+        }
+    }
+
+    /**
+     * Ensure everything works as expected
+     */
+    public function testIsFolderAccessible_FolderDoesNotExistException() {
+        foreach ($this->mailFolderNotThere as $mailFolderNotThere) {
+            $ee = null;
+            try {
+                $this->securityService->isFolderMovable(
+                    $mailFolderNotThere
+                );
+            } catch (\Exception $e) {
+                $ee = $e;
+            }
+
+            $this->assertTrue($ee instanceof \Conjoon\Mail\Client\Folder\FolderDoesNotExistException);
+        }
     }
 
     /**
@@ -157,7 +255,7 @@ class DefaultFolderSecurityServiceTest
     }
 
     /**
-     * Ensures everythign works as expected
+     * Ensures everything works as expected
      */
     public function testIsMailFolderAccessibleForRemote()
     {
