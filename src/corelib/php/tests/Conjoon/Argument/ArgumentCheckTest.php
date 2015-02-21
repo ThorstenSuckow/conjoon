@@ -208,6 +208,146 @@ class ArgumentCheckTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @ticket CN-942
+     */
+    public function test_CN942_InvalidArgumentException_BecauseOfMisplacedConfig() {
+
+        $dataOk = array('values' => array(
+            1, 2, 3, 4, 5
+        ));
+
+        $config = array(
+            'values' =>  array(
+                array(
+                    'type'  => 'int'
+                ),
+                array(
+                    'type'  => 'string'
+                ),
+            ),
+        );
+
+        $str = "";
+
+        try {
+            ArgumentCheck::check($config, $dataOk);
+        } catch (\Conjoon\Argument\InvalidArgumentException $e) {
+            $str = $e->getMessage();
+        }
+        $this->assertTrue(strpos($str, "Boolean Operator expected, got") === 0);
+
+    }
+
+    /**
+     * @ticket CN-942
+     */
+    public function test_CN942_InvalidArgumentException_BecauseOfMisplacedBooleanArgument() {
+
+        $dataOk = array('values' => array(
+            1, 2, 3, 4, 5
+        ));
+
+        $config = array(
+            'values' =>  array(
+                'OR',
+                array(
+                    'type'  => 'int'
+                ),
+                array(
+                    'type'  => 'string'
+                ),
+            ),
+        );
+
+        $str = "";
+
+        try {
+            ArgumentCheck::check($config, $dataOk);
+        } catch (\Conjoon\Argument\InvalidArgumentException $e) {
+            $str = $e->getMessage();
+        }
+        $this->assertTrue(strpos($str, "Configuration expected, got") === 0);
+
+    }
+
+    /**
+     * @ticket CN-942
+     */
+    public function test_CN942_InvalidArgumentException_BecauseOfWrongBooleanOperator() {
+
+        $dataOk = array('values' => array(
+            1, 2, 3, 4, 5
+        ));
+
+        $str = "";
+
+        try {
+            ArgumentCheck::check(array(
+                'values' =>  array(
+                    array(
+                        'type'  => 'int'
+                    ),
+                    'AND',
+                    array(
+                        'type'  => 'string'
+                    ),
+                ),
+            ), $dataOk);
+        } catch (\Conjoon\Argument\InvalidArgumentException $e) {
+            $str = $e->getMessage();
+        }
+
+        $this->assertTrue(strpos($str, "'OR' expected, got") === 0);
+
+    }
+
+    /**
+     * @ticket CN-942
+     * @expectedException \Conjoon\Argument\InvalidArgumentException
+     */
+    public function test_CN942_InvalidArgumentException_BecauseOfArgument() {
+
+        $dataOk = array('values' => array(
+            1, 2, 3, 4, 5
+        ));
+
+        ArgumentCheck::check(array(
+            'values' =>  array(
+                array(
+                    'type'  => 'int'
+                ),
+                'OR',
+                array(
+                    'type'  => 'string'
+                ),
+            ),
+        ), $dataOk);
+    }
+
+
+    /**
+     * @ticket CN-942
+     */
+    public function test_CN942() {
+
+        $dataOk = array('values' => array(
+            1, 2, 3, 4, 5
+        ));
+
+        ArgumentCheck::check(array(
+            'values' =>  array(
+                array(
+                    'type'  => 'array'
+                ),
+                'OR',
+                array(
+                    'type'  => 'string'
+                )
+            ),
+        ), $dataOk);
+    }
+
+    /**
      * @ticket CN-926
      */
     public function test_CN926() {

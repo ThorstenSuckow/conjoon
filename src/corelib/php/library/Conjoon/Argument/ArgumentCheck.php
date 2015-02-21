@@ -58,6 +58,64 @@ class ArgumentCheck {
 
         foreach ($config as $argumentName => $entityConfig) {
 
+            if (is_array($entityConfig) && array_key_exists(0, $entityConfig)) {
+                $stack = array();
+                $conditionMod = true;
+                foreach ($entityConfig as $configEntry) {
+
+                    if (is_array($configEntry)) {
+                        if ($conditionMod === false) {
+                            throw new InvalidArgumentException(
+                                "Boolean Operator expected, got Configuration"
+                            );
+                        }
+                        try {
+                            self::check(
+                                array($argumentName => $configEntry),
+                                $data
+                            );
+                            $stack[] = true;
+                            // we only consider "OR" for now,
+                            // so break foreach and succeed
+                            break;
+                        } catch (\Exception $e) {
+                            $stack[] = $e;
+                        }
+                        $conditionMod = false;
+                    } else {
+                        if ($conditionMod === true) {
+                            throw new InvalidArgumentException(
+                                "Configuration expected, got $configEntry"
+                            );
+                        }
+                        // $configEntry == 'OR'
+                        if ($configEntry !== 'OR') {
+                            throw new InvalidArgumentException(
+                                "'OR' expected, got $configEntry"
+                            );
+                        }
+
+                        $conditionMod = true;
+                    }
+                }
+
+                if (in_array(true, array_unique($stack), true)) {
+                    continue;
+                } else {
+                    $excMessages = array();
+                    foreach ($stack as $stackEntry) {
+                        if ($stackEntry instanceof \Exception) {
+                            $excMessages[] = $stackEntry->getMessage();
+                        }
+                    }
+                    throw new InvalidArgumentException(
+                        implode(';', $excMessages)
+                    );
+                }
+
+               return;
+            }
+
             $isMandatory = isset($entityConfig['mandatory'])
                 ? (bool) $entityConfig['mandatory']
                 : true;
