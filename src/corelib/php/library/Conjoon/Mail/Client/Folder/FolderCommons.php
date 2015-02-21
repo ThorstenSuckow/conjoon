@@ -154,7 +154,6 @@ interface FolderCommons {
      * @throws FolderServiceException
      * @throws \Conjoon\Argument\InvalidArgumentException
      * @throws FolderDoesNotExistException
-     * @throws NoChildFoldersAllowedException
      */
     public function getChildFolderEntities($folder);
 

@@ -246,10 +246,6 @@ class DefaultFolderCommons implements FolderCommons {
             $entity = $this->getFolderEntity($folder);
         }
 
-        if (!$entity->getIsChildAllowed())  {
-            throw new NoChildFoldersAllowedException();
-        }
-
         $folders = array();
 
         try {

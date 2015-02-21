@@ -386,12 +386,19 @@ class DefaultFolderCommonsTest extends \Conjoon\DatabaseTestCaseDefault {
     }
 
     /**
-     * @expectedException \Conjoon\Mail\Client\Folder\NoChildFoldersAllowedException
+     * @ticket CN-944
      */
     public function testGetChildFolderEntities_NoChildFoldersAllowedException() {
-        $this->commons->getChildFolderEntities(
-            $this->noChildFoldersAllowedFolder
-        );
+
+        try {
+            $this->commons->getChildFolderEntities(
+                $this->noChildFoldersAllowedFolder
+            );
+        } catch (\Exception $e) {
+            $this->fail("No exception should be thrown");
+        }
+
+
     }
 
 
