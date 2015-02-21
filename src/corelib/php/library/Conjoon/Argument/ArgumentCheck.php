@@ -109,7 +109,7 @@ class ArgumentCheck {
                         }
                     }
                     throw new InvalidArgumentException(
-                        implode(';', $excMessages)
+                        implode('; ', $excMessages)
                     );
                 }
 
