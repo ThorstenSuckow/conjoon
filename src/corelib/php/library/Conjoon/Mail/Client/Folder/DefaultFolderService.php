@@ -114,6 +114,11 @@ class DefaultFolderService implements FolderService {
     protected $folderSecurityService;
 
     /**
+     * @var Conjoon\Mail\Client\Folder\Strategy\FolderNamingForMovingStrategy
+     */
+    protected $folderNamingForMovingStrategy;
+
+    /**
      * @inheritdoc
      */
     public function __construct(Array $options)
@@ -143,10 +148,17 @@ class DefaultFolderService implements FolderService {
             'folderSecurityService' => array(
                 'type'  => 'instanceof',
                 'class' => 'Conjoon\Mail\Client\Security\FolderSecurityService'
+            ),
+            'folderNamingForMovingStrategy' => array(
+                'type'  => 'instanceof',
+                'class' => 'Conjoon\Mail\Client\Folder\Strategy\FolderNamingForMovingStrategy'
             )
         ), $options);
 
         $this->folderSecurityService = $options['folderSecurityService'];
+
+        $this->folderNamingForMovingStrategy =
+            $options['folderNamingForMovingStrategy'];
 
         $this->folderRepository  = $options['mailFolderRepository'];
         $this->user              = $options['user'];
@@ -212,6 +224,10 @@ class DefaultFolderService implements FolderService {
         // set new parent for source Folder
         $sourceEntity->setParent($targetEntity);
 
+        $sourceEntity->setName(
+            $this->getNameForMovingFolder($sourceEntity, $targetEntity)
+        );
+
         $tmpArr = $targetEntity->getMailAccounts();
         $targetMailAccounts = array();
         if (!is_array($tmpArr) &&
@@ -235,6 +251,50 @@ class DefaultFolderService implements FolderService {
             );
         }
 
+    }
+
+    /**
+     * Computes and applies a new folder name based on
+     * folderNamingForMovingStrategy for sourceEntity.
+     *
+     * @param \Conjoon\Data\Entity\Mail\MailFolderEntity $sourceEntity The folder
+     *        which might provoce a naming issue
+     * @param \Conjoon\Data\Entity\Mail\MailFolderEntity $targetEntity The target
+     *        folder which child folders need to be checked against $sourceEntity
+     *
+     * @return bool
+     */
+    protected function getNameForMovingFolder(
+        \Conjoon\Data\Entity\Mail\MailFolderEntity $sourceEntity,
+        \Conjoon\Data\Entity\Mail\MailFolderEntity $targetEntity
+    ) {
+
+        $childFolderNames = array();
+
+        $childFolders = $this->mailFolderCommons->getChildFolderEntities(
+            $sourceEntity
+        );
+
+        foreach ($childFolders as $childFolder) {
+            $childFolderNames[] = $childFolder->getName();
+        }
+
+        $strategyOptions = array(
+            'name' => $sourceEntity->getName(),
+            'list' => $childFolderNames
+        );
+
+        try {
+            $namingResult = $this->folderNamingForMovingStrategy->execute(
+                $strategyOptions
+            );
+        } catch (\Conjoon\Mail\Client\Message\Folder\StrategyException $e) {
+            throw new FolderServiceException(
+                "Exception thrown by previous exception", 0, $e
+            );
+        }
+
+        return $namingResult->getName();
     }
 
     /**
@@ -273,7 +333,6 @@ class DefaultFolderService implements FolderService {
             $this->replaceMailAccountsForFolderHierarchy(
                 $childFolder, $targetMailAccounts, $repository);
         }
-
     }
 
 // -------- DEPRECATED API

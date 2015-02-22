@@ -63,6 +63,12 @@ require_once 'Conjoon/Mail/Client/Folder/Folder.php';
 require_once 'Conjoon/Modules/Default/User.php';
 
 /**
+ * @see Conjoon\Mail\Client\Folder\Strategy\DefaultFolderNamingForMovingStrategy
+ */
+require_once 'Conjoon/Mail/Client/Folder/Strategy/DefaultFolderNamingForMovingStrategy.php';
+
+
+/**
  * @category   Conjoon
  * @package    Conjoon_Mail
  * @subpackage UnitTests
@@ -163,12 +169,18 @@ class DefaultClientMailFolderServiceTest extends \Conjoon\DatabaseTestCaseDefaul
                 'mailFolderCommons'    => $mailFolderCommons
         ));
 
+        $folderNamingForMovingStrategy =
+            new \Conjoon\Mail\Client\Folder\Strategy\DefaultFolderNamingForMovingStrategy(
+                array('template' => '{0} {1}')
+            );
 
         $this->service = new DefaultFolderService(array(
             'folderSecurityService' => $folderSecurityService,
             'mailFolderRepository' => $repository,
             'user'                 => $this->user,
-            'mailFolderCommons'    => $mailFolderCommons
+            'mailFolderCommons'    => $mailFolderCommons,
+            'folderNamingForMovingStrategy' => $folderNamingForMovingStrategy
+
         ));
 
     }
