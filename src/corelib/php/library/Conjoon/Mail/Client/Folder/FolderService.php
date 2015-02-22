@@ -86,7 +86,8 @@ interface FolderService {
      *                             should be appended to.
      *
      *
-     * @return ServiceResult
+     * @return \Conjoon\Data\Entity\Mail\MailFolderEntity The updated mail entity
+     *         represented by the passed folder
      *
      * @throws \Conjoon\Mail\Client\Folder\FolderServiceException
      * @throws \Conjoon\Mail\Client\Folder\FolderTypeMismatchException

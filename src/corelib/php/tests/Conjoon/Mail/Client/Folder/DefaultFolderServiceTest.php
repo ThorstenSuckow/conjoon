@@ -274,7 +274,12 @@ class DefaultClientMailFolderServiceTest extends \Conjoon\DatabaseTestCaseDefaul
             new DefaultFolderPath('["root", "14"]')
         );
 
-        $this->service->moveFolder($folderToMove, $targetFolder);
+        $movedEntity = $this->service->moveFolder($folderToMove, $targetFolder);
+
+        $this->assertTrue($movedEntity instanceof \Conjoon\Data\Entity\Mail\MailFolderEntity);
+        $this->assertEquals("Same Name (1)", $movedEntity->getName());
+        $this->assertEquals(14, $movedEntity->getParent()->getId());
+
 
         $queryTable = $this->getConnection()->createQueryTable(
             'groupware_email_folders',

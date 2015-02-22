@@ -251,6 +251,7 @@ class DefaultFolderService implements FolderService {
             );
         }
 
+        return $sourceEntity;
     }
 
     /**
@@ -273,8 +274,8 @@ class DefaultFolderService implements FolderService {
 
         $childFolders = $this->mailFolderCommons->getChildFolderEntities(
             $sourceEntity
-        );
 
+        );
         foreach ($childFolders as $childFolder) {
             $childFolderNames[] = $childFolder->getName();
         }
