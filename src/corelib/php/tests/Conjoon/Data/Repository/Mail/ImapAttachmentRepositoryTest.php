@@ -37,6 +37,11 @@ namespace Conjoon\Data\Repository\Mail;
 require_once 'Conjoon/Data/Repository/Mail/ImapAttachmentRepository.php';
 
 /**
+ * @see \Conjoon\Data\Repository\Mail\MailAccountMock
+ */
+require_once dirname(__FILE__) . '/MailAccountMock.php';
+
+/**
  * @see \Conjoon\Data\EntityCreator\Mail\SimpleAttachmentEntityCreator
  */
 require_once dirname(__FILE__) . '/../../EntityCreator/Mail/SimpleAttachmentEntityCreator.php';

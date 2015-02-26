@@ -37,6 +37,11 @@ namespace Conjoon\Data\Repository\Mail;
 require_once 'Conjoon/Data/Repository/Mail/ImapMessageFlagRepository.php';
 
 /**
+ * @see \Conjoon\Data\Repository\Mail\MailAccountMock
+ */
+require_once dirname(__FILE__) . '/MailAccountMock.php';
+
+/**
  * @package    Conjoon/Tests
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
@@ -223,43 +228,3 @@ class UserMock implements \Conjoon\User\User {
 
 }
 
-class MailAccountMock extends \Conjoon\Data\Entity\Mail\DefaultMailAccountEntity {
-
-    protected $id = 0;
-
-    public function __construct($id)
-    {
-        $this->id = $id;
-    }
-
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function getServerInbox()
-    {
-        return 'host';
-    }
-
-    public function getPortInbox()
-    {
-        return 143;
-    }
-
-    public function getUsernameInbox()
-    {
-        return 'username';
-    }
-
-    public function getPasswordInbox()
-    {
-        return 'password';
-    }
-
-    public function getInboxConnectionType()
-    {
-        return 'SSL';
-    }
-
-}
