@@ -190,6 +190,15 @@ class ImapMessageRepository extends DefaultImapRepository
     }
 
     /**
+     * @inheritdoc
+     */
+    public function moveMessagesFromFolder(
+        \Conjoon\Data\Entity\Mail\MailFolderEntity $sourceEntity,
+        \Conjoon\Data\Entity\Mail\MailFolderEntity $targetEntity) {
+        throw new \RuntimeException("Not yet supported.");
+    }
+
+    /**
      * @return string
      */
     public static function getEntityClassName()

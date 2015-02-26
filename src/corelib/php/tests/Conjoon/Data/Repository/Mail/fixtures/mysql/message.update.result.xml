@@ -53,6 +53,23 @@
             <value>Recipients</value>
             <value>Sender</value>
         </row>
+        <row>
+            <value>5</value>
+            <value>1</value>
+            <value>2007-01-01 00:00:02</value>
+            <value>Subject</value>
+            <value>From</value>
+            <value>Reply_to</value>
+            <value>To</value>
+            <value>Cc</value>
+            <value>Bcc</value>
+            <value>In_reply_to</value>
+            <value>References</value>
+            <value>Content_text_plain</value>
+            <value>Content_text_html</value>
+            <value>Recipients</value>
+            <value>Sender</value>
+        </row>
     </table>
     <table name="users">
         <column>id</column>

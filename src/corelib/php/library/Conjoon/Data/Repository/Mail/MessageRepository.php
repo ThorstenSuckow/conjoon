@@ -47,4 +47,18 @@ require_once 'Conjoon/Data/Repository/DataRepository.php';
  */
 interface MessageRepository extends \Conjoon\Data\Repository\DataRepository {
 
+    /**
+     * Moves all the messages managed by this repository belonging to the
+     * specified $sourceEntity to the specified $targetEntity.
+     *
+     * @param \Conjoon\Data\Entity\Mail\MailFolderEntity $sourceEntity
+     * @param \Conjoon\Data\Entity\Mail\MailFolderEntity $targetEntity
+     *
+     * @return integer The overall count of updated entities. Might be 0.
+     */
+    public function moveMessagesFromFolder(
+        \Conjoon\Data\Entity\Mail\MailFolderEntity $sourceEntity,
+        \Conjoon\Data\Entity\Mail\MailFolderEntity $targetEntity);
+
+
 }

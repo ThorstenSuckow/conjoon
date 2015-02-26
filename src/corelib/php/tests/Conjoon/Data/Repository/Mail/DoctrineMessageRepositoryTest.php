@@ -48,11 +48,46 @@ require_once 'Conjoon/DatabaseTestCaseDefault.php';
  */
 class DoctrineMessageRepositoryTest extends \Conjoon\DatabaseTestCaseDefault {
 
+    protected $messageCount = 2;
+
     public function getDataSet()
     {
         return $this->createXMLDataSet(
             dirname(__FILE__) . '/fixtures/mysql/message.xml'
         );
+    }
+
+    /**
+     * Ensure everything works as expected.
+     */
+    public function testMoveMessagesFromFolder() {
+
+        $folderRepository = $this->_entityManager->getRepository(
+            '\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
+
+        $sourceEntity = $folderRepository->findById(1);
+        $targetEntity = $folderRepository->findById(2);
+
+        $this->assertNotNull($sourceEntity);
+        $this->assertNotNull($targetEntity);
+
+        $repository = $this->_entityManager->getRepository(
+            '\Conjoon\Data\Entity\Mail\DefaultMessageEntity');
+
+        $res = $repository->moveMessagesFromFolder(
+            $sourceEntity, $targetEntity
+        );
+
+        $this->assertSame(2, $res);
+
+        // groupware email folders
+        $queryTable = $this->getConnection()->createQueryTable(
+            'groupware_email_items', 'SELECT * FROM groupware_email_items'
+        );
+        $expectedTable = $this->createXmlDataSet(
+            dirname(__FILE__) . '/fixtures/mysql/message.move.result.xml'
+        )->getTable("groupware_email_items");
+        $this->assertTablesEqual($expectedTable, $queryTable);
     }
 
     /**
@@ -68,7 +103,7 @@ class DoctrineMessageRepositoryTest extends \Conjoon\DatabaseTestCaseDefault {
 
 
         $this->assertEquals(
-            1,
+            $this->messageCount,
             $this->getConnection()->getRowCount('groupware_email_items'),
             "Pre-Condition"
         );
@@ -94,7 +129,7 @@ class DoctrineMessageRepositoryTest extends \Conjoon\DatabaseTestCaseDefault {
 
 
         $this->assertEquals(
-            1,
+            $this->messageCount,
             $this->getConnection()->getRowCount('groupware_email_items'),
             "Pre-Condition"
         );
@@ -168,7 +203,7 @@ class DoctrineMessageRepositoryTest extends \Conjoon\DatabaseTestCaseDefault {
 
 
         $this->assertEquals(
-            1,
+            $this->messageCount,
             $this->getConnection()->getRowCount('groupware_email_items'),
             "Pre-Condition"
         );
@@ -195,7 +230,7 @@ class DoctrineMessageRepositoryTest extends \Conjoon\DatabaseTestCaseDefault {
         $repository->register($message);
 
         $this->assertEquals(
-            1,
+            $this->messageCount,
             $this->getConnection()->getRowCount('groupware_email_items'),
             "Pre-Condition"
         );
@@ -203,7 +238,7 @@ class DoctrineMessageRepositoryTest extends \Conjoon\DatabaseTestCaseDefault {
         $repository->flush();
 
         $this->assertEquals(
-            2,
+            $this->messageCount + 1,
             $this->getConnection()->getRowCount('groupware_email_items'),
             "Pre-Condition"
         );
@@ -231,7 +266,7 @@ class DoctrineMessageRepositoryTest extends \Conjoon\DatabaseTestCaseDefault {
 
 
         $this->assertEquals(
-            1,
+            $this->messageCount,
             $this->getConnection()->getRowCount('groupware_email_items'),
             "Pre-Condition"
         );
@@ -243,7 +278,7 @@ class DoctrineMessageRepositoryTest extends \Conjoon\DatabaseTestCaseDefault {
         $repository->register($message);
 
         $this->assertEquals(
-            1,
+            $this->messageCount,
             $this->getConnection()->getRowCount('groupware_email_items'),
             "Pre-Condition"
         );
@@ -260,7 +295,7 @@ class DoctrineMessageRepositoryTest extends \Conjoon\DatabaseTestCaseDefault {
         $repository->flush($message);
 
         $this->assertEquals(
-            1,
+            $this->messageCount,
             $this->getConnection()->getRowCount('groupware_email_items'),
             "Pre-Condition"
         );
@@ -287,7 +322,7 @@ class DoctrineMessageRepositoryTest extends \Conjoon\DatabaseTestCaseDefault {
 
 
         $this->assertEquals(
-            1,
+            $this->messageCount,
             $this->getConnection()->getRowCount('groupware_email_items'),
             "Pre-Condition"
         );
@@ -296,7 +331,7 @@ class DoctrineMessageRepositoryTest extends \Conjoon\DatabaseTestCaseDefault {
         $repository->remove($message);
 
         $this->assertEquals(
-            1,
+            $this->messageCount,
             $this->getConnection()->getRowCount('groupware_email_items'),
             "Pre-Condition"
         );
@@ -322,7 +357,7 @@ class DoctrineMessageRepositoryTest extends \Conjoon\DatabaseTestCaseDefault {
         $repository->flush();
 
         $this->assertEquals(
-            0,
+            $this->messageCount - 1,
             $this->getConnection()->getRowCount('groupware_email_items'),
             "Pre-Condition"
         );

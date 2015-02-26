@@ -105,4 +105,25 @@ class DoctrineMessageRepository
 
         return parent::findById($id);
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function moveMessagesFromFolder(
+        \Conjoon\Data\Entity\Mail\MailFolderEntity $sourceEntity,
+        \Conjoon\Data\Entity\Mail\MailFolderEntity $targetEntity) {
+
+        $em = $this->getEntityManager();
+
+        $query = $em->createQuery(
+            "UPDATE \Conjoon\Data\Entity\Mail\DefaultMessageEntity a" .
+            " SET a.groupwareEmailFolders=?1 WHERE a.groupwareEmailFolders=?2"
+        );
+        $query->setParameter(1, $targetEntity->getId());
+        $query->setParameter(2, $sourceEntity->getId());
+
+        $res = $query->getResult();
+        return $res;
+    }
+
 }
