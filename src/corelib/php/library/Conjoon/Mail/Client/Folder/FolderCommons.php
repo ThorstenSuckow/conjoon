@@ -50,8 +50,10 @@ interface FolderCommons {
      *                       - user: and instance of \Conjoon\User\User
      *                       - mailFolderRepository: an instance of
      *                       Conjoon\Data\Repository\Mail\MailFolderRepository
-     *
-     * @throws Conjoon\Argument\InvalidArgumentExcpetion
+     *                       - messageRepository: an instance of
+     *                       Conjoon\Data\Repository\Mail\MessageRepository
+     * 
+     * @throws \Conjoon\Argument\InvalidArgumentExcpetion
      */
     public function __construct(Array $options);
 
@@ -156,5 +158,17 @@ interface FolderCommons {
      * @throws FolderDoesNotExistException
      */
     public function getChildFolderEntities($folder);
+
+    /**
+     * Moves all the messages from the specified source folder to the specified
+     * target folder.
+     *
+     * @param Folder|\Conjoon\Data\Entity\Mail\MailFolderEntity $sourceFolder
+     * @param Folder|\Conjoon\Data\Entity\Mail\MailFolderEntity $targetFolder
+     *
+     * @throws FolderDoesNotExistException
+     * @throws \Conjoon\Argument\InvalidArgumentException
+     */
+    public function moveMessages($sourceFolder, $targetFolder);
 
 }

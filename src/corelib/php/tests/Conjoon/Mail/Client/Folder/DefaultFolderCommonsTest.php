@@ -79,6 +79,10 @@ class DefaultFolderCommonsTest extends \Conjoon\DatabaseTestCaseDefault {
 
     protected $childFoldersAllowedFolder;
 
+    protected $mailFolderRepository;
+
+    protected $messageRepository;
+
     public function getDataSet()
     {
         return $this->createXMLDataSet(
@@ -92,7 +96,10 @@ class DefaultFolderCommonsTest extends \Conjoon\DatabaseTestCaseDefault {
 
         $repository = $this->_entityManager->getRepository(
             '\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
+        $this->mailFolderRepository = $repository;
 
+        $this->messageRepository = $this->_entityManager->getRepository(
+            '\Conjoon\Data\Entity\Mail\DefaultMessageEntity');
 
         $user = new \Conjoon_Modules_Default_User();
         $user->setId(1);
@@ -104,6 +111,7 @@ class DefaultFolderCommonsTest extends \Conjoon\DatabaseTestCaseDefault {
         $this->user = new \Conjoon\User\AppUser($user);
 
         $this->commons = new DefaultFolderCommons(array(
+            'messageRepository'    => $this->messageRepository,
             'mailFolderRepository' => $repository,
             'user'                 => $this->user
         ));
@@ -152,6 +160,45 @@ class DefaultFolderCommonsTest extends \Conjoon\DatabaseTestCaseDefault {
                 '["root", "5", "7" ]'
             )
         );
+
+    }
+
+    /**
+     * Ensure everything works as expected.
+     */
+    public function test_CN947_moveMessages()
+    {
+        $sourceFolder = new Folder(
+            new DefaultFolderPath(
+                '["root", "5", "6" ]'
+            )
+        );
+
+        $targetFolder = new Folder(
+            new DefaultFolderPath(
+                '["root", "5", "7" ]'
+            )
+        );
+
+        // groupware email folders
+        $queryTable = $this->getConnection()->createQueryTable(
+            'groupware_email_items', 'SELECT * FROM groupware_email_items'
+        );
+        $expectedTable = $this->createXmlDataSet(
+            dirname(__FILE__) . '/fixtures/mysql/mail_folder.xml'
+        )->getTable("groupware_email_items");
+        $this->assertTablesEqual($expectedTable, $queryTable);
+
+        $this->commons->moveMessages($sourceFolder, $targetFolder);
+
+        // groupware email folders
+        $queryTable = $this->getConnection()->createQueryTable(
+            'groupware_email_items', 'SELECT * FROM groupware_email_items'
+        );
+        $expectedTable = $this->createXmlDataSet(
+            dirname(__FILE__) . '/fixtures/mysql/mail_folder.moveMessagesResult.xml'
+        )->getTable("groupware_email_items");
+        $this->assertTablesEqual($expectedTable, $queryTable);
 
     }
 

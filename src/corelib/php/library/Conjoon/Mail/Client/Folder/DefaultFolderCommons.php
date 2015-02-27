@@ -93,9 +93,15 @@ class DefaultFolderCommons implements FolderCommons {
     const ROOT = 'root';
 
     /**
-     * @var DoctrineMailFolderRepository
+     * @var MailFolderRepository
      */
     protected $folderRepository;
+
+    /**
+     * @var MessageRepository
+     */
+    protected $messageRepository;
+
 
     /**
      * @var Conjoon\User\User
@@ -121,14 +127,19 @@ class DefaultFolderCommons implements FolderCommons {
                 'type'  => 'instanceof',
                 'class' => 'Conjoon\Data\Repository\Mail\MailFolderRepository'
             ),
+            'messageRepository' => array(
+                'type'  => 'instanceof',
+                'class' => 'Conjoon\Data\Repository\Mail\MessageRepository'
+            ),
             'user' => array(
                 'type'  => 'instanceof',
                 'class' => 'Conjoon\User\User'
             )
         ), $options);
 
-        $this->folderRepository = $options['mailFolderRepository'];
-        $this->user             = $options['user'];
+        $this->messageRepository = $options['messageRepository'];
+        $this->folderRepository  = $options['mailFolderRepository'];
+        $this->user              = $options['user'];
     }
 
     /**
@@ -318,6 +329,64 @@ class DefaultFolderCommons implements FolderCommons {
         }
 
         return true;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function moveMessages($sourceFolder, $targetFolder) {
+
+        $data = array(
+            'sourceFolder' => $sourceFolder,
+            'targetFolder' => $targetFolder,
+        );
+
+        $config = array(
+            'sourceFolder' => array(
+                array(
+                    'type'  => 'instanceof',
+                    'class' => '\Conjoon\Mail\Client\Folder\Folder'
+                ),
+                'OR',
+                array(
+                    'type'  => 'instanceof',
+                    'class' => '\Conjoon\Data\Entity\Mail\MailFolderEntity'
+                )
+            ),
+            'targetFolder' => array(
+                array(
+                    'type'  => 'instanceof',
+                    'class' => '\Conjoon\Mail\Client\Folder\Folder'
+                ),
+                'OR',
+                array(
+                    'type'  => 'instanceof',
+                    'class' => '\Conjoon\Data\Entity\Mail\MailFolderEntity'
+                )
+            )
+        );
+
+        ArgumentCheck::check($config, $data);
+
+        $sourceEntity = null;
+        $targetEntity = null;
+
+        if (!($sourceFolder instanceof \Conjoon\Data\Entity\Mail\MailFolderEntity)) {
+            $sourceEntity = $this->getFolderEntity($sourceFolder);
+        }
+        if (!($targetFolder instanceof \Conjoon\Data\Entity\Mail\MailFolderEntity)) {
+            $targetEntity = $this->getFolderEntity($targetFolder);
+        }
+
+        try {
+            $this->messageRepository->moveMessagesFromFolder($sourceEntity, $targetEntity);
+        } catch (\Exception $e) {
+            throw new FolderServiceException(
+                "Exception thrown by previous exception", 0, $e
+            );
+        }
+
+
     }
 
 }
