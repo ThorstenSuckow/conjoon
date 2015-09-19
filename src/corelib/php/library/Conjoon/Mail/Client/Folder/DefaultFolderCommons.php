@@ -373,9 +373,13 @@ class DefaultFolderCommons implements FolderCommons {
 
         if (!($sourceFolder instanceof \Conjoon\Data\Entity\Mail\MailFolderEntity)) {
             $sourceEntity = $this->getFolderEntity($sourceFolder);
+        } else {
+            $sourceEntity = $sourceFolder;
         }
         if (!($targetFolder instanceof \Conjoon\Data\Entity\Mail\MailFolderEntity)) {
             $targetEntity = $this->getFolderEntity($targetFolder);
+        } else {
+            $targetEntity = $targetFolder;
         }
 
         try {

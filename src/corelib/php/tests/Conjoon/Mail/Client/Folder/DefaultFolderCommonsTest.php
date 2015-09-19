@@ -208,19 +208,55 @@ class DefaultFolderCommonsTest extends \Conjoon\DatabaseTestCaseDefault {
     /**
      * Ensure everything works as expected.
      */
+    public function test_CN954()
+    {
+        $folderGroup = array(
+            $this->commons->getFolderEntity(new Folder(
+                new DefaultFolderPath(
+                    '["root", "5", "6" ]'
+                )
+            )),
+            $this->commons->getFolderEntity(new Folder(
+                new DefaultFolderPath(
+                    '["root", "5", "7" ]'
+                )
+            ))
+        );
+
+        $this->_CN947($folderGroup);
+    }
+
+    /**
+     * Ensure everything works as expected.
+     */
     public function test_CN947_moveMessages()
     {
-        $sourceFolder = new Folder(
-            new DefaultFolderPath(
-                '["root", "5", "6" ]'
+        $folderGroup = array(
+            new Folder(
+                new DefaultFolderPath(
+                    '["root", "5", "6" ]'
+                )
+            ),
+            new Folder(
+                new DefaultFolderPath(
+                    '["root", "5", "7" ]'
+                )
             )
         );
 
-        $targetFolder = new Folder(
-            new DefaultFolderPath(
-                '["root", "5", "7" ]'
-            )
-        );
+        $this->_CN947($folderGroup);
+    }
+
+    /**
+     * Helper for CN947 related tests
+     */
+    protected function _CN947($folderGroup)
+    {
+        $sourceFolder = $folderGroup[0];
+        $targetFolder = $folderGroup[1];
+
+        $this->assertNotNull($sourceFolder);
+        $this->assertNotNull($targetFolder);
 
         // groupware email folders
         $queryTable = $this->getConnection()->createQueryTable(
@@ -241,7 +277,6 @@ class DefaultFolderCommonsTest extends \Conjoon\DatabaseTestCaseDefault {
             dirname(__FILE__) . '/fixtures/mysql/mail_folder.moveMessagesResult.xml'
         )->getTable("groupware_email_items");
         $this->assertTablesEqual($expectedTable, $queryTable);
-
     }
 
     /**
