@@ -77,7 +77,8 @@ interface FolderService {
      * being moved/read.
      * The folders get moved for the user which is bound to the current instance
      * of this class.
-     * Moved folders need to inherit the account of the target folders.
+     * Moved folders need to inherit the account of the target folders. They
+     * will not keep their original associations to their mail accounts.
      * Folders may be moved across different accounts. Remote_root Folders must
      * not be moved to root or accounts_root folder hierarchies.
      *
