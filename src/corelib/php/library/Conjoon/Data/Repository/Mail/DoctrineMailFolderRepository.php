@@ -84,4 +84,29 @@ class DoctrineMailFolderRepository
         return $res;
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function hasMessages(\Conjoon\Data\Entity\Mail\MailFolderEntity $folderEntity) {
+
+        $em = $this->getEntityManager();
+
+        $qb = $em->createQueryBuilder()
+            ->select('count(message.id)')
+            ->from(' \Conjoon\Data\Entity\Mail\DefaultMessageEntity', 'message')
+            ->leftJoin('message.groupwareEmailFolders', 'folder')
+            ->leftJoin('message.groupwareEmailItemsFlags', 'flag')
+            ->where('folder = :folder')
+            ->andWhere('flag.isDeleted = :isDeleted')
+            ->setParameter('isDeleted', false)// find the messages
+                                              // not marked as false.
+                                              // if there is any found, the folder
+                                              // "hasMessages"
+            ->setParameter('folder', $folderEntity);
+
+        $result =$qb->getQuery()->getSingleScalarResult();
+
+        return $result >= 1;
+    }
+
 }

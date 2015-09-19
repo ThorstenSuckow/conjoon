@@ -56,5 +56,15 @@
             <value>1</value>
             <value>0</value>
         </row>
+        <row>
+            <value>5</value>
+            <value>folder 5</value>
+            <value>1</value>
+            <value>0</value>
+            <value>root</value>
+            <value>inbox</value>
+            <value>4</value>
+            <value>0</value>
+        </row>
     </table>
 </dataset>

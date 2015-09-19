@@ -48,13 +48,54 @@ require_once 'Conjoon/DatabaseTestCaseDefault.php';
  */
 class DoctrineMailFolderRepositoryTest extends \Conjoon\DatabaseTestCaseDefault {
 
-    protected $mailFolderCount = 4;
+    protected $mailFolderCount = 5;
 
     public function getDataSet()
     {
         return $this->createXMLDataSet(
             dirname(__FILE__) . '/fixtures/mysql/mail_folder.xml'
         );
+    }
+
+    /**
+     * Ensure everything works as expected.
+     */
+    public function testHasMessages() {
+
+        $repository = $this->_entityManager->getRepository(
+            '\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
+
+        $folder1 = $repository->findById(1);
+        $folder2 = $repository->findById(5);
+
+        $this->assertNotNull($folder1);
+        $this->assertNotNull($folder2);
+
+        $this->assertTrue($repository->hasMessages($folder1));
+        $this->assertTrue($repository->hasMessages($folder2));
+
+    }
+
+    /**
+     * Ensure everything works as expected.
+     */
+    public function testHasNoMessages() {
+
+        $repository = $this->_entityManager->getRepository(
+            '\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
+
+        $folder1 = $repository->findById(4);
+        $folder2 = $repository->findById(3);
+        $folder3 = $repository->findById(2);
+
+        $this->assertNotNull($folder1);
+        $this->assertNotNull($folder2);
+        $this->assertNotNull($folder3);
+
+        $this->assertFalse($repository->hasMessages($folder1));
+        $this->assertFalse($repository->hasMessages($folder2));
+        $this->assertFalse($repository->hasMessages($folder3));
+
     }
 
     /**
@@ -415,7 +456,7 @@ class DoctrineMailFolderRepositoryTest extends \Conjoon\DatabaseTestCaseDefault 
         $repository = $this->_entityManager->getRepository(
             '\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
 
-        $entity = $repository->findById(4);
+        $entity = $repository->findById(5);
 
         $entities = $repository->getChildFolders($entity);
 

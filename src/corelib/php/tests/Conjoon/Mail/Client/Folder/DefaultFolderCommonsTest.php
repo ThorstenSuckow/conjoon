@@ -166,6 +166,48 @@ class DefaultFolderCommonsTest extends \Conjoon\DatabaseTestCaseDefault {
     /**
      * Ensure everything works as expected.
      */
+    public function test_CN923_hasMessages()
+    {
+        $folder1 = new Folder(
+            new DefaultFolderPath(
+                '["root", "5", "6" ]'
+            )
+        );
+
+        $folder2 = $this->commons->getFolderEntity(new Folder(
+            new DefaultFolderPath(
+                '["root", "5", "7" ]'
+            )
+        ));
+
+        $folder3 = new Folder(
+            new DefaultFolderPath(
+                '["root", "5", "8" ]'
+            )
+        );
+
+        $folder4 = $this->commons->getFolderEntity(new Folder(
+            new DefaultFolderPath(
+                '["root", "14", "19" ]'
+            )
+        ));
+
+        $this->assertNotNull($folder1);
+        $this->assertNotNull($folder2);
+        $this->assertNotNull($folder3);
+        $this->assertNotNull($folder4);
+
+
+        $this->assertTrue($this->commons->hasMessages($folder1));
+        $this->assertFalse($this->commons->hasMessages($folder2));
+        $this->assertTrue($this->commons->hasMessages($folder3));
+        $this->assertFalse($this->commons->hasMessages($folder4));
+
+    }
+
+    /**
+     * Ensure everything works as expected.
+     */
     public function test_CN947_moveMessages()
     {
         $sourceFolder = new Folder(
@@ -392,9 +434,9 @@ class DefaultFolderCommonsTest extends \Conjoon\DatabaseTestCaseDefault {
             new DefaultFolderPath('["root", "5"]')
         ));
 
-        $this->assertSame(2, count($entities));
+        $this->assertSame(3, count($entities));
 
-        $ids = array(6, 7);
+        $ids = array(6, 7, 8);
 
         foreach ($entities as $entity) {
             $this->assertTrue(in_array($entity->getId(), $ids));
@@ -407,8 +449,8 @@ class DefaultFolderCommonsTest extends \Conjoon\DatabaseTestCaseDefault {
             $this->commons->getFolderEntity(new Folder(
                 new DefaultFolderPath('["root", "5"]')
         )));
-        $this->assertSame(2, count($entities));
-        $ids = array(6, 7);
+        $this->assertSame(3, count($entities));
+        $ids = array(6, 7, 8);
         foreach ($entities as $entity) {
             $this->assertTrue(in_array($entity->getId(), $ids));
         }

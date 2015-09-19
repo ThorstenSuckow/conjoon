@@ -385,8 +385,47 @@ class DefaultFolderCommons implements FolderCommons {
                 "Exception thrown by previous exception", 0, $e
             );
         }
+    }
 
+    /**
+     * @inheritdoc
+     */
+    public function hasMessages($folder) {
+        $data = array(
+            'folder' => $folder
+        );
 
+        $config = array(
+            'folder' => array(
+                array(
+                    'type'  => 'instanceof',
+                    'class' => '\Conjoon\Mail\Client\Folder\Folder'
+                ),
+                'OR',
+                array(
+                    'type'  => 'instanceof',
+                    'class' => '\Conjoon\Data\Entity\Mail\MailFolderEntity'
+                )
+            )
+        );
+
+        ArgumentCheck::check($config, $data);
+
+        $folderEntity = null;
+
+        if (!($folder instanceof \Conjoon\Data\Entity\Mail\MailFolderEntity)) {
+            $folderEntity = $this->getFolderEntity($folder);
+        } else {
+            $folderEntity = $folder;
+        }
+
+        try {
+            return $this->folderRepository->hasMessages($folderEntity);
+        } catch (\Exception $e) {
+            throw new FolderServiceException(
+                "Exception thrown by previous exception", 0, $e
+            );
+        }
     }
 
 }

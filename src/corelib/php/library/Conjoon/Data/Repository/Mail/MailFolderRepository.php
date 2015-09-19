@@ -59,4 +59,20 @@ interface MailFolderRepository extends \Conjoon\Data\Repository\DataRepository {
      */
     public function getChildFolders(\Conjoon\Data\Entity\Mail\MailFolderEntity $folder);
 
+
+    /**
+     * Checks whether the specified folder or any of its sub folders contains
+     * one or more messages which are not flagged as deleted.
+     * This method does consider all user-messages relationships. If there are
+     * n users associated with 1 message, and x (with x <= n) users have flagged
+     * the message as deleted, the method will return false. Otherwise it will
+     * return true.
+     *
+     * @param \Conjoon\Data\Entity\Mail\MailFolderEntity $folderEntity
+     *
+     * @return boolean false if any message not flagged as deleted is available,
+     *         otherwise true
+     */
+    public function hasMessages(\Conjoon\Data\Entity\Mail\MailFolderEntity $folderEntity);
+
 }

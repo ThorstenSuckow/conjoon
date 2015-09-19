@@ -52,7 +52,7 @@ interface FolderCommons {
      *                       Conjoon\Data\Repository\Mail\MailFolderRepository
      *                       - messageRepository: an instance of
      *                       Conjoon\Data\Repository\Mail\MessageRepository
-     * 
+     *
      * @throws \Conjoon\Argument\InvalidArgumentExcpetion
      */
     public function __construct(Array $options);
@@ -170,5 +170,20 @@ interface FolderCommons {
      * @throws \Conjoon\Argument\InvalidArgumentException
      */
     public function moveMessages($sourceFolder, $targetFolder);
+
+
+    /**
+     * Returns true if the passed Folder or any of its child folders in the
+     * representing sub-tree has one or more messages which are not flagged as
+     * deleted.
+     *
+     * @param Folder|\Conjoon\Data\Entity\Mail\MailFolderEntity $folder
+     *
+     * @return Boolean
+     *
+     * @throws FolderDoesNotExistException
+     * @throws \Conjoon\Argument\InvalidArgumentException
+     */
+    public function hasMessages($folder);
 
 }
