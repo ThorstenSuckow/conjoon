@@ -94,6 +94,8 @@ class DefaultClientMailFolderServiceTest extends \Conjoon\DatabaseTestCaseDefaul
 
     protected $service;
 
+    protected $messageRepository;
+
     public function getDataSet()
     {
         return $this->createXMLDataSet(
@@ -153,13 +155,17 @@ class DefaultClientMailFolderServiceTest extends \Conjoon\DatabaseTestCaseDefaul
                 )
             );
 
+        $this->messageRepository = $this->_entityManager->getRepository(
+            '\Conjoon\Data\Entity\Mail\DefaultMessageEntity');
+
         $repository = $this->_entityManager->getRepository(
             '\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
 
         $mailFolderCommons = new \Conjoon\Mail\Client\Folder\DefaultFolderCommons(
             array(
                 'mailFolderRepository' => $repository,
-                'user'                 => $this->user
+                'user'                 => $this->user,
+                'messageRepository'    => $this->messageRepository
             ));
 
         $folderSecurityService =
