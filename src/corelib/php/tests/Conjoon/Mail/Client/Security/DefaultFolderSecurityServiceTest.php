@@ -94,6 +94,9 @@ class DefaultFolderSecurityServiceTest
         $repository = $this->_entityManager->getRepository(
             '\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
 
+        $messageRepository =  $this->_entityManager->getRepository(
+            '\Conjoon\Data\Entity\Mail\DefaultMessageEntity');
+
 
         $this->mailFolderOk =
             new Folder(
@@ -139,7 +142,8 @@ class DefaultFolderSecurityServiceTest
                 new \Conjoon\Mail\Client\Folder\DefaultFolderCommons(
                     array(
                         'mailFolderRepository' => $repository,
-                        'user'                 => $user
+                        'user'                 => $user,
+                        'messageRepository'    => $messageRepository
                 ))
         ));
 
