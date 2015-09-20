@@ -59,6 +59,56 @@
             <value>1</value>
             <value>0</value>
         </row>
+        <row>
+            <value>15</value>
+            <value>folder 15</value>
+            <value>0</value>
+            <value>0</value>
+            <value>inbox</value>
+            <value>inbox</value>
+            <value>3</value>
+            <value>0</value>
+        </row>
+        <row>
+            <value>16</value>
+            <value>folder 16</value>
+            <value>0</value>
+            <value>0</value>
+            <value>inbox</value>
+            <value>inbox</value>
+            <value>15</value>
+            <value>0</value>
+        </row>
+        <row>
+            <value>17</value>
+            <value>folder 17</value>
+            <value>0</value>
+            <value>0</value>
+            <value>inbox</value>
+            <value>inbox</value>
+            <value>16</value>
+            <value>0</value>
+        </row>
+        <row>
+            <value>123</value>
+            <value>folder 123</value>
+            <value>1</value>
+            <value>0</value>
+            <value>root_remote</value>
+            <value>inbox</value>
+            <null />
+            <value>0</value>
+        </row>
+        <row>
+            <value>124</value>
+            <value>folder 124</value>
+            <value>1</value>
+            <value>0</value>
+            <value>root_remote</value>
+            <value>inbox</value>
+            <null />
+            <value>0</value>
+        </row>
     </table>
     <table name="groupware_email_folders_users">
         <column>groupware_email_folders_id</column>
@@ -81,6 +131,31 @@
         </row>
         <row>
             <value>4</value>
+            <value>2</value>
+            <value>owner</value>
+        </row>
+        <row>
+            <value>123</value>
+            <value>1</value>
+            <value>owner</value>
+        </row>
+        <row>
+            <value>124</value>
+            <value>2</value>
+            <value>owner</value>
+        </row>
+        <row>
+            <value>16</value>
+            <value>1</value>
+            <value>owner</value>
+        </row>
+        <row>
+            <value>17</value>
+            <value>1</value>
+            <value>owner</value>
+        </row>
+        <row>
+            <value>15</value>
             <value>2</value>
             <value>owner</value>
         </row>

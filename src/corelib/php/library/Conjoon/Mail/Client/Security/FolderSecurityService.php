@@ -85,6 +85,32 @@ interface FolderSecurityService {
 
     /**
      * Checks whether the user bound to this service may access the specified
+     * folder and all its child folders.
+     * Access means read and write permissions.
+     * The implementing classes should consider the possibility that the sent
+     * folder represents a remote folder which's path exists only on the remote
+     * server, but is not mapped on the client site yet.
+     * The method should then first check the root id, and if this one is
+     * accessible by the current user, the path should be checked for existance
+     * on the client side. If the path does only exist on remote site, it should
+     * be assumed that the path is accessible since the root id is accessible.
+     * Another case is the one that comes with empty paths, i.e. where only the
+     * root id is available.
+     * If a path is available, and this path exists on client side, only the
+     * last path part of this path should be checked for accessibility.
+     *
+     * @param \Conjoon\Mail\Client\Folder\MailFolder $folder The folder to check
+     *
+     * @return boolean true on success, false if access is forbidden
+     *
+     * @throws SecurityServiceException
+     * @throws Conjoon\Mail\Client\Folder\FolderDoesNotExistException
+     */
+    public function isFolderHierarchyAccessible(
+        \Conjoon\Mail\Client\Folder\Folder $folder);
+
+    /**
+     * Checks whether the user bound to this service may access the specified
      * folder for moving.
      * Moving means appending this folder and its child folders to a new parent
      * folder

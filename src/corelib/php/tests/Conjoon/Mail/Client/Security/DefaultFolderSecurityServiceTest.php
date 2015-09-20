@@ -70,6 +70,7 @@ class DefaultFolderSecurityServiceTest
 
     protected $mailFolderNotThere;
 
+
     public function getDataSet()
     {
         return $this->createXMLDataSet(
@@ -150,6 +151,90 @@ class DefaultFolderSecurityServiceTest
 
     }
 
+    /**
+     * Ensure everything works as expected
+     */
+    public function testIsFolderHierarchyAccessible_FolderDoesNotExistException_CN958() {
+
+        foreach ($this->mailFolderNotThere as $mailFolderNotThere) {
+            $ee = null;
+            try {
+                $this->securityService->isFolderHierarchyAccessible(
+                    $mailFolderNotThere
+                );
+            } catch (\Exception $e) {
+                $ee = $e;
+            }
+
+            $this->assertTrue($ee instanceof \Conjoon\Mail\Client\Folder\FolderDoesNotExistException);
+        }
+    }
+    /**
+     * Ensures everything works as expected
+     */
+    public function testIsMailFolderHierarchyAccessible_CN958()
+    {
+
+        $this->assertTrue(
+            $this->securityService->isFolderHierarchyAccessible(
+                new Folder(
+                    new DefaultFolderPath(
+                        '["root", "1", "2", "3", "15", "16"]'
+                    )
+                )
+            )
+        );
+
+        $this->assertFalse(
+            $this->securityService->isFolderHierarchyAccessible(
+                new Folder(
+                    new DefaultFolderPath(
+                        '["root", "1", "2", "3", "15"]'
+                    )
+                )
+            )
+        );
+
+        $this->assertFalse(
+            $this->securityService->isFolderHierarchyAccessible(
+                $this->mailFolderOk
+            )
+        );
+
+        $this->assertFalse(
+            $this->securityService->isFolderHierarchyAccessible(
+                $this->mailFolderFail
+            )
+        );
+    }
+
+    /**
+     * Ensures everything works as expected
+     */
+    public function testIsMailFolderHierarchyAccessibleForRemote_CN958()
+    {
+
+        $this->assertTrue(
+            $this->securityService->isFolderHierarchyAccessible(
+                new Folder(
+                    new DefaultFolderPath(
+                        '["root", "123", "2432432", "3253532253"]'
+                    )
+                )
+            )
+        );
+
+        $this->assertFalse(
+            $this->securityService->isFolderHierarchyAccessible(
+                new Folder(
+                    new DefaultFolderPath(
+                        '["root", "124", "2432432", "3253532253"]'
+                    )
+                )
+            )
+        );
+    }
+
 
     /**
      * Ensure everything works as expected
@@ -212,7 +297,7 @@ class DefaultFolderSecurityServiceTest
         foreach ($this->mailFolderNotThere as $mailFolderNotThere) {
             $ee = null;
             try {
-                $this->securityService->isFolderMovable(
+                $this->securityService->isFolderAccessible(
                     $mailFolderNotThere
                 );
             } catch (\Exception $e) {

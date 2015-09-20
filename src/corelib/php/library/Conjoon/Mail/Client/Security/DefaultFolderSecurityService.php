@@ -164,13 +164,34 @@ class DefaultFolderSecurityService implements FolderSecurityService {
     /**
      * @inheritdoc
      */
-    public function isFolderAccessible(
-        \Conjoon\Mail\Client\Folder\Folder $folder)
-    {
-        /**
-         * @refactor uses old implementation
-         */
+    public function isFolderAccessible(\Conjoon\Mail\Client\Folder\Folder $folder) {
+        return $this->isFolderAccessibleHelper($folder, false);
 
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isFolderHierarchyAccessible(\Conjoon\Mail\Client\Folder\Folder $folder) {
+        return $this->isFolderAccessibleHelper($folder, true);
+
+    }
+
+    /**
+     * Helper function for folder*Accessible checks.
+     * @param \Conjoon\Mail\Client\Folder\Folder $folder
+     * @param bool $considerChildFolders True to recurse into child folders
+     *                                   and check whether these are accessible
+     *                                   too
+     *
+     * @return bool true if folder(s) are accessible, otherwise false
+     *
+     * @throws SecurityServiceException
+     * @throws \Conjoon\Mail\Client\Folder\FolderDoesNotExistException
+     */
+    protected function isFolderAccessibleHelper(
+        \Conjoon\Mail\Client\Folder\Folder $folder, $considerChildFolders = false)
+    {
         $path   = $folder->getPath();
         $nodeId = $folder->getNodeId();
         $rootId = $folder->getRootId();
@@ -178,6 +199,9 @@ class DefaultFolderSecurityService implements FolderSecurityService {
         $checkNodeId = null;
 
         $checkForRoot = false;
+
+        // the folder that gets transformed to its corresponding entity later on
+        $transformToEntity = $folder;
 
         switch (true) {
 
@@ -188,7 +212,7 @@ class DefaultFolderSecurityService implements FolderSecurityService {
                 $checkForRoot = true;
                 break;
 
-            // paths set, node id avilable.
+            // paths set, node id available.
             case (!empty($path) && !empty($nodeId)):
 
                 $doesMailFolderExist = $this->checkClientMailFolderExists($folder);
@@ -207,6 +231,7 @@ class DefaultFolderSecurityService implements FolderSecurityService {
                             "The folder $folder does not seem to exist"
                         );
                     }
+
 
                     $checkNodeId = $rootId;
                     $checkForRoot = true;
@@ -233,6 +258,8 @@ class DefaultFolderSecurityService implements FolderSecurityService {
 
             $doesMailFolderExist = $this->checkClientMailFolderExists($folderCheck);
 
+            $transformToEntity = $folderCheck;
+
             if (!$doesMailFolderExist) {
                 throw new \Conjoon\Mail\Client\Folder\FolderDoesNotExistException(
                     "The folder $folder does not seem to exist"
@@ -240,15 +267,53 @@ class DefaultFolderSecurityService implements FolderSecurityService {
             }
         }
 
+        return $this->checkFolderHierarchyAccessible(
+            $this->folderCommons->getFolderEntity($transformToEntity),
+            $considerChildFolders === true
+        );
+
+    }
+
+    /**
+     * Returns false if the $folderEntity or any of its child folders is
+     * not accessible by the user bound to this service.
+     *
+     * @param \Conjoon\Data\Entity\Mail\MailFolderEntity
+     * @param bool $recurse
+     * @return bool
+     */
+    protected function checkFolderHierarchyAccessible(
+        \Conjoon\Data\Entity\Mail\MailFolderEntity $folderEntity, $recurse = false) {
+        /**
+         * @refactor uses old implementation
+         */
+
+        $OWNER_STR = \Conjoon_Modules_Groupware_Email_Folder_Model_FoldersUsers::OWNER;
+
         $foldersUsers =
             new \Conjoon_Modules_Groupware_Email_Folder_Model_FoldersUsers();
+
+        $checkNodeId = $folderEntity->getId();
 
         $rel = $foldersUsers->getRelationShipForFolderAndUser(
             $checkNodeId, $this->user->getId()
         );
 
-        return $rel ===
-            \Conjoon_Modules_Groupware_Email_Folder_Model_FoldersUsers::OWNER;
+        $isAccessible = $rel === $OWNER_STR;
+
+
+        if ($isAccessible && $recurse) {
+            $childFolders = $this->folderCommons->getChildFolderEntities($folderEntity);
+
+            foreach ($childFolders as $childFolder) {
+                $isAccessible = $this->checkFolderHierarchyAccessible($childFolder, $recurse);
+                if (!$isAccessible) {
+                    break;
+                }
+            }
+        }
+
+        return $isAccessible;
     }
 
 
