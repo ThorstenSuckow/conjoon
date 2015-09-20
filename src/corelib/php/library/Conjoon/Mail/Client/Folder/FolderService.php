@@ -101,4 +101,25 @@ interface FolderService {
         \Conjoon\Mail\Client\Folder\Folder $targetRootFolder);
 
 
+    /**
+     * Recursively moves all the messages found in $sourceFolder and its child
+     * folders to $targetFolder.
+     * The folder meta info of $sourceFolder and $targetFolder must be equal.
+     * Implementing classes must check if the messages found in all the folders
+     * found within $sourceFolder are accessible, and let the operation void if
+     * this is not the case.
+     *
+     * @param Folder $sourceFolder The source folder to read the messages from
+     * @param Folder $targetFolder The target folder where the messages should
+     *                             be moved to
+     *
+     * @return boolean true
+     *
+     * @throws \Conjoon\Mail\Client\Folder\FolderServiceException
+     * @throws \Conjoon\Mail\Client\Folder\FolderMetaInfoMismatchException
+     * @throws \Conjoon\Mail\Client\Security\FolderAccessException
+     */
+    public function moveMessages(\Conjoon\Mail\Client\Folder\Folder $sourceFolder,
+                                 \Conjoon\Mail\Client\Folder\Folder $targetFolder);
+
 }

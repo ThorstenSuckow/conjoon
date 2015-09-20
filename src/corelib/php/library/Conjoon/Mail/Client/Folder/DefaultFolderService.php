@@ -36,9 +36,11 @@ use Conjoon\Data\Repository\Mail\MailFolderRepository,
     Conjoon\Argument\ArgumentCheck,
     Conjoon\Argument\InvalidArgumentException,
     Conjoon\Mail\Client\Folder\FolderServiceException,
-    Conjoon\Mail\Client\Security\FolderAccessException,
     Conjoon\Mail\Client\Security\FolderAddException,
-    Conjoon\Mail\Client\Security\FolderMoveException;
+    Conjoon\Mail\Client\Security\FolderAccessException,
+    Conjoon\Mail\Client\Security\FolderMoveException,
+    Conjoon\Mail\Client\Folder\FolderTypeMismatchException,
+    Conjoon\Mail\Client\Folder\FolderMetaInfoMismatchException;
 
 /**
  * @see Conjoon\Mail\Client\Folder\FolderService
@@ -46,14 +48,24 @@ use Conjoon\Data\Repository\Mail\MailFolderRepository,
 require_once 'Conjoon/Mail/Client/Folder/FolderService.php';
 
 /**
- * @see Conjoon\Mail\Client\Folder\FolderServiceException
+ * @see Conjoon\Mail\Client\Folder\FolderTypeMismatchException
  */
-require_once 'Conjoon/Mail/Client/Folder/FolderServiceException.php';
+require_once 'Conjoon/Mail/Client/Folder/FolderTypeMismatchException.php';
 
 /**
  * @see Conjoon\Mail\Client\Security\FolderAccessException
  */
 require_once 'Conjoon/Mail/Client/Security/FolderAccessException.php';
+
+/**
+ * @see Conjoon\Mail\Client\Folder\FolderMetaInfoMismatchException
+ */
+require_once 'Conjoon/Mail/Client/Folder/FolderMetaInfoMismatchException.php';
+
+/**
+ * @see Conjoon\Mail\Client\Folder\FolderServiceException
+ */
+require_once 'Conjoon/Mail/Client/Folder/FolderServiceException.php';
 
 /**
  * @see Conjoon\Mail\Client\Security\FolderMoveException
@@ -164,6 +176,86 @@ class DefaultFolderService implements FolderService {
         $this->user              = $options['user'];
         $this->mailFolderCommons = $options['mailFolderCommons'];
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function moveMessages(\Conjoon\Mail\Client\Folder\Folder $sourceFolder,
+                                 \Conjoon\Mail\Client\Folder\Folder $targetFolder) {
+
+        $isSourceRemote = $this->mailFolderCommons->isFolderRepresentingRemoteMailbox(
+            $sourceFolder);
+        $isTargetRemote = $this->mailFolderCommons->isFolderRepresentingRemoteMailbox(
+            $targetFolder);
+
+        if ($isSourceRemote || $isTargetRemote) {
+            throw new \RuntimeException("operation not supported yet.");
+        }
+
+        try {
+            $sourceEntity = $this->mailFolderCommons->getFolderEntity(
+                $sourceFolder);
+            $targetEntity = $this->mailFolderCommons->getFolderEntity(
+                $targetFolder);
+        } catch (\Exception $e) {
+            throw new FolderServiceException(
+                "Exception thrown by previous exception.", 0 , $e
+            );
+        }
+
+        // check access options recursively for sourceFolder first!
+        // break here if any folder is found that may not be accessed
+        if (!$this->folderSecurityService->isFolderHierarchyAccessible($sourceFolder)) {
+            throw new FolderAccessException(
+                "Source folder hierarchy is not accessible by user"
+            );
+        }
+
+        // check access for target folder
+        if (!$this->folderSecurityService->isFolderAccessible($targetFolder)) {
+            throw new FolderAccessException(
+                "Target folder hierarchy is not accessible by user"
+            );
+        }
+
+        // foldertype mismatch
+        // check if type is the same
+        if ($sourceEntity->getMetaInfo() !== $targetEntity->getMetaInfo()) {
+            throw new FolderTypeMismatchException(
+                "Source- and Target-Folder do not share the same type"
+            );
+        }
+
+        return $this->moveMessagesIntoTargetFolder($sourceEntity, $targetEntity);
+    }
+
+    /**
+     * Helper function for moveMessages. Recursively moves the messages from
+     * all the folders found in $sourceEntity (including $sourceEntity) to
+     * $targetEntity.
+     *
+     * @param \Conjoon\Data\Entity\Mail\FolderEntity $sourceEntity
+     * @param \Conjoon\Data\Entity\Mail\FolderEntity $targetEntity
+     *
+     * @return bool
+     */
+    public function moveMessagesIntoTargetFolder(
+        \Conjoon\Data\Entity\Mail\MailFolderEntity $sourceEntity,
+        \Conjoon\Data\Entity\Mail\MailFolderEntity $targetEntity) {
+
+        $folderCommons = $this->mailFolderCommons;
+
+        $folderCommons->moveMessages($sourceEntity, $targetEntity);
+
+        $childEntities = $folderCommons->getChildFolderEntities($sourceEntity);
+
+        foreach ($childEntities as $childEntity) {
+            $this->moveMessagesIntoTargetFolder($childEntity, $targetEntity);
+        }
+
+        return true;
+    }
+
 
     /**
      * @inheritdoc
