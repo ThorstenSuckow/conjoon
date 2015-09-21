@@ -42,6 +42,8 @@ namespace Conjoon\Mail\Client\Folder;
 interface FolderCommons {
 
     /**
+     * @todo refactor, no contract for constructor needed
+     *
      * Creates a new instance of a folder security service.
      * A folder security service is bound to a user.
      *
