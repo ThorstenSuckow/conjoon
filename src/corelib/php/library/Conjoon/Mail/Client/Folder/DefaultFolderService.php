@@ -183,15 +183,6 @@ class DefaultFolderService implements FolderService {
     public function moveMessages(\Conjoon\Mail\Client\Folder\Folder $sourceFolder,
                                  \Conjoon\Mail\Client\Folder\Folder $targetFolder) {
 
-        $isSourceRemote = $this->mailFolderCommons->isFolderRepresentingRemoteMailbox(
-            $sourceFolder);
-        $isTargetRemote = $this->mailFolderCommons->isFolderRepresentingRemoteMailbox(
-            $targetFolder);
-
-        if ($isSourceRemote || $isTargetRemote) {
-            throw new \RuntimeException("operation not supported yet.");
-        }
-
         try {
             $sourceEntity = $this->mailFolderCommons->getFolderEntity(
                 $sourceFolder);
@@ -201,6 +192,18 @@ class DefaultFolderService implements FolderService {
             throw new FolderServiceException(
                 "Exception thrown by previous exception.", 0 , $e
             );
+        }
+
+        /**
+         * @todo remove later on when this works with remote mailboxes
+         */
+        $isSourceRemote = $this->mailFolderCommons->isFolderRepresentingRemoteMailbox(
+            $sourceFolder);
+        $isTargetRemote = $this->mailFolderCommons->isFolderRepresentingRemoteMailbox(
+            $targetFolder);
+
+        if ($isSourceRemote || $isTargetRemote) {
+            throw new \RuntimeException("operation not supported yet.");
         }
 
         // check access options recursively for sourceFolder first!
@@ -221,7 +224,7 @@ class DefaultFolderService implements FolderService {
         // foldertype mismatch
         // check if type is the same
         if ($sourceEntity->getMetaInfo() !== $targetEntity->getMetaInfo()) {
-            throw new FolderTypeMismatchException(
+            throw new FolderMetaInfoMismatchException(
                 "Source- and Target-Folder do not share the same type"
             );
         }

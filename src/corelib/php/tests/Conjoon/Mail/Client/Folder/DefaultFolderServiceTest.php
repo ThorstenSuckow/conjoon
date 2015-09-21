@@ -195,6 +195,7 @@ class DefaultClientMailFolderServiceTest extends \Conjoon\DatabaseTestCaseDefaul
      * @expectedException \Conjoon\Mail\Client\Folder\FolderServiceException
      */
     public function testMoveFolder_FolderServiceException() {
+
         $folderToMove = new Folder(
             new DefaultFolderPath('["root", "1", "18"]')
         );

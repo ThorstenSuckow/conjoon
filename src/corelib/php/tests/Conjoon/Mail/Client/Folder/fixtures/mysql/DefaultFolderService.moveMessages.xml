@@ -59,7 +59,7 @@
             <value>0</value>
             <value>inbox</value>
             <value>inbox</value>
-            <value>3</value>
+            <value>2</value>
             <value>0</value>
         </row>
         <row>
@@ -78,6 +78,26 @@
             <value>0</value>
             <value>0</value>
             <value>inbox</value>
+            <value>inbox</value>
+            <value>4</value>
+            <value>0</value>
+        </row>
+        <row>
+            <value>6</value>
+            <value>folder 6</value>
+            <value>0</value>
+            <value>0</value>
+            <value>spam</value>
+            <value>spam</value>
+            <value>4</value>
+            <value>0</value>
+        </row>
+        <row>
+            <value>7</value>
+            <value>folder 7</value>
+            <value>0</value>
+            <value>0</value>
+            <value>folder</value>
             <value>inbox</value>
             <value>4</value>
             <value>0</value>
@@ -110,6 +130,16 @@
         <row>
             <value>5</value>
             <value>1</value>
+            <value>owner</value>
+        </row>
+        <row>
+            <value>6</value>
+            <value>1</value>
+            <value>owner</value>
+        </row>
+        <row>
+            <value>7</value>
+            <value>2</value>
             <value>owner</value>
         </row>
     </table>

@@ -83,7 +83,7 @@ class DefaultFolderService_moveMessages_Test extends \Conjoon\DatabaseTestCaseDe
     public function getDataSet()
     {
         return $this->createXMLDataSet(
-            dirname(__FILE__) . '/fixtures/mysql/DefaultFolderServiceTest.moveMessages.xml'
+            dirname(__FILE__) . '/fixtures/mysql/DefaultFolderService.moveMessages.xml'
         );
     }
 
@@ -160,15 +160,129 @@ class DefaultFolderService_moveMessages_Test extends \Conjoon\DatabaseTestCaseDe
         );
 
         $queryTable = $this->getConnection()->createQueryTable(
-            'groupware_email_folders',
-            'SELECT * FROM groupware_email_folders'
+            'groupware_email_items',
+            'SELECT * FROM groupware_email_items'
         );
         $expectedTable = $this->createXmlDataSet(
             dirname(__FILE__) .
-            '/fixtures/mysql/DefaultFolderServiceTest.moveMessages.moveMessages.xml'
-        )->getTable("groupware_email_folders");
+            '/fixtures/mysql/DefaultFolderService.moveMessages.moveMessages.xml'
+        )->getTable("groupware_email_items");
 
         $this->assertTablesEqual($expectedTable, $queryTable);
+    }
+
+
+// -------- Exception Tests
+
+    /**
+     * @expectedException \Conjoon\Mail\Client\Security\FolderAccessException
+     */
+    public function testMoveMessages_FolderAccessException() {
+        $sourceFolder =
+            new Folder(
+                new DefaultFolderPath(
+                    '["root", "1"]'
+                )
+            );
+
+        $targetFolder =
+            new Folder(
+                new DefaultFolderPath(
+                    '["root", "4", "7"]'
+                )
+            );
+
+
+        $this->service->moveMessages($sourceFolder, $targetFolder);
+    }
+
+
+    /**
+     * @expectedException \Conjoon\Mail\Client\Folder\FolderMetaInfoMismatchException
+     */
+    public function testMoveMessages_FolderMetaInfoMismatchException() {
+        $sourceFolder =
+            new Folder(
+                new DefaultFolderPath(
+                    '["root", "1"]'
+                )
+            );
+
+        $targetFolder =
+            new Folder(
+                new DefaultFolderPath(
+                    '["root", "4", "6"]'
+                )
+            );
+
+
+        $this->service->moveMessages($sourceFolder, $targetFolder);
+    }
+
+    /**
+     * @expectedException \Conjoon\Mail\Client\Folder\FolderServiceException
+     */
+    public function testMoveMessages_FolderServiceException_argAll() {
+
+        $sourceFolder =
+            new Folder(
+                new DefaultFolderPath(
+                    '["root", "oio1"]'
+                )
+            );
+
+        $targetFolder =
+            new Folder(
+                new DefaultFolderPath(
+                    '["root", "4", "5adasdd"]'
+                )
+            );
+
+        $this->service->moveMessages($sourceFolder, $targetFolder);
+    }
+
+    /**
+     * @expectedException \Conjoon\Mail\Client\Folder\FolderServiceException
+     */
+    public function testMoveMessages_FolderServiceException_arg2() {
+
+        $sourceFolder =
+            new Folder(
+                new DefaultFolderPath(
+                    '["root", "1"]'
+                )
+            );
+
+        $targetFolder =
+            new Folder(
+                new DefaultFolderPath(
+                    '["root", "4", "324345"]'
+                )
+            );
+
+        $this->service->moveMessages($sourceFolder, $targetFolder);
+    }
+
+    /**
+     * @expectedException \Conjoon\Mail\Client\Folder\FolderServiceException
+     */
+    public function testMoveMessages_FolderServiceException_arg1() {
+
+        $sourceFolder =
+            new Folder(
+                new DefaultFolderPath(
+                    '["root", "43243"]'
+                )
+            );
+
+        $targetFolder =
+            new Folder(
+                new DefaultFolderPath(
+                    '["root", "4", "5"]'
+                )
+            );
+
+        $this->service->moveMessages($sourceFolder, $targetFolder);
     }
 
 }
