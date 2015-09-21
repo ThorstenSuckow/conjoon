@@ -190,7 +190,21 @@ class ArgumentCheckTest extends \PHPUnit_Framework_TestCase {
                                 "1",
                                 null,
                                 "yo"
-                        ))
+                        )),
+                        // third test
+                        array(
+                            array(
+                                'input' => array(
+                                    'type'        => 'integer',
+                                    'allowEmpty'  => true,
+                                    'greaterThan' => 3
+                                )),
+                            array(
+                                4557,
+                                "5",
+                                "8yo"
+
+                            ))
                     )
                 )
             )

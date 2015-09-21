@@ -296,6 +296,7 @@ class ArgumentCheck {
                 break;
 
                 case 'int':
+                case 'integer':
 
                     if (is_array($data[$argumentName])
                         || is_object($data[$argumentName])) {
