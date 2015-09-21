@@ -19,7 +19,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*
+ *
  * $Author$
  * $Id$
  * $Date$
@@ -51,8 +51,9 @@ interface AccountBasicService {
      * @return null|\Conjoon\Data\Entity\Mail\MailAccountEntity
      *
      * @throws AccountDoesNotExistException
+     * @throws AccountServiceException
      */
-    public function getMailAccountEntity(
+    public function getAccountEntity(
         \Conjoon\Mail\Client\Account\Account $account);
 
 }
