@@ -33,21 +33,20 @@
 namespace Conjoon\Mail\Client\Account;
 
 /**
- * @see Conjoon_Mail_Client_MailClientException
+ * @see Conjoon\Mail\Client\Account\AccountException
  */
-require_once 'Conjoon/Mail/Client/MailClientException.php';
+require_once 'Conjoon/Mail/Client/Account/AccountException.php';
 
 
 /**
  * @category   Conjoon
  * @package    Exception
  *
- * @uses \Conjoon_Mail_Client_MailClientException
+ * @uses Conjoon\Mail\Client\Account\AccountException
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class AccountServiceException
-    extends \Conjoon_Mail_Client_MailClientException {
+class AccountServiceException extends AccountException {
 
 }
 
