@@ -42,6 +42,9 @@ namespace Conjoon\Mail\Client\Security;
 interface FolderSecurityService {
 
     /**
+     * @todo refactor no contract needed for constructor, provide getUser method
+     * instead
+     * 
      * Creates a new instance of a folder security service.
      * A folder security service is bound to a user.
      *
