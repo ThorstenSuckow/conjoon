@@ -160,6 +160,17 @@ class ArgumentCheckTest extends \PHPUnit_Framework_TestCase {
                             array(
                                 0, "0", -1, array(), null
                         )),
+                        // third test
+                        array(
+                            array(
+                                'input' => array(
+                                    'type'        => 'int',
+                                    'allowEmpty'  => false,
+                                    'greaterThan' => 3
+                                )),
+                            array(
+                                0, "0", -1, array(), null
+                            )),
                     ),
                     'success' => array(
                         // first test
@@ -202,8 +213,22 @@ class ArgumentCheckTest extends \PHPUnit_Framework_TestCase {
                             array(
                                 4557,
                                 "5",
+                                "8yo",
+                                "",
+                                null
+                            )),
+                        // fourth test
+                        array(
+                            array(
+                                'input' => array(
+                                    'type'        => 'integer',
+                                    'allowEmpty'  => false,
+                                    'greaterThan' => 3
+                                )),
+                            array(
+                                4557,
+                                "5",
                                 "8yo"
-
                             ))
                     )
                 )
@@ -219,6 +244,56 @@ class ArgumentCheckTest extends \PHPUnit_Framework_TestCase {
      */
     public function tearDown()
     {
+    }
+
+    /**
+     * @ticket CN-961
+     */
+    public function test_CN961() {
+
+        $dataOk = array('value' => null);
+
+        ArgumentCheck::check(array(
+            'value' =>  array(
+                    'type'        => 'int',
+                    'greaterThan' => 3,
+                    'allowEmpty' => true
+        )), $dataOk);
+
+        $this->assertSame(0, $dataOk['value']);
+
+        // ----------
+        $dataOk = array('value' => null);
+        $exp = null;
+        try{
+            ArgumentCheck::check(array(
+                'value' =>  array(
+                    'type'        => 'int',
+                    'greaterThan' => 5,
+                    'allowEmpty' => false
+                )), $dataOk);
+
+        } catch (\Conjoon\Argument\InvalidArgumentException $e) {
+            $exp = $e;
+        }
+        $this->assertNotNull($exp);
+
+        // ----------
+        $dataOk = array('value' => 4);
+        $exp = null;
+        try{
+            ArgumentCheck::check(array(
+                'value' =>  array(
+                    'type'        => 'int',
+                    'greaterThan' => 5,
+                    'allowEmpty' => true
+                )), $dataOk);
+
+        } catch (\Conjoon\Argument\InvalidArgumentException $e) {
+            $exp = $e;
+        }
+
+        $this->assertNotNull($exp);
     }
 
     /**

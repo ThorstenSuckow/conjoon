@@ -327,7 +327,13 @@ class ArgumentCheck {
                         );
                     }
 
-                    if ($greaterThan !== false && $val <= $greaterThan) {
+                    // check first if $org is not empty, and then check for
+                    // greaterThan.
+                    // if $org was empty and allowEmpty was set to false, an
+                    // exception should have been thrown already.
+                    // we take any other value into account
+                    if (($org !== null && $org !== "") &&
+                        $greaterThan !== false && $val <= $greaterThan) {
                         throw new InvalidArgumentException(
                             "value \"$argumentName\" must be > "
                             . $greaterThan .", was $val"
