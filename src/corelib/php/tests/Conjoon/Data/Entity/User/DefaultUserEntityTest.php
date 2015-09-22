@@ -31,10 +31,22 @@
 
 namespace Conjoon\Data\Entity\User;
 
+use Conjoon\User\AppUser;
+
 /**
  * @see Conjoon\Data\Entity\User\DefaultUserEntity
  */
 require_once 'Conjoon/Data/Entity/User/DefaultUserEntity.php';
+
+/**
+ * @see \Conjoon_Modules_Default_User
+ */
+require_once 'Conjoon/Modules/Default/User.php';
+
+/**
+ * @see \Conjoon\User\AppUser
+ */
+require_once 'Conjoon/User/AppUser.php';
 
 /**
  * @package    Conjoon/Tests
@@ -74,6 +86,47 @@ class DefaultUserEntityTest extends \PHPUnit_Framework_TestCase {
 
             $this->assertSame($value, $user->$methodGet());
         }
+    }
+
+    /**
+     * @ticket CN-963
+     */
+    public function testEquals_CN963() {
+
+        $sameId = 1234;
+
+        $user = new DefaultUserEntity();
+
+        $reflector = new \ReflectionClass($user);
+        $id = $reflector->getProperty('id');
+        $id->setAccessible(true);
+        $id->setValue($user, $sameId);
+
+        $userData = array(
+            'id'           => $sameId,
+            'firstName'    => 'a',
+            'lastName'     => 'b',
+            'username'     => 'c',
+            'emailAddress' => 'd'
+        );
+
+        $tmpUser = new \Conjoon_Modules_Default_User();
+        $tmpUser->setId($userData['id']);
+        $tmpUser->setFirstName($userData['firstName']);
+        $tmpUser->setLastName($userData['lastName']);
+        $tmpUser->setEmailAddress($userData['emailAddress']);
+        $tmpUser->setUserName($userData['username']);
+
+        $succUser = new AppUser($tmpUser);
+
+        $tmpUser->setId($userData['id'] + 1);
+        $failUser = new AppUser($tmpUser);
+
+
+        $this->assertTrue($user->equals($succUser));
+        $this->assertFalse($user->equals($failUser));
+        $this->assertTrue($user->equals($user));
+
     }
 
 }

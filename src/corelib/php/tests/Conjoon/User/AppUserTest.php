@@ -74,6 +74,40 @@ class AppUserTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * Ensure everything works as expected.
+     */
+    public function testEquals_CN963() {
+
+        $sameUserId = $this->_defaultUser->getId();
+
+        $userData = array(
+            'id'           => $sameUserId,
+            'firstName'    => 'a',
+            'lastName'     => 'b',
+            'username'     => 'c',
+            'emailAddress' => 'd'
+        );
+
+        $tmpUser = new \Conjoon_Modules_Default_User();
+        $tmpUser->setId($userData['id']);
+        $tmpUser->setFirstName($userData['firstName']);
+        $tmpUser->setLastName($userData['lastName']);
+        $tmpUser->setEmailAddress($userData['emailAddress']);
+        $tmpUser->setUserName($userData['username']);
+
+        $succUser = new AppUser($tmpUser);
+
+        $tmpUser->setId($userData['id'] + 1);
+        $failUser = new AppUser($tmpUser);
+
+
+        $user = new AppUser($this->_defaultUser);
+        $this->assertTrue($user->equals($succUser));
+        $this->assertFalse($user->equals($failUser));
+
+    }
+
+    /**
      * @expectedException \Conjoon_Argument_Exception
      */
     public function testConstructErrorArgument()

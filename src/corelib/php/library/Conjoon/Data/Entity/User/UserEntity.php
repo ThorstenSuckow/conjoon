@@ -160,4 +160,22 @@ abstract class UserEntity implements \Conjoon\Data\Entity\DataEntity,
      */
     abstract public function getLastLogin();
 
+
+    /**
+     * @inheritdoc
+     */
+    public function equals($obj) {
+
+        if (is_object($obj) && ($obj instanceof \Conjoon\User\User)) {
+
+            if (($this === $obj) ||
+                ((string)$obj->getId() === (string)$this->getId())) {
+                return true;
+            }
+
+        }
+
+        return false;
+    }
+
 }

@@ -141,4 +141,20 @@ abstract class DefaultUser implements User {
             );
 
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function equals($obj) {
+
+        if (is_object($obj) && ($obj instanceof \Conjoon\User\User)) {
+
+            if ((string)$obj->getId() === (string)$this->getId()) {
+                return true;
+            }
+
+        }
+
+        return false;
+    }
 }

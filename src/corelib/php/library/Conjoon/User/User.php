@@ -31,6 +31,13 @@
 
 namespace Conjoon\User;
 
+use Conjoon\Lang\Equatable;
+
+/**
+ * @see \Conjoon\Lang\Equatable
+ */
+require_once 'Conjoon/Lang/Equatable.php';
+
 /**
  * An interface representing an user.
  *
@@ -40,8 +47,7 @@ namespace Conjoon\User;
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-
-interface User {
+interface User extends Equatable {
 
     /**
      * Returns the id associated with this user.
