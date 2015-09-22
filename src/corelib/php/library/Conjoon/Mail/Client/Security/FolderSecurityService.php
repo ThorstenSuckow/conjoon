@@ -44,7 +44,7 @@ interface FolderSecurityService {
     /**
      * @todo refactor no contract needed for constructor, provide getUser method
      * instead
-     * 
+     *
      * Creates a new instance of a folder security service.
      * A folder security service is bound to a user.
      *
@@ -125,7 +125,7 @@ interface FolderSecurityService {
      * @return boolean true on success, false if access is forbidden
      *
      * @throws SecurityServiceException
-     * @throws Conjoon\Mail\Client\Folder\FolderDoesNotExistException
+     * @throws \Conjoon\Mail\Client\Folder\FolderDoesNotExistException
      */
     public function isFolderMovable(
         \Conjoon\Mail\Client\Folder\Folder $folder);
@@ -140,8 +140,8 @@ interface FolderSecurityService {
      * @return boolean true on success, false if access is forbidden
      *
      * @throws SecurityServiceException
-     * @throws Conjoon\Mail\Client\Folder\FolderDoesNotExistException
-     * @throws Conjoon\Mail\Client\Folder\NoChildFoldersAllowedException when
+     * @throws \Conjoon\Mail\Client\Folder\FolderDoesNotExistException
+     * @throws \Conjoon\Mail\Client\Folder\NoChildFoldersAllowedException when
      *         the target folder does not allow child folders
      */
     public function mayAppendFolderTo(
