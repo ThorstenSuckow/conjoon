@@ -57,7 +57,8 @@ interface AccountSecurityService {
      *
      * @return boolean true on success, false if access is forbidden
      *
-     * @throws SecurityServiceException
+     * @throws AccountSecurityServiceException
+     * @throws \Conjoon\Mail\Client\Account\AccountDoesNotExistException
      */
     public function isAccountAccessible(
         \Conjoon\Mail\Client\Account\Account $account);
