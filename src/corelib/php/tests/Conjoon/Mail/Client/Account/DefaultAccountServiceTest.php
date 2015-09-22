@@ -205,4 +205,7 @@ class UserMock implements \Conjoon\User\User {
         return "" . $this->userId;
     }
 
+    public function equals($obj) {
+        return false;
+    }
 }
