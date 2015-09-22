@@ -31,13 +31,12 @@
 
 namespace Conjoon\Mail\Client\Account;
 
-use Conjoon\Data\Repository\Mail\DoctrineMailAccountRepository,
-    Conjoon\Argument\InvalidArgumentException;
+use Conjoon\Mail\Client\Account\TestAccountMockRepository;
 
 /**
- * @see Conjoon\Data\Repository\Mail\DoctrineMailAccountRepository
+ * @see Conjoon\Mail\Client\Account\TestAccountMockRepository
  */
-require_once 'Conjoon/Data/Repository/Mail/DoctrineMailAccountRepository.php';
+require_once 'Conjoon/Mail/Client/Account/TestAccountMockRepository.php';
 
 /**
  * @see Conjoon\Mail\Client\Account\DefaultAccountBasicService
@@ -53,11 +52,6 @@ require_once 'Conjoon/Mail/Client/Account/Account.php';
  * @see Conjoon\DatabaseTestCaseDefault
  */
 require_once 'Conjoon/DatabaseTestCaseDefault.php';
-
-/**
- * @see Conjoon\Argument\InvalidArgumentException
- */
-require_once 'Conjoon/Argument/InvalidArgumentException.php';
 
 
 /**
@@ -121,7 +115,7 @@ class DefaultAccountBasicServiceTest extends \Conjoon\DatabaseTestCaseDefault {
      */
     public function testGetAccountEntity_AccountServiceException() {
 
-        $repository = new AccountMockRepository();
+        $repository = new TestAccountMockRepository();
 
         $basicService = new DefaultAccountBasicService(array(
             'mailAccountRepository' => $repository
@@ -141,23 +135,6 @@ class DefaultAccountBasicServiceTest extends \Conjoon\DatabaseTestCaseDefault {
             $this->basicService->getAccountEntity(new Account(1))->getId()
         );
 
-    }
-
-}
-
-/**
- * Account Mock so findById throws InvalidArgumentException in any case.
- *
- * Class AccountMockRepository
- * @package Conjoon\Mail\Client\Account
- */
-class AccountMockRepository extends DoctrineMailAccountRepository {
-
-    public function __construct(){}
-
-    public function findById($id) {
-        throw new InvalidArgumentException(
-            'AccountMockRepository mocks the findById');
     }
 
 }
