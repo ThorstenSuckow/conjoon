@@ -35,12 +35,17 @@ use Conjoon\Data\Repository\Mail\DoctrineMailFolderRepository,
     Conjoon\Argument\InvalidArgumentException;
 
 /**
+ * @see Conjoon\Argument\InvalidArgumentException
+ */
+require_once 'Conjoon/Argument/InvalidArgumentException.php';
+
+/**
  * @see Conjoon\Data\Repository\Mail\DoctrineMailFolderRepository
  */
 require_once 'Conjoon/Data/Repository/Mail/DoctrineMailFolderRepository.php';
 
 /**
- * Folder Mock so findById throws InvalidArgumentException in any case.
+ * Folder Mock so findById/find throws InvalidArgumentException in any case.
  *
  * Class FolderMockRepository
  * @package Conjoon\Mail\Client\Account
@@ -49,6 +54,8 @@ class TestFolderMockRepository extends DoctrineMailFolderRepository {
 
     public function __construct(){}
 
+
+
     public function findById($id) {
         throw new InvalidArgumentException(
             'FolderMockRepository mocks the findById');
@@ -56,7 +63,7 @@ class TestFolderMockRepository extends DoctrineMailFolderRepository {
 
     public function find($id) {
         throw new InvalidArgumentException(
-            'FolderMockRepository mocks the findById');
+            'FolderMockRepository mocks the find');
     }
 
 }
