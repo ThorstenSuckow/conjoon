@@ -456,8 +456,10 @@ class DefaultFolderCommons implements FolderCommons {
 
         $config = array(
             'accounts' => array(
-                'type' => 'arrayType',
-                'class' => '\Conjoon\Data\Entity\Mail\MailAccountEntity'
+                'type'       => 'arrayType',
+                'minLength'  => 1,
+                'allowEmpty' => false,
+                'class'      => '\Conjoon\Data\Entity\Mail\MailAccountEntity'
             ),
             'folder' => array(
                 array(
