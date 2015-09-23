@@ -249,6 +249,61 @@ class ArgumentCheckTest extends \PHPUnit_Framework_TestCase {
     /**
      * @ticket CN-961
      */
+    public function test_CN967() {
+
+        $dataOk = array('value' => array(1, 2, 3));
+        ArgumentCheck::check(array(
+            'value' =>  array(
+                'type'      => 'array',
+                'minLength' => 3
+            )), $dataOk);
+        $this->assertSame(3, count($dataOk['value']));
+
+        $dataOk = array('value' => array(1, 2, 3));
+        $ce = null;
+        try {
+        ArgumentCheck::check(array(
+            'value' =>  array(
+                'type'      => 'array',
+                'minLength' => 4
+            )), $dataOk);
+        } catch (\Exception $e) {
+            $ce = $e;
+        }
+        $this->assertInstanceOf('\Conjoon\Argument\InvalidArgumentException', $ce);
+        // ---
+        $dataOk = array('value' => array(
+            new \stdClass, new \stdClass, new \stdClass));
+        ArgumentCheck::check(array(
+            'value' =>  array(
+                'type'      => 'arrayType',
+                'class'     => '\stdClass',
+                'minLength' => 3
+            )), $dataOk);
+        $this->assertSame(3, count($dataOk['value']));
+
+        $dataOk = array('value' => array(
+            new \stdClass, new \stdClass, new \stdClass));
+        $ce = null;
+        try {
+            ArgumentCheck::check(array(
+                'value' =>  array(
+                    'type'      => 'arrayType',
+                    'class'     => '\stdClass',
+                    'minLength' => 4
+                )), $dataOk);
+        } catch (\Exception $e) {
+            $ce = $e;
+        }
+
+        $this->assertInstanceOf('\Conjoon\Argument\InvalidArgumentException', $ce);
+
+    }
+
+
+        /**
+     * @ticket CN-961
+     */
     public function test_CN961() {
 
         $dataOk = array('value' => null);

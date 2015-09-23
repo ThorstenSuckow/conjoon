@@ -145,6 +145,10 @@ class ArgumentCheck {
                 continue;
             }
 
+            $minLength =  isset($entityConfig['minLength'])
+                          ? (int)(string)$entityConfig['minLength']
+                          : null;
+
             $greaterThan = isset($entityConfig['greaterThan'])
                            ? (int)(string)$entityConfig['greaterThan']
                            : false;
@@ -165,6 +169,14 @@ class ArgumentCheck {
                         throw new InvalidArgumentException(
                             "\"$argumentName\" is not an array"
                         );
+                    }
+
+                    if ($minLength !== null) {
+                        if (count($data[$argumentName]) < $minLength) {
+                            throw new InvalidArgumentException(
+                                "\"$argumentName\" minLength is $minLength"
+                            );
+                        }
                     }
 
                     foreach ($data[$argumentName] as $arrKey => $arrValue) {
@@ -213,6 +225,19 @@ class ArgumentCheck {
                             "Not an array passed for $argumentName"
                         );
                     }
+
+                    if ($minLength !== null) {
+                        $minLengthCount = 0;
+                        foreach ($data[$argumentName] as $minLengthCheck) {
+                            $minLengthCount++;
+                        }
+                        if ($minLengthCount < $minLength) {
+                            throw new InvalidArgumentException(
+                                "\"$argumentName\" minLength is $minLength"
+                            );
+                        }
+                    }
+
 
                     break;
 
