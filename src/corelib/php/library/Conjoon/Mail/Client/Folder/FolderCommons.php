@@ -188,4 +188,21 @@ interface FolderCommons {
      */
     public function hasMessages($folder);
 
+    /**
+     * Applies the mail accounts found in $accounts to $folder. Child
+     * folders will be ignored.
+     * Duplicate account associations will be prevented.
+     *
+     * @param Array $accounts a collection
+     *        of instances of \Conjoon\Data\Entity\Mail\MailAccountEntity
+     * @param Folder|\Conjoon\Data\Entity\Mail\MailFolderEntity $folder
+     *
+     * @return \Conjoon\Data\Entity\Mail\MailFolderEntity The mail folder
+     *          entity that was updated
+     *
+     * @throws FolderDoesNotExistException
+     * @throws FolderServiceException
+     * @throws \Conjoon\Argument\InvalidArgumentException
+     */
+    public function applyMailAccountsToFolder(Array $accounts, $folder);
 }

@@ -104,7 +104,7 @@ class DefaultFolderCommons implements FolderCommons {
 
 
     /**
-     * @var Conjoon\User\User
+     * @var \Conjoon\User\User
      */
     protected $user;
 
@@ -442,6 +442,73 @@ class DefaultFolderCommons implements FolderCommons {
                 "Exception thrown by previous exception", 0, $e
             );
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function applyMailAccountsToFolder(Array $accounts, $folder) {
+
+        $data = array(
+            'accounts' => $accounts,
+            'folder'   => $folder
+        );
+
+        $config = array(
+            'accounts' => array(
+                'type' => 'arrayType',
+                'class' => '\Conjoon\Data\Entity\Mail\MailAccountEntity'
+            ),
+            'folder' => array(
+                array(
+                    'type'  => 'instanceof',
+                    'class' => '\Conjoon\Mail\Client\Folder\Folder'
+                ),
+                'OR',
+                array(
+                    'type'  => 'instanceof',
+                    'class' => '\Conjoon\Data\Entity\Mail\MailFolderEntity'
+                )
+            )
+        );
+
+        ArgumentCheck::check($config, $data);
+
+        $folderEntity = null;
+
+        if (!($folder instanceof \Conjoon\Data\Entity\Mail\MailFolderEntity)) {
+            $folderEntity = $this->getFolderEntity($folder);
+        } else {
+            $folderEntity = $folder;
+        }
+
+        // inspect accounts
+        $orgMailAccounts = $folderEntity->getMailAccounts();
+        $oldIds = array();
+        foreach ($orgMailAccounts as $orgAccount) {
+            $oldIds[] = $orgAccount->getId();
+        }
+
+        foreach ($accounts as $account) {
+            if (!in_array($account->getId(), $oldIds)) {
+
+                $folderEntity->addMailAccount($account);
+
+                // prevent dups
+                $oldIds[] = $account->getId();
+            }
+        }
+
+        try {
+            $this->folderRepository->register($folderEntity);
+            $this->folderRepository->flush();
+        } catch (\Exception $e){
+            throw new FolderServiceException(
+                "Exception thrown by previous exception", 0, $e
+            );
+        }
+
+        return $folderEntity;
     }
 
 }
