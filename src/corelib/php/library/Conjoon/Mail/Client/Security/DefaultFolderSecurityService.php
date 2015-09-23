@@ -50,9 +50,9 @@ require_once 'Conjoon/Argument/ArgumentCheck.php';
 require_once 'Conjoon/Argument/InvalidArgumentException.php';
 
 /**
- * @see Conjoon\Mail\Client\Security\SecurityServiceException
+ * @see Conjoon\Mail\Client\Security\FolderSecurityServiceException
  */
-require_once 'Conjoon/Mail/Client/Security/SecurityServiceException.php';
+require_once 'Conjoon/Mail/Client/Security/FolderSecurityServiceException.php';
 
 /**
  * @see Conjoon_Modules_Groupware_Email_Folder_Model_FoldersUsers
@@ -152,7 +152,16 @@ class DefaultFolderSecurityService implements FolderSecurityService {
     public function mayAppendFolderTo(
         \Conjoon\Mail\Client\Folder\Folder $folder) {
 
-        if (!$this->folderCommons->doesFolderAllowChildFolders($folder)) {
+        try {
+            $allowed = $this->folderCommons->doesFolderAllowChildFolders($folder);
+        } catch (\Conjoon\Mail\Client\Folder\FolderServiceException $e) {
+            throw new \Conjoon\Mail\Client\Security\FolderSecurityServiceException(
+                "Exception thrown by previous exception: " .
+                $e->getMessage(), 0, $e
+            );
+        }
+
+        if (!$allowed) {
             throw new \Conjoon\Mail\Client\Folder\NoChildFoldersAllowedException(
                 "Folder " . $folder . " does not allow child folders"
             );
@@ -186,7 +195,7 @@ class DefaultFolderSecurityService implements FolderSecurityService {
      *
      * @return bool true if folder(s) are accessible, otherwise false
      *
-     * @throws SecurityServiceException
+     * @throws FolderSecurityServiceException
      * @throws \Conjoon\Mail\Client\Folder\FolderDoesNotExistException
      */
     protected function isFolderAccessibleHelper(
@@ -225,8 +234,16 @@ class DefaultFolderSecurityService implements FolderSecurityService {
                 } else {
                     // check if root node is accessible
                     // if remote, check for rootID
-                    if (!$this->folderCommons->isFolderRepresentingRemoteMailbox(
-                        $folder)) {
+                    try {
+                        $repRemote = $this->folderCommons->isFolderRepresentingRemoteMailbox($folder);
+                    } catch (\Conjoon\Mail\Client\Folder\FolderServiceException $e) {
+                        throw new FolderSecurityServiceException(
+                            "Exception trhown by previous exception: " .
+                            $e->getMessage(), 0, $e
+                        );
+                    }
+
+                    if (!$repRemote) {
                         throw new \Conjoon\Mail\Client\Folder\FolderDoesNotExistException(
                             "The folder $folder does not seem to exist"
                         );
@@ -240,7 +257,7 @@ class DefaultFolderSecurityService implements FolderSecurityService {
                 break;
 
             default:
-                throw new SecurityServiceException(
+                throw new FolderSecurityServiceException(
                     "Could not check whether folder \""
                         . $folder->__toString()
                         . "\" is accessible "
@@ -322,7 +339,7 @@ class DefaultFolderSecurityService implements FolderSecurityService {
      *
      * @param \Conjoon\Mail\Client\Folder\Folder $folder
      *
-     * @throws SecurityServiceException
+     * @throws FolderSecurityServiceException
      */
     protected function checkClientMailFolderExists(\Conjoon\Mail\Client\Folder\Folder $folder) {
 
@@ -330,9 +347,9 @@ class DefaultFolderSecurityService implements FolderSecurityService {
             $doesMailFolderExist =
                 $this->folderCommons->doesMailFolderExist($folder);
         } catch (\Conjoon\Mail\Client\Folder\FolderServiceException $e) {
-            throw new SecurityServiceException(
-                "Exception thrown by previous exception: "
-                . $e->getMessage, 0, $e
+            throw new FolderSecurityServiceException(
+                "Exception thrown by previous exception: " .
+                $e->getMessage(), 0, $e
             );
         }
 

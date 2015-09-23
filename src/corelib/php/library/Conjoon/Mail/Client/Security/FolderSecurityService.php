@@ -56,7 +56,7 @@ interface FolderSecurityService {
      *                       - mailFolderCommons an instance of
      *                       Conjoon\Mail\Client\Folder\FolderCommons
      *
-     * @throws Conjoon\Argument\InvalidArgumentExcpetion
+     * @throws \Conjoon\Argument\InvalidArgumentExcpetion
      */
     public function __construct(Array $options);
 
@@ -80,8 +80,8 @@ interface FolderSecurityService {
      *
      * @return boolean true on success, false if access is forbidden
      *
-     * @throws SecurityServiceException
-     * @throws Conjoon\Mail\Client\Folder\FolderDoesNotExistException
+     * @throws FolderSecurityServiceException
+     * @throws \Conjoon\Mail\Client\Folder\FolderDoesNotExistException
      */
     public function isFolderAccessible(
         \Conjoon\Mail\Client\Folder\Folder $folder);
@@ -106,8 +106,8 @@ interface FolderSecurityService {
      *
      * @return boolean true on success, false if access is forbidden
      *
-     * @throws SecurityServiceException
-     * @throws Conjoon\Mail\Client\Folder\FolderDoesNotExistException
+     * @throws FolderSecurityServiceException
+     * @throws \Conjoon\Mail\Client\Folder\FolderDoesNotExistException
      */
     public function isFolderHierarchyAccessible(
         \Conjoon\Mail\Client\Folder\Folder $folder);
@@ -124,14 +124,14 @@ interface FolderSecurityService {
      *
      * @return boolean true on success, false if access is forbidden
      *
-     * @throws SecurityServiceException
+     * @throws FolderSecurityServiceException
      * @throws \Conjoon\Mail\Client\Folder\FolderDoesNotExistException
      */
     public function isFolderMovable(
         \Conjoon\Mail\Client\Folder\Folder $folder);
 
     /**
-     * Checks whether the user bound to this service may apend folders to the
+     * Checks whether the user bound to this service may append folders to the
      * specified target folder.
      *
      * @param \Conjoon\Mail\Client\Folder\MailFolder $folder The folder to check
@@ -139,7 +139,7 @@ interface FolderSecurityService {
      *
      * @return boolean true on success, false if access is forbidden
      *
-     * @throws SecurityServiceException
+     * @throws FolderSecurityServiceException
      * @throws \Conjoon\Mail\Client\Folder\FolderDoesNotExistException
      * @throws \Conjoon\Mail\Client\Folder\NoChildFoldersAllowedException when
      *         the target folder does not allow child folders

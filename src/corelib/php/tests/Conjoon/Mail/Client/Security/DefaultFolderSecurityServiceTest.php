@@ -35,6 +35,12 @@ namespace Conjoon\Mail\Client\Security;
 use Conjoon\Mail\Client\Folder\Folder,
     Conjoon\Mail\Client\Folder\DefaultFolderPath;
 
+
+/**
+ * @see \Conjoon\Mail\Client\Security\TestFolderMockRepository
+ */
+require_once 'Conjoon/Mail/Client/Security/TestFolderMockRepository.php';
+
 /**
  * @see DefaultMailFolderSecurityService
  */
@@ -61,7 +67,6 @@ require_once 'Conjoon/Modules/Default/User.php';
 class DefaultFolderSecurityServiceTest
     extends \Conjoon\DatabaseTestCaseDefault {
 
-
     protected $securityService;
 
     protected $mailFolderOk;
@@ -70,6 +75,7 @@ class DefaultFolderSecurityServiceTest
 
     protected $mailFolderNotThere;
 
+    protected $mailFolderNotThereInvArg;
 
     public function getDataSet()
     {
@@ -82,22 +88,6 @@ class DefaultFolderSecurityServiceTest
     protected function setUp()
     {
         parent::setUp();
-
-        $user = new \Conjoon_Modules_Default_User();
-        $user->setId(1);
-        $user->setFirstName("f");
-        $user->setLastName("l");
-        $user->setUsername("u");
-        $user->setEmailAddress("ea");
-
-        $user = new \Conjoon\User\AppUser($user);
-
-        $repository = $this->_entityManager->getRepository(
-            '\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
-
-        $messageRepository =  $this->_entityManager->getRepository(
-            '\Conjoon\Data\Entity\Mail\DefaultMessageEntity');
-
 
         $this->mailFolderOk =
             new Folder(
@@ -122,7 +112,21 @@ class DefaultFolderSecurityServiceTest
 
             new Folder(
                 new DefaultFolderPath(
-                    '["root", "4232", "khklkhlhk", "kjllkhlkh"]'
+                    '["root", "4232", "235523253", "235253"]'
+                )
+            )
+        );
+
+        $this->mailFolderNotThereInvArg = array(
+            new Folder(
+                new DefaultFolderPath(
+                    '["root", "-1"]'
+                )
+            ),
+
+            new Folder(
+                new DefaultFolderPath(
+                    '["root", "0", "68", -122]'
                 )
             )
         );
@@ -136,7 +140,38 @@ class DefaultFolderSecurityServiceTest
         );
 
 
-        $this->securityService = new DefaultFolderSecurityService(array(
+        $this->securityService = $this->getSecurityService();
+    }
+
+    /**
+     * Helper to retrieve SecurityService.
+     *
+     * @param boolean $mockRepository true to return the service with
+     * a mock repository which throws InvalidArgumentExceptions in its
+     * findById-method
+     */
+    protected function getSecurityService($mockRepository = false) {
+
+        $user = new \Conjoon_Modules_Default_User();
+        $user->setId(1);
+        $user->setFirstName("f");
+        $user->setLastName("l");
+        $user->setUsername("u");
+        $user->setEmailAddress("ea");
+
+        $user = new \Conjoon\User\AppUser($user);
+
+        if ($mockRepository !== true) {
+            $repository = $this->_entityManager->getRepository(
+                '\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
+        } else {
+            $repository = new TestFolderMockRepository();
+        }
+
+        $messageRepository =  $this->_entityManager->getRepository(
+            '\Conjoon\Data\Entity\Mail\DefaultMessageEntity');
+
+        return new DefaultFolderSecurityService(array(
             'mailFolderRepository' => $repository,
             'user'                 => $user,
             'mailFolderCommons'    =>
@@ -145,9 +180,71 @@ class DefaultFolderSecurityServiceTest
                         'mailFolderRepository' => $repository,
                         'user'                 => $user,
                         'messageRepository'    => $messageRepository
-                ))
+                    ))
         ));
+    }
 
+    /**
+     * @ticket CN-965
+     * @expectedException \Conjoon\Mail\Client\Security\FolderSecurityServiceException
+     */
+    public function isFolderAccessible_FolderSecurityServiceException(){
+
+        $this->getSecurityService(true)->isFolderAccessible(
+            $this->mailFolderOk);
+
+    }
+
+    /**
+     * @ticket CN-965
+     * @expectedException \Conjoon\Mail\Client\Security\FolderSecurityServiceException
+     */
+    public function testIsFolderHierarchyAccessible_FolderSecurityServiceException(){
+
+        $this->getSecurityService(true)->isFolderHierarchyAccessible(
+            $this->mailFolderOk);
+
+    }
+
+    /**
+     * @ticket CN-965
+     * @expectedException \Conjoon\Mail\Client\Security\FolderSecurityServiceException
+     */
+    public function testIsFolderMovable_FolderSecurityServiceException(){
+
+        $this->getSecurityService(true)->isFolderMovable(
+            $this->mailFolderOk);
+
+    }
+
+    /**
+     * @ticket CN-965
+     * @expectedException \Conjoon\Mail\Client\Security\FolderSecurityServiceException
+     */
+    public function testMayAppendFolderTo_FolderSecurityServiceException(){
+
+        $this->getSecurityService(true)->mayAppendFolderTo(
+            $this->mailFolderOk);
+
+    }
+
+    /**
+     * Ensure everything works as expected
+     */
+    public function testIsFolderHierarchyAccessible_FolderSecurityServiceException_CN965() {
+
+        foreach ($this->mailFolderNotThereInvArg as $mailFolderNotThereInvArg) {
+            $ee = null;
+            try {
+                $this->securityService->isFolderHierarchyAccessible(
+                    $mailFolderNotThereInvArg
+                );
+            } catch (\Exception $e) {
+                $ee = $e;
+            }
+
+            $this->assertTrue($ee instanceof \Conjoon\Mail\Client\Security\SecurityServiceException);
+        }
 
     }
 
@@ -168,6 +265,7 @@ class DefaultFolderSecurityServiceTest
 
             $this->assertTrue($ee instanceof \Conjoon\Mail\Client\Folder\FolderDoesNotExistException);
         }
+
     }
     /**
      * Ensures everything works as expected

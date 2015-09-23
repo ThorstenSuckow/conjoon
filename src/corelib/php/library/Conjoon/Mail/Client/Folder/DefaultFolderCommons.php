@@ -155,7 +155,19 @@ class DefaultFolderCommons implements FolderCommons {
             $id = $folder->getRootId();
         }
 
-        $entity = $this->folderRepository->find($id);
+        try {
+
+            $entity = $this->folderRepository->findById($id);
+
+        } catch (\Conjoon\Argument\InvalidArgumentException $e) {
+
+            throw new FolderServiceException(
+                "Exception thrown by previous exception: " .
+                $e->getMessage(),
+                0, $e
+            );
+        }
+
 
         try {
             while ($entity && $entity->getParent()) {
