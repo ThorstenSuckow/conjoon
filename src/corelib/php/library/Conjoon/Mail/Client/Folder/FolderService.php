@@ -50,6 +50,8 @@ require_once 'Conjoon/Mail/Client/Folder/Folder.php';
 interface FolderService {
 
     /**
+     * @todo refactor no nee for a contract for the constructor
+     *
      * Creates a new instance of a folder service.
      * A folder service is bound to a user.
      *
@@ -122,4 +124,25 @@ interface FolderService {
     public function moveMessages(\Conjoon\Mail\Client\Folder\Folder $sourceFolder,
                                  \Conjoon\Mail\Client\Folder\Folder $targetFolder);
 
+    /**
+     * Will apply all the mail accounts found in $mailAccounts to the specified
+     * target folder and it's child folders.
+     *
+     * @param Array $mailAccounts An array of instances of
+     *        \Conjoon\Mail\Client\Account\Account
+     * @param Folder $targetFolder The target folder to which the mail
+     *        accounts get applied.
+     *
+     * @return \Conjoon\Data\Entity\Mail\MailFolderEntity The updated folder entity
+     *         with the merged accounts
+     *
+     * @throws \Conjoon\Argument\InvalidArgumentException
+     * @throws \Conjoon\Mail\Client\Folder\FolderDoesNotExistException
+     * @throws \Conjoon\Mail\Client\Folder\IllegalFolderRootTypeException
+     * @throws \Conjoon\Mail\Client\Folder\FolderOperationProtocolSupportException
+     * @throws \Conjoon\Mail\Client\Security\FolderAccessException
+     * @throws \Conjoon\Mail\Client\Folder\FolderServiceException
+     */
+    public function applyMailAccountsToFolder(
+        Array $mailAccounts, \Conjoon\Mail\Client\Folder\Folder $targetFolder);
 }

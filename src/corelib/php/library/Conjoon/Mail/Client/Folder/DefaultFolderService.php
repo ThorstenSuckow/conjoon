@@ -111,22 +111,22 @@ class DefaultFolderService implements FolderService {
     protected $folderRepository;
 
     /**
-     * @var Conjoon\User\User
+     * @var \Conjoon\User\User
      */
     protected $user;
 
     /**
-     * @var Conjoon\Mail\Client\Folder\MailFolderCommons
+     * @var \Conjoon\Mail\Client\Folder\FolderCommons
      */
     protected $mailFolderCommons;
 
     /**
-     * @var Conjoon\Mail\Client\Security\FolderSecurityService
+     * @var \Conjoon\Mail\Client\Security\FolderSecurityService
      */
     protected $folderSecurityService;
 
     /**
-     * @var Conjoon\Mail\Client\Folder\Strategy\FolderNamingForMovingStrategy
+     * @var \Conjoon\Mail\Client\Folder\Strategy\FolderNamingForMovingStrategy
      */
     protected $folderNamingForMovingStrategy;
 
@@ -384,7 +384,7 @@ class DefaultFolderService implements FolderService {
             $namingResult = $this->folderNamingForMovingStrategy->execute(
                 $strategyOptions
             );
-        } catch (\Conjoon\Mail\Client\Message\Folder\StrategyException $e) {
+        } catch (\Conjoon\Mail\Client\Folder\Strategy\StrategyException $e) {
             throw new FolderServiceException(
                 "Exception thrown by previous exception", 0, $e
             );
@@ -430,6 +430,57 @@ class DefaultFolderService implements FolderService {
                 $childFolder, $targetMailAccounts, $repository);
         }
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function applyMailAccountsToFolder(
+        Array $mailAccounts, \Conjoon\Mail\Client\Folder\Folder $targetFolder) {
+
+        $data = array(
+            'accounts' => $mailAccounts,
+            'folder'   => $targetFolder
+        );
+
+        $config = array(
+            'accounts' => array(
+                'type'       => 'arrayType',
+                'minLength'  => 1,
+                'allowEmpty' => false,
+                'class'      => '\Conjoon\Data\Entity\Mail\MailAccountEntity'
+            ),
+            'folder' => array(
+                array(
+                    'type'  => 'instanceof',
+                    'class' => '\Conjoon\Mail\Client\Folder\Folder'
+                )
+            )
+        );
+
+        ArgumentCheck::check($config, $data);
+
+        try {
+            $isAccessible =
+                $this->folderSecurityService->isFolderHierarchyAccessible($targetFolder);
+        } catch (\Conjoon\Mail\Client\Security\FolderSecurityServiceException $e) {
+            throw new FolderServiceException(
+                "Exception thrown by previous exception: " .
+                $e->getMessage(), 0, $e
+            );
+        }
+
+        if (!$isAccessible) {
+            throw new \Conjoon\Mail\Client\Security\FolderAccessException(
+                "Folder $targetFolder is not accessible by the user."
+            );
+        }
+
+        return $this->mailFolderCommons->applyMailAccountsToFolder(
+            $mailAccounts, $targetFolder
+        );
+
+    }
+
 
 // -------- DEPRECATED API
 
