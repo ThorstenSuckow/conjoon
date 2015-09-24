@@ -451,6 +451,100 @@ class DefaultFolderCommons implements FolderCommons {
         }
     }
 
+
+    /**
+     * Removes all associations to mail accounts from the specified folder and
+     * all its child folders.
+     *
+     * @param Folder|\Conjoon\Data\Entity\Mail\MailFolderEntity $folder
+     *
+     * @return \Conjoon\Data\Entity\Mail\MailFolderEntity The mail folder
+     *          entity that was updated
+     *
+     * @throws FolderDoesNotExistException
+     * @throws FolderServiceException
+     * @throws \Conjoon\Argument\InvalidArgumentException
+     */
+    public function removeMailAccountsFromFolder($folder, $autoCommit = false) {
+
+        $data = array(
+            'folder'   => $folder
+        );
+
+        $config = array(
+            'folder' => array(
+                array(
+                    'type'  => 'instanceof',
+                    'class' => '\Conjoon\Mail\Client\Folder\Folder'
+                ),
+                'OR',
+                array(
+                    'type'  => 'instanceof',
+                    'class' => '\Conjoon\Data\Entity\Mail\MailFolderEntity'
+                )
+            )
+        );
+
+        ArgumentCheck::check($config, $data);
+
+        $folderEntity = null;
+
+        if (!($folder instanceof \Conjoon\Data\Entity\Mail\MailFolderEntity)) {
+            $folderEntity = $this->getFolderEntity($folder);
+        } else {
+            $folderEntity = $folder;
+        }
+
+        $this->removeAccounts($folderEntity);
+
+        try {
+            $this->folderRepository->flush();
+        } catch (\Exception $e){
+            throw new FolderServiceException(
+                "Exception thrown by previous exception: " .
+                $e->getMessage(), 0, $e
+            );
+        }
+
+        return $folderEntity;
+    }
+
+    /**
+     * Helper function for #removeMailAccountsFromFolder.
+     *
+     * @param \Conjoon\Data\Entity\Mail\MailFolderEntity $folderEntity
+     */
+    protected function removeAccounts(
+        \Conjoon\Data\Entity\Mail\MailFolderEntity $folderEntity) {
+
+        // inspect accounts
+        $orgMailAccounts = $folderEntity->getMailAccounts();
+        foreach ($orgMailAccounts as $orgAccount) {
+            $folderEntity->removeMailAccount($orgAccount);
+        }
+
+        try {
+            $this->folderRepository->register($folderEntity);
+        } catch (\Exception $e){
+            throw new FolderServiceException(
+                "Exception thrown by previous exception", 0, $e
+            );
+        }
+
+        try {
+            $folders = $this->folderRepository->getChildFolders($folderEntity);
+        } catch (\Exception $e) {
+            throw new FolderServiceException(
+                "Exception thrown by previous exception", 0, $e
+            );
+        }
+
+        foreach ($folders as $folder) {
+            $this->removeAccounts($folder);
+        }
+    }
+
+
     /**
      * @inheritdoc
      */
@@ -540,9 +634,8 @@ class DefaultFolderCommons implements FolderCommons {
     /**
      * Helper function for #applyMailAccountsToFolder.
      *
-     * @param array $accounts
-     *
-     * @return \Conjoon\Data\Entity\Mail\MailFolderEntity
+     * @param Array $accounts
+     * @param \Conjoon\Data\Entity\Mail\MailFolderEntity $folderEntity
      */
     protected function applyAccounts(Array $accounts,
         \Conjoon\Data\Entity\Mail\MailFolderEntity $folderEntity) {

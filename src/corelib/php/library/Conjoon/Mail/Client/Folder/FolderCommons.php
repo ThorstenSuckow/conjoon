@@ -190,7 +190,7 @@ interface FolderCommons {
 
     /**
      * Applies the mail accounts found in $accounts to $folder and all its
-     * childFolders.
+     * child folders.
      * Duplicate account associations will be prevented.
      *
      * @param Array $accounts a collection
@@ -207,4 +207,20 @@ interface FolderCommons {
      * @throws \Conjoon\Argument\InvalidArgumentException
      */
     public function applyMailAccountsToFolder(Array $accounts, $folder);
+
+    /**
+     * Removes all associations to mail accounts from the specified folder and
+     * all its child folders.
+     *
+     * @param Folder|\Conjoon\Data\Entity\Mail\MailFolderEntity $folder
+     *
+     * @return \Conjoon\Data\Entity\Mail\MailFolderEntity The mail folder
+     *          entity that was updated
+     *
+     * @throws FolderDoesNotExistException
+     * @throws FolderServiceException
+     * @throws \Conjoon\Argument\InvalidArgumentException
+     */
+    public function removeMailAccountsFromFolder($folder, $autoCommit = false);
+
 }

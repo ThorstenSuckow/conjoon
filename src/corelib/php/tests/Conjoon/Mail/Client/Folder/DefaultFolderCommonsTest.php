@@ -52,6 +52,11 @@ require_once 'Conjoon/Modules/Default/User.php';
 require_once 'Conjoon/Data/Entity/Mail/DefaultMailFolderEntity.php';
 
 /**
+ * @see \Conjoon\Mail\Client\Folder\TestFolderMockRepository
+ */
+require_once 'Conjoon/Mail/Client/Folder/TestFolderMockRepository.php';
+
+/**
  * @category   Conjoon
  * @package    Conjoon_Mail
  * @subpackage UnitTests
@@ -90,9 +95,7 @@ class DefaultFolderCommonsTest extends \Conjoon\DatabaseTestCaseDefault {
         );
     }
 
-    protected function setUp()
-    {
-        parent::setUp();
+    protected function getCommons($bUseMock = false) {
 
         $repository = $this->_entityManager->getRepository(
             '\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
@@ -110,11 +113,20 @@ class DefaultFolderCommonsTest extends \Conjoon\DatabaseTestCaseDefault {
 
         $this->user = new \Conjoon\User\AppUser($user);
 
-        $this->commons = new DefaultFolderCommons(array(
+        return new DefaultFolderCommons(array(
             'messageRepository'    => $this->messageRepository,
-            'mailFolderRepository' => $repository,
+            'mailFolderRepository' => $bUseMock !== true
+                                      ? $repository
+                                      : new TestFolderMockRepository,
             'user'                 => $this->user
         ));
+    }
+
+    protected function setUp()
+    {
+        parent::setUp();
+
+        $this->commons = $this->getCommons();
 
         $this->rootMailFolder =
             new Folder(
@@ -161,6 +173,72 @@ class DefaultFolderCommonsTest extends \Conjoon\DatabaseTestCaseDefault {
             )
         );
 
+    }
+
+    /**
+     * @expectedException \Conjoon\Mail\Client\Folder\FolderServiceException
+     */
+    public function testRemoveMailAccountsFromFolder_FolderServiceException() {
+        $this->getCommons(true)->removeMailAccountsFromFolder(
+            $this->mailFolderRepository->findById(10)
+        );
+    }
+
+
+    /**
+     * @expectedException \Conjoon\Mail\Client\Folder\FolderDoesNotExistException
+     */
+    public function testRemoveMailAccountsFromFolder_FolderDoesNotExistException() {
+        $this->commons->removeMailAccountsFromFolder(new Folder(
+            new DefaultFolderPath(
+                '["root", "123"]'
+            )
+        ));
+    }
+
+    /**
+     * @expectedException \Conjoon\Argument\InvalidArgumentException
+     */
+    public function testRemoveMailAccountsFromFolder_InvalidArgumentsException() {
+        $this->commons->removeMailAccountsFromFolder('b');
+    }
+
+    /**
+     * Ensure everything works as expected.
+     */
+    public function testRemoveMailAccountsFromFolder() {
+
+        $folders = array(
+            new Folder(
+                new DefaultFolderPath(
+                    '["root", "10"]'
+                )
+            ),
+            $this->mailFolderRepository->findById(10)
+        );
+
+        foreach ($folders as $folder) {
+            $ret = $this->commons->removeMailAccountsFromFolder($folder);
+
+            // groupware_email_folders_accounts
+            $queryTable = $this->getConnection()->createQueryTable(
+                'groupware_email_folders_accounts', 'SELECT * FROM groupware_email_folders_accounts'
+            );
+            $expectedTable = $this->createXmlDataSet(
+                dirname(__FILE__) . '/fixtures/mysql/mail_folder.removeMailAccountsFromFolder.xml'
+            )->getTable("groupware_email_folders_accounts");
+            $this->assertTablesEqual($expectedTable, $queryTable);
+
+            $this->assertInstanceOf('\Conjoon\Data\Entity\Mail\MailFolderEntity', $ret);
+
+            if ($folder instanceof Folder) {
+                $this->assertEquals($ret->getId(), $folder->getRootId());
+            } else {
+                $this->assertEquals($ret->getId(), $folder->getId());
+            }
+
+
+        }
     }
 
     /**
