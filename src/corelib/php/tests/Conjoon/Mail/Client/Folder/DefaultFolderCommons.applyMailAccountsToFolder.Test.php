@@ -59,7 +59,8 @@ require_once 'Conjoon/Mail/Client/Folder/TestFolderMockRepository.php';
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class DefaultFolderCommonsTest_applyMailAccountsToFolder_Test extends \Conjoon\DatabaseTestCaseDefault {
+class DefaultFolderCommonsTest_applyMailAccountsToFolder_Test
+    extends \Conjoon\DatabaseTestCaseDefault {
 
     protected $user;
 
@@ -72,6 +73,10 @@ class DefaultFolderCommonsTest_applyMailAccountsToFolder_Test extends \Conjoon\D
     protected $accountRepository;
 
     protected $accountsToAdd;
+
+    protected $accountsRootFolder;
+
+    protected $rootRemoteFolder;
 
     public function getDataSet()
     {
@@ -100,6 +105,35 @@ class DefaultFolderCommonsTest_applyMailAccountsToFolder_Test extends \Conjoon\D
                 )
             );
 
+        $this->rootRemoteFolder =
+            new Folder(
+                new DefaultFolderPath(
+                    '["root", "3"]'
+                )
+            );
+
+        $this->rootRootFolder = $this->mailFolderRepository->findById(15);
+
+    }
+
+    /**
+     * @expectedException \Conjoon\Mail\Client\Folder\IllegalFolderRootTypeException
+     */
+    public function testApplyMailAccountsToFolder_IllegalFolderRootTypeException() {
+        $commonService = $this->getCommonService();
+        $commonService->applyMailAccountsToFolder(
+            $this->accountsToAdd, $this->rootRootFolder
+        );
+    }
+
+    /**
+     * @expectedException \Conjoon\Mail\Client\Folder\FolderOperationProtocolSupportException
+     */
+    public function testApplyMailAccountsToFolder_FolderOperationProtocolSupportException() {
+        $commonService = $this->getCommonService();
+        $commonService->applyMailAccountsToFolder(
+            $this->accountsToAdd, $this->rootRemoteFolder
+        );
     }
 
     /**
@@ -159,12 +193,7 @@ class DefaultFolderCommonsTest_applyMailAccountsToFolder_Test extends \Conjoon\D
 
         $commonService->applyMailAccountsToFolder(
             $this->accountsToAdd,
-            $this->rootMailFolder =
-                new Folder(
-                    new DefaultFolderPath(
-                        '["root", "123"]'
-                    )
-                )
+            new Folder(new DefaultFolderPath('["root", "123"]'))
         );
     }
 
@@ -207,6 +236,9 @@ class DefaultFolderCommonsTest_applyMailAccountsToFolder_Test extends \Conjoon\D
 
         $ret = $commonService->applyMailAccountsToFolder($accountsToAdd, $folder);
 
+        $this->assertInstanceof(
+            '\Conjoon\Data\Entity\Mail\MailFolderEntity', $ret);
+
         if ($useFolderEntity === true) {
             $this->assertSame($folder, $ret);
         } else {
@@ -219,7 +251,8 @@ class DefaultFolderCommonsTest_applyMailAccountsToFolder_Test extends \Conjoon\D
         );
         $queryTableRelations = $this->getConnection()->createQueryTable(
             'groupware_email_folders_accounts',
-            'SELECT * FROM groupware_email_folders_accounts'
+            'SELECT * FROM groupware_email_folders_accounts ORDER BY ' .
+            'groupware_email_folders_id, groupware_email_accounts_id'
         );
         $file = dirname(__FILE__) .
             '/fixtures/mysql/DefaultFolderCommons.applyMailAccountsToFolder.'.

@@ -189,8 +189,8 @@ interface FolderCommons {
     public function hasMessages($folder);
 
     /**
-     * Applies the mail accounts found in $accounts to $folder. Child
-     * folders will be ignored.
+     * Applies the mail accounts found in $accounts to $folder and all its
+     * childFolders.
      * Duplicate account associations will be prevented.
      *
      * @param Array $accounts a collection
@@ -201,6 +201,8 @@ interface FolderCommons {
      *          entity that was updated
      *
      * @throws FolderDoesNotExistException
+     * @throws IllegalFolderRootTypeException
+     * @throws FolderOperationProtocolSupportException
      * @throws FolderServiceException
      * @throws \Conjoon\Argument\InvalidArgumentException
      */

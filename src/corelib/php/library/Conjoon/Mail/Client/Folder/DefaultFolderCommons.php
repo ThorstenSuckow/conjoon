@@ -46,6 +46,16 @@ require_once 'Conjoon/Mail/Client/Folder/FolderCommons.php';
 require_once 'Conjoon/Mail/Client/Folder/FolderDoesNotExistException.php';
 
 /**
+ * @see IllegalFolderRootTypeException
+ */
+require_once 'Conjoon/Mail/Client/Folder/IllegalFolderRootTypeException.php';
+
+/**
+ * @see FolderOperationProtocolSupportException
+ */
+require_once 'Conjoon/Mail/Client/Folder/FolderOperationProtocolSupportException.php';
+
+/**
  * @see NoChildFoldersAllowedException
  */
 require_once 'Conjoon/Mail/Client/Folder/NoChildFoldersAllowedException.php';
@@ -156,9 +166,7 @@ class DefaultFolderCommons implements FolderCommons {
         }
 
         try {
-
             $entity = $this->folderRepository->findById($id);
-
         } catch (\Conjoon\Argument\InvalidArgumentException $e) {
 
             throw new FolderServiceException(
@@ -167,7 +175,6 @@ class DefaultFolderCommons implements FolderCommons {
                 0, $e
             );
         }
-
 
         try {
             while ($entity && $entity->getParent()) {
@@ -477,12 +484,68 @@ class DefaultFolderCommons implements FolderCommons {
         ArgumentCheck::check($config, $data);
 
         $folderEntity = null;
+        $rootId       = null;
 
         if (!($folder instanceof \Conjoon\Data\Entity\Mail\MailFolderEntity)) {
             $folderEntity = $this->getFolderEntity($folder);
+            $rootId       = $folder->getRootId();
         } else {
             $folderEntity = $folder;
+
+            try {
+                $parent = $folderEntity;
+                while ($parent->getParent()) {
+                    $parent = $parent->getParent();
+                }
+                $rootId = $parent->getId();
+            } catch (\Exception $e) {
+                throw new FolderServiceException(
+                    "Exception thrown by previous exception: " .
+                    $e->getMessage(),
+                    0, $e
+                );
+            }
+
         }
+
+        // check if folder is remote folder
+        $type = $this->getFolderType($rootId);
+
+        if ($type === self::ROOT) {
+            throw new IllegalFolderRootTypeException(
+                "Folder's root folder does not support to be used by multiple mail accounts."
+            );
+        }
+        if ($type === self::ROOT_REMOTE) {
+            throw new FolderOperationProtocolSupportException(
+                "Remote folder does not support to be used by multiple mail accounts."
+            );
+        }
+
+        $this->applyAccounts($accounts, $folderEntity);
+
+        try {
+            $this->folderRepository->flush();
+        } catch (\Exception $e){
+            throw new FolderServiceException(
+                "Exception thrown by previous exception: " .
+                $e->getMessage(), 0, $e
+            );
+        }
+
+        return $folderEntity;
+    }
+
+
+    /**
+     * Helper function for #applyMailAccountsToFolder.
+     *
+     * @param array $accounts
+     *
+     * @return \Conjoon\Data\Entity\Mail\MailFolderEntity
+     */
+    protected function applyAccounts(Array $accounts,
+        \Conjoon\Data\Entity\Mail\MailFolderEntity $folderEntity) {
 
         // inspect accounts
         $orgMailAccounts = $folderEntity->getMailAccounts();
@@ -491,26 +554,33 @@ class DefaultFolderCommons implements FolderCommons {
             $oldIds[] = $orgAccount->getId();
         }
 
-        foreach ($accounts as $account) {
-            if (!in_array($account->getId(), $oldIds)) {
-
-                $folderEntity->addMailAccount($account);
-
+        foreach ($accounts as $applyAccount) {
+            if (!in_array($applyAccount->getId(), $oldIds)) {
+                $folderEntity->addMailAccount($applyAccount);
                 // prevent dups
-                $oldIds[] = $account->getId();
+                $oldIds[] = $applyAccount->getId();
             }
         }
 
         try {
             $this->folderRepository->register($folderEntity);
-            $this->folderRepository->flush();
         } catch (\Exception $e){
             throw new FolderServiceException(
                 "Exception thrown by previous exception", 0, $e
             );
         }
 
-        return $folderEntity;
+        try {
+            $folders = $this->folderRepository->getChildFolders($folderEntity);
+        } catch (\Exception $e) {
+            throw new FolderServiceException(
+                "Exception thrown by previous exception", 0, $e
+            );
+        }
+
+        foreach ($folders as $folder) {
+            $this->applyAccounts($accounts, $folder);
+        }
     }
 
 }

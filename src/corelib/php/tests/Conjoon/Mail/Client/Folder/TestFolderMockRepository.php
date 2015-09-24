@@ -45,6 +45,12 @@ require_once 'Conjoon/Argument/InvalidArgumentException.php';
 require_once 'Conjoon/Data/Repository/Mail/DoctrineMailFolderRepository.php';
 
 /**
+ * @see Conjoon\Data\Entity\Mail\DefaultMailFolderEntity
+ */
+require_once 'Conjoon/Data/Entity/Mail/DefaultMailFolderEntity.php';
+
+
+/**
  * Folder Mock so register throws InvalidArgumentException in any case.
  *
  * Class FolderMockRepository
@@ -53,6 +59,10 @@ require_once 'Conjoon/Data/Repository/Mail/DoctrineMailFolderRepository.php';
 class TestFolderMockRepository extends DoctrineMailFolderRepository {
 
     public function __construct(){}
+
+    public function findById($id) {
+        return new \Conjoon\Data\Entity\Mail\DefaultMailFolderEntity();
+    }
 
     public function register(\Conjoon\Data\Entity\DataEntity $entity) {
         throw new InvalidArgumentException(

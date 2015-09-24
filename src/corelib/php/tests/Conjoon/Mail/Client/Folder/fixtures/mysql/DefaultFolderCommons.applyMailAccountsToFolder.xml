@@ -14,7 +14,77 @@
             <value>folder 1</value>
             <value>1</value>
             <value>0</value>
+            <value>accounts_root</value>
+            <value>inbox</value>
+            <null />
+            <value>0</value>
+        </row>
+        <row>
+            <value>2</value>
+            <value>folder 2</value>
+            <value>1</value>
+            <value>0</value>
+            <value>root</value>
+            <value>inbox</value>
+            <null />
+            <value>0</value>
+        </row>
+        <row>
+            <value>3</value>
+            <value>folder 3</value>
+            <value>1</value>
+            <value>0</value>
             <value>root_remote</value>
+            <value>inbox</value>
+            <null />
+            <value>0</value>
+        </row>
+        <row>
+            <value>11</value>
+            <value>folder 11</value>
+            <value>1</value>
+            <value>0</value>
+            <value>folder</value>
+            <value>inbox</value>
+            <value>1</value>
+            <value>0</value>
+        </row>
+        <row>
+            <value>12</value>
+            <value>folder 12</value>
+            <value>1</value>
+            <value>0</value>
+            <value>folder</value>
+            <value>inbox</value>
+            <value>11</value>
+            <value>0</value>
+        </row>
+        <row>
+            <value>14</value>
+            <value>folder 14</value>
+            <value>1</value>
+            <value>0</value>
+            <value>folder</value>
+            <value>inbox</value>
+            <value>2</value>
+            <value>0</value>
+        </row>
+        <row>
+            <value>15</value>
+            <value>folder 15</value>
+            <value>1</value>
+            <value>0</value>
+            <value>folder</value>
+            <value>inbox</value>
+            <value>14</value>
+            <value>0</value>
+        </row>
+        <row>
+            <value>1000</value>
+            <value>folder 1000</value>
+            <value>1</value>
+            <value>0</value>
+            <value>root</value>
             <value>inbox</value>
             <null />
             <value>0</value>
@@ -35,7 +105,31 @@
             <value>1</value>
             <value>3</value>
         </row>
-    </table>
+        <row>
+            <value>11</value>
+            <value>1</value>
+        </row>
+        <row>
+            <value>12</value>
+            <value>1</value>
+        </row>
+        <row>
+            <value>11</value>
+            <value>2</value>
+        </row>
+        <row>
+            <value>12</value>
+            <value>2</value>
+        </row>
+        <row>
+            <value>11</value>
+            <value>3</value>
+        </row>
+        <row>
+            <value>12</value>
+            <value>3</value>
+        </row>
+s    </table>
     <table name="groupware_email_accounts">
         <column>id</column>
         <column>user_id</column>
@@ -184,6 +278,51 @@
             <value>SSL</value>
             <value>1</value>
             <value>0</value>
+        </row>
+    </table>
+    <table name="groupware_email_folders_users">
+        <column>groupware_email_folders_id</column>
+        <column>users_id</column>
+        <column>relationship</column>
+        <row>
+            <value>1</value>
+            <value>1</value>
+            <value>owner</value>
+        </row>
+        <row>
+            <value>2</value>
+            <value>1</value>
+            <value>owner</value>
+        </row>
+        <row>
+            <value>3</value>
+            <value>1</value>
+            <value>owner</value>
+        </row>
+        <row>
+            <value>11</value>
+            <value>1</value>
+            <value>owner</value>
+        </row>
+        <row>
+            <value>12</value>
+            <value>1</value>
+            <value>owner</value>
+        </row>
+        <row>
+            <value>14</value>
+            <value>1</value>
+            <value>owner</value>
+        </row>
+        <row>
+            <value>15</value>
+            <value>1</value>
+            <value>owner</value>
+        </row>
+        <row>
+            <value>1000</value>
+            <value>2</value>
+            <value>owner</value>
         </row>
     </table>
 </dataset>
