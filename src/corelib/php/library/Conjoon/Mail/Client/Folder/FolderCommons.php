@@ -221,6 +221,29 @@ interface FolderCommons {
      * @throws FolderServiceException
      * @throws \Conjoon\Argument\InvalidArgumentException
      */
-    public function removeMailAccountsFromFolder($folder, $autoCommit = false);
+    public function removeMailAccountsFromFolder($folder);
+
+    /**
+     * Applies the specified type to the specified folder. If $childFolders is
+     * set to true, child folders will be considered, too.
+     * The passed $type will be checked against validity with the FolderTypes
+     * found in #FolderTypes.
+     *
+     * @param string $type
+     * @param Folder|\Conjoon\Data\Entity\Mail\MailFolderEntity $targetFolder
+     * @param boolean $childFolders
+     *
+     * @return \Conjoon\Data\Entity\Mail\MailFolderEntity The mail folder
+     *          which type was changed.
+     *
+     * @throws \Conjoon\Argument\InvalidArgumentException
+     * @throws \Conjoon\Mail\Client\Folder\FolderServiceException
+     * @throws \Conjoon\Mail\Client\Folder\FolderDoesNotExistException
+     ** @throws InvalidFolderTypeException
+     * @throws IllegalChildFolderTypeException
+     *
+     * @see FolderTypes
+     */
+    public function applyTypeToFolder($type, $folder, $childFolders = false);
 
 }

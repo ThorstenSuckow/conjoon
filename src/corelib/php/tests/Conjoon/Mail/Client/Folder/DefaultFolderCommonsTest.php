@@ -176,6 +176,133 @@ class DefaultFolderCommonsTest extends \Conjoon\DatabaseTestCaseDefault {
     }
 
     /**
+     * @expectedException \Conjoon\Mail\Client\Folder\IllegalChildFolderTypeException
+     */
+    public function testApplyTypeToFolder_IllegalChildFolderTypeException() {
+        $folder = $this->mailFolderRepository->findById(10);
+        $this->getCommons()->applyTypeToFolder('inbox', $folder, true);
+    }
+
+    /**
+     * @expectedException \Conjoon\Mail\Client\Folder\InvalidFolderTypeException
+     */
+    public function testApplyTypeToFolder_InvalidFolderTypeException() {
+        $folder = $this->mailFolderRepository->findById(10);
+        $this->getCommons()->applyTypeToFolder('folde213r', $folder, true);
+    }
+
+    /**
+     * @expectedException \Conjoon\Mail\Client\Folder\FolderServiceException
+     */
+    public function testApplyTypeToFolder_FolderServiceException() {
+        $folder = $this->mailFolderRepository->findById(10);
+        $this->getCommons(true)->applyTypeToFolder('folder', $folder, true);
+    }
+
+    /**
+     * @expectedException \Conjoon\Mail\Client\Folder\FolderDoesNotExistException
+     */
+    public function testApplyTypeToFolder_FolderDoesNotExistException() {
+        $folder = new Folder(new DefaultFolderPath('["root", "123"]'));
+        $this->commons->applyTypeToFolder('folder', $folder, true);
+    }
+
+    /**
+     * @expectedException \Conjoon\Argument\InvalidArgumentException
+     */
+    public function testApplyTypeToFolder_InvalidArgumentException_childFolders() {
+        $folder = new Folder(new DefaultFolderPath('["root", "10"]'));
+        $this->commons->applyTypeToFolder('folder', $folder, 1);
+    }
+
+    /**
+     * @expectedException \Conjoon\Argument\InvalidArgumentException
+     */
+    public function testApplyTypeToFolder_InvalidArgumentException_folder() {
+        $this->commons->applyTypeToFolder('folder', '$folder', true);
+    }
+
+    /**
+     * @expectedException \Conjoon\Argument\InvalidArgumentException
+     */
+    public function testApplyTypeToFolder_InvalidArgumentException_type() {
+        $folder = new Folder(new DefaultFolderPath('["root", "10"]'));
+        $this->commons->applyTypeToFolder(2323, $folder, true);
+    }
+
+    /**
+     * Ensure everything works as expected.
+     */
+    public function testApplyTypeToFolder_DefaultFolder_singleFolder() {
+        $this->applyToFolderHelper(false, false);
+    }
+
+    /**
+     * Ensure everything works as expected.
+     */
+    public function testApplyTypeToFolder_FolderEntity_singleFolder() {
+        $this->applyToFolderHelper(true, false);
+    }
+
+    /**
+     * Ensure everything works as expected.
+     */
+    public function testApplyTypeToFolder_DefaultFolder() {
+        $this->applyToFolderHelper(false, true);
+    }
+
+    /**
+     * Ensure everything works as expected.
+     */
+    public function testApplyTypeToFolder_FolderEntity() {
+        $this->applyToFolderHelper(true, true);
+    }
+
+    /**
+     * Helper function for testRemoveMailAccountsFromFolder
+     */
+    protected function applyToFolderHelper($useEntity = false, $childFolders = true) {
+
+        if ($useEntity === true) {
+            $folder = $this->mailFolderRepository->findById(10);
+        } else {
+            $folder = new Folder(
+                new DefaultFolderPath(
+                    '["root", "10"]'
+                )
+            );
+        }
+
+        $ret = $this->commons->applyTypeToFolder(
+            'folder', $folder, $childFolders
+        );
+
+        // groupware_email_folders_accounts
+        $queryTable = $this->getConnection()->createQueryTable(
+            'groupware_email_folders', 'SELECT * FROM groupware_email_folders'
+        );
+        $expectedTable = $this->createXmlDataSet(
+            dirname(__FILE__) .
+            '/fixtures/mysql/mail_folder.applyTypeToFolder_'.
+            ($childFolders !== false
+             ? 'childFolders'
+             : 'singleFolder') .
+            '.xml'
+        )->getTable("groupware_email_folders");
+        $this->assertTablesEqual($expectedTable, $queryTable);
+
+        $this->assertInstanceOf('\Conjoon\Data\Entity\Mail\MailFolderEntity', $ret);
+
+        if ($folder instanceof Folder) {
+            $this->assertEquals($ret->getId(), $folder->getRootId());
+        } else {
+            $this->assertEquals($ret->getId(), $folder->getId());
+        }
+
+    }
+
+
+    /**
      * @expectedException \Conjoon\Mail\Client\Folder\FolderServiceException
      */
     public function testRemoveMailAccountsFromFolder_FolderServiceException() {
@@ -206,39 +333,52 @@ class DefaultFolderCommonsTest extends \Conjoon\DatabaseTestCaseDefault {
     /**
      * Ensure everything works as expected.
      */
-    public function testRemoveMailAccountsFromFolder() {
+    public function testRemoveMailAccountsFromFolder_FolderEntity() {
+        $this->removeMailAccountsFromFolderHelper(true);
+    }
 
-        $folders = array(
-            new Folder(
+    /**
+     * Ensure everything works as expected.
+     */
+    public function testRemoveMailAccountsFromFolder_DefaultFolder() {
+        $this->removeMailAccountsFromFolderHelper(false);
+    }
+
+    /**
+     * Helper function for testRemoveMailAccountsFromFolder
+     */
+    protected function removeMailAccountsFromFolderHelper($useEntity = false) {
+
+        if ($useEntity === true) {
+            $folder = $this->mailFolderRepository->findById(10);
+        } else {
+            $folder = new Folder(
                 new DefaultFolderPath(
                     '["root", "10"]'
                 )
-            ),
-            $this->mailFolderRepository->findById(10)
-        );
-
-        foreach ($folders as $folder) {
-            $ret = $this->commons->removeMailAccountsFromFolder($folder);
-
-            // groupware_email_folders_accounts
-            $queryTable = $this->getConnection()->createQueryTable(
-                'groupware_email_folders_accounts', 'SELECT * FROM groupware_email_folders_accounts'
             );
-            $expectedTable = $this->createXmlDataSet(
-                dirname(__FILE__) . '/fixtures/mysql/mail_folder.removeMailAccountsFromFolder.xml'
-            )->getTable("groupware_email_folders_accounts");
-            $this->assertTablesEqual($expectedTable, $queryTable);
-
-            $this->assertInstanceOf('\Conjoon\Data\Entity\Mail\MailFolderEntity', $ret);
-
-            if ($folder instanceof Folder) {
-                $this->assertEquals($ret->getId(), $folder->getRootId());
-            } else {
-                $this->assertEquals($ret->getId(), $folder->getId());
-            }
-
-
         }
+
+        $ret = $this->commons->removeMailAccountsFromFolder($folder);
+
+
+        // groupware_email_folders_accounts
+        $queryTable = $this->getConnection()->createQueryTable(
+            'groupware_email_folders_accounts', 'SELECT * FROM groupware_email_folders_accounts'
+        );
+        $expectedTable = $this->createXmlDataSet(
+            dirname(__FILE__) . '/fixtures/mysql/mail_folder.removeMailAccountsFromFolder.xml'
+        )->getTable("groupware_email_folders_accounts");
+        $this->assertTablesEqual($expectedTable, $queryTable);
+
+        $this->assertInstanceOf('\Conjoon\Data\Entity\Mail\MailFolderEntity', $ret);
+
+        if ($folder instanceof Folder) {
+            $this->assertEquals($ret->getId(), $folder->getRootId());
+        } else {
+            $this->assertEquals($ret->getId(), $folder->getId());
+        }
+
     }
 
     /**

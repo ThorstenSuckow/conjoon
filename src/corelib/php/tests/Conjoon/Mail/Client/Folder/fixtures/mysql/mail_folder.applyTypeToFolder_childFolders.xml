@@ -1,0 +1,183 @@
+<?xml version="1.0" ?>
+<dataset>
+    <table name="groupware_email_folders">
+        <column>id</column>
+        <column>name</column>
+        <column>is_child_allowed</column>
+        <column>is_locked</column>
+        <column>type</column>
+        <column>meta_info</column>
+        <column>parent_id</column>
+        <column>is_deleted</column>
+        <row>
+            <value>1</value>
+            <value>folder 1</value>
+            <value>1</value>
+            <value>0</value>
+            <value>root_remote</value>
+            <value>inbox</value>
+            <null />
+            <value>0</value>
+        </row>
+        <row>
+            <value>2</value>
+            <value>folder 2</value>
+            <value>1</value>
+            <value>0</value>
+            <value>root</value>
+            <value>inbox</value>
+            <value>1</value>
+            <value>0</value>
+        </row>
+        <row>
+            <value>3</value>
+            <value>Accounts Root</value>
+            <value>1</value>
+            <value>0</value>
+            <value>accounts_root</value>
+            <value>inbox</value>
+            <value>0</value>
+            <value>0</value>
+        </row>
+        <row>
+            <value>5</value>
+            <value>folder 5</value>
+            <value>1</value>
+            <value>0</value>
+            <value>root</value>
+            <value>inbox</value>
+            <null />
+            <value>0</value>
+        </row>
+        <row>
+            <value>6</value>
+            <value>folder 6</value>
+            <value>0</value>
+            <value>0</value>
+            <value>inbox</value>
+            <value>inbox</value>
+            <value>5</value>
+            <value>0</value>
+        </row>
+        <row>
+            <value>7</value>
+            <value>folder 7</value>
+            <value>1</value>
+            <value>0</value>
+            <value>inbox</value>
+            <value>inbox</value>
+            <value>5</value>
+            <value>0</value>
+        </row>
+        <row>
+            <value>8</value>
+            <value>Folder 8</value>
+            <value>1</value>
+            <value>0</value>
+            <value>inbox</value>
+            <value>inbox</value>
+            <value>5</value>
+            <value>0</value>
+        </row>
+        <row>
+            <value>10</value>
+            <value>Same Name</value>
+            <value>1</value>
+            <value>0</value>
+            <value>folder</value>
+            <value>inbox</value>
+            <null />
+            <value>0</value>
+        </row>
+        <row>
+            <value>11</value>
+            <value>folder 11</value>
+            <value>1</value>
+            <value>0</value>
+            <value>folder</value>
+            <value>inbox</value>
+            <value>10</value>
+            <value>0</value>
+        </row>
+        <row>
+            <value>12</value>
+            <value>folder 12</value>
+            <value>1</value>
+            <value>0</value>
+            <value>folder</value>
+            <value>inbox</value>
+            <value>11</value>
+            <value>0</value>
+        </row>
+        <row>
+            <value>13</value>
+            <value>folder 13</value>
+            <value>1</value>
+            <value>0</value>
+            <value>folder</value>
+            <value>inbox</value>
+            <value>10</value>
+            <value>0</value>
+        </row>
+        <row>
+            <value>14</value>
+            <value>folder 14</value>
+            <value>1</value>
+            <value>0</value>
+            <value>accounts_root</value>
+            <value>inbox</value>
+            <null />
+            <value>0</value>
+        </row>
+        <row>
+            <value>15</value>
+            <value>folder 15</value>
+            <value>1</value>
+            <value>0</value>
+            <value>root</value>
+            <value>inbox</value>
+            <null />
+            <value>0</value>
+        </row>
+        <row>
+            <value>16</value>
+            <value>folder 16</value>
+            <value>1</value>
+            <value>0</value>
+            <value>inbox</value>
+            <value>inbox</value>
+            <value>15</value>
+            <value>0</value>
+        </row>
+        <row>
+            <value>17</value>
+            <value>folder 17</value>
+            <value>0</value>
+            <value>0</value>
+            <value>folder</value>
+            <value>inbox</value>
+            <value>10</value>
+            <value>0</value>
+        </row>
+        <row>
+            <value>18</value>
+            <value>folder 18</value>
+            <value>1</value>
+            <value>0</value>
+            <value>folder</value>
+            <value>sent</value>
+            <value>10</value>
+            <value>0</value>
+        </row>
+        <row>
+            <value>19</value>
+            <value>Same Name</value>
+            <value>1</value>
+            <value>0</value>
+            <value>inbox</value>
+            <value>inbox</value>
+            <value>14</value>
+            <value>0</value>
+        </row>
+    </table>
+</dataset>

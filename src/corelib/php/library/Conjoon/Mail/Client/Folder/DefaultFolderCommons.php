@@ -33,7 +33,8 @@
 namespace Conjoon\Mail\Client\Folder;
 
 use Conjoon\Argument\ArgumentCheck,
-    Conjoon\Argument\InvalidArgumentException;
+    Conjoon\Argument\InvalidArgumentException,
+    Conjoon\Util\ArrayUtil;
 
 /**
  * @see MailFolderCommons
@@ -75,6 +76,25 @@ require_once 'Conjoon/Argument/ArgumentCheck.php';
  */
 require_once 'Conjoon/Argument/InvalidArgumentException.php';
 
+/**
+ * @see Conjoon\Mail\Client\Folder\InvalidFolderTypeException
+ */
+require_once 'Conjoon/Mail/Client/Folder/InvalidFolderTypeException.php';
+
+/**
+ * @see Conjoon\Mail\Client\Folder\IllegalChildFolderTypeException
+ */
+require_once 'Conjoon/Mail/Client/Folder/IllegalChildFolderTypeException.php';
+
+/**
+ * @see Conjoon\Mail\Client\Folder\FolderTypes
+ */
+require_once 'Conjoon/Mail/Client/Folder/FolderTypes.php';
+
+/**
+ * @see Conjoon\Util\ArrayUtil
+ */
+require_once 'Conjoon/Util/ArrayUtil.php';
 
 
 /**
@@ -101,6 +121,11 @@ class DefaultFolderCommons implements FolderCommons {
      * @const ROOT
      */
     const ROOT = 'root';
+
+    /**
+     * @const FOLDERTYPE_FOLDER
+     */
+    const FOLDERTYPE_FOLDER = 'folder';
 
     /**
      * @var MailFolderRepository
@@ -254,19 +279,7 @@ class DefaultFolderCommons implements FolderCommons {
 
         $data = array('folder' => $folder);
 
-        $config = array(
-            'folder' => array(
-                array(
-                    'type'  => 'instanceof',
-                    'class' => '\Conjoon\Mail\Client\Folder\Folder'
-                ),
-                'OR',
-                array(
-                    'type'  => 'instanceof',
-                    'class' => '\Conjoon\Data\Entity\Mail\MailFolderEntity'
-                )
-            )
-        );
+        $config = $this->getFolderHybridCheckConfiguration('folder');
 
         ArgumentCheck::check($config, $data);
 
@@ -371,20 +384,12 @@ class DefaultFolderCommons implements FolderCommons {
                     'type'  => 'instanceof',
                     'class' => '\Conjoon\Data\Entity\Mail\MailFolderEntity'
                 )
-            ),
-            'targetFolder' => array(
-                array(
-                    'type'  => 'instanceof',
-                    'class' => '\Conjoon\Mail\Client\Folder\Folder'
-                ),
-                'OR',
-                array(
-                    'type'  => 'instanceof',
-                    'class' => '\Conjoon\Data\Entity\Mail\MailFolderEntity'
-                )
             )
         );
 
+        ArrayUtil::apply(
+            $config,
+            $this->getFolderHybridCheckConfiguration('targetFolder'));
         ArgumentCheck::check($config, $data);
 
         $sourceEntity = null;
@@ -418,19 +423,7 @@ class DefaultFolderCommons implements FolderCommons {
             'folder' => $folder
         );
 
-        $config = array(
-            'folder' => array(
-                array(
-                    'type'  => 'instanceof',
-                    'class' => '\Conjoon\Mail\Client\Folder\Folder'
-                ),
-                'OR',
-                array(
-                    'type'  => 'instanceof',
-                    'class' => '\Conjoon\Data\Entity\Mail\MailFolderEntity'
-                )
-            )
-        );
+        $config = $this->getFolderHybridCheckConfiguration('folder');
 
         ArgumentCheck::check($config, $data);
 
@@ -465,25 +458,13 @@ class DefaultFolderCommons implements FolderCommons {
      * @throws FolderServiceException
      * @throws \Conjoon\Argument\InvalidArgumentException
      */
-    public function removeMailAccountsFromFolder($folder, $autoCommit = false) {
+    public function removeMailAccountsFromFolder($folder) {
 
         $data = array(
             'folder'   => $folder
         );
 
-        $config = array(
-            'folder' => array(
-                array(
-                    'type'  => 'instanceof',
-                    'class' => '\Conjoon\Mail\Client\Folder\Folder'
-                ),
-                'OR',
-                array(
-                    'type'  => 'instanceof',
-                    'class' => '\Conjoon\Data\Entity\Mail\MailFolderEntity'
-                )
-            )
-        );
+        $config = $this->getFolderHybridCheckConfiguration('folder');
 
         ArgumentCheck::check($config, $data);
 
@@ -561,20 +542,12 @@ class DefaultFolderCommons implements FolderCommons {
                 'minLength'  => 1,
                 'allowEmpty' => false,
                 'class'      => '\Conjoon\Data\Entity\Mail\MailAccountEntity'
-            ),
-            'folder' => array(
-                array(
-                    'type'  => 'instanceof',
-                    'class' => '\Conjoon\Mail\Client\Folder\Folder'
-                ),
-                'OR',
-                array(
-                    'type'  => 'instanceof',
-                    'class' => '\Conjoon\Data\Entity\Mail\MailFolderEntity'
-                )
             )
         );
 
+        ArrayUtil::apply(
+            $config,
+            $this->getFolderHybridCheckConfiguration('folder'));
         ArgumentCheck::check($config, $data);
 
         $folderEntity = null;
@@ -630,7 +603,6 @@ class DefaultFolderCommons implements FolderCommons {
         return $folderEntity;
     }
 
-
     /**
      * Helper function for #applyMailAccountsToFolder.
      *
@@ -674,6 +646,135 @@ class DefaultFolderCommons implements FolderCommons {
         foreach ($folders as $folder) {
             $this->applyAccounts($accounts, $folder);
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function applyTypeToFolder(
+        $type, $folder, $childFolders = false) {
+
+        $data = array(
+            'type'               => $type,
+            'folder'             => $folder,
+            'childFolders'       => $childFolders
+        );
+
+        $config = array(
+            'type' => array(
+                'type'       => 'string',
+                'allowEmpty' => false,
+                'strict'     => true
+            ),
+            'childFolders' => array(
+                'type'       => 'boolean',
+                'allowEmpty' => false,
+                'strict'     => true
+            )
+        );
+
+        ArrayUtil::apply(
+            $config,
+            $this->getFolderHybridCheckConfiguration('folder'));
+
+        ArgumentCheck::check($config, $data);
+
+        $folderEntity = null;
+
+        $type = $data['type'];
+
+        // checks for supplied folder types
+        if (!in_array($type, FolderTypes::getFolderTypes())) {
+            throw new InvalidFolderTypeException(
+                "invalid folder type \"$type\"."
+            );
+        }
+
+        if ($childFolders === true &&
+            in_array($type, FolderTypes::getFirstLevelFolderTypes())) {
+            throw new IllegalChildFolderTypeException(
+                "Folder type \"$type\" may not be applied to child folders."
+            );
+        }
+
+        if (!($folder instanceof \Conjoon\Data\Entity\Mail\MailFolderEntity)) {
+            $folderEntity = $this->getFolderEntity($folder);
+        } else {
+            $folderEntity = $folder;
+        }
+
+        $this->applyType($type, $folderEntity, $childFolders);
+
+        try {
+            $this->folderRepository->flush();
+        } catch (\Exception $e){
+            throw new FolderServiceException(
+                "Exception thrown by previous exception: " .
+                $e->getMessage(), 0, $e
+            );
+        }
+
+        return $folderEntity;
+    }
+
+    /**
+     * Helper function for applyTypeToFolder.
+     *
+     * @param string $type The type to apply
+     * @param \Conjoon\Data\Entity\Mail\MailFolderEntity $folder The target folder
+     * @param boolean $childFolders True to recurse into child folders
+     *
+     * @throws FolderServiceException
+     * @throws FolderDoesNotExistException
+     */
+    protected function applyType(
+        $type,
+        \Conjoon\Data\Entity\Mail\MailFolderEntity $folder,
+        $childFolders) {
+
+
+        try {
+            $this->folderRepository->register($folder);
+        } catch (\Exception $e){
+            throw new FolderServiceException(
+                "Exception thrown by previous exception: " .
+                $e->getMessage()
+                , 0, $e
+            );
+        }
+
+        $folder->setType($type);
+
+        if ($childFolders) {
+            $subs = $this->getChildFolderEntities($folder);
+            foreach ($subs as $sub) {
+                $this->applyType($type, $sub, true);
+            }
+        }
+    }
+
+
+    /**
+     * Helper function to return the configuration for an argument check
+     * for a Folder/MailFolderEntity argument.
+     *
+     * @param string $keyName The name used for the key which has to match the
+     *        argument in the check
+     *
+     * @return array
+     */
+    protected function getFolderHybridCheckConfiguration($keyName) {
+        return array($keyName => array(
+            array(
+                'type'  => 'instanceof',
+                'class' => '\Conjoon\Mail\Client\Folder\Folder'
+            ),
+            'OR',
+            array(
+                'type'  => 'instanceof',
+                'class' => '\Conjoon\Data\Entity\Mail\MailFolderEntity'
+            )
+        ));
     }
 
 }
