@@ -271,10 +271,13 @@ class ArgumentCheck {
                 case 'boolean':
                 case 'bool':
 
-                    if (!is_bool($data[$argumentName])) {
-                        throw new InvalidArgumentException(
-                            "No boolean value passed for $argumentName"
-                        );
+                     if (isset($entityConfig['strict']) &&
+                        $entityConfig['strict'] === true) {
+                        if (!is_bool($data[$argumentName])) {
+                            throw new InvalidArgumentException(
+                                "No boolean value passed for $argumentName"
+                            );
+                        }
                     }
 
                     if (isset($data[$argumentName])) {

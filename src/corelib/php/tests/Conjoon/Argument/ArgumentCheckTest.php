@@ -64,7 +64,8 @@ class ArgumentCheckTest extends \PHPUnit_Framework_TestCase {
                             array(
                                 'input' => array(
                                     'type'       => 'bool',
-                                    'allowEmpty' => false
+                                    'allowEmpty' => false,
+                                    'strict'     => true
                                 )),
                             array(
                                 new \stdClass,
@@ -88,6 +89,7 @@ class ArgumentCheckTest extends \PHPUnit_Framework_TestCase {
                                 true,
                                 false
                             )),
+                        // second test
                         array(
                             array(
                                 'input' => array(
@@ -97,6 +99,41 @@ class ArgumentCheckTest extends \PHPUnit_Framework_TestCase {
                             array(
                                 true,
                                 false
+                            )),
+                        // third test
+                        array(
+                            array(
+                                'input' => array(
+                                    'type'       => 'bool',
+                                    'allowEmpty' => true,
+                                    'strict'     => true
+                                )),
+                            array(
+                                true,
+                                false
+                            )),
+                        // fourth test
+                        array(
+                            array(
+                                'input' => array(
+                                    'type'       => 'bool',
+                                    'allowEmpty' => true
+                                )),
+                            array(
+                                0,
+                                1
+                            )),
+                        // fifth test
+                        array(
+                            array(
+                                'input' => array(
+                                    'type'       => 'bool',
+                                    'allowEmpty' => true,
+                                    'strict'     => false
+                                )),
+                            array(
+                                1,
+                                0
                             ))
                     )
                 )
@@ -884,7 +921,7 @@ class ArgumentCheckTest extends \PHPUnit_Framework_TestCase {
 
                 ArgumentCheck::check($rule, $in);
 
-                $this->assertSame($in['input'], $inputs[$a]);
+                $this->assertSame($in['input'], (bool)$inputs[$a]);
             }
         }
     }
