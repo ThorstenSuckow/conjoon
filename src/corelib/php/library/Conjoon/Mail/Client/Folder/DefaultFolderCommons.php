@@ -283,11 +283,7 @@ class DefaultFolderCommons implements FolderCommons {
 
         ArgumentCheck::check($config, $data);
 
-        $entity = $folder;
-
-        if ($entity instanceof \Conjoon\Mail\Client\Folder\Folder) {
-            $entity = $this->getFolderEntity($folder);
-        }
+        $entity = $this->makeFolderEntity($folder);
 
         $folders = array();
 
@@ -373,38 +369,18 @@ class DefaultFolderCommons implements FolderCommons {
             'targetFolder' => $targetFolder,
         );
 
-        $config = array(
-            'sourceFolder' => array(
-                array(
-                    'type'  => 'instanceof',
-                    'class' => '\Conjoon\Mail\Client\Folder\Folder'
-                ),
-                'OR',
-                array(
-                    'type'  => 'instanceof',
-                    'class' => '\Conjoon\Data\Entity\Mail\MailFolderEntity'
-                )
-            )
-        );
+        $config = array();
 
         ArrayUtil::apply(
             $config,
             $this->getFolderHybridCheckConfiguration('targetFolder'));
+        ArrayUtil::apply(
+            $config,
+            $this->getFolderHybridCheckConfiguration('sourceFolder'));
         ArgumentCheck::check($config, $data);
 
-        $sourceEntity = null;
-        $targetEntity = null;
-
-        if (!($sourceFolder instanceof \Conjoon\Data\Entity\Mail\MailFolderEntity)) {
-            $sourceEntity = $this->getFolderEntity($sourceFolder);
-        } else {
-            $sourceEntity = $sourceFolder;
-        }
-        if (!($targetFolder instanceof \Conjoon\Data\Entity\Mail\MailFolderEntity)) {
-            $targetEntity = $this->getFolderEntity($targetFolder);
-        } else {
-            $targetEntity = $targetFolder;
-        }
+        $sourceEntity = $this->makeFolderEntity($sourceFolder);
+        $targetEntity = $this->makeFolderEntity($targetFolder);
 
         try {
             $this->messageRepository->moveMessagesFromFolder($sourceEntity, $targetEntity);
@@ -427,13 +403,7 @@ class DefaultFolderCommons implements FolderCommons {
 
         ArgumentCheck::check($config, $data);
 
-        $folderEntity = null;
-
-        if (!($folder instanceof \Conjoon\Data\Entity\Mail\MailFolderEntity)) {
-            $folderEntity = $this->getFolderEntity($folder);
-        } else {
-            $folderEntity = $folder;
-        }
+        $folderEntity = $this->makeFolderEntity($folder);
 
         try {
             return $this->folderRepository->hasMessages($folderEntity);
@@ -468,13 +438,7 @@ class DefaultFolderCommons implements FolderCommons {
 
         ArgumentCheck::check($config, $data);
 
-        $folderEntity = null;
-
-        if (!($folder instanceof \Conjoon\Data\Entity\Mail\MailFolderEntity)) {
-            $folderEntity = $this->getFolderEntity($folder);
-        } else {
-            $folderEntity = $folder;
-        }
+        $folderEntity = $this->makeFolderEntity($folder);
 
         $this->removeAccounts($folderEntity);
 
@@ -679,8 +643,6 @@ class DefaultFolderCommons implements FolderCommons {
 
         ArgumentCheck::check($config, $data);
 
-        $folderEntity = null;
-
         $type = $data['type'];
 
         // checks for supplied folder types
@@ -697,11 +659,7 @@ class DefaultFolderCommons implements FolderCommons {
             );
         }
 
-        if (!($folder instanceof \Conjoon\Data\Entity\Mail\MailFolderEntity)) {
-            $folderEntity = $this->getFolderEntity($folder);
-        } else {
-            $folderEntity = $folder;
-        }
+        $folderEntity = $this->makeFolderEntity($folder);
 
         $this->applyType($type, $folderEntity, $childFolders);
 
@@ -716,6 +674,54 @@ class DefaultFolderCommons implements FolderCommons {
 
         return $folderEntity;
     }
+
+    /**
+     * Checks whether the passed $folder including its child folders share
+     * one and the same Meta Info value.
+     * Pass $metaInfo as second argument to force the check after this value.
+     *
+     * @param Folder|\Conjoon\Data\Entity\Mail\MailFolderEntity $targetFolder
+     * @param string $metaInfo if $metaInfo is submitted, the $folder has
+     *               already be set to this value
+     *
+     * @return boolean true if one and the same meta info is used throughout
+     *                 the folder hierarchy, otherwise false
+     *
+     * @throws \Conjoon\Argument\InvalidArgumentException
+     * @throws \Conjoon\Mail\Client\Folder\FolderServiceException
+     * @throws \Conjoon\Mail\Client\Folder\FolderDoesNotExistException
+     */
+    public function isMetaInfoInFolderHierarchyUnique($folder, $metaInfo = "") {
+
+        $data = array(
+            'folder'   => $folder,
+            'metaInfo' => $metaInfo
+        );
+
+        $config = array(
+            'metaInfo' => array(
+                'type'       => 'string',
+                'allowEmpty' => true,
+                'strict'     => true
+            )
+        );
+
+        ArrayUtil::apply(
+            $config,
+            $this->getFolderHybridCheckConfiguration('folder'));
+        ArgumentCheck::check($config, $data);
+
+        $folderEntity = $this->makeFolderEntity($folder);
+
+        $actualMetaInfo   = $folderEntity->getMetaInfo();
+        $expectedMetaInfo = $data['metaInfo'] === ""
+                            ? $actualMetaInfo
+                            : $actualMetaInfo;
+
+        return $this->checkMetaInfoType($folderEntity, $expectedMetaInfo);
+    }
+
+// -------- helper
 
     /**
      * Helper function for applyTypeToFolder.
@@ -753,6 +759,35 @@ class DefaultFolderCommons implements FolderCommons {
         }
     }
 
+    /**
+     * Helper function for #isMetaInfoInFolderHierarchyUnique to recurse into
+     * child folders and check for unique meta info.
+     *
+     * @param \Conjoon\Data\Entity\Mail\MailFolderEntity $folder
+     * @param $metaInfo string
+     *
+     * @return boolean
+     *
+     * @throws FolderServiceException
+     * @throws FolderDoesNotExistException
+     */
+    protected function checkMetaInfoType(
+        \Conjoon\Data\Entity\Mail\MailFolderEntity $folder, $metaInfo) {
+
+        if ($folder->getMetaInfo() !== $metaInfo) {
+            return false;
+        }
+
+        $childFolders = $this->getChildFolderEntities($folder);
+
+        foreach ($childFolders as $childFolder) {
+            if ($this->checkMetaInfoType($childFolder, $metaInfo) !== true) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 
     /**
      * Helper function to return the configuration for an argument check
@@ -777,4 +812,20 @@ class DefaultFolderCommons implements FolderCommons {
         ));
     }
 
+    /**
+     * Helper function to type check passed argument against
+     *  \Conjoon\Data\Entity\Mail\MailFolderEntity
+     * This method does no type check. It is expected that the calling API
+     * methods already check for type. The passed argument _should_either be
+     * a Folder or a MailFolderEntity.
+     *
+     * @param mixed $folder
+     *
+     * @return boolean
+     */
+    protected function makeFolderEntity($folder) {
+        return ($folder instanceof \Conjoon\Data\Entity\Mail\MailFolderEntity)
+               ? $folder
+               : $this->getFolderEntity($folder);
+    }
 }

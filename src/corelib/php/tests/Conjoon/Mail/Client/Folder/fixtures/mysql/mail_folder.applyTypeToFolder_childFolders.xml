@@ -179,5 +179,15 @@
             <value>14</value>
             <value>0</value>
         </row>
+        <row>
+            <value>20</value>
+            <value>Folder 20</value>
+            <value>1</value>
+            <value>0</value>
+            <value>folder</value>
+            <value>inbox</value>
+            <value>11</value>
+            <value>0</value>
+        </row>
     </table>
 </dataset>

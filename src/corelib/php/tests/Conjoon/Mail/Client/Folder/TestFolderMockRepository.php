@@ -64,6 +64,11 @@ class TestFolderMockRepository extends DoctrineMailFolderRepository {
         return new \Conjoon\Data\Entity\Mail\DefaultMailFolderEntity();
     }
 
+    public function getChildFolders(\Conjoon\Data\Entity\Mail\MailFolderEntity $folder) {
+        throw new InvalidArgumentException(
+            'FolderMockRepository mocks the getChildFolders');
+    }
+
     public function register(\Conjoon\Data\Entity\DataEntity $entity) {
         throw new InvalidArgumentException(
             'FolderMockRepository mocks the register');

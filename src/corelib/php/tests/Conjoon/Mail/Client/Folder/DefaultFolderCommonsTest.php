@@ -176,6 +176,74 @@ class DefaultFolderCommonsTest extends \Conjoon\DatabaseTestCaseDefault {
     }
 
     /**
+     * @expectedException \Conjoon\Mail\Client\Folder\FolderServiceException
+     */
+    public function testIsMetaInfoInFolderHierarchyUnique_FolderServiceException() {
+        $folder = $this->mailFolderRepository->findById(11);
+        $this->getCommons(true)->isMetaInfoInFolderHierarchyUnique($folder, 'inbox');
+    }
+
+    /**
+     * @expectedException \Conjoon\Mail\Client\Folder\FolderDoesNotExistException
+     */
+    public function testIsMetaInfoInFolderHierarchyUnique_FolderDoesNotExistException() {
+        $folder = new Folder(new DefaultFolderPath('["root", "123"]'));
+        $this->getCommons()->isMetaInfoInFolderHierarchyUnique($folder);
+    }
+
+    /**
+     * @expectedException \Conjoon\Argument\InvalidArgumentException
+     */
+    public function testIsMetaInfoInFolderHierarchyUnique_InvalidArgumentException_1() {
+        $this->getCommons()->isMetaInfoInFolderHierarchyUnique('a');
+    }
+
+    /**
+     * @expectedException \Conjoon\Argument\InvalidArgumentException
+     */
+    public function testIsMetaInfoInFolderHierarchyUnique_InvalidArgumentException_2() {
+        $folder = $this->mailFolderRepository->findById(11);
+        $this->getCommons()->isMetaInfoInFolderHierarchyUnique($folder, 2);
+    }
+
+    /**
+     * Ensure everything works as expected.
+     */
+    public function testIsMetaInfoInFolderHierarchyUnique() {
+
+        $folder = $this->mailFolderRepository->findById(11);
+        $this->assertTrue(
+            $this->getCommons()->isMetaInfoInFolderHierarchyUnique($folder)
+        );
+        $folder = new Folder(new DefaultFolderPath('["root", "10", "11"]'));
+        $this->assertTrue(
+            $this->getCommons()->isMetaInfoInFolderHierarchyUnique($folder, "")
+        );
+        $folder = $this->mailFolderRepository->findById(11);
+        $this->assertTrue(
+            $this->getCommons()->isMetaInfoInFolderHierarchyUnique($folder, " ")
+        );
+        $folder = $this->mailFolderRepository->findById(11);
+        $this->assertTrue(
+            $this->getCommons()->isMetaInfoInFolderHierarchyUnique($folder, null)
+        );
+
+        $folder = $this->mailFolderRepository->findById(11);
+        $this->assertTrue(
+            $this->getCommons()->isMetaInfoInFolderHierarchyUnique($folder, 'inbox')
+        );
+
+        $folder = $this->mailFolderRepository->findById(10);
+        $this->assertFalse(
+            $this->getCommons()->isMetaInfoInFolderHierarchyUnique($folder, 'inbox')
+        );
+        $folder = $this->mailFolderRepository->findById(10);
+        $this->assertFalse(
+            $this->getCommons()->isMetaInfoInFolderHierarchyUnique($folder)
+        );
+    }
+
+    /**
      * @expectedException \Conjoon\Mail\Client\Folder\IllegalChildFolderTypeException
      */
     public function testApplyTypeToFolder_IllegalChildFolderTypeException() {

@@ -173,7 +173,6 @@ interface FolderCommons {
      */
     public function moveMessages($sourceFolder, $targetFolder);
 
-
     /**
      * Returns true if the passed Folder or any of its child folders in the
      * representing sub-tree has one or more messages which are not flagged as
@@ -245,5 +244,23 @@ interface FolderCommons {
      * @see FolderTypes
      */
     public function applyTypeToFolder($type, $folder, $childFolders = false);
+
+    /**
+     * Checks whether the passed $folder including its child folders share
+     * one and the same Meta Info value.
+     * Pass $metaInfo as second argument to force the check after this value.
+     *
+     * @param Folder|\Conjoon\Data\Entity\Mail\MailFolderEntity $targetFolder
+     * @param string $metaInfo if $metaInfo is submitted, the $folder has
+     *               already be set to this value
+     *
+     * @return boolean true if one and the same meta info is used throughout
+     *                 the folder hierarchy, otherwise false
+     *
+     * @throws \Conjoon\Argument\InvalidArgumentException
+     * @throws \Conjoon\Mail\Client\Folder\FolderServiceException
+     * @throws \Conjoon\Mail\Client\Folder\FolderDoesNotExistException
+     */
+     public function isMetaInfoInFolderHierarchyUnique($folder, $metaInfo = "");
 
 }
