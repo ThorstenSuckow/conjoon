@@ -76,7 +76,29 @@ class ArgumentCheckTest extends \PHPUnit_Framework_TestCase {
                                 0,
                                 "1",
                                 "0"
-                            ))),
+                            )),
+                        //second test
+                        array(
+                            array(
+                                'input' => array(
+                                    'type'       => 'bool',
+                                    'allowEmpty' => false,
+                                    'strict'     => true
+                                )),
+                            array(
+                                null
+                            )),
+                        array(
+                            array(
+                                'input' => array(
+                                    'type'       => 'bool',
+                                    'allowEmpty' => false,
+                                    'strict'     => false
+                                )),
+                            array(
+                                null
+                            ))
+                    ),
                     'success' => array(
                         // first test
                         array(
@@ -134,6 +156,17 @@ class ArgumentCheckTest extends \PHPUnit_Framework_TestCase {
                             array(
                                 1,
                                 0
+                            )),
+                        // sixth test
+                        array(
+                            array(
+                                'input' => array(
+                                    'type'       => 'bool',
+                                    'allowEmpty' => true,
+                                    'strict'     => true
+                                )),
+                            array(
+                                null
                             ))
                     )
                 )
@@ -168,7 +201,19 @@ class ArgumentCheckTest extends \PHPUnit_Framework_TestCase {
                                 "1",
                                 null,
                                 "yo"
-                    )))
+                        )),
+                        // second test
+                        array(
+                            array(
+                                'input' => array(
+                                    'type'       => 'string',
+                                    'allowEmpty' => true,
+                                    'strict'     => true
+                                )),
+                            array(
+                                null
+                            ))
+                    )
                 )
             ),
             'testInt' => array(
@@ -283,7 +328,9 @@ class ArgumentCheckTest extends \PHPUnit_Framework_TestCase {
     {
     }
 
-    /**
+
+
+        /**
      * @ticket CN-961
      */
     public function test_CN967() {
@@ -921,7 +968,20 @@ class ArgumentCheckTest extends \PHPUnit_Framework_TestCase {
 
                 ArgumentCheck::check($rule, $in);
 
-                $this->assertSame($in['input'], (bool)$inputs[$a]);
+                /**
+                 * @ticket CN-979
+                 */
+                if (isset($rule['input']['strict']) &&
+                    $rule['input']['strict'] === true &&
+                    isset($rule['input']['allowEmpty']) &&
+                    $rule['input']['allowEmpty'] === true &&
+                    $inputs[$a] === null) {
+                    $this->assertNull($in['input']);
+                } else {
+                    $this->assertSame($in['input'], (bool)$inputs[$a]);
+                }
+
+
             }
         }
     }
@@ -972,7 +1032,18 @@ class ArgumentCheckTest extends \PHPUnit_Framework_TestCase {
 
                 ArgumentCheck::check($rule, $in);
 
-                $this->assertSame($in['input'], (string)$inputs[$a]);
+                /**
+                 * @ticket CN-979
+                 */
+                if (isset($rule['input']['strict']) &&
+                    $rule['input']['strict'] === true &&
+                    isset($rule['input']['allowEmpty']) &&
+                    $rule['input']['allowEmpty'] === true &&
+                    $inputs[$a] === null) {
+                    $this->assertNull($in['input']);
+                } else {
+                    $this->assertSame($in['input'], (string)$inputs[$a]);
+                }
             }
         }
     }

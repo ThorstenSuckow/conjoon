@@ -122,6 +122,9 @@ class ArgumentCheck {
 
             $isSettingAvailable = array_key_exists($argumentName, $data);
 
+            $isStrict = (isset($entityConfig['strict']) &&
+                        $entityConfig['strict'] === true);
+
             $wasDefaultNull = false;
 
             if (!$isSettingAvailable && $isMandatory) {
@@ -142,6 +145,13 @@ class ArgumentCheck {
                           : false;
 
             if ($allowEmpty && $wasDefaultNull) {
+                continue;
+            }
+
+            // strict = true, allowEmpty= true, value = null
+            // -> allowEmpty succeeds, pass!
+            if ($allowEmpty && $isStrict  && $isSettingAvailable &&
+                $data[$argumentName] === null) {
                 continue;
             }
 
