@@ -32,7 +32,16 @@
 namespace Conjoon\Mail\Client\Folder;
 
 /**
- * A base service for operations on folders and related entities.
+ * A basic service for operations on folders and related entities.
+ * This class provides a contract for domain logic regarding mail folders
+ * in the conjoon software system, and represents a direct interface with
+ * the underlying data storage, e.g. the mail folder repository.
+ * Developers are advised to compose commands out of this API, providing
+ * authentication/security checks and additional application logic in another
+ * service layer.
+ *
+ * @todo refactor move appropriate methods into domain model
+ * (isFolderRootFolder, getChildFolderEntities, etc.))
  *
  * @category   Conjoon_Mail
  * @package    Folder
