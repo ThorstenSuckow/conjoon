@@ -67,7 +67,6 @@ require_once 'Conjoon/Modules/Default/User.php';
  */
 require_once 'Conjoon/Mail/Client/Folder/Strategy/DefaultFolderNamingForMovingStrategy.php';
 
-
 /**
  * @category   Conjoon
  * @package    Conjoon_Mail
@@ -107,6 +106,10 @@ class DefaultClientMailFolderServiceTest extends \Conjoon\DatabaseTestCaseDefaul
     {
         parent::setUp();
 
+        $this->service = $this->getService();
+    }
+
+    protected function getService($useMock = false) {
         $user = new \Conjoon_Modules_Default_User();
         $user->setId(1);
         $user->setFirstName("f");
@@ -161,28 +164,36 @@ class DefaultClientMailFolderServiceTest extends \Conjoon\DatabaseTestCaseDefaul
         $repository = $this->_entityManager->getRepository(
             '\Conjoon\Data\Entity\Mail\DefaultMailFolderEntity');
 
-        $mailFolderCommons = new \Conjoon\Mail\Client\Folder\DefaultFolderCommons(
-            array(
-                'mailFolderRepository' => $repository,
-                'user'                 => $this->user,
-                'messageRepository'    => $this->messageRepository
-            ));
+        if ($useMock) {
+            $mailFolderCommons = new MockFolderCommons(
+                array(
+                    'mailFolderRepository' => $repository,
+                    'user'                 => $this->user,
+                    'messageRepository'    => $this->messageRepository
+                ));
+        } else {
+            $mailFolderCommons = new \Conjoon\Mail\Client\Folder\DefaultFolderCommons(
+                array(
+                    'mailFolderRepository' =>  $repository,
+                    'user'                 => $this->user,
+                    'messageRepository'    => $this->messageRepository
+                ));
+        }
 
         $folderSecurityService =
             new \Conjoon\Mail\Client\Security\DefaultFolderSecurityService(array(
                 'mailFolderRepository' => $repository,
                 'user'                 => $this->user,
                 'mailFolderCommons'    => $mailFolderCommons
-        ));
+            ));
 
         $folderNamingForMovingStrategy =
             new \Conjoon\Mail\Client\Folder\Strategy\DefaultFolderNamingForMovingStrategy(
                 array('template' => '{0} {1}')
             );
 
-        $this->service = new DefaultFolderService(array(
+        return new DefaultFolderService(array(
             'folderSecurityService' => $folderSecurityService,
-            'mailFolderRepository' => $repository,
             'user'                 => $this->user,
             'mailFolderCommons'    => $mailFolderCommons,
             'folderNamingForMovingStrategy' => $folderNamingForMovingStrategy
@@ -192,25 +203,41 @@ class DefaultClientMailFolderServiceTest extends \Conjoon\DatabaseTestCaseDefaul
     }
 
     /**
+     * @expectedException \Conjoon\Mail\Client\Folder\FolderDoesNotExistException
+     */
+    public function testMoveFolder_FolderDoesNotExistException() {
+
+        $folderToMove = new Folder(
+            new DefaultFolderPath('["root", "1", "123"]')
+        );
+
+        $targetFolder = new Folder(
+            new DefaultFolderPath('["root", "14"]')
+        );
+
+        $this->getService(true)->moveFolder($folderToMove, $targetFolder);
+    }
+
+    /**
      * @expectedException \Conjoon\Mail\Client\Folder\FolderServiceException
      */
     public function testMoveFolder_FolderServiceException() {
 
         $folderToMove = new Folder(
-            new DefaultFolderPath('["root", "1", "18"]')
+            new DefaultFolderPath('["root", "10", "11"]')
         );
 
         $targetFolder = new Folder(
-            new DefaultFolderPath('["root", "4"]')
+            new DefaultFolderPath('["root", "14"]')
         );
 
-        $this->service->moveFolder($folderToMove, $targetFolder);
+        $this->getService(true)->moveFolder($folderToMove, $targetFolder);
     }
 
     /**
-     * @expectedException \Conjoon\Mail\Client\Folder\FolderTypeMismatchException
+     * @expectedException \Conjoon\Mail\Client\Folder\FolderMetaInfoMismatchException
      */
-    public function testMoveFolder_FolderTypeMismatchException() {
+    public function testMoveFolder_FolderMetaInfoMismatchException() {
         $folderToMove = new Folder(
             new DefaultFolderPath('["root", "10", "18"]')
         );
@@ -274,17 +301,20 @@ class DefaultClientMailFolderServiceTest extends \Conjoon\DatabaseTestCaseDefaul
     public function testMoveFolder() {
 
         $folderToMove = new Folder(
-            new DefaultFolderPath('["root", "10"]')
+            new DefaultFolderPath('["root", "10", "11"]')
         );
 
         $targetFolder = new Folder(
             new DefaultFolderPath('["root", "14"]')
         );
 
-        $movedEntity = $this->service->moveFolder($folderToMove, $targetFolder);
+        $movedEntity = $this->service->moveFolder(
+            $folderToMove,
+            $targetFolder
+        );
 
         $this->assertTrue($movedEntity instanceof \Conjoon\Data\Entity\Mail\MailFolderEntity);
-        $this->assertEquals("Same Name (1)", $movedEntity->getName());
+        $this->assertEquals("folder 11 (1)", $movedEntity->getName());
         $this->assertEquals(14, $movedEntity->getParent()->getId());
 
 
@@ -300,7 +330,8 @@ class DefaultClientMailFolderServiceTest extends \Conjoon\DatabaseTestCaseDefaul
 
         $queryTable = $this->getConnection()->createQueryTable(
             'groupware_email_folders_accounts',
-            'SELECT * FROM groupware_email_folders_accounts'
+            'SELECT * FROM groupware_email_folders_accounts ' .
+            'ORDER BY groupware_email_folders_id'
         );
         $expectedTable = $this->createXmlDataSet(
             dirname(__FILE__) . '/fixtures/mysql/mail_folder.moveFolderResult.xml'
@@ -454,6 +485,16 @@ class DefaultClientMailFolderServiceTest extends \Conjoon\DatabaseTestCaseDefaul
             ))
         );
     }
+}
 
+class MockFolderCommons extends \Conjoon\Mail\Client\Folder\DefaultFolderCommons {
+
+    public function getFolderEntity(Folder $folder) {
+        if($folder->getNodeId() == 123) {
+            throw new FolderDoesNotExistException();
+        }
+
+        throw new FolderServiceException();
+    }
 
 }

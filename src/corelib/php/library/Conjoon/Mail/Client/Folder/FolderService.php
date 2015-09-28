@@ -83,6 +83,8 @@ interface FolderService {
      * will not keep their original associations to their mail accounts.
      * Folders may be moved across different accounts. Remote_root Folders must
      * not be moved to root or accounts_root folder hierarchies.
+     * The type of the moved folders get automatically set to "folder" while
+     * their meta info stays the same.
      *
      * @param Folder $sourceFolder The source folder to move
      * @param Folder $targetFolder The target folder where the source folder
@@ -93,7 +95,8 @@ interface FolderService {
      *         represented by the passed folder
      *
      * @throws \Conjoon\Mail\Client\Folder\FolderServiceException
-     * @throws \Conjoon\Mail\Client\Folder\FolderTypeMismatchException
+     * @throws \Conjoon\Mail\Client\Folder\FolderDoesNotExistException
+     * @throws \Conjoon\Mail\Client\Folder\FolderMetaInfoMismatchException
      * @throws \Conjoon\Mail\Client\Folder\NoChildFoldersAllowedException
      * @throws \Conjoon\Mail\Client\Security\FolderMoveException
      * @throws \Conjoon\Mail\Client\Security\FolderAddException

@@ -194,7 +194,7 @@
         </row>
         <row>
             <value>19</value>
-            <value>Same Name</value>
+            <value>folder 11</value>
             <value>1</value>
             <value>0</value>
             <value>inbox</value>
@@ -229,6 +229,16 @@
         <column>relationship</column>
         <row>
             <value>10</value>
+            <value>1</value>
+            <value>owner</value>
+        </row>
+        <row>
+            <value>11</value>
+            <value>1</value>
+            <value>owner</value>
+        </row>
+        <row>
+            <value>18</value>
             <value>1</value>
             <value>owner</value>
         </row>

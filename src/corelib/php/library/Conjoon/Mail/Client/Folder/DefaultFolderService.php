@@ -39,18 +39,12 @@ use Conjoon\Data\Repository\Mail\MailFolderRepository,
     Conjoon\Mail\Client\Security\FolderAddException,
     Conjoon\Mail\Client\Security\FolderAccessException,
     Conjoon\Mail\Client\Security\FolderMoveException,
-    Conjoon\Mail\Client\Folder\FolderTypeMismatchException,
     Conjoon\Mail\Client\Folder\FolderMetaInfoMismatchException;
 
 /**
  * @see Conjoon\Mail\Client\Folder\FolderService
  */
 require_once 'Conjoon/Mail/Client/Folder/FolderService.php';
-
-/**
- * @see Conjoon\Mail\Client\Folder\FolderTypeMismatchException
- */
-require_once 'Conjoon/Mail/Client/Folder/FolderTypeMismatchException.php';
 
 /**
  * @see Conjoon\Mail\Client\Security\FolderAccessException
@@ -144,11 +138,11 @@ class DefaultFolderService implements FolderService {
             )
         ), $data);
 
+        if (isset($options['mailFolderRepository'])) {
+            throw new \RuntimeException("no repository here since @ticket CN-971");
+        }
+
         ArgumentCheck::check(array(
-            'mailFolderRepository' => array(
-                'type'  => 'instanceof',
-                'class' => 'Conjoon\Data\Repository\Mail\MailFolderRepository'
-            ),
             'user' => array(
                 'type'  => 'instanceof',
                 'class' => 'Conjoon\User\User'
@@ -172,7 +166,6 @@ class DefaultFolderService implements FolderService {
         $this->folderNamingForMovingStrategy =
             $options['folderNamingForMovingStrategy'];
 
-        $this->folderRepository  = $options['mailFolderRepository'];
         $this->user              = $options['user'];
         $this->mailFolderCommons = $options['mailFolderCommons'];
     }
@@ -242,7 +235,7 @@ class DefaultFolderService implements FolderService {
      *
      * @return bool
      */
-    public function moveMessagesIntoTargetFolder(
+    protected function moveMessagesIntoTargetFolder(
         \Conjoon\Data\Entity\Mail\MailFolderEntity $sourceEntity,
         \Conjoon\Data\Entity\Mail\MailFolderEntity $targetEntity) {
 
@@ -267,16 +260,10 @@ class DefaultFolderService implements FolderService {
         \Conjoon\Mail\Client\Folder\Folder $sourceFolder,
         \Conjoon\Mail\Client\Folder\Folder $targetRootFolder) {
 
-        try {
-            $sourceEntity = $this->mailFolderCommons->getFolderEntity(
-                $sourceFolder);
-            $targetEntity = $this->mailFolderCommons->getFolderEntity(
-                $targetRootFolder);
-        } catch (\Exception $e) {
-            throw new FolderServiceException(
-                "Exception thrown by previous exception.", 0 , $e
-            );
-        }
+        $sourceEntity = $this->mailFolderCommons->getFolderEntity(
+            $sourceFolder);
+        $targetEntity = $this->mailFolderCommons->getFolderEntity(
+            $targetRootFolder);
 
         $isSourceRemote = $this->mailFolderCommons->isFolderRepresentingRemoteMailbox(
             $sourceFolder);
@@ -286,20 +273,6 @@ class DefaultFolderService implements FolderService {
 
         if ($isSourceRemote || $isTargetRemote) {
             throw new \RuntimeException("operation not supported yet.");
-        }
-
-        // check if type is the same
-        if ($sourceEntity->getType() !== $targetEntity->getType()) {
-            throw new FolderTypeMismatchException(
-                "Source- and Target-Folder do not share the same type"
-            );
-        }
-
-        // check if target folder allows child folder
-        if (!$this->mailFolderCommons->doesFolderAllowChildFolders($targetRootFolder)) {
-            throw new NoChildFoldersAllowedException(
-                "Target-Folder does not allow child folders"
-            );
         }
 
         // check if source may be moved
@@ -316,37 +289,18 @@ class DefaultFolderService implements FolderService {
             );
         }
 
-        // set new parent for source Folder
-        $sourceEntity->setParent($targetEntity);
-
-        $sourceEntity->setName(
-            $this->getNameForMovingFolder($sourceEntity, $targetEntity)
-        );
-
-        $tmpArr = $targetEntity->getMailAccounts();
-        $targetMailAccounts = array();
-        if (!is_array($tmpArr) &&
-           ($tmpArr instanceof \Doctrine\Common\Collections\Collection)) {
-            foreach ($tmpArr as $targetAccount) {
-                $targetMailAccounts[] = $targetAccount;
-            }
-        } else {
-            $targetMailAccounts = $tmpArr;
-        }
-
-        // set new mail accounts for all the child folders which are belonging
-        // to the folder which is moved
-        $this->replaceMailAccountsForFolderHierarchy(
-            $sourceEntity, $targetMailAccounts, $this->folderRepository);
         try {
-            $this->folderRepository->flush();
-        } catch (\Exception $e) {
+            return $this->mailFolderCommons->moveFolderTo(
+                $sourceEntity, $targetEntity,
+                $this->getNameForMovingFolder($sourceEntity, $targetEntity)
+            );
+        } catch (InvalidArgumentException $e) {
             throw new FolderServiceException(
-                "Exception thrown by previous exception", 0, $e
+                "Exception thrown by previous exception: " .
+                $e->getMessage(),
+                0, $e
             );
         }
-
-        return $sourceEntity;
     }
 
     /**
@@ -391,44 +345,6 @@ class DefaultFolderService implements FolderService {
         }
 
         return $namingResult->getName();
-    }
-
-    /**
-     * Replaces all the mail accounts of the specified folder and its subfolders
-     * with the accounts found in $targetMailAccounts.
-     *
-     * @param \Conjoon\Data\Entity\Mail\MailFolderEntity $folder The target folder
-     *        of which all mail accounts should be replaced. Child folders will
-     *        be considered
-     * @param array $targetMailAccounts The mail accounts which should replace
-     *        the origin mail accounts of $folder
-     *
-     *
-     */
-    protected function replaceMailAccountsForFolderHierarchy(
-        \Conjoon\Data\Entity\Mail\MailFolderEntity $folderEntity,
-        Array $targetMailAccounts,
-        \Conjoon\Data\Repository\Mail\MailFolderRepository $repository) {
-
-        $sourceAccounts = $folderEntity->getMailAccounts();
-        $repository->register($folderEntity);
-
-        foreach ($sourceAccounts as $sourceAccount) {
-            $folderEntity->removeMailAccount($sourceAccount);
-        }
-
-        foreach ($targetMailAccounts as $targetAccount) {
-            $folderEntity->addMailAccount($targetAccount);
-        }
-
-        $childFolders = $this->mailFolderCommons->getChildFolderEntities(
-            $folderEntity
-        );
-
-        foreach ($childFolders as $childFolder) {
-            $this->replaceMailAccountsForFolderHierarchy(
-                $childFolder, $targetMailAccounts, $repository);
-        }
     }
 
     /**
