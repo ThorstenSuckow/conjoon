@@ -348,9 +348,19 @@ class DefaultFolderCommons implements FolderCommons {
     /**
      * @inheritdoc
      */
-    public function doesFolderAllowChildFolders(Folder $folder) {
+    public function doesFolderAllowChildFolders($folder) {
 
-        $entity = $this->getFolderEntity($folder);
+        $data = array(
+            'folder' => $folder
+        );
+
+        $config = array();
+        ArrayUtil::apply(
+            $config,
+            $this->getFolderHybridCheckConfiguration('folder'));
+        ArgumentCheck::check($config, $data);
+
+        $entity = $this->makeFolderEntity($folder);
 
         if (!$entity->getIsChildAllowed()) {
             return false;
@@ -714,12 +724,102 @@ class DefaultFolderCommons implements FolderCommons {
         $folderEntity = $this->makeFolderEntity($folder);
 
         $actualMetaInfo   = $folderEntity->getMetaInfo();
-        $expectedMetaInfo = $data['metaInfo'] === ""
+        $expectedMetaInfo = $data['metaInfo'] === "" || $data['metaInfo'] === null
                             ? $actualMetaInfo
-                            : $actualMetaInfo;
+                            : $data['metaInfo'];
 
         return $this->checkMetaInfoType($folderEntity, $expectedMetaInfo);
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function moveFolderTo(
+        $sourceFolder, $targetFolder, $newSourceName = null) {
+
+        $data = array(
+            'sourceFolder'  => $sourceFolder,
+            'targetFolder'  => $targetFolder,
+            'newSourceName' => $newSourceName
+        );
+
+        $config = array(
+            'newSourceName' => array(
+                'type'       => 'string',
+                'allowEmpty' => true,
+                'strict'     => true
+            )
+        );
+
+        ArrayUtil::apply(
+            $config,
+            $this->getFolderHybridCheckConfiguration('sourceFolder'));
+        ArrayUtil::apply(
+            $config,
+            $this->getFolderHybridCheckConfiguration('targetFolder'));
+
+        ArgumentCheck::check($config, $data);
+
+        $sourceFolderEntity = null;
+        $targetFolderEntity = null;
+
+        $newSourceName = $data['newSourceName'];
+
+        if (!$this->doesFolderAllowChildFolders($targetFolder)) {
+            throw new NoChildFoldersAllowedException(
+                "Folder $targetFolder does not allow child folders."
+            );
+        }
+
+        $targetFolderEntity = $this->makeFolderEntity($targetFolder);
+        $sourceFolderEntity = $this->makeFolderEntity($sourceFolder);
+
+        if (!$this->isMetaInfoInFolderHierarchyUnique(
+            $sourceFolderEntity, $targetFolderEntity->getMetaInfo())) {
+            throw new FolderMetaInfoMismatchException(
+                "Source $sourceFolder and target $targetFolder do not share the " .
+                "same Meta Info"
+            );
+        }
+
+        $tmpArr = $targetFolderEntity->getMailAccounts();
+        $targetMailAccounts = array();
+        foreach ($tmpArr as $targetAccount) {
+            $targetMailAccounts[] = $targetAccount;
+        }
+
+        try {
+            $this->folderRepository->register($sourceFolderEntity);
+        } catch (\Exception $e){
+            throw new FolderServiceException(
+                "Exception thrown by previous exception: " .
+                $e->getMessage()
+                , 0, $e
+            );
+        }
+
+        if ($newSourceName !== null) {
+            $sourceFolderEntity->setName($newSourceName);
+        }
+
+        $sourceFolderEntity->setParent($targetFolderEntity);
+        $this->removeMailAccountsFromFolder($sourceFolderEntity);
+        $this->applyMailAccountsToFolder($targetMailAccounts, $sourceFolderEntity);
+        $this->applyTypeToFolder(self::FOLDERTYPE_FOLDER, $sourceFolderEntity, true);
+
+        try {
+            $this->folderRepository->flush();
+        } catch (\Exception $e){
+            throw new FolderServiceException(
+                "Exception thrown by previous exception: " .
+                $e->getMessage(),
+                0, $e
+            );
+        }
+
+        return $sourceFolderEntity;
+    }
+
 
 // -------- helper
 

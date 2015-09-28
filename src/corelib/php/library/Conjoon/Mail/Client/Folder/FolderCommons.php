@@ -78,14 +78,15 @@ interface FolderCommons {
      * Returns true if the specified folder allows for adding child folders,
      * otherwise false.
      *
-     * @param MailFolder $folder
+     * @param Folder|\Conjoon\Data\Entity\Mail\MailFolderEntity $sourceFolder
      *
      * @return boolean
      *
+     * @throws InvalidArgumentException
      * @throws FolderServiceException
      * @throws FolderDoesNotExistException
      */
-    public function doesFolderAllowChildFolders(Folder $folder);
+    public function doesFolderAllowChildFolders($folder);
 
     /**
      * Returns true if the specified folder represents a remote folder,
@@ -263,4 +264,27 @@ interface FolderCommons {
      */
      public function isMetaInfoInFolderHierarchyUnique($folder, $metaInfo = "");
 
+    /**
+     * Moves the specified $sourceFolder and its child folders as a new
+     * $childFolder and renames $sourceFolder if $newSourceName is specified.
+     * The meta info of source and target has to be the same, otherwise an exception
+     * will be thrown.
+     * All associations from mail accounts will be removed from $sourceFolder. It
+     * will inherit the accounts from $targetFolder. The type of $sourceFolder
+     * and all its child folders will be set to "folder".
+     *
+     * @param Folder|\Conjoon\Data\Entity\Mail\MailFolderEntity $sourceFolder
+     * @param Folder|\Conjoon\Data\Entity\Mail\MailFolderEntity $targetFolder
+     * @param string $newSourceName
+     *
+     * @return \Conjoon\Data\Entity\Mail\MailFolderEntity The mail folder
+     *          entity that was moved
+     *
+     * @throws \Conjoon\Argument\InvalidArgumentException
+     * @throws \Conjoon\Mail\Client\Folder\FolderServiceException
+     * @throws \Conjoon\Mail\Client\Folder\FolderDoesNotExistException
+     * @throws \Conjoon\Mail\Client\Folder\FolderMetaInfoMismatchException
+     * @throws \Conjoon\Mail\Client\Folder\NoChildFoldersAllowedException
+     */
+    public function moveFolderTo($sourceFolder, $targetFolder, $newSourceName = null);
 }

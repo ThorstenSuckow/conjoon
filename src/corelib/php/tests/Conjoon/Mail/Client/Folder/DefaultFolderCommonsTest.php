@@ -175,6 +175,178 @@ class DefaultFolderCommonsTest extends \Conjoon\DatabaseTestCaseDefault {
 
     }
 
+// +--------------------------------------
+// | moveFolderTo
+// +--------------------------------------
+    /**
+     * Ensure everything works as expected
+     */
+    public function testMoveFolder() {
+
+        $folderToMove = new Folder(
+            new DefaultFolderPath('["root", "10", "11"]')
+        );
+
+        $targetFolder = new Folder(
+            new DefaultFolderPath('["root", "14"]')
+        );
+
+        $movedEntity = $this->getCommons()->moveFolderTo(
+            $folderToMove, $targetFolder
+        );
+
+        $this->assertTrue($movedEntity instanceof \Conjoon\Data\Entity\Mail\MailFolderEntity);
+        $this->assertEquals("folder 11", $movedEntity->getName());
+        $this->assertEquals(14, $movedEntity->getParent()->getId());
+
+
+        $queryTable = $this->getConnection()->createQueryTable(
+            'groupware_email_folders',
+            'SELECT * FROM groupware_email_folders'
+        );
+        $expectedTable = $this->createXmlDataSet(
+            dirname(__FILE__) . '/fixtures/mysql/' .
+            'DefaultFolderCommons.moveFolderTo.sameName.xml'
+        )->getTable("groupware_email_folders");
+
+        $this->assertTablesEqual($expectedTable, $queryTable);
+
+        $queryTable = $this->getConnection()->createQueryTable(
+            'groupware_email_folders_accounts',
+            'SELECT * FROM groupware_email_folders_accounts ORDER BY groupware_email_folders_id'
+        );
+        $expectedTable = $this->createXmlDataSet(
+            dirname(__FILE__) . '/fixtures/mysql/' .
+            'DefaultFolderCommons.moveFolderTo.sameName.xml'
+        )->getTable("groupware_email_folders_accounts");
+
+        $this->assertTablesEqual($expectedTable, $queryTable);
+    }
+
+    /**
+     * Ensure everything works as expected
+     */
+    public function testMoveFolder_newName() {
+
+        $folderToMove = $this->mailFolderRepository->findById(11);
+
+        $targetFolder = new Folder(
+            new DefaultFolderPath('["root", "14"]')
+        );
+
+        $movedEntity = $this->getCommons()->moveFolderTo(
+            $folderToMove, $targetFolder, "New Name"
+        );
+
+        $this->assertTrue($movedEntity instanceof \Conjoon\Data\Entity\Mail\MailFolderEntity);
+        $this->assertEquals("New Name", $movedEntity->getName());
+        $this->assertEquals(14, $movedEntity->getParent()->getId());
+
+
+        $queryTable = $this->getConnection()->createQueryTable(
+            'groupware_email_folders',
+            'SELECT * FROM groupware_email_folders'
+        );
+        $expectedTable = $this->createXmlDataSet(
+            dirname(__FILE__) . '/fixtures/mysql/' .
+            'DefaultFolderCommons.moveFolderTo.newName.xml'
+        )->getTable("groupware_email_folders");
+
+        $this->assertTablesEqual($expectedTable, $queryTable);
+    }
+
+    /**
+     * @expectedException \Conjoon\Argument\InvalidArgumentException
+     */
+    public function testMoveFolder_InvalidArgumentException_newFolderName() {
+
+        $folderToMove = $this->mailFolderRepository->findById(11);
+        $targetFolder = new Folder(
+            new DefaultFolderPath('["root", "14"]')
+        );
+
+        $this->getCommons()->moveFolderTo($folderToMove, $targetFolder, 12);
+    }
+
+    /**
+     * @expectedException \Conjoon\Argument\InvalidArgumentException
+     */
+    public function testMoveFolder_InvalidArgumentException_targetFolder() {
+
+        $folderToMove = new Folder(
+            new DefaultFolderPath('["root", "10", "11"]')
+        );
+
+        $this->getCommons()->moveFolderTo($folderToMove, 2323, null);
+    }
+
+    /**
+     * @expectedException \Conjoon\Argument\InvalidArgumentException
+     */
+    public function testMoveFolder_InvalidArgumentException_folderToMove() {
+
+        $targetFolder = new Folder(
+            new DefaultFolderPath('["root", "10", "17"]')
+        );
+
+        $this->getCommons()->moveFolderTo('a', $targetFolder, null);
+    }
+
+    /**
+     * @expectedException \Conjoon\Mail\Client\Folder\FolderDoesNotExistException
+     */
+    public function testMoveFolder_FolderDoesNotExistException() {
+
+        $folderToMove = new Folder(
+            new DefaultFolderPath('["root", "10", "123"]')
+        );
+
+        $targetFolder = new Folder(
+            new DefaultFolderPath('["root", "10", "17"]')
+        );
+
+        $this->getCommons(true)->moveFolderTo($folderToMove, $targetFolder);
+    }
+
+    /**
+     * @expectedException \Conjoon\Mail\Client\Folder\FolderServiceException
+     */
+    public function testMoveFolder_FolderServiceException() {
+
+        $folderToMove = $this->mailFolderRepository->findById(11);
+        $targetFolder = $this->mailFolderRepository->findById(14);
+
+        $this->getCommons(true)->moveFolderTo($folderToMove, $targetFolder);
+    }
+
+    /**
+     * @expectedException \Conjoon\Mail\Client\Folder\FolderMetaInfoMismatchException
+     */
+    public function testMoveFolder_FolderMetaInfoMismatchException() {
+        $folderToMove = $this->mailFolderRepository->findById(18);
+        $targetFolder = $this->mailFolderRepository->findById(14);
+
+        $this->getCommons()->moveFolderTo($folderToMove, $targetFolder, 'META');
+    }
+
+    /**
+     * @expectedException \Conjoon\Mail\Client\Folder\NoChildFoldersAllowedException
+     */
+    public function testMoveFolder_NoChildFoldersAllowedException() {
+        $folderToMove = new Folder(
+            new DefaultFolderPath('["root", "10", "11"]')
+        );
+
+        $targetFolder = new Folder(
+            new DefaultFolderPath('["root", "10", "17"]')
+        );
+
+        $this->getCommons()->moveFolderTo($folderToMove, $targetFolder);
+    }
+
+// +--------------------------------------
+// | isMetaInfoInFolderHierarchyUnique
+// +--------------------------------------
     /**
      * @expectedException \Conjoon\Mail\Client\Folder\FolderServiceException
      */
@@ -220,7 +392,7 @@ class DefaultFolderCommonsTest extends \Conjoon\DatabaseTestCaseDefault {
             $this->getCommons()->isMetaInfoInFolderHierarchyUnique($folder, "")
         );
         $folder = $this->mailFolderRepository->findById(11);
-        $this->assertTrue(
+        $this->assertFalse(
             $this->getCommons()->isMetaInfoInFolderHierarchyUnique($folder, " ")
         );
         $folder = $this->mailFolderRepository->findById(11);
@@ -240,6 +412,11 @@ class DefaultFolderCommonsTest extends \Conjoon\DatabaseTestCaseDefault {
         $folder = $this->mailFolderRepository->findById(10);
         $this->assertFalse(
             $this->getCommons()->isMetaInfoInFolderHierarchyUnique($folder)
+        );
+
+        $folder = $this->mailFolderRepository->findById(18);
+        $this->assertFalse(
+            $this->getCommons()->isMetaInfoInFolderHierarchyUnique($folder, 'inbox')
         );
     }
 
@@ -847,6 +1024,15 @@ class DefaultFolderCommonsTest extends \Conjoon\DatabaseTestCaseDefault {
         $this->commons->doesFolderAllowChildFolders(
             $this->argumentExceptionFolder
         );
+
+    }
+
+    /**
+     * @expectedException \Conjoon\Argument\InvalidArgumentException
+     */
+    public function testDoesFolderAllowChildFolders_InvalidArgumentException() {
+
+        $this->commons->doesFolderAllowChildFolders('folder');
 
     }
 
